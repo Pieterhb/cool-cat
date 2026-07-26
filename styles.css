@@ -322,11 +322,24 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .logo-text {
+    font-size: 1.2rem;
+  }
+  
+  .logo-img {
+    height: 40px;
+  }
+
   .nav-links {
-    display: none; /* We will add a simple JS toggle if needed, or flex column */
+    display: none; 
     position: absolute;
     top: 100%;
     left: 0;
+    right: 0;
     width: 100%;
     background: var(--white);
     flex-direction: column;
