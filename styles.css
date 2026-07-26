@@ -45,7 +45,8 @@ html, body {
   background-color: var(--bg-light);
   line-height: 1.6;
   overflow-x: hidden;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -323,16 +324,20 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
   .container {
     padding: 0 1rem;
   }
   
   .logo-text {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .logo-img {
-    height: 40px;
+    height: 38px;
   }
 
   .nav-links {
@@ -362,5 +367,15 @@ footer {
   
   .grid-2, .grid-3 {
     grid-template-columns: 1fr;
+  }
+
+  /* Fix footer overflow on mobile */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-col a {
+    word-break: break-all;
   }
 }
