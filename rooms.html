@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Rooms | Cool Cat B&B</title>
+    <meta name="description" content="View the luxury accommodation options at Cool Cat B&B in Strand, South Africa.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-header {
+            background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Ocean.jpg') center/cover;
+            padding: 8rem 0 4rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        .room-price {
+            font-family: var(--font-heading);
+            color: var(--orange);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .room-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+        .room-features li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="Logo.jpg" alt="Cool Cat B&B Logo" class="logo-img">
+                <span class="logo-text">COOL CAT B&B</span>
+            </a>
+            
+            <nav>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="rooms.html" class="active">Accommodation</a></li>
+                    <li><a href="guide.html">Guest Guide</a></li>
+                    <li><a href="faq.html">FAQ & Policies</a></li>
+                    <li><a href="mailto:bookings@cool-cat.co.za" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1 style="color: white; font-size: 3rem;">Our Accommodation</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Relax in comfort with our carefully appointed rooms, just steps away from the beautiful Strand beach.</p>
+        </div>
+    </div>
+
+    <!-- Rooms Section -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="grid-2">
+                
+                <!-- Room 1 -->
+                <div class="card">
+                    <img src="King Arther Bedroom.jpg" alt="The King Arthur Suite" class="card-img" style="height: 300px;">
+                    <div class="card-content">
+                        <h2>The King Arthur Suite</h2>
+                        <div class="room-price">From R1,450 / night</div>
+                        <p style="margin-bottom: 1rem;">Experience premium comfort in our flagship suite, featuring luxurious bedding and elegant decor perfect for a relaxing getaway.</p>
+                        <ul class="room-features">
+                            <li>🛏️ King Size Bed</li>
+                            <li>🚿 En-suite Bathroom</li>
+                            <li>📶 Free Uncapped WiFi</li>
+                            <li>📺 Smart TV (Netflix, DSTV)</li>
+                        </ul>
+                        <a href="mailto:bookings@cool-cat.co.za?subject=Booking Inquiry: King Arthur Suite" class="btn btn-outline" style="color: var(--sapphire-blue); border-color: var(--sapphire-blue); width: 100%;">Enquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Room 2 -->
+                <div class="card">
+                    <img src="1. Double bed.jpg" alt="The Sapphire Double Room" class="card-img" style="height: 300px;">
+                    <div class="card-content">
+                        <h2>The Sapphire Double</h2>
+                        <div class="room-price">From R1,100 / night</div>
+                        <p style="margin-bottom: 1rem;">A bright and airy double room designed for comfort, offering a peaceful retreat after a long day at the beach.</p>
+                        <ul class="room-features">
+                            <li>🛏️ Comfortable Double Bed</li>
+                            <li>🚿 Shared / Private Bathroom options</li>
+                            <li>📶 Free Uncapped WiFi</li>
+                            <li>☕ Tea & Coffee Station access</li>
+                        </ul>
+                        <a href="mailto:bookings@cool-cat.co.za?subject=Booking Inquiry: Sapphire Double" class="btn btn-outline" style="color: var(--sapphire-blue); border-color: var(--sapphire-blue); width: 100%;">Enquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Room 3 -->
+                <div class="card">
+                    <img src="2. Double bed.jpg" alt="The Coral Room" class="card-img" style="height: 300px;">
+                    <div class="card-content">
+                        <h2>The Coral Room</h2>
+                        <div class="room-price">From R950 / night</div>
+                        <p style="margin-bottom: 1rem;">A cozy and affordable double room perfect for short stays or solo travelers seeking a beachside holiday.</p>
+                        <ul class="room-features">
+                            <li>🛏️ Comfortable Double Bed</li>
+                            <li>📶 Free Uncapped WiFi</li>
+                            <li>🚪 Access to shared Lounge & Kitchen</li>
+                            <li>📺 Smart TV access in lounge</li>
+                        </ul>
+                        <a href="mailto:bookings@cool-cat.co.za?subject=Booking Inquiry: Coral Room" class="btn btn-outline" style="color: var(--sapphire-blue); border-color: var(--sapphire-blue); width: 100%;">Enquire Now</a>
+                    </div>
+                </div>
+
+                <!-- Shared Spaces -->
+                <div class="card">
+                    <img src="Lounch.jpg" alt="Shared Lounge" class="card-img" style="height: 300px;">
+                    <div class="card-content">
+                        <h2>Shared Amenities</h2>
+                        <div class="room-price">Included with all stays</div>
+                        <p style="margin-bottom: 1rem;">All our guests have access to our beautiful communal areas to socialize, dine, and relax.</p>
+                        <ul class="room-features">
+                            <li>🛋️ Comfortable Lounge & Dining Room</li>
+                            <li>🍳 Microwave & Refrigerator Access</li>
+                            <li>🎲 Board Games (Chess, Monopoly, etc.)</li>
+                            <li>🚬 Designated Outdoor Smoking Area</li>
+                        </ul>
+                        <a href="guide.html" class="btn btn-outline" style="color: var(--sapphire-blue); border-color: var(--sapphire-blue); width: 100%;">View Guest Guide</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Cool Cat B&B</h3>
+                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>📱 <a href="tel:0662360862">066 236 0862 (Michele Rossouw)</a></li>
+                        <li>💬 <a href="https://wa.me/27662360862" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za">bookings@cool-cat.co.za</a></li>
+                        <li>✉️ <a href="mailto:corrie@cool-cat.co.za">corrie@cool-cat.co.za</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="rooms.html">Our Rooms</a></li>
+                        <li><a href="guide.html">Guest Guide & Menus</a></li>
+                        <li><a href="faq.html">Policies & Rules</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; <script>document.write(new Date().getFullYear())</script> Cool Cat B&B. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

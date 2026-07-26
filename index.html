@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool Cat B&B | Strand, South Africa</title>
+    <meta name="description" content="Welcome to Cool Cat B&B in Strand, Western Cape. Enjoy a relaxing holiday just 100m from the beach.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="Logo.jpg" alt="Cool Cat B&B Logo" class="logo-img">
+                <span class="logo-text">COOL CAT B&B</span>
+            </a>
+            
+            <nav>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="rooms.html">Accommodation</a></li>
+                    <li><a href="guide.html">Guest Guide</a></li>
+                    <li><a href="faq.html">FAQ & Policies</a></li>
+                    <li><a href="mailto:bookings@cool-cat.co.za" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section with Video Banner -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline poster="Cool Cat Banner.jpg">
+            <source src="Cool Cat Video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <h1>Relax. Unwind. Enjoy.</h1>
+            <p>Your perfect beachside holiday awaits at Cool Cat B&B, Strand, South Africa. Just 100m from the ocean.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="rooms.html" class="btn btn-primary">View Rooms</a>
+                <a href="https://wa.me/27662360862" target="_blank" class="btn btn-outline">WhatsApp Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlights Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title text-center">Why Choose Us?</h2>
+            <div class="grid-3" style="margin-top: 3rem;">
+                <div class="card text-center" style="padding: 2rem;">
+                    <h3 class="text-orange" style="font-size: 2rem;">🏖️</h3>
+                    <h3>100m to the Beach</h3>
+                    <p class="text-light">Perfect for swimming, walking, jogging, and watching spectacular sunsets over False Bay.</p>
+                </div>
+                <div class="card text-center" style="padding: 2rem;">
+                    <h3 class="text-orange" style="font-size: 2rem;">🍳</h3>
+                    <h3>Delicious Breakfasts</h3>
+                    <p class="text-light">Start your day right with our Continental, Sunrise, or Cool Cat Signature breakfasts.</p>
+                </div>
+                <div class="card text-center" style="padding: 2rem;">
+                    <h3 class="text-orange" style="font-size: 2rem;">🛏️</h3>
+                    <h3>Premium Comfort</h3>
+                    <p class="text-light">Relax in our carefully appointed rooms or enjoy our shared lounge with Smart TV and games.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Cool Cat B&B</h3>
+                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>📱 <a href="tel:0662360862">066 236 0862 (Michele Rossouw)</a></li>
+                        <li>💬 <a href="https://wa.me/27662360862" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za">bookings@cool-cat.co.za</a></li>
+                        <li>✉️ <a href="mailto:corrie@cool-cat.co.za">corrie@cool-cat.co.za</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="rooms.html">Our Rooms</a></li>
+                        <li><a href="guide.html">Guest Guide & Menus</a></li>
+                        <li><a href="faq.html">Policies & Rules</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; <script>document.write(new Date().getFullYear())</script> Cool Cat B&B. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple mobile menu toggle
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.85)';
+            }
+        });
+    </script>
+</body>
+</html>

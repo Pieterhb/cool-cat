@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Guide & Menus | Cool Cat B&B</title>
+    <meta name="description" content="Explore our menus, local attractions, and amenities during your stay at Cool Cat B&B.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-header {
+            background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
+            padding: 8rem 0 4rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .menu-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+        }
+        .menu-price {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--orange);
+        }
+        .menu-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        .guide-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+        .guide-section h3 {
+            color: var(--orange);
+            border-bottom: 2px solid var(--orange);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        ul.custom-list {
+            list-style: none;
+        }
+        ul.custom-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        ul.custom-list li::before {
+            content: '🐾';
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+            top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="Logo.jpg" alt="Cool Cat B&B Logo" class="logo-img">
+                <span class="logo-text">COOL CAT B&B</span>
+            </a>
+            
+            <nav>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="rooms.html">Accommodation</a></li>
+                    <li><a href="guide.html" class="active">Guest Guide</a></li>
+                    <li><a href="faq.html">FAQ & Policies</a></li>
+                    <li><a href="mailto:bookings@cool-cat.co.za" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1 style="color: white; font-size: 3rem;">Guest Guide & Menus</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Everything you need to know to make the most of your stay at Cool Cat B&B.</p>
+        </div>
+    </div>
+
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="grid-2">
+                
+                <!-- Left Column: Menus -->
+                <div>
+                    <div class="guide-section">
+                        <h3>🍳 Breakfast Menu</h3>
+                        <p class="text-light" style="margin-bottom: 1.5rem;"><em>Served daily 07:00 - 09:00. Please order before 20:00 the evening prior.</em></p>
+                        
+                        <div class="menu-item">
+                            <span class="menu-title">Continental Breakfast</span>
+                            <span class="menu-price">R95</span>
+                        </div>
+                        <div class="menu-desc">Fresh Fruit, Yoghurt, Cereal, Toast, Preserves, Tea or Coffee.</div>
+
+                        <div class="menu-item">
+                            <span class="menu-title">Sunrise Breakfast</span>
+                            <span class="menu-price">R145</span>
+                        </div>
+                        <div class="menu-desc">Fresh Fruit, Yoghurt, Eggs, Bacon, Toast, Fruit Juice, Tea or Coffee.</div>
+
+                        <div class="menu-item">
+                            <span class="menu-title">Cool Cat Signature Breakfast</span>
+                            <span class="menu-price">R225</span>
+                        </div>
+                        <div class="menu-desc">Fresh Fruit, Yoghurt, Eggs, Bacon, Champion Boerewors, Fried Mushrooms, Fried Onions, Grilled Tomato, Cheddar Cheese, Fruit Juice, Tea/Coffee.</div>
+                    </div>
+
+                    <div class="guide-section">
+                        <h3>🥪 Gourmet Sandwiches</h3>
+                        <p class="text-light" style="margin-bottom: 1.5rem;"><em>Prepared fresh on White or Brown Bread. Order before 11:00 AM (Ready by 18:00).</em></p>
+                        
+                        <div class="menu-item"><span class="menu-title">Deluxe Chicken</span><span class="menu-price">R95</span></div>
+                        <div class="menu-desc">Lettuce, Fried Chicken, Tomato, Onion & Mayo.</div>
+                        
+                        <div class="menu-item"><span class="menu-title">Deluxe Cheese</span><span class="menu-price">R95</span></div>
+                        <div class="menu-desc">Lettuce, Cheddar Cheese, Tomato, Gherkin, Onion & Mayo.</div>
+                        
+                        <div class="menu-item"><span class="menu-title">Deluxe Tuna</span><span class="menu-price">R95</span></div>
+                        <div class="menu-desc">Tuna, Capers, Onion & Mayo.</div>
+                        
+                        <div class="menu-item"><span class="menu-title">Deluxe Chicken & Avo</span><span class="menu-price">R95</span></div>
+                        <div class="menu-desc">Bacon, Fried Chicken, Avocado & Mayo.</div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Info & Attractions -->
+                <div>
+                    <div class="guide-section">
+                        <h3>🏖️ Walking Distance (Within 500m)</h3>
+                        <ul class="custom-list">
+                            <li><strong>Strand Beach (100m):</strong> Ideal for swimming, walking, jogging, and sunsets.</li>
+                            <li><strong>Southside Centre (300m):</strong> OK Foods, OK Liquor, ATMs (Nedbank, Standard, Capitec), Debonairs Pizza, KFC.</li>
+                            <li><strong>Strand Municipal Indoor Pool (500m):</strong> Open Mon-Sun 10:00-16:45.</li>
+                            <li><strong>Total Garage (300m):</strong> 24/7 Service Station & convenience store.</li>
+                            <li><strong>Fast Food:</strong> Nando's Drive-Thru (250m), McDonald's Drive-Thru (300m).</li>
+                        </ul>
+                    </div>
+
+                    <div class="guide-section">
+                        <h3>🍽️ Recommended Restaurants (Driving Distance)</h3>
+                        <ul class="custom-list">
+                            <li><strong>Jackson & Black:</strong> Grill & Pizza (064 513 0288)</li>
+                            <li><strong>Bossa Strand Pavilion:</strong> Grill & Bar (021 879 3395)</li>
+                            <li><strong>PRIME Wagyu:</strong> 5-Star Family-Friendly Dining (087 149 4685)</li>
+                            <li><strong>Ocean Basket:</strong> Seafood (021 853 4041)</li>
+                            <li><strong>De Brasserie:</strong> 5-Star Belgian Cuisine (021 853 3833)</li>
+                        </ul>
+                    </div>
+
+                    <div class="guide-section">
+                        <h3>🧺 Laundry Services</h3>
+                        <ul class="custom-list">
+                            <li><strong>Wash Load (Up to 6kg):</strong> R200</li>
+                            <li><strong>Ironing:</strong> R60 per item</li>
+                        </ul>
+                        <p class="text-light" style="margin-top: 1rem; font-size: 0.9rem;">Same-day service available subject to availability.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Cool Cat B&B</h3>
+                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>📱 <a href="tel:0662360862">066 236 0862 (Michele Rossouw)</a></li>
+                        <li>💬 <a href="https://wa.me/27662360862" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za">bookings@cool-cat.co.za</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="rooms.html">Our Rooms</a></li>
+                        <li><a href="guide.html">Guest Guide & Menus</a></li>
+                        <li><a href="faq.html">Policies & Rules</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; <script>document.write(new Date().getFullYear())</script> Cool Cat B&B. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
