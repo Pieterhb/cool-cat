@@ -333,7 +333,8 @@ footer {
   }
   
   .logo-text {
-    font-size: 1.1rem;
+    font-size: 1.65rem;
+    color: var(--sapphire-blue-light);
   }
   
   .logo-img {

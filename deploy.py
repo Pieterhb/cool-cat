@@ -39,8 +39,7 @@ def auto_deploy():
     # 4. Deploy to Cloudflare
     print("Deploying to Cloudflare Pages...")
     # Use shell=True for npx on Windows
-    subprocess.run('npx wrangler pages deploy . --project-name cool-cat-site --branch main', shell=True, check=True)
-    subprocess.run('npx wrangler pages domain set cool-cat-site cool-cat.co.za', shell=True, check=True)
+    subprocess.run('npx wrangler pages deploy . --project-name cool-cat-site --branch production', shell=True, check=True)
     
     print("===================================================")
     print(" DONE! Your website is live and the cache is busted!")
