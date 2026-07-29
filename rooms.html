@@ -69,9 +69,9 @@
                 
                 <!-- Room 1 -->
                 <div class="card">
-                    <img src="King Arther Bedroom.jpg" alt="The King Arthur Suite" class="card-img" style="height: 300px;">
+                    <video src="1. King Arthur Room.webm" alt="King Arthur Room" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
-                        <h2>The King Arthur Suite</h2>
+                        <h2>King Arthur Room</h2>
                         <div class="room-price">From R1,450 / night</div>
                         <p style="margin-bottom: 1rem;">Experience premium comfort in our flagship suite, featuring luxurious bedding and elegant decor perfect for a relaxing getaway.</p>
                         <ul class="room-features">
@@ -86,9 +86,9 @@
 
                 <!-- Room 2 -->
                 <div class="card">
-                    <img src="1. Double bed.jpg" alt="The Sapphire Double Room" class="card-img" style="height: 300px;">
+                    <video src="2. Santori Double Room.webm" alt="Santori Double Room" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
-                        <h2>The Sapphire Double</h2>
+                        <h2>Santori Double Room</h2>
                         <div class="room-price">From R1,100 / night</div>
                         <p style="margin-bottom: 1rem;">A bright and airy double room designed for comfort, offering a peaceful retreat after a long day at the beach.</p>
                         <ul class="room-features">
@@ -103,9 +103,9 @@
 
                 <!-- Room 3 -->
                 <div class="card">
-                    <img src="2. Double bed.jpg" alt="The Coral Room" class="card-img" style="height: 300px;">
+                    <video src="3. Relaxation Lounge.webm" alt="Relaxation Lounge" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
-                        <h2>The Coral Room</h2>
+                        <h2>Relaxation Lounge</h2>
                         <div class="room-price">From R950 / night</div>
                         <p style="margin-bottom: 1rem;">A cozy and affordable double room perfect for short stays or solo travelers seeking a beachside holiday.</p>
                         <ul class="room-features">
@@ -120,9 +120,9 @@
 
                 <!-- Shared Spaces -->
                 <div class="card">
-                    <img src="Lounch.jpg" alt="Shared Lounge" class="card-img" style="height: 300px;">
+                    <video src="4. Breakfast Lounge.webm" alt="Breakfast Lounge" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
-                        <h2>Shared Amenities</h2>
+                        <h2>Breakfast Lounge</h2>
                         <div class="room-price">Included with all stays</div>
                         <p style="margin-bottom: 1rem;">All our guests have access to our beautiful communal areas to socialize, dine, and relax.</p>
                         <ul class="room-features">
@@ -184,6 +184,28 @@
                 header.style.background = 'rgba(255, 255, 255, 0.95)';
             } else {
                 header.style.background = 'rgba(255, 255, 255, 0.85)';
+            }
+        });
+
+        // Lazy load and play videos on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const videos = document.querySelectorAll('video');
+            if ('IntersectionObserver' in window) {
+                const videoObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.play().catch(e => console.log("Play failed:", e));
+                        } else {
+                            entry.target.pause();
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                videos.forEach(video => {
+                    videoObserver.observe(video);
+                });
+            } else {
+                videos.forEach(video => video.play().catch(e => console.log("Play failed:", e)));
             }
         });
     </script>
