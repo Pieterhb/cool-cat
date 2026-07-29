@@ -404,8 +404,9 @@ footer {
     order: 3;
     width: 100vw;
     height: auto;
+    max-height: 45vh;
     margin: 0.5rem 0;
-    object-fit: cover;
+    object-fit: contain;
   }
   
   .hero-buttons-container {
