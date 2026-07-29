@@ -364,7 +364,7 @@ footer {
   .hero {
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 120px;
+    padding-top: 95px;
     padding-bottom: 2rem;
     height: auto;
     min-height: auto;
@@ -391,7 +391,7 @@ footer {
     position: relative;
     z-index: 3;
     padding: 0 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
   }
   
   .hero-video {
@@ -402,7 +402,7 @@ footer {
     order: 3;
     width: 100vw;
     height: auto;
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     object-fit: cover;
   }
   
