@@ -363,10 +363,10 @@ footer {
   
   .hero {
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding-top: 65px;
-    padding-bottom: 10px;
+    padding-top: 75px;
+    padding-bottom: 20px;
     height: 100dvh;
     min-height: 0;
     overflow-y: auto;
@@ -383,12 +383,12 @@ footer {
 
   .hero-content h1 {
     order: 1;
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     position: relative;
     z-index: 3;
     padding: 0 1rem;
-    margin-bottom: 0.2rem;
-    margin-top: auto;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
   }
   
   .hero-content p {
@@ -397,7 +397,7 @@ footer {
     z-index: 3;
     padding: 0 1rem;
     margin-bottom: 0;
-    font-size: 0.85rem;
+    font-size: 1.1rem;
   }
   
   .hero-video {
@@ -408,9 +408,9 @@ footer {
     order: 3;
     width: 100vw;
     height: auto;
-    max-height: 25vh;
-    margin: 0.5rem 0;
-    object-fit: contain;
+    max-height: 40vh;
+    margin: 1rem 0;
+    object-fit: cover;
   }
   
   .hero-buttons-container {
@@ -418,12 +418,12 @@ footer {
     position: relative;
     z-index: 3;
     padding: 0 1rem;
-    margin-bottom: auto;
+    margin-bottom: 2rem;
   }
 
   .hero-buttons-container .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
   }
   
   .grid-2, .grid-3 {
