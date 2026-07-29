@@ -361,8 +361,56 @@ footer {
     display: block;
   }
   
+  .hero {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 120px;
+    padding-bottom: 2rem;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .hero-overlay {
+    display: none;
+  }
+
+  .hero-content {
+    display: contents;
+  }
+
   .hero-content h1 {
+    order: 1;
     font-size: 2.5rem;
+    position: relative;
+    z-index: 3;
+    padding: 0 1rem;
+  }
+  
+  .hero-content p {
+    order: 2;
+    position: relative;
+    z-index: 3;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-video {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    order: 3;
+    width: 100vw;
+    height: auto;
+    margin: 1rem 0;
+    object-fit: cover;
+  }
+  
+  .hero-buttons-container {
+    order: 4;
+    position: relative;
+    z-index: 3;
+    padding: 0 1rem;
   }
   
   .grid-2, .grid-3 {
