@@ -239,6 +239,30 @@ header {
   text-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
+/* Audio Section */
+.audio-container {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  width: 100%;
+}
+
+.btn.audio-btn {
+  border-color: var(--white);
+  color: var(--white);
+  padding: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+  background-color: transparent;
+}
+
+.btn.audio-btn:hover, .btn.audio-btn:active, .btn.audio-btn:focus {
+  background-color: var(--white);
+  color: var(--text-dark);
+}
+
 /* Cards & Grids */
 .grid-2 {
   display: grid;
@@ -420,6 +444,18 @@ footer {
     z-index: 3;
     padding: 0 1rem;
     margin-bottom: 1rem;
+  }
+  
+  .audio-container {
+    order: 5;
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    background-color: #000;
+    padding: 10px 0;
+    width: 100%;
+    margin-top: 0;
   }
 
   .hero-buttons-container .btn {
