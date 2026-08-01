@@ -12,7 +12,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="styles-v1785496384.css">
+    <link rel="stylesheet" href="styles-v1785570248.css">
 </head>
 <body>
 
@@ -31,6 +31,14 @@
                     <li><a href="rooms.html">Accommodation</a></li>
                     <li><a href="guide.html">Guest Guide</a></li>
                     <li><a href="faq.html">FAQ & Policies</a></li>
+                    
+                    <li class="coupon-dropdown">
+                        <button class="coupon-btn">Coupon</button>
+                        <div class="coupon-dropdown-content">Cool Cat</div>
+                    </li>
+                    
+                    <li><button class="reviews-btn" onclick="document.getElementById('reviewsModal').style.display='block'">Reviews</button></li>
+
                     <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=bookings@cool-cat.co.za" target="_blank" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
@@ -120,7 +128,25 @@
         </div>
     </footer>
 
+    <!-- Reviews Modal -->
+    <div id="reviewsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('reviewsModal').style.display='none'">&times;</span>
+            <!-- Elfsight Google Reviews | Untitled Google Reviews -->
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-f3b57c27-9991-4764-bccb-c23acbff9f10" data-elfsight-app-lazy></div>
+        </div>
+    </div>
+
     <script>
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            var modal = document.getElementById('reviewsModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+
         // Simple mobile menu toggle
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');
