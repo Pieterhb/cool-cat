@@ -160,8 +160,13 @@ header {
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.2rem;
   list-style: none;
+  align-items: center;
+}
+
+.nav-links > li {
+  display: flex;
   align-items: center;
 }
 
@@ -351,11 +356,12 @@ footer {
 .coupon-btn {
   background-color: #000 !important;
   color: #fff !important;
-  padding: 0.5rem 1.5rem;
+  padding: 8px 16px;
   border: none;
   border-radius: 50px;
   font-family: var(--font-heading);
   font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
 }
@@ -386,10 +392,11 @@ footer {
   border: 1px solid #ccc;
   padding: 8px 16px;
   border-radius: 20px;
-  font-size: 15px;
+  font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: var(--font-heading);
 }
 .nav-reviews-btn:hover {
   background-color: #f0f0f0;
