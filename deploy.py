@@ -30,13 +30,17 @@ def auto_deploy():
         with open(html_file, 'w', encoding='utf-8') as f:
             f.write(content)
             
-    # 3. Commit to Git
+    # 3. Generate pSEO pages
+    print("Running pSEO generator...")
+    subprocess.run(['python', 'generate_pseo.py'], check=True)
+    
+    # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
     subprocess.run(['git', 'commit', '-m', 'Auto cache-bust CSS'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
-    # 4. Deploy to Cloudflare
+    # 5. Deploy to Cloudflare
     print("Deploying to Cloudflare Pages...")
     # Use shell=True for npx on Windows
     subprocess.run('npx wrangler pages deploy . --project-name cool-cat-site --branch production', shell=True, check=True)
