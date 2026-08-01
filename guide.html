@@ -12,7 +12,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/guide.html">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="styles-v1785580751.css">
+    <link rel="stylesheet" href="styles-v1785581455.css">
     <style>
         .page-header {
             background: linear-gradient(rgba(10, 58, 133, 0.5), rgba(15, 82, 186, 0.6)), url('1. Dining Breakfast.jpg') center/cover;
@@ -118,7 +118,7 @@
             <div class="grid-2">
                 
                 <!-- Left Column: Menus -->
-                <div>
+                <div style="display: flex; flex-direction: column;">
                     <div class="guide-section">
                         <h3>🍳 Breakfast Menu</h3>
                         <p class="text-light" style="margin-bottom: 1.5rem;"><em>Served daily 07:00 - 09:00. Please order before 20:00 the evening prior.</em></p>
@@ -158,10 +158,23 @@
                         <div class="menu-item"><span class="menu-title">Deluxe Chicken & Avo</span><span class="menu-price">R95</span></div>
                         <div class="menu-desc">Bacon, Fried Chicken, Avocado & Mayo.</div>
                     </div>
+                    <div class="guide-section" style="margin-top: auto; text-align: center;">
+                        <h3>🎬 Discover What to Watch Next</h3>
+                        <p class="text-light" style="margin-bottom: 1.5rem;">Never waste time searching for a good movie or show again. Scan or tap the QR code below to visit FlickFuture for top trending films and streaming guides!</p>
+                        <a href="#" onclick="window.open('https://flickfuture.com','_blank','noopener,noreferrer');return false;" aria-label="Scan QR code to visit FlickFuture">
+                            <img src="FlickFuture QR.png" alt="QR Code — Scan to visit FlickFuture" style="width: 180px; height: 180px; border-radius: 12px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        </a>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">
+                            <a href="#" onclick="window.open('https://flickfuture.com','_blank','noopener,noreferrer');return false;" style="color: var(--orange); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;">(Clickable link to FlickFuture)</a>
+                        </p>
+                        <p style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-light); background: #fff5ee; border-radius: 8px; padding: 0.5rem 0.75rem; display: inline-block;">
+                            💡 <em>On mobile: close the FlickFuture tab when done to return here.</em>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Right Column: Info & Attractions -->
-                <div>
+                <div style="display: flex; flex-direction: column;">
                     <div class="guide-section">
                         <h3>🏖️ Walking Distance (Within 500m)</h3>
                         <ul class="custom-list">
@@ -195,7 +208,7 @@
                         <p class="text-light" style="margin-top: 1rem; font-size: 0.9rem;">Same-day service available subject to availability.</p>
                     </div>
 
-                    <div class="guide-section" style="text-align: center;">
+                    <div class="guide-section" style="margin-top: auto; text-align: center;">
                         <h3>📚 Beach Reads &amp; eBooks</h3>
                         <p class="text-light" style="margin-bottom: 1.5rem;">Looking for a good story to relax with by the beach? Scan or tap the QR code below to explore our eBook collection on Amazon!</p>
                         <a href="#" onclick="window.open('https://amazn.so/fuh9KDw','_blank','noopener,noreferrer');return false;" aria-label="Scan QR code to browse eBooks on Amazon">
