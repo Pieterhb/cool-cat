@@ -8,7 +8,7 @@ def generate():
     os.makedirs('explore', exist_ok=True)
     
     # Load data
-    with open('data/locations.json', 'r', encoding='utf-8') as f:
+    with open('data/locations.json', 'r', encoding='utf-8-sig') as f:
         locations = json.load(f)
         
     # Load template
