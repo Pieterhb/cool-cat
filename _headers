@@ -1,2 +1,31 @@
-/*
-  Cache-Control: no-cache, no-store, must-revalidate
+# HTML files: Short revalidation so changes publish immediately
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Static Assets: Long-term immutable caching for performance and Core Web Vitals
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webm
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.mp4
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.mp3
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webmanifest
+  Cache-Control: public, max-age=604800, must-revalidate

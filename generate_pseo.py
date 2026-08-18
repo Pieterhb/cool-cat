@@ -41,13 +41,75 @@ def generate():
     css_match = re.search(r'href="\.\./(styles-[^"]+\.css)"', template)
     css_file = css_match.group(1) if css_match else "styles-v1785582198.css"
     
+    today = __import__('datetime').date.today().isoformat()
+
     explore_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Nearby | Cool Cat B&B</title>
-    <meta name="description" content="Discover places to visit and stay near Cool Cat B&B in Strand, Western Cape.">
+    <title>Explore Nearby | Cool Cat B&B Strand, Western Cape</title>
+    <meta name="description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool Cat B&B in Strand, Western Cape, South Africa.">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://cool-cat.co.za/explore.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="Cool Cat B&B">
+    <meta property="og:title" content="Explore Nearby | Cool Cat B&B Strand">
+    <meta property="og:description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool Cat B&B in Strand, Western Cape.">
+    <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Cool Cat B&B Strand">
+    <meta property="og:url" content="https://cool-cat.co.za/explore.html">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_ZA">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Explore Nearby | Cool Cat B&B Strand">
+    <meta name="twitter:description" content="Explore top destinations near Cool Cat B&B in Strand, Western Cape, South Africa.">
+    <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
+
+    <!-- JSON-LD: CollectionPage + BreadcrumbList -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@graph": [
+        {{
+          "@type": "CollectionPage",
+          "@id": "https://cool-cat.co.za/explore.html",
+          "name": "Explore Nearby | Cool Cat B&B",
+          "description": "A directory of top attractions, beaches, golf courses, hospitals, and destinations near Cool Cat B&B in Strand, Western Cape.",
+          "url": "https://cool-cat.co.za/explore.html",
+          "publisher": {{
+            "@type": "LodgingBusiness",
+            "@id": "https://cool-cat.co.za/#bedandbreakfast",
+            "name": "Cool Cat B&B",
+            "url": "https://cool-cat.co.za/"
+          }}
+        }},
+        {{
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {{
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://cool-cat.co.za/"
+            }},
+            {{
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Explore Nearby",
+              "item": "https://cool-cat.co.za/explore.html"
+            }}
+          ]
+        }}
+      ]
+    }}
+    </script>
+
     <link rel="stylesheet" href="{css_file}">
     <style>
         .page-header {{
@@ -175,15 +237,15 @@ def generate():
     base_url = "https://cool-cat.co.za"
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url><loc>{base_url}/</loc></url>
-    <url><loc>{base_url}/index.html</loc></url>
-    <url><loc>{base_url}/rooms.html</loc></url>
-    <url><loc>{base_url}/guide.html</loc></url>
-    <url><loc>{base_url}/faq.html</loc></url>
-    <url><loc>{base_url}/explore.html</loc></url>
+    <url><loc>{base_url}/</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+    <url><loc>{base_url}/index.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+    <url><loc>{base_url}/rooms.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+    <url><loc>{base_url}/guide.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>{base_url}/faq.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>{base_url}/explore.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 """
     for loc in locations:
-        sitemap += f"    <url><loc>{base_url}/explore/{loc['slug']}.html</loc></url>\n"
+        sitemap += f"    <url><loc>{base_url}/explore/{loc['slug']}.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
         
     sitemap += "</urlset>"
     

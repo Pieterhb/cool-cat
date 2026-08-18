@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /signature.html
+Disallow: /*backup*
+Disallow: /*.txt$
+Disallow: /data/
+
+Sitemap: https://cool-cat.co.za/sitemap.xml
