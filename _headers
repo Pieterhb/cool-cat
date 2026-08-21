@@ -1,8 +1,5 @@
-# HTML files: Short revalidation so changes publish immediately
-/*.html
-  Cache-Control: public, max-age=0, must-revalidate
-
-/
+# HTML / Page Routes: Short revalidation so changes publish immediately
+/*
   Cache-Control: public, max-age=0, must-revalidate
 
 # Static Assets: Long-term immutable caching for performance and Core Web Vitals

@@ -51,7 +51,7 @@ def generate():
     <title>Explore Nearby | Cool Cat B&B Strand, Western Cape</title>
     <meta name="description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool Cat B&B in Strand, Western Cape, South Africa.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://cool-cat.co.za/explore.html">
+    <link rel="canonical" href="https://cool-cat.co.za/explore">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content="Cool Cat B&B">
@@ -61,7 +61,7 @@ def generate():
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Cool Cat B&B Strand">
-    <meta property="og:url" content="https://cool-cat.co.za/explore.html">
+    <meta property="og:url" content="https://cool-cat.co.za/explore">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_ZA">
 
@@ -78,10 +78,10 @@ def generate():
       "@graph": [
         {{
           "@type": "CollectionPage",
-          "@id": "https://cool-cat.co.za/explore.html",
+          "@id": "https://cool-cat.co.za/explore",
           "name": "Explore Nearby | Cool Cat B&B",
           "description": "A directory of top attractions, beaches, golf courses, hospitals, and destinations near Cool Cat B&B in Strand, Western Cape.",
-          "url": "https://cool-cat.co.za/explore.html",
+          "url": "https://cool-cat.co.za/explore",
           "publisher": {{
             "@type": "LodgingBusiness",
             "@id": "https://cool-cat.co.za/#bedandbreakfast",
@@ -102,7 +102,7 @@ def generate():
               "@type": "ListItem",
               "position": 2,
               "name": "Explore Nearby",
-              "item": "https://cool-cat.co.za/explore.html"
+              "item": "https://cool-cat.co.za/explore"
             }}
           ]
         }}
@@ -145,17 +145,17 @@ def generate():
 <body>
     <header id="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo-wrapper">
+            <a href="/" class="logo-wrapper">
                 <img src="Logo.png" alt="Cool Cat B&B Logo" class="logo-img">
                 <span class="logo-text">COOL CAT B&B</span>
             </a>
             <nav>
                 <div class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('active')">☰</div>
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="rooms.html">Accommodation</a></li>
-                    <li><a href="guide.html">Guest Guide</a></li>
-                    <li><a href="faq.html">FAQ & Policies</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/rooms">Accommodation</a></li>
+                    <li><a href="/guide">Guest Guide</a></li>
+                    <li><a href="/faq">FAQ & Policies</a></li>
                     <li><a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
@@ -175,7 +175,7 @@ def generate():
 """
     for loc in locations:
         explore_content += f"""
-                <a href="explore/{loc['slug']}.html" class="location-card">
+                <a href="/explore/{loc['slug']}" class="location-card">
                     <h3>{loc['landmark']}</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">{loc['distance_km']} away</p>
                     <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
@@ -204,9 +204,9 @@ def generate():
                 <div class="footer-col">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="rooms.html">Our Rooms</a></li>
-                        <li><a href="guide.html">Guest Guide & Menus</a></li>
-                        <li><a href="explore.html">Explore Nearby</a></li>
+                        <li><a href="/rooms">Our Rooms</a></li>
+                        <li><a href="/guide">Guest Guide & Menus</a></li>
+                        <li><a href="/explore">Explore Nearby</a></li>
                     </ul>
                 </div>
             </div>
@@ -238,14 +238,13 @@ def generate():
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url><loc>{base_url}/</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-    <url><loc>{base_url}/index.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-    <url><loc>{base_url}/rooms.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-    <url><loc>{base_url}/guide.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>{base_url}/faq.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>{base_url}/explore.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>{base_url}/rooms</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+    <url><loc>{base_url}/guide</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>{base_url}/faq</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>{base_url}/explore</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 """
     for loc in locations:
-        sitemap += f"    <url><loc>{base_url}/explore/{loc['slug']}.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
+        sitemap += f"    <url><loc>{base_url}/explore/{loc['slug']}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n"
         
     sitemap += "</urlset>"
     
