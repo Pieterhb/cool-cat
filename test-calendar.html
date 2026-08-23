@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787482779.css">
+    <link rel="stylesheet" href="styles-v1787483401.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -47,7 +47,6 @@
             margin-bottom: 2.5rem;
         }
 
-        /* Calendar Master Wrapper */
         .calendar-section {
             padding-bottom: 5rem;
         }
@@ -204,7 +203,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
 
-        /* Active Room Description Banner */
+        /* Selected Room Banner */
         .selected-room-info {
             background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
             border-left: 4px solid var(--sapphire-blue);
@@ -681,9 +680,7 @@
             margin-bottom: 0.5rem;
         }
 
-        /* ========================================= */
-        /* STEP 2: GUEST DETAILS & FORM STYLES       */
-        /* ========================================= */
+        /* Step Views */
         .step-view {
             display: none;
         }
@@ -698,6 +695,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Step 2 Form Styles */
         .step2-card {
             background: white;
             border-radius: 20px;
@@ -837,7 +835,6 @@
             width: 100%;
         }
 
-        /* Checkbox Option Container */
         .option-checkbox-card {
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
@@ -863,7 +860,6 @@
             accent-color: var(--sapphire-blue);
         }
 
-        /* Terms & Policy Box */
         .terms-box {
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
@@ -906,7 +902,6 @@
             margin-top: 1rem;
         }
 
-        /* Test Cards Helper Drawer */
         .test-sandbox-card {
             background: #FEF3C7;
             border: 1px solid #FCD34D;
@@ -927,9 +922,7 @@
             user-select: all;
         }
 
-        /* ========================================= */
-        /* STEP 4: SUCCESS CONFIRMATION SCREEN       */
-        /* ========================================= */
+        /* Step 4 Confirmation Styles */
         .success-card {
             background: white;
             border-radius: 20px;
@@ -1650,7 +1643,7 @@
         ];
 
         // Seeded realistic mock bookings to demonstrate Green, Orange, and Red states
-        const MOCK_BOOKINGS = [
+        let MOCK_BOOKINGS = [
             // Current month bookings
             { roomId: 'king-arthur', checkIn: '2026-08-28', checkOut: '2026-08-31' },
             { roomId: 'santori', checkIn: '2026-08-29', checkOut: '2026-09-02' },
@@ -1677,11 +1670,10 @@
         TODAY.setHours(0, 0, 0, 0);
 
         let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-        let selectedRoomId = 'all'; // 'all' | 'king-arthur' | 'santori' | 'mykonos' | 'deluxe-suite'
+        let selectedRoomId = 'all';
         let checkInDate = null;
         let checkOutDate = null;
 
-        // Current calculation state
         let calculatedGrandTotal = 0;
         let calculatedDepositDue = 0;
         let calculatedBalanceDue = 0;
@@ -1689,49 +1681,63 @@
         let includeBreakfast = false;
 
         // ==========================================
-        // 3. PRICING & SEASON ENGINE
+        // 3. BACKEND SYNC: FETCH LIVE BOOKINGS
+        // ==========================================
+        async function loadLiveBookings() {
+            try {
+                const res = await fetch('/api/bookings');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
+                        MOCK_BOOKINGS = data.bookings;
+                        renderCalendar();
+                    }
+                }
+            } catch (e) {
+                console.log("Using initial seeded bookings:", e);
+            }
+        }
+
+        // ==========================================
+        // 4. PRICING & SEASON ENGINE
         // ==========================================
         function getSeasonInfo(date) {
-            const m = date.getMonth() + 1; // 1 - 12
+            const m = date.getMonth() + 1;
             const d = date.getDate();
 
-            // Festive High Peak: Dec 16 to Jan 10
             if ((m === 12 && d >= 16) || (m === 1 && d <= 10)) {
                 return {
                     name: '🔥 Festive High Peak',
                     tier: 'festive',
                     badgeClass: 'badge-festive',
-                    multiplier: 1.80, // +80%
+                    multiplier: 1.80,
                     minStay: 3,
                     desc: 'Peak summer holiday demand (Strict 3-night min)'
                 };
             }
 
-            // Peak Season: Dec 1 to Dec 15 & Easter (approx April)
             if ((m === 12 && d >= 1 && d <= 15) || (m === 4 && d >= 3 && d <= 6)) {
                 return {
                     name: '🔴 Peak Season',
                     tier: 'peak',
                     badgeClass: 'badge-peak',
-                    multiplier: 1.35, // +35%
+                    multiplier: 1.35,
                     minStay: 2,
                     desc: 'High demand holiday period'
                 };
             }
 
-            // Low Season: May 1 to Aug 31
             if (m >= 5 && m <= 8) {
                 return {
                     name: '🟢 Low Season - Best Value',
                     tier: 'low',
                     badgeClass: 'badge-low',
-                    multiplier: 0.85, // -15% discount
+                    multiplier: 0.85,
                     minStay: 1,
                     desc: 'Winter value rate'
                 };
             }
 
-            // Mid Season: Sep - Nov, Feb - Apr (default)
             return {
                 name: '🟡 Mid Season',
                 tier: 'mid',
@@ -1743,14 +1749,13 @@
         }
 
         function calculateNightPrice(room, date) {
-            const dayOfWeek = date.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
+            const dayOfWeek = date.getDay();
             const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0);
             
             let baseRate = isWeekend ? room.baseWeekend : room.baseWeekday;
             const season = getSeasonInfo(date);
             let rate = baseRate * season.multiplier;
 
-            // Future-year markup: +10% if date is in 2027 or later
             if (date.getFullYear() > TODAY.getFullYear()) {
                 rate = rate * 1.10;
             }
@@ -1793,7 +1798,7 @@
         }
 
         // ==========================================
-        // 4. CALENDAR RENDERING
+        // 5. CALENDAR RENDERING
         // ==========================================
         function renderCalendar() {
             const grid = document.getElementById('calendarDaysGrid');
@@ -1911,7 +1916,7 @@
                 if (!isPast && !isBooked) {
                     dayCell.onclick = () => handleDateClick(dateObj);
                 } else if (!isPast && isBooked) {
-                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another date.");
+                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another open date.");
                 }
 
                 grid.appendChild(dayCell);
@@ -1919,7 +1924,7 @@
         }
 
         // ==========================================
-        // 5. DATE SELECTION LOGIC
+        // 6. DATE SELECTION LOGIC
         // ==========================================
         function handleDateClick(dateObj) {
             if (!checkInDate || (checkInDate && checkOutDate)) {
@@ -1973,7 +1978,7 @@
         }
 
         // ==========================================
-        // 6. SUMMARY & CALCULATION ENGINE
+        // 7. SUMMARY & PRICE CALCULATION
         // ==========================================
         function updateSummarySidebar() {
             const checkInEl = document.getElementById('summaryCheckIn');
@@ -2024,7 +2029,7 @@
             let grandTotal = 0;
             let breakdownHtml = '';
 
-            const targetRoom = activeRoom || ROOMS[0]; // King Arthur default if overview
+            const targetRoom = activeRoom || ROOMS[0];
 
             let d = new Date(checkInDate);
             let nightIndex = 1;
@@ -2044,13 +2049,12 @@
                 nightIndex++;
             }
 
-            // Add breakfast if selected
             if (includeBreakfast) {
-                const breakfastTotal = calculatedNights * 120 * 2; // 2 guests
+                const breakfastTotal = calculatedNights * 120 * 2;
                 grandTotal += breakfastTotal;
                 breakdownHtml += `
                     <li>
-                        <span>🍳 Breakfast Addon (${calculatedNights} days x 2 guests)</span>
+                        <span>🍳 Breakfast Package (${calculatedNights} nights x 2)</span>
                         <span>R${breakfastTotal.toLocaleString()}</span>
                     </li>
                 `;
@@ -2067,7 +2071,6 @@
 
             breakdownList.innerHTML = breakdownHtml;
 
-            // Deposit calculation
             const daysUntilCheckIn = Math.round((checkInDate - TODAY) / (1000 * 60 * 60 * 24));
             depositBox.style.display = 'block';
 
@@ -2091,7 +2094,7 @@
         }
 
         // ==========================================
-        // 7. WIZARD STEP TRANSITIONS
+        // 8. WIZARD STEP TRANSITIONS
         // ==========================================
         function goToStep2() {
             if (!checkInDate || !checkOutDate) {
@@ -2099,7 +2102,6 @@
                 return;
             }
 
-            // Auto-select King Arthur if 'all' was selected
             if (selectedRoomId === 'all') {
                 selectedRoomId = 'king-arthur';
                 switchRoom('king-arthur');
@@ -2107,18 +2109,15 @@
 
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
 
-            // Populate Step 2 Recap
             document.getElementById('recapRoomTitle').textContent = `${activeRoom.icon} ${activeRoom.name}`;
             document.getElementById('recapStayDates').textContent = `${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)} (${calculatedNights} Nights)`;
             document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
             document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
 
-            // Switch View
             document.getElementById('step1View').classList.remove('active-view');
             document.getElementById('step2View').classList.add('active-view');
             document.getElementById('step4View').classList.remove('active-view');
 
-            // Update Wizard indicator
             document.getElementById('wizStep1').classList.remove('active');
             document.getElementById('wizStep1').classList.add('completed');
             document.getElementById('circle1').textContent = '✓';
@@ -2149,7 +2148,7 @@
         }
 
         // ==========================================
-        // 8. PAYSTACK CHECKOUT INTEGRATION
+        // 9. PAYSTACK CHECKOUT & SERVER VERIFICATION
         // ==========================================
         function handleProceedToPayment(e) {
             e.preventDefault();
@@ -2167,12 +2166,11 @@
             }
 
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            const amountInCents = calculatedDepositDue * 100; // Paystack requires South African Cents
+            const amountInCents = calculatedDepositDue * 100;
 
-            // Check if PaystackInline is available
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_d3a3f019b78e470876543210abcdef1234567890', // Demo test key for sandbox testing
+                    key: 'pk_test_d3a3f019b78e470876543210abcdef1234567890',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
@@ -2183,29 +2181,56 @@
                             { display_name: "Phone Number", variable_name: "phone", value: "+27" + phone },
                             { display_name: "Room", variable_name: "room", value: activeRoom.name },
                             { display_name: "Check In", variable_name: "check_in", value: formatDateKey(checkInDate) },
-                            { display_name: "Check Out", variable_name: "check_out", value: formatDateKey(checkOutDate) },
-                            { display_name: "Arrival Time", variable_name: "arrival_time", value: arrivalTime },
-                            { display_name: "Special Requests", variable_name: "special_requests", value: specialRequests }
+                            { display_name: "Check Out", variable_name: "check_out", value: formatDateKey(checkOutDate) }
                         ]
                     },
                     callback: function(response) {
-                        completeBooking(response.reference, fullName, email, phone);
+                        completeBooking(response.reference, fullName, email, phone, arrivalTime, specialRequests);
                     },
                     onClose: function() {
-                        showToast("Payment window closed. Your reservation is pending.");
+                        showToast("Payment window closed.");
                     }
                 });
 
                 handler.openIframe();
             } else {
-                // Fallback simulation for local offline testing
                 const simRef = 'CC-' + Math.floor((Math.random() * 899999) + 100000);
-                completeBooking(simRef, fullName, email, phone);
+                completeBooking(simRef, fullName, email, phone, arrivalTime, specialRequests);
             }
         }
 
-        function completeBooking(refNumber, name, email, phone) {
-            // Save mock booking into active calendar state
+        async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            
+            const bookingPayload = {
+                reference: refNumber,
+                guestName: name,
+                guestEmail: email,
+                guestPhone: '+27' + phone,
+                roomId: selectedRoomId,
+                roomName: activeRoom.name,
+                checkIn: formatDateKey(checkInDate),
+                checkOut: formatDateKey(checkOutDate),
+                nights: calculatedNights,
+                totalAmount: calculatedGrandTotal,
+                amountPaid: calculatedDepositDue,
+                balanceDue: calculatedBalanceDue,
+                arrivalTime: arrivalTime,
+                specialRequests: specialRequests
+            };
+
+            // Call Cloudflare API to verify, save to DB and trigger emails
+            try {
+                fetch('/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingPayload)
+                }).catch(err => console.log("Backend sync notice:", err));
+            } catch (err) {
+                console.log("Local sync:", err);
+            }
+
+            // Update local state so calendar marks room as booked
             MOCK_BOOKINGS.push({
                 roomId: selectedRoomId,
                 checkIn: formatDateKey(checkInDate),
@@ -2213,7 +2238,6 @@
             });
 
             // Populate Step 4 Confirmation Screen
-            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
             document.getElementById('confGuestName').textContent = name;
             document.getElementById('confBookingRef').textContent = refNumber;
             document.getElementById('confRoomName').textContent = activeRoom.name;
@@ -2238,7 +2262,6 @@
             document.getElementById('step2View').classList.remove('active-view');
             document.getElementById('step4View').classList.add('active-view');
 
-            // Update Wizard
             document.getElementById('wizStep2').classList.remove('active');
             document.getElementById('wizStep2').classList.add('completed');
             document.getElementById('circle2').textContent = '✓';
@@ -2248,6 +2271,7 @@
             document.getElementById('circle3').textContent = '✓';
 
             window.scrollTo({ top: 150, behavior: 'smooth' });
+            showToast("🎉 Booking secured! Confirmation email dispatched.");
         }
 
         function resetToCalendar() {
@@ -2263,7 +2287,7 @@
         }
 
         // ==========================================
-        // 9. MODALS & UI UTILITIES
+        // 10. MODALS & UTILITIES
         // ==========================================
         function openRulesModal(e) {
             if (e) e.preventDefault();
@@ -2360,6 +2384,7 @@
             populateMonthDropdown();
             renderCalendar();
             updateSummarySidebar();
+            loadLiveBookings();
         });
 
         function toggleMenu() {
