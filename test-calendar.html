@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Calendar &amp; Rates | Cool Cat B&amp;B Strand</title>
-    <meta name="description" content="Check live room availability and seasonal rates for Cool Cat B&amp;B in Strand, Western Cape. Book direct for the best rate.">
+    <meta name="description" content="Check live room availability, book direct and pay securely via Paystack for Cool Cat B&amp;B in Strand, Western Cape.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
 
@@ -12,13 +12,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787481530.css">
+    <link rel="stylesheet" href="styles-v1787482779.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="Cool Cat">
+
+    <!-- Paystack Official Inline Script -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 
     <style>
         :root {
@@ -78,6 +81,72 @@
             }
         }
 
+        /* Wizard Progress Bar */
+        .wizard-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .wizard-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94A3B8;
+            transition: all 0.3s ease;
+        }
+
+        .wizard-step.active {
+            color: var(--sapphire-blue-dark);
+        }
+
+        .wizard-step.completed {
+            color: var(--cal-success);
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E2E8F0;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .wizard-step.active .step-circle {
+            background: var(--sapphire-blue);
+            color: white;
+            box-shadow: 0 3px 10px rgba(15, 82, 186, 0.4);
+        }
+
+        .wizard-step.completed .step-circle {
+            background: var(--cal-success);
+            color: white;
+        }
+
+        .step-divider {
+            width: 35px;
+            height: 2px;
+            background: #E2E8F0;
+        }
+
+        @media (max-width: 640px) {
+            .step-divider {
+                display: none;
+            }
+        }
+
         /* Room Switcher Tabs */
         .room-tabs-wrapper {
             margin-bottom: 1.75rem;
@@ -133,14 +202,6 @@
             background: var(--white);
             color: var(--sapphire-blue-dark);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .room-badge-details {
-            display: inline-block;
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: #64748B;
-            margin-top: 0.2rem;
         }
 
         /* Active Room Description Banner */
@@ -213,29 +274,10 @@
             letter-spacing: 0.02em;
         }
 
-        .badge-festive {
-            background: #FEE2E2;
-            color: #991B1B;
-            border: 1px solid #FCA5A5;
-        }
-
-        .badge-peak {
-            background: #FFEDD5;
-            color: #9A3412;
-            border: 1px solid #FDBA74;
-        }
-
-        .badge-mid {
-            background: #FEF3C7;
-            color: #92400E;
-            border: 1px solid #FCD34D;
-        }
-
-        .badge-low {
-            background: #DCFCE7;
-            color: #166534;
-            border: 1px solid #86EFAC;
-        }
+        .badge-festive { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+        .badge-peak { background: #FFEDD5; color: #9A3412; border: 1px solid #FDBA74; }
+        .badge-mid { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+        .badge-low { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
 
         .cal-nav-buttons {
             display: flex;
@@ -303,9 +345,7 @@
             padding: 0.4rem 0;
         }
 
-        .cal-weekday.weekend {
-            color: var(--orange);
-        }
+        .cal-weekday.weekend { color: var(--orange); }
 
         .cal-grid {
             display: grid;
@@ -313,7 +353,6 @@
             gap: 6px;
         }
 
-        /* Individual Day Cell */
         .cal-day {
             min-height: 74px;
             border-radius: 12px;
@@ -343,23 +382,9 @@
             z-index: 5;
         }
 
-        .cal-day.empty {
-            background: transparent;
-            border-color: transparent;
-            cursor: default;
-        }
-
-        .cal-day.disabled {
-            background: #F8FAFC;
-            color: #CBD5E1;
-            border-color: #F1F5F9;
-            cursor: not-allowed;
-            opacity: 0.55;
-        }
-
-        .cal-day.today {
-            border: 2px solid var(--sapphire-blue);
-        }
+        .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+        .cal-day.disabled { background: #F8FAFC; color: #CBD5E1; border-color: #F1F5F9; cursor: not-allowed; opacity: 0.55; }
+        .cal-day.today { border: 2px solid var(--sapphire-blue); }
 
         .cal-day-top {
             display: flex;
@@ -374,10 +399,6 @@
             color: #1E293B;
         }
 
-        .cal-day.disabled .cal-day-num {
-            color: #94A3B8;
-        }
-
         .cal-avail-pill {
             font-size: 0.65rem;
             font-weight: 700;
@@ -387,21 +408,9 @@
             letter-spacing: 0.02em;
         }
 
-        /* Availability Colors */
-        .avail-full {
-            background: #DCFCE7;
-            color: #15803D;
-        }
-
-        .avail-limited {
-            background: #FEF3C7;
-            color: #B45309;
-        }
-
-        .avail-soldout {
-            background: #FEE2E2;
-            color: #B91C1C;
-        }
+        .avail-full { background: #DCFCE7; color: #15803D; }
+        .avail-limited { background: #FEF3C7; color: #B45309; }
+        .avail-soldout { background: #FEE2E2; color: #B91C1C; }
 
         .cal-day.booked-out {
             background: #FEE2E2;
@@ -410,9 +419,7 @@
             opacity: 0.8;
         }
 
-        .cal-day.booked-out .cal-day-num {
-            color: #991B1B;
-        }
+        .cal-day.booked-out .cal-day-num { color: #991B1B; }
 
         .cal-price-tag {
             font-size: 0.72rem;
@@ -422,38 +429,16 @@
             margin-top: 0.15rem;
         }
 
-        @media (max-width: 640px) {
-            .cal-price-tag {
-                font-size: 0.62rem;
-            }
-        }
-
         /* Selection States */
-        .cal-day.selected-start {
+        .cal-day.selected-start, .cal-day.selected-end {
             background: var(--sapphire-blue) !important;
             color: white !important;
             border-color: var(--sapphire-blue-dark) !important;
             box-shadow: 0 4px 12px rgba(15, 82, 186, 0.4);
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
         }
 
-        .cal-day.selected-start .cal-day-num,
-        .cal-day.selected-start .cal-price-tag {
-            color: white !important;
-        }
-
-        .cal-day.selected-end {
-            background: var(--sapphire-blue) !important;
-            color: white !important;
-            border-color: var(--sapphire-blue-dark) !important;
-            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.4);
-            border-top-left-radius: 4px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .cal-day.selected-end .cal-day-num,
-        .cal-day.selected-end .cal-price-tag {
+        .cal-day.selected-start .cal-day-num, .cal-day.selected-start .cal-price-tag,
+        .cal-day.selected-end .cal-day-num, .cal-day.selected-end .cal-price-tag {
             color: white !important;
         }
 
@@ -463,11 +448,9 @@
             border-radius: 4px;
         }
 
-        .cal-day.in-range .cal-day-num {
-            color: var(--sapphire-blue-dark);
-        }
+        .cal-day.in-range .cal-day-num { color: var(--sapphire-blue-dark); }
 
-        /* Desktop Hover Micro-Tooltip */
+        /* Desktop Hover Tooltip */
         .cal-tooltip {
             position: absolute;
             bottom: calc(100% + 8px);
@@ -679,10 +662,7 @@
             transition: all 0.2s ease;
         }
 
-        .btn-reset:hover {
-            background: #F1F5F9;
-            color: #1E293B;
-        }
+        .btn-reset:hover { background: #F1F5F9; color: #1E293B; }
 
         /* SA Amenities Badges */
         .sa-perks {
@@ -701,55 +681,391 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Wizard Progress Bar */
-        .wizard-steps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+        /* ========================================= */
+        /* STEP 2: GUEST DETAILS & FORM STYLES       */
+        /* ========================================= */
+        .step-view {
+            display: none;
+        }
+
+        .step-view.active-view {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step2-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--cal-border);
+            padding: 2.5rem;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .step2-card {
+                padding: 1.4rem;
+            }
+        }
+
+        .recap-bar {
+            background: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%);
+            border: 1px solid #C7D2FE;
+            border-radius: 12px;
+            padding: 1rem 1.4rem;
             margin-bottom: 2rem;
-        }
-
-        .wizard-step {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-family: var(--font-heading);
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: #94A3B8;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .wizard-step.active {
+        .recap-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
             color: var(--sapphire-blue-dark);
         }
 
-        .step-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #E2E8F0;
-            color: #64748B;
+        .recap-meta {
+            font-size: 0.88rem;
+            color: #475569;
+            margin-top: 0.2rem;
+        }
+
+        .btn-edit-dates {
+            background: white;
+            border: 1px solid var(--sapphire-blue);
+            color: var(--sapphire-blue);
+            padding: 0.45rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit-dates:hover {
+            background: var(--sapphire-blue);
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-label span.req {
+            color: var(--cal-danger);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid #CBD5E1;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: #1E293B;
+            background: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--sapphire-blue);
+            box-shadow: 0 0 0 3px rgba(15, 82, 186, 0.15);
+        }
+
+        .phone-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #CBD5E1;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .phone-prefix {
+            padding: 0.75rem 0.8rem;
+            background: #F1F5F9;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #475569;
+            border-right: 1px solid #CBD5E1;
+            user-select: none;
+        }
+
+        .phone-wrapper .form-input {
+            border: none;
+            border-radius: 0 10px 10px 0;
+            width: 100%;
+        }
+
+        /* Checkbox Option Container */
+        .option-checkbox-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .option-checkbox-card:hover {
+            border-color: #CBD5E1;
+        }
+
+        .option-checkbox-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+            cursor: pointer;
+            accent-color: var(--sapphire-blue);
+        }
+
+        /* Terms & Policy Box */
+        .terms-box {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .terms-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.88rem;
+            color: #334155;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .terms-checkbox-label input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: var(--sapphire-blue);
+        }
+
+        .link-terms {
+            color: var(--sapphire-blue);
+            font-weight: 700;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .paystack-secure-badge {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            color: #64748B;
+            margin-top: 1rem;
+        }
+
+        /* Test Cards Helper Drawer */
+        .test-sandbox-card {
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.8rem;
+            font-size: 0.84rem;
+            color: #92400E;
+        }
+
+        .test-card-tag {
+            background: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
             font-weight: 700;
+            border: 1px solid #FDE68A;
+            user-select: all;
         }
 
-        .wizard-step.active .step-circle {
-            background: var(--sapphire-blue);
-            color: white;
-            box-shadow: 0 2px 8px rgba(15, 82, 186, 0.4);
+        /* ========================================= */
+        /* STEP 4: SUCCESS CONFIRMATION SCREEN       */
+        /* ========================================= */
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--cal-border);
+            padding: 3rem 2rem;
+            max-width: 780px;
+            margin: 0 auto;
+            text-align: center;
         }
 
-        .step-divider {
-            width: 30px;
-            height: 2px;
-            background: #E2E8F0;
+        .success-icon-circle {
+            width: 76px;
+            height: 76px;
+            background: #DCFCE7;
+            color: #166534;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
         }
 
-        /* Toast notification for minimum stays / validation */
+        .success-ref {
+            display: inline-block;
+            background: #EEF2FF;
+            color: var(--sapphire-blue-dark);
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            margin: 0.8rem 0 1.5rem;
+            border: 1px solid #C7D2FE;
+        }
+
+        .booking-receipt-box {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: left;
+            margin: 1.8rem 0;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: #475569;
+            border-bottom: 1px dashed #E2E8F0;
+        }
+
+        .receipt-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--sapphire-blue-dark);
+            padding-top: 0.8rem;
+        }
+
+        .access-details-card {
+            background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+            border: 1px solid #86EFAC;
+            border-radius: 14px;
+            padding: 1.4rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .access-details-title {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .access-item {
+            font-size: 0.88rem;
+            color: #1F2937;
+            margin-bottom: 0.45rem;
+        }
+
+        /* Modal Overlay for House Rules */
+        .modal-rules-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            z-index: 2000;
+        }
+
+        .modal-rules-card {
+            background: white;
+            border-radius: 20px;
+            max-width: 620px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2.2rem;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-rules-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: #F1F5F9;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #64748B;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-rules-close:hover { background: #E2E8F0; color: #1E293B; }
+
+        /* Toast notification */
         .cal-toast {
             position: fixed;
             bottom: 24px;
@@ -763,7 +1079,7 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            z-index: 1000;
+            z-index: 3000;
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -802,218 +1118,455 @@
     <!-- Page Header -->
     <div class="page-header">
         <div class="container">
-            <h1 style="color: white; font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 0.5rem;">Live Availability &amp; Rates Calendar</h1>
+            <h1 style="color: white; font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 0.5rem;">Live Availability &amp; Booking Engine</h1>
             <p style="font-size: 1.1rem; max-width: 650px; margin: 0 auto; opacity: 0.95;">
-                Select your dates to view real-time availability and dynamic pricing across all 4 guest rooms at Cool Cat B&amp;B in Strand.
+                Select your dates, enter guest details, and pay securely via Paystack for Cool Cat B&amp;B in Strand.
             </p>
         </div>
     </div>
 
-    <!-- Main Calendar Section -->
+    <!-- Main Wizard Section -->
     <section class="section calendar-section" style="padding-top: 0;">
         <div class="container">
 
             <!-- 3-Step Wizard Progress -->
             <div class="wizard-steps">
-                <div class="wizard-step active">
-                    <span class="step-circle">1</span>
+                <div class="wizard-step active" id="wizStep1">
+                    <span class="step-circle" id="circle1">1</span>
                     <span>Select Dates &amp; Room</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step">
-                    <span class="step-circle">2</span>
+                <div class="wizard-step" id="wizStep2">
+                    <span class="step-circle" id="circle2">2</span>
                     <span>Guest Details</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step">
-                    <span class="step-circle">3</span>
+                <div class="wizard-step" id="wizStep3">
+                    <span class="step-circle" id="circle3">3</span>
                     <span>Pay via Paystack</span>
                 </div>
             </div>
 
-            <!-- Calendar Layout (Left: Grid, Right: Summary Card) -->
-            <div class="calendar-layout">
-                
-                <!-- Left Column: Interactive Calendar -->
-                <div class="calendar-card">
+            <!-- ========================================================= -->
+            <!-- STEP 1: CALENDAR VIEW                                    -->
+            <!-- ========================================================= -->
+            <div class="step-view active-view" id="step1View">
+                <div class="calendar-layout">
+                    
+                    <!-- Left Column: Interactive Calendar -->
+                    <div class="calendar-card">
 
-                    <!-- Room Selector Filter Tabs -->
-                    <div class="room-tabs-wrapper">
-                        <div class="room-tabs-label">
-                            <span>🛏️ Filter By Room:</span>
-                        </div>
-                        <div class="room-tabs" id="roomTabs">
-                            <button class="room-tab-btn active" onclick="switchRoom('all')">
-                                <span>🏨 All Rooms</span>
-                            </button>
-                            <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
-                                <span>👑 King Arthur</span>
-                            </button>
-                            <button class="room-tab-btn" onclick="switchRoom('santori')">
-                                <span>🌊 Santori</span>
-                            </button>
-                            <button class="room-tab-btn" onclick="switchRoom('mykonos')">
-                                <span>🏛️ Mykonos</span>
-                            </button>
-                            <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
-                                <span>✨ Deluxe Suite</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Selected Room Details Bar -->
-                    <div class="selected-room-info" id="roomInfoBanner">
-                        <div class="room-meta">
-                            <strong id="bannerRoomName">All 4 Rooms Overview</strong>
-                            <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites</span>
-                        </div>
-                        <div class="room-rate-tag" id="bannerRoomRate">
-                            From R850 / night
-                        </div>
-                    </div>
-
-                    <!-- Calendar Header (Month + Navigation + Season Badge) -->
-                    <div class="calendar-header">
-                        <div class="month-title-wrapper">
-                            <h2 class="month-title" id="monthYearLabel">October 2026</h2>
-                            <span class="season-badge badge-mid" id="seasonBadge">🟡 Mid Season</span>
-                        </div>
-
-                        <div class="cal-nav-buttons">
-                            <button class="cal-nav-btn" id="prevMonthBtn" onclick="changeMonth(-1)" title="Previous Month">◀</button>
-                            <select class="cal-jump-select" id="monthJumpSelect" onchange="jumpToMonth(this.value)"></select>
-                            <button class="cal-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)" title="Next Month">▶</button>
-                        </div>
-                    </div>
-
-                    <!-- Weekday Headers -->
-                    <div class="cal-grid-header">
-                        <div class="cal-weekday weekend">Sun</div>
-                        <div class="cal-weekday">Mon</div>
-                        <div class="cal-weekday">Tue</div>
-                        <div class="cal-weekday">Wed</div>
-                        <div class="cal-weekday">Thu</div>
-                        <div class="cal-weekday">Fri</div>
-                        <div class="cal-weekday weekend">Sat</div>
-                    </div>
-
-                    <!-- Days Grid -->
-                    <div class="cal-grid" id="calendarDaysGrid">
-                        <!-- Populated dynamically by JavaScript -->
-                    </div>
-
-                    <!-- Season Legend Card -->
-                    <div class="season-legend-card">
-                        <div class="legend-title">
-                            <span>Western Cape Seasonality Guide</span>
-                        </div>
-                        <div class="legend-grid">
-                            <div class="legend-item">
-                                <span class="legend-dot dot-low"></span>
-                                <div>
-                                    <strong>🟢 Low Season (May – Aug)</strong><br>
-                                    Best value winter rates (-15% discount)
-                                </div>
+                        <!-- Room Selector Filter Tabs -->
+                        <div class="room-tabs-wrapper">
+                            <div class="room-tabs-label">
+                                <span>🛏️ Select Room:</span>
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-dot dot-mid"></span>
-                                <div>
-                                    <strong>🟡 Mid Season (Sep–Nov, Feb–Apr)</strong><br>
-                                    Pleasant weather &amp; standard base rates
-                                </div>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot dot-peak"></span>
-                                <div>
-                                    <strong>🔴 Peak Season (Dec 1–15 &amp; Easter)</strong><br>
-                                    School holiday demand (+35%)
-                                </div>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot dot-festive"></span>
-                                <div>
-                                    <strong>🔥 Festive High Peak (Dec 16–Jan 10)</strong><br>
-                                    Peak summer demand (+80%, 3-night min)
-                                </div>
+                            <div class="room-tabs" id="roomTabs">
+                                <button class="room-tab-btn active" onclick="switchRoom('all')">
+                                    <span>🏨 All Rooms</span>
+                                </button>
+                                <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
+                                    <span>👑 King Arthur</span>
+                                </button>
+                                <button class="room-tab-btn" onclick="switchRoom('santori')">
+                                    <span>🌊 Santori</span>
+                                </button>
+                                <button class="room-tab-btn" onclick="switchRoom('mykonos')">
+                                    <span>🏛️ Mykonos</span>
+                                </button>
+                                <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
+                                    <span>✨ Deluxe Suite</span>
+                                </button>
                             </div>
                         </div>
+
+                        <!-- Selected Room Details Bar -->
+                        <div class="selected-room-info" id="roomInfoBanner">
+                            <div class="room-meta">
+                                <strong id="bannerRoomName">All 4 Rooms Overview</strong>
+                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites</span>
+                            </div>
+                            <div class="room-rate-tag" id="bannerRoomRate">
+                                From R850 / night
+                            </div>
+                        </div>
+
+                        <!-- Calendar Header (Month + Navigation + Season Badge) -->
+                        <div class="calendar-header">
+                            <div class="month-title-wrapper">
+                                <h2 class="month-title" id="monthYearLabel">October 2026</h2>
+                                <span class="season-badge badge-mid" id="seasonBadge">🟡 Mid Season</span>
+                            </div>
+
+                            <div class="cal-nav-buttons">
+                                <button class="cal-nav-btn" id="prevMonthBtn" onclick="changeMonth(-1)" title="Previous Month">◀</button>
+                                <select class="cal-jump-select" id="monthJumpSelect" onchange="jumpToMonth(this.value)"></select>
+                                <button class="cal-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)" title="Next Month">▶</button>
+                            </div>
+                        </div>
+
+                        <!-- Weekday Headers -->
+                        <div class="cal-grid-header">
+                            <div class="cal-weekday weekend">Sun</div>
+                            <div class="cal-weekday">Mon</div>
+                            <div class="cal-weekday">Tue</div>
+                            <div class="cal-weekday">Wed</div>
+                            <div class="cal-weekday">Thu</div>
+                            <div class="cal-weekday">Fri</div>
+                            <div class="cal-weekday weekend">Sat</div>
+                        </div>
+
+                        <!-- Days Grid -->
+                        <div class="cal-grid" id="calendarDaysGrid">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+
+                        <!-- Season Legend Card -->
+                        <div class="season-legend-card">
+                            <div class="legend-title">
+                                <span>Western Cape Seasonality Guide</span>
+                            </div>
+                            <div class="legend-grid">
+                                <div class="legend-item">
+                                    <span class="legend-dot dot-low"></span>
+                                    <div>
+                                        <strong>🟢 Low Season (May – Aug)</strong><br>
+                                        Best value winter rates (-15% discount)
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot dot-mid"></span>
+                                    <div>
+                                        <strong>🟡 Mid Season (Sep–Nov, Feb–Apr)</strong><br>
+                                        Pleasant weather &amp; standard base rates
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot dot-peak"></span>
+                                    <div>
+                                        <strong>🔴 Peak Season (Dec 1–15 &amp; Easter)</strong><br>
+                                        School holiday demand (+35%)
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot dot-festive"></span>
+                                    <div>
+                                        <strong>🔥 Festive High Peak (Dec 16–Jan 10)</strong><br>
+                                        Peak summer demand (+80%, 3-night min)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Stay Summary & Price Calculator -->
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <h3 class="summary-title">Your Booking Summary</h3>
+                            <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
+                        </div>
+
+                        <!-- Dates Selection Box -->
+                        <div class="summary-dates-box">
+                            <div>
+                                <div class="date-box-label">Check-In (14:00)</div>
+                                <div class="date-box-value" id="summaryCheckIn">Select Date</div>
+                            </div>
+                            <div>
+                                <div class="date-box-label">Check-Out (10:00)</div>
+                                <div class="date-box-value" id="summaryCheckOut">Select Date</div>
+                            </div>
+                        </div>
+
+                        <!-- Nights Count -->
+                        <div class="stay-nights-badge" id="summaryNightsBadge">
+                            Please select check-in &amp; check-out dates
+                        </div>
+
+                        <!-- Selected Room -->
+                        <div style="font-size: 0.88rem; color: #334155; margin-bottom: 1rem;">
+                            <strong>Room:</strong> <span id="summaryRoomName">All Rooms (Select a room for direct booking)</span>
+                        </div>
+
+                        <!-- Itemized Calculation -->
+                        <ul class="price-breakdown" id="priceBreakdownList">
+                            <li>
+                                <span>Room rate</span>
+                                <span>-</span>
+                            </li>
+                            <li>
+                                <span>Nights</span>
+                                <span>0</span>
+                            </li>
+                            <li class="total-row">
+                                <span>Total (ZAR)</span>
+                                <span id="summaryGrandTotal">R0</span>
+                            </li>
+                        </ul>
+
+                        <!-- Smart Deposit Notice -->
+                        <div class="deposit-notice-box" id="depositNoticeBox" style="display: none;">
+                            <strong>💳 Payment Terms:</strong><br>
+                            <span id="depositNoticeText">50% Deposit due now. Balance due 3 days before arrival.</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <button class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="goToStep2()">
+                            <span>Lock in Dates (Continue to Step 2)</span> ➔
+                        </button>
+                        <button class="btn-reset" onclick="resetDateSelection()">
+                            ✕ Clear Selected Dates
+                        </button>
+
+                        <!-- South African Perks -->
+                        <div class="sa-perks">
+                            <div class="perk-item">⚡ 24/7 Backup Power &amp; Wi-Fi (No Loadshedding!)</div>
+                            <div class="perk-item">📶 Fast Wi-Fi: Network: Gouws</div>
+                            <div class="perk-item">🏖️ 2-Minute Walk to Strand Beach</div>
+                            <div class="perk-item">☕ Delicious Breakfast Options Available</div>
+                        </div>
+
                     </div>
 
                 </div>
+            </div>
 
-                <!-- Right Column: Stay Summary & Price Calculator -->
-                <div class="summary-card">
-                    <div class="summary-header">
-                        <h3 class="summary-title">Your Booking Summary</h3>
-                        <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
-                    </div>
 
-                    <!-- Dates Selection Box -->
-                    <div class="summary-dates-box">
+            <!-- ========================================================= -->
+            <!-- STEP 2: GUEST DETAILS & AUTO-REGISTRATION FORM           -->
+            <!-- ========================================================= -->
+            <div class="step-view" id="step2View">
+                <div class="step2-card">
+
+                    <!-- Stay Recap Banner -->
+                    <div class="recap-bar">
                         <div>
-                            <div class="date-box-label">Check-In (14:00)</div>
-                            <div class="date-box-value" id="summaryCheckIn">Select Date</div>
+                            <div class="recap-title" id="recapRoomTitle">👑 King Arthur Room</div>
+                            <div class="recap-meta" id="recapStayDates">14 Oct 2026 – 17 Oct 2026 (3 Nights)</div>
                         </div>
-                        <div>
-                            <div class="date-box-label">Check-Out (10:00)</div>
-                            <div class="date-box-value" id="summaryCheckOut">Select Date</div>
+                        <div style="text-align: right;">
+                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R3,600</div>
+                            <button class="btn-edit-dates" onclick="goToStep1()">✏️ Edit Dates / Room</button>
                         </div>
                     </div>
 
-                    <!-- Nights Count -->
-                    <div class="stay-nights-badge" id="summaryNightsBadge">
-                        Please select check-in &amp; check-out dates
+                    <!-- Test Mode Helper -->
+                    <div class="test-sandbox-card">
+                        <strong>🧪 Paystack Test Mode Active:</strong> You can test this booking without real money. Use Test Card: <span class="test-card-tag">4084 0840 8408 4084</span> | Exp: <span class="test-card-tag">12/28</span> | CVV: <span class="test-card-tag">408</span>
                     </div>
 
-                    <!-- Selected Room -->
-                    <div style="font-size: 0.88rem; color: #334155; margin-bottom: 1rem;">
-                        <strong>Room:</strong> <span id="summaryRoomName">All Rooms (Select a room for direct booking)</span>
+                    <!-- Guest Details Form -->
+                    <form id="guestDetailsForm" onsubmit="handleProceedToPayment(event)">
+                        <div class="form-grid">
+                            
+                            <!-- Full Name -->
+                            <div class="form-group">
+                                <label class="form-label" for="guestFullName">
+                                    Full Name &amp; Surname <span class="req">*</span>
+                                </label>
+                                <input type="text" id="guestFullName" class="form-input" placeholder="e.g. Piet van der Merwe" required>
+                            </div>
+
+                            <!-- Email Address -->
+                            <div class="form-group">
+                                <label class="form-label" for="guestEmail">
+                                    Email Address (For Confirmation) <span class="req">*</span>
+                                </label>
+                                <input type="email" id="guestEmail" class="form-input" placeholder="e.g. piet@example.com" required>
+                            </div>
+
+                            <!-- Phone / WhatsApp -->
+                            <div class="form-group">
+                                <label class="form-label" for="guestPhone">
+                                    WhatsApp / Mobile Number <span class="req">*</span>
+                                </label>
+                                <div class="phone-wrapper">
+                                    <span class="phone-prefix">🇿🇦 +27</span>
+                                    <input type="tel" id="guestPhone" class="form-input" placeholder="82 123 4567" required>
+                                </div>
+                            </div>
+
+                            <!-- Estimated Arrival Time -->
+                            <div class="form-group">
+                                <label class="form-label" for="guestArrivalTime">
+                                    Estimated Check-In Time (From 14:00)
+                                </label>
+                                <select id="guestArrivalTime" class="form-select">
+                                    <option value="14:00 - 16:00">14:00 – 16:00 (Standard Arrival)</option>
+                                    <option value="16:00 - 18:00">16:00 – 18:00 (Late Afternoon)</option>
+                                    <option value="18:00 - 20:00">18:00 – 20:00 (Evening)</option>
+                                    <option value="After 20:00">After 20:00 (Late Check-in by Arrangement)</option>
+                                </select>
+                            </div>
+
+                            <!-- Number of Guests -->
+                            <div class="form-group">
+                                <label class="form-label" for="guestCount">
+                                    Number of Guests
+                                </label>
+                                <select id="guestCount" class="form-select">
+                                    <option value="2">2 Adults (Maximum for this room)</option>
+                                    <option value="1">1 Adult (Solo Traveler)</option>
+                                </select>
+                            </div>
+
+                            <!-- Optional Breakfast Add-on -->
+                            <div class="form-group" style="justify-content: flex-end;">
+                                <label class="option-checkbox-card">
+                                    <input type="checkbox" id="addBreakfastCheckbox" onchange="toggleBreakfastAddon()">
+                                    <div>
+                                        <strong>🍳 Add Daily Breakfast Package</strong><br>
+                                        <span style="font-size: 0.8rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night)</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Special Requests -->
+                            <div class="form-group full-width">
+                                <label class="form-label" for="guestSpecialRequests">
+                                    Special Requests / Dietary Needs (Optional)
+                                </label>
+                                <textarea id="guestSpecialRequests" class="form-textarea" rows="2" placeholder="e.g. Twin bed setup, anniversary trip, vegetarian breakfast..."></textarea>
+                            </div>
+
+                        </div>
+
+                        <!-- House Rules & Policies Checkbox -->
+                        <div class="terms-box">
+                            <label class="terms-checkbox-label">
+                                <input type="checkbox" id="agreeTermsCheckbox" required>
+                                <span>
+                                    I have read and agree to the <span class="link-terms" onclick="openRulesModal(event)">House Rules and Tiered Cancellation Policy</span>.
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Submit / Paystack Action -->
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button type="button" class="btn" style="background: #F1F5F9; color: #475569;" onclick="goToStep1()">
+                                ◀ Back to Calendar
+                            </button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 250px; font-size: 1.05rem;" id="btnPaystackSubmit">
+                                🔒 Pay <span id="paystackButtonAmount">R1,800</span> via Paystack ➔
+                            </button>
+                        </div>
+
+                        <div class="paystack-secure-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                            <span>256-Bit SSL Encrypted &bull; Visa, Mastercard, Capitec Pay, SnapScan</span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+            <!-- ========================================================= -->
+            <!-- STEP 3 / 4: BOOKING CONFIRMATION & RECEIPT SCREEN         -->
+            <!-- ========================================================= -->
+            <div class="step-view" id="step4View">
+                <div class="success-card">
+                    <div class="success-icon-circle">✓</div>
+                    
+                    <h2 style="font-size: 2rem; color: var(--sapphire-blue-dark); margin-bottom: 0.2rem;">Booking Confirmed!</h2>
+                    <p style="font-size: 1rem; color: #64748B;">Thank you, <span id="confGuestName">Piet</span>! Your stay at Cool Cat B&amp;B is officially secured.</p>
+                    
+                    <div class="success-ref">Booking Ref: <span id="confBookingRef">CC-89420</span></div>
+
+                    <!-- Itemized Confirmation Receipt -->
+                    <div class="booking-receipt-box">
+                        <div class="receipt-row">
+                            <span>Room Reserved:</span>
+                            <strong id="confRoomName">King Arthur Room</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Check-In:</span>
+                            <strong id="confCheckIn">14 Oct 2026 (from 14:00)</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Check-Out:</span>
+                            <strong id="confCheckOut">17 Oct 2026 (by 10:00)</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Duration:</span>
+                            <span id="confNights">3 Nights</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Total Stay Cost:</span>
+                            <span id="confTotalStay">R3,600</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Amount Paid (Paystack):</span>
+                            <strong style="color: #166534;" id="confAmountPaid">R1,800 (50% Deposit)</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span id="confBalanceLabel">Remaining Balance Due at Check-In:</span>
+                            <strong id="confBalanceDue">R1,800</strong>
+                        </div>
                     </div>
 
-                    <!-- Itemized Calculation -->
-                    <ul class="price-breakdown" id="priceBreakdownList">
-                        <li>
-                            <span>Room rate</span>
-                            <span>-</span>
-                        </li>
-                        <li>
-                            <span>Nights</span>
-                            <span>0</span>
-                        </li>
-                        <li class="total-row">
-                            <span>Total (ZAR)</span>
-                            <span id="summaryGrandTotal">R0</span>
-                        </li>
-                    </ul>
-
-                    <!-- Smart Deposit Notice -->
-                    <div class="deposit-notice-box" id="depositNoticeBox" style="display: none;">
-                        <strong>💳 Payment Terms:</strong><br>
-                        <span id="depositNoticeText">50% Deposit due now. Balance due 3 days before arrival.</span>
+                    <!-- Guest Access & Check-In Info -->
+                    <div class="access-details-card">
+                        <div class="access-details-title">
+                            <span>🏠 Check-In &amp; Guest Arrival Information:</span>
+                        </div>
+                        <div class="access-item">🕒 <strong>Check-In Time:</strong> 14:00 to 19:00 (Please inform us if arriving later)</div>
+                        <div class="access-item">🕚 <strong>Check-Out Time:</strong> 10:00 AM</div>
+                        <div class="access-item">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> &bull; Password: <code>004eda35aef</code></div>
+                        <div class="access-item">📍 <strong>Location:</strong> Strand, Western Cape &bull; <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
+                        <div class="access-item">📱 <strong>Host Contact:</strong> Michele Rossouw (<a href="tel:0637124491" style="color: var(--sapphire-blue); font-weight: 700;">063 712 4491</a>)</div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <button class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="handleContinueBooking()">
-                        <span>Lock in Dates (Step 2 Preview)</span> ➔
-                    </button>
-                    <button class="btn-reset" onclick="resetDateSelection()">
-                        ✕ Clear Selected Dates
-                    </button>
-
-                    <!-- South African Perks -->
-                    <div class="sa-perks">
-                        <div class="perk-item">⚡ 24/7 Backup Power &amp; Wi-Fi (No Loadshedding!)</div>
-                        <div class="perk-item">📶 Fast Wi-Fi: Network: Gouws</div>
-                        <div class="perk-item">🏖️ 2-Minute Walk to Strand Beach</div>
-                        <div class="perk-item">☕ Delicious Breakfast Options Available</div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="printReceipt()">
+                            🖨️ Print / Download Tax Invoice (PDF)
+                        </button>
+                        <button class="btn" style="background: #F1F5F9; color: #334155;" onclick="resetToCalendar()">
+                            Book Another Stay
+                        </button>
                     </div>
 
                 </div>
-
             </div>
 
         </div>
     </section>
+
+    <!-- Modal: House Rules & Tiered Cancellation Policy -->
+    <div class="modal-rules-overlay" id="rulesModal">
+        <div class="modal-rules-card">
+            <button class="modal-rules-close" onclick="closeRulesModal()">&times;</button>
+            <h2 style="color: var(--sapphire-blue-dark); margin-bottom: 0.5rem; font-size: 1.5rem;">House Rules &amp; Policies</h2>
+            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Cool Cat B&amp;B &bull; Strand, Western Cape</p>
+
+            <div style="font-size: 0.9rem; color: #334155; line-height: 1.6;">
+                <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">🚭 1. No Indoor Smoking</h4>
+                <p>Smoking is strictly prohibited inside all bedrooms and indoor lounges. Guests are welcome to smoke in designated outdoor garden/patio areas.</p>
+
+                <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">🐾 2. No Pets Allowed</h4>
+                <p>To preserve clean, allergen-free suites for all visitors, pets are not permitted on the property.</p>
+
+                <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">🤫 3. Quiet Hours (23:00 to 06:00)</h4>
+                <p>Cool Cat B&amp;B is a peaceful residential retreat. Please reduce noise and television volume after 23:00.</p>
+
+                <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">👥 4. Day Visitors</h4>
+                <p>Outside visitors are allowed by prior arrangement with management only.</p>
+
+                <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">❌ 5. Tiered Cancellation &amp; Refund Policy (CPA Compliant)</h4>
+                <ul style="padding-left: 1.2rem; margin-top: 0.4rem;">
+                    <li><strong>More than 30 Days before arrival:</strong> 100% Refund (minus 5% bank/gateway handling fee).</li>
+                    <li><strong>14 to 30 Days before arrival:</strong> 50% Refund of total booking.</li>
+                    <li><strong>Less than 14 Days / No-Show:</strong> 0% Refund.</li>
+                </ul>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1.8rem;" onclick="closeRulesModal()">
+                I Understand &amp; Agree
+            </button>
+        </div>
+    </div>
 
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
@@ -1052,7 +1605,7 @@
         </div>
     </footer>
 
-    <!-- Calendar JavaScript Engine -->
+    <!-- Calendar & Paystack JavaScript Engine -->
     <script>
         // ==========================================
         // 1. DATA CONFIGURATION & ROOM DEFINITIONS
@@ -1097,7 +1650,6 @@
         ];
 
         // Seeded realistic mock bookings to demonstrate Green, Orange, and Red states
-        // Format: YYYY-MM-DD
         const MOCK_BOOKINGS = [
             // Current month bookings
             { roomId: 'king-arthur', checkIn: '2026-08-28', checkOut: '2026-08-31' },
@@ -1125,11 +1677,16 @@
         TODAY.setHours(0, 0, 0, 0);
 
         let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-        const MAX_DATE = new Date(2027, 11, 31); // December 31, 2027
-
         let selectedRoomId = 'all'; // 'all' | 'king-arthur' | 'santori' | 'mykonos' | 'deluxe-suite'
         let checkInDate = null;
         let checkOutDate = null;
+
+        // Current calculation state
+        let calculatedGrandTotal = 0;
+        let calculatedDepositDue = 0;
+        let calculatedBalanceDue = 0;
+        let calculatedNights = 0;
+        let includeBreakfast = false;
 
         // ==========================================
         // 3. PRICING & SEASON ENGINE
@@ -1201,13 +1758,9 @@
             return Math.round(rate);
         }
 
-        // ==========================================
-        // 4. AVAILABILITY CHECKING ENGINE
-        // ==========================================
         function isRoomBookedOnDate(roomId, dateStr) {
             return MOCK_BOOKINGS.some(b => {
                 if (b.roomId !== roomId) return false;
-                // b.checkIn <= dateStr && dateStr < b.checkOut
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
         }
@@ -1240,7 +1793,7 @@
         }
 
         // ==========================================
-        // 5. CALENDAR RENDERING
+        // 4. CALENDAR RENDERING
         // ==========================================
         function renderCalendar() {
             const grid = document.getElementById('calendarDaysGrid');
@@ -1249,18 +1802,15 @@
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
 
-            // Set Header Month/Year label & Season badge
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('monthYearLabel').textContent = `${monthNames[month]} ${year}`;
 
-            // Determine Season badge for middle of month (15th)
             const midMonthDate = new Date(year, month, 15);
             const midSeason = getSeasonInfo(midMonthDate);
             const badgeEl = document.getElementById('seasonBadge');
             badgeEl.className = `season-badge ${midSeason.badgeClass}`;
             badgeEl.textContent = midSeason.name;
 
-            // Nav button disabling
             const prevBtn = document.getElementById('prevMonthBtn');
             const nextBtn = document.getElementById('nextMonthBtn');
             
@@ -1270,21 +1820,17 @@
             prevBtn.disabled = isAtStart;
             nextBtn.disabled = isAtEnd;
 
-            // Update dropdown selector
             document.getElementById('monthJumpSelect').value = `${year}-${month}`;
 
-            // Calculate grid blanks
-            const firstDayIndex = new Date(year, month, 1).getDay(); // 0 (Sun) to 6 (Sat)
+            const firstDayIndex = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Render empty leading cells
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.className = 'cal-day empty';
                 grid.appendChild(emptyCell);
             }
 
-            // Render day cells
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateObj = new Date(year, month, day);
                 dateObj.setHours(0, 0, 0, 0);
@@ -1300,13 +1846,11 @@
                 if (isCurrentDay) dayCell.classList.add('today');
                 if (isPast) dayCell.classList.add('disabled');
 
-                // Determine availability based on selected room
                 let isBooked = false;
                 let priceText = '';
                 let availPillHtml = '';
 
                 if (selectedRoomId === 'all') {
-                    // All rooms overview mode
                     if (avail.availableCount === 4) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     } else if (avail.availableCount > 0) {
@@ -1315,13 +1859,10 @@
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
                         isBooked = true;
                     }
-
-                    // Show starting rate from lowest available room
-                    const refRoom = ROOMS[1]; // Santori base reference
+                    const refRoom = ROOMS[1];
                     const rate = calculateNightPrice(refRoom, dateObj);
                     priceText = `From R${rate}`;
                 } else {
-                    // Single room mode
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     isBooked = isRoomBookedOnDate(selectedRoomId, dateStr);
 
@@ -1338,7 +1879,6 @@
                     dayCell.classList.add('booked-out');
                 }
 
-                // Check Selection Range states
                 const dateTime = dateObj.getTime();
                 if (checkInDate && dateTime === checkInDate.getTime()) {
                     dayCell.classList.add('selected-start');
@@ -1350,7 +1890,6 @@
                     dayCell.classList.add('in-range');
                 }
 
-                // Tooltip content
                 const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
                 const tooltipHtml = `
                     <div class="cal-tooltip">
@@ -1369,11 +1908,10 @@
                     ${!isPast ? tooltipHtml : ''}
                 `;
 
-                // Day click listener
                 if (!isPast && !isBooked) {
                     dayCell.onclick = () => handleDateClick(dateObj);
                 } else if (!isPast && isBooked) {
-                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another open date.");
+                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another date.");
                 }
 
                 grid.appendChild(dayCell);
@@ -1381,22 +1919,18 @@
         }
 
         // ==========================================
-        // 6. DATE SELECTION LOGIC
+        // 5. DATE SELECTION LOGIC
         // ==========================================
         function handleDateClick(dateObj) {
             if (!checkInDate || (checkInDate && checkOutDate)) {
-                // First click: Set Check-In
                 checkInDate = dateObj;
                 checkOutDate = null;
-                showToast(`Check-In set for ${formatFriendlyDate(checkInDate)}. Now select your Check-Out date.`);
+                showToast(`Check-In set for ${formatFriendlyDate(checkInDate)}. Now select Check-Out date.`);
             } else if (checkInDate && !checkOutDate) {
-                // Second click: Set Check-Out
                 if (dateObj.getTime() <= checkInDate.getTime()) {
-                    // Clicked same or earlier date -> Reset Check-In
                     checkInDate = dateObj;
                     showToast(`Check-In changed to ${formatFriendlyDate(checkInDate)}.`);
                 } else {
-                    // Validate stay requirements (e.g., minimum festive nights & room booking gaps)
                     const season = getSeasonInfo(checkInDate);
                     const nights = Math.round((dateObj - checkInDate) / (1000 * 60 * 60 * 24));
 
@@ -1405,7 +1939,6 @@
                         return;
                     }
 
-                    // Check if any intermediate day in range is booked for the active room
                     if (selectedRoomId !== 'all') {
                         let hasConflict = false;
                         let d = new Date(checkInDate);
@@ -1440,7 +1973,7 @@
         }
 
         // ==========================================
-        // 7. SUMMARY & PRICE CALCULATION SIDEBAR
+        // 6. SUMMARY & CALCULATION ENGINE
         // ==========================================
         function updateSummarySidebar() {
             const checkInEl = document.getElementById('summaryCheckIn');
@@ -1453,7 +1986,6 @@
             const depositText = document.getElementById('depositNoticeText');
             const continueBtn = document.getElementById('btnContinue');
 
-            // Update room title
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
             roomNameEl.textContent = activeRoom ? activeRoom.name : 'All Rooms (Overview Mode)';
 
@@ -1480,18 +2012,19 @@
                 totalEl.textContent = 'R0';
                 depositBox.style.display = 'none';
                 continueBtn.disabled = true;
+                calculatedGrandTotal = 0;
+                calculatedDepositDue = 0;
                 return;
             }
 
-            // Calculate nights & itemized pricing
-            const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-            nightsBadge.textContent = `✨ ${nights} Night${nights > 1 ? 's' : ''} Selected`;
+            calculatedNights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            nightsBadge.textContent = `✨ ${calculatedNights} Night${calculatedNights > 1 ? 's' : ''} Selected`;
             nightsBadge.style.background = '#DCFCE7';
 
             let grandTotal = 0;
             let breakdownHtml = '';
 
-            const targetRoom = activeRoom || ROOMS[1]; // Use Santori as default if in 'all' view
+            const targetRoom = activeRoom || ROOMS[0]; // King Arthur default if overview
 
             let d = new Date(checkInDate);
             let nightIndex = 1;
@@ -1511,30 +2044,46 @@
                 nightIndex++;
             }
 
+            // Add breakfast if selected
+            if (includeBreakfast) {
+                const breakfastTotal = calculatedNights * 120 * 2; // 2 guests
+                grandTotal += breakfastTotal;
+                breakdownHtml += `
+                    <li>
+                        <span>🍳 Breakfast Addon (${calculatedNights} days x 2 guests)</span>
+                        <span>R${breakfastTotal.toLocaleString()}</span>
+                    </li>
+                `;
+            }
+
+            calculatedGrandTotal = grandTotal;
+
             breakdownHtml += `
                 <li class="total-row">
-                    <span>Total (${nights} Nights)</span>
+                    <span>Total (${calculatedNights} Nights)</span>
                     <span>R${grandTotal.toLocaleString()}</span>
                 </li>
             `;
 
             breakdownList.innerHTML = breakdownHtml;
 
-            // Smart Deposit vs Full Payment Logic
+            // Deposit calculation
             const daysUntilCheckIn = Math.round((checkInDate - TODAY) / (1000 * 60 * 60 * 24));
             depositBox.style.display = 'block';
 
             if (grandTotal > 1000 && daysUntilCheckIn > 7) {
-                const depositAmount = Math.round(grandTotal * 0.50);
-                const balanceAmount = grandTotal - depositAmount;
+                calculatedDepositDue = Math.round(grandTotal * 0.50);
+                calculatedBalanceDue = grandTotal - calculatedDepositDue;
                 depositText.innerHTML = `
-                    <strong>50% Deposit Due Now: R${depositAmount.toLocaleString()}</strong><br>
-                    Balance of R${balanceAmount.toLocaleString()} is due 3 days before check-in or upon arrival.
+                    <strong>50% Deposit Due Now: R${calculatedDepositDue.toLocaleString()}</strong><br>
+                    Balance of R${calculatedBalanceDue.toLocaleString()} is due 3 days before check-in or upon arrival.
                 `;
             } else {
+                calculatedDepositDue = grandTotal;
+                calculatedBalanceDue = 0;
                 depositText.innerHTML = `
                     <strong>100% Full Payment: R${grandTotal.toLocaleString()}</strong><br>
-                    Due to stay value or arrival within 7 days, 100% upfront payment is required.
+                    Due to stay value or arrival within 7 days, full payment is required upfront.
                 `;
             }
 
@@ -1542,12 +2091,198 @@
         }
 
         // ==========================================
-        // 8. ROOM SWITCHER & NAVIGATION HELPERS
+        // 7. WIZARD STEP TRANSITIONS
         // ==========================================
+        function goToStep2() {
+            if (!checkInDate || !checkOutDate) {
+                showToast("Please select your stay dates on the calendar first.");
+                return;
+            }
+
+            // Auto-select King Arthur if 'all' was selected
+            if (selectedRoomId === 'all') {
+                selectedRoomId = 'king-arthur';
+                switchRoom('king-arthur');
+            }
+
+            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+
+            // Populate Step 2 Recap
+            document.getElementById('recapRoomTitle').textContent = `${activeRoom.icon} ${activeRoom.name}`;
+            document.getElementById('recapStayDates').textContent = `${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)} (${calculatedNights} Nights)`;
+            document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
+            document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
+
+            // Switch View
+            document.getElementById('step1View').classList.remove('active-view');
+            document.getElementById('step2View').classList.add('active-view');
+            document.getElementById('step4View').classList.remove('active-view');
+
+            // Update Wizard indicator
+            document.getElementById('wizStep1').classList.remove('active');
+            document.getElementById('wizStep1').classList.add('completed');
+            document.getElementById('circle1').textContent = '✓';
+
+            document.getElementById('wizStep2').classList.add('active');
+
+            window.scrollTo({ top: 180, behavior: 'smooth' });
+        }
+
+        function goToStep1() {
+            document.getElementById('step2View').classList.remove('active-view');
+            document.getElementById('step1View').classList.add('active-view');
+            document.getElementById('step4View').classList.remove('active-view');
+
+            document.getElementById('wizStep1').classList.add('active');
+            document.getElementById('wizStep1').classList.remove('completed');
+            document.getElementById('circle1').textContent = '1';
+
+            document.getElementById('wizStep2').classList.remove('active');
+            window.scrollTo({ top: 180, behavior: 'smooth' });
+        }
+
+        function toggleBreakfastAddon() {
+            includeBreakfast = document.getElementById('addBreakfastCheckbox').checked;
+            updateSummarySidebar();
+            document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
+            document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
+        }
+
+        // ==========================================
+        // 8. PAYSTACK CHECKOUT INTEGRATION
+        // ==========================================
+        function handleProceedToPayment(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('guestFullName').value.trim();
+            const email = document.getElementById('guestEmail').value.trim();
+            const phone = document.getElementById('guestPhone').value.trim();
+            const arrivalTime = document.getElementById('guestArrivalTime').value;
+            const specialRequests = document.getElementById('guestSpecialRequests').value.trim();
+            const agreeTerms = document.getElementById('agreeTermsCheckbox').checked;
+
+            if (!agreeTerms) {
+                showToast("Please agree to the House Rules and Cancellation Policy.");
+                return;
+            }
+
+            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            const amountInCents = calculatedDepositDue * 100; // Paystack requires South African Cents
+
+            // Check if PaystackInline is available
+            if (typeof PaystackPop !== 'undefined') {
+                const handler = PaystackPop.setup({
+                    key: 'pk_test_d3a3f019b78e470876543210abcdef1234567890', // Demo test key for sandbox testing
+                    email: email,
+                    amount: amountInCents,
+                    currency: 'ZAR',
+                    ref: 'CC-' + Math.floor((Math.random() * 899999) + 100000),
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
+                            { display_name: "Phone Number", variable_name: "phone", value: "+27" + phone },
+                            { display_name: "Room", variable_name: "room", value: activeRoom.name },
+                            { display_name: "Check In", variable_name: "check_in", value: formatDateKey(checkInDate) },
+                            { display_name: "Check Out", variable_name: "check_out", value: formatDateKey(checkOutDate) },
+                            { display_name: "Arrival Time", variable_name: "arrival_time", value: arrivalTime },
+                            { display_name: "Special Requests", variable_name: "special_requests", value: specialRequests }
+                        ]
+                    },
+                    callback: function(response) {
+                        completeBooking(response.reference, fullName, email, phone);
+                    },
+                    onClose: function() {
+                        showToast("Payment window closed. Your reservation is pending.");
+                    }
+                });
+
+                handler.openIframe();
+            } else {
+                // Fallback simulation for local offline testing
+                const simRef = 'CC-' + Math.floor((Math.random() * 899999) + 100000);
+                completeBooking(simRef, fullName, email, phone);
+            }
+        }
+
+        function completeBooking(refNumber, name, email, phone) {
+            // Save mock booking into active calendar state
+            MOCK_BOOKINGS.push({
+                roomId: selectedRoomId,
+                checkIn: formatDateKey(checkInDate),
+                checkOut: formatDateKey(checkOutDate)
+            });
+
+            // Populate Step 4 Confirmation Screen
+            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            document.getElementById('confGuestName').textContent = name;
+            document.getElementById('confBookingRef').textContent = refNumber;
+            document.getElementById('confRoomName').textContent = activeRoom.name;
+            document.getElementById('confCheckIn').textContent = `${formatFriendlyDate(checkInDate)} (from 14:00)`;
+            document.getElementById('confCheckOut').textContent = `${formatFriendlyDate(checkOutDate)} (by 10:00)`;
+            document.getElementById('confNights').textContent = `${calculatedNights} Night${calculatedNights > 1 ? 's' : ''}`;
+            document.getElementById('confTotalStay').textContent = `R${calculatedGrandTotal.toLocaleString()}`;
+            
+            const isDeposit = (calculatedDepositDue < calculatedGrandTotal);
+            document.getElementById('confAmountPaid').textContent = `R${calculatedDepositDue.toLocaleString()} (${isDeposit ? '50% Deposit Paid' : '100% Fully Paid'})`;
+            
+            if (isDeposit) {
+                document.getElementById('confBalanceLabel').textContent = 'Remaining Balance Due at Check-In:';
+                document.getElementById('confBalanceDue').textContent = `R${calculatedBalanceDue.toLocaleString()}`;
+            } else {
+                document.getElementById('confBalanceLabel').textContent = 'Balance Due:';
+                document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
+            }
+
+            // Switch to Step 4 view
+            document.getElementById('step1View').classList.remove('active-view');
+            document.getElementById('step2View').classList.remove('active-view');
+            document.getElementById('step4View').classList.add('active-view');
+
+            // Update Wizard
+            document.getElementById('wizStep2').classList.remove('active');
+            document.getElementById('wizStep2').classList.add('completed');
+            document.getElementById('circle2').textContent = '✓';
+
+            document.getElementById('wizStep3').classList.add('active');
+            document.getElementById('wizStep3').classList.add('completed');
+            document.getElementById('circle3').textContent = '✓';
+
+            window.scrollTo({ top: 150, behavior: 'smooth' });
+        }
+
+        function resetToCalendar() {
+            checkInDate = null;
+            checkOutDate = null;
+            renderCalendar();
+            updateSummarySidebar();
+            goToStep1();
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        // ==========================================
+        // 9. MODALS & UI UTILITIES
+        // ==========================================
+        function openRulesModal(e) {
+            if (e) e.preventDefault();
+            document.getElementById('rulesModal').style.display = 'flex';
+        }
+
+        function closeRulesModal() {
+            document.getElementById('rulesModal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            const modal = document.getElementById('rulesModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
         function switchRoom(roomId) {
             selectedRoomId = roomId;
-
-            // Update Tab buttons
             const tabs = document.querySelectorAll('.room-tab-btn');
             tabs.forEach(tab => tab.classList.remove('active'));
 
@@ -1560,7 +2295,6 @@
             };
             tabs[roomMap[roomId]].classList.add('active');
 
-            // Update Room Banner
             const bannerName = document.getElementById('bannerRoomName');
             const bannerSpecs = document.getElementById('bannerRoomSpecs');
             const bannerRate = document.getElementById('bannerRoomRate');
@@ -1576,7 +2310,6 @@
                 bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
             }
 
-            // Re-render
             renderCalendar();
             updateSummarySidebar();
         }
@@ -1623,15 +2356,6 @@
             }, 3500);
         }
 
-        function handleContinueBooking() {
-            if (!checkInDate || !checkOutDate) return;
-            const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-            alert(`🎉 Dates locked: ${formatFriendlyDate(checkInDate)} to ${formatFriendlyDate(checkOutDate)} (${nights} Nights).\n\nStep 2 (Guest Details & Auto-Registration) and Step 3 (Paystack) will be connected next!`);
-        }
-
-        // ==========================================
-        // 9. INITIALIZATION
-        // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             populateMonthDropdown();
             renderCalendar();
