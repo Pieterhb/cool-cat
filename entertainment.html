@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fun &amp; Entertainment Within 50km | Cool Cat B&amp;B Strand</title>
-    <meta name="description" content="Explore top activities, water sports, wine farms, hiking, adventure parks, and family entertainment within 50km of Cool Cat B&B in Strand, Western Cape.">
+    <meta name="description" content="Complete directory of activities, wine farms, adventure parks, hiking, golf, wildlife, and family entertainment within 50km of Cool Cat B&B in Strand, Western Cape.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://cool-cat.co.za/entertainment">
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="Cool Cat B&B">
     <meta property="og:title" content="Fun &amp; Entertainment Within 50km | Cool Cat B&B Strand">
-    <meta property="og:description" content="Explore top activities, wine estates, beaches, adventures, and attractions within 50km of Strand, Western Cape.">
+    <meta property="og:description" content="Explore 25+ curated attractions, wine estates, beaches, adventures, and wildlife within 50km of Strand, Western Cape.">
     <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1787492532.css">
+    <link rel="stylesheet" href="styles-v1787493244.css">
     <style>
         .ent-hero {
-            background: linear-gradient(rgba(10, 58, 133, 0.75), rgba(15, 82, 186, 0.85)), url('1. Dining Breakfast.jpg') center/cover;
+            background: linear-gradient(rgba(10, 58, 133, 0.78), rgba(15, 82, 186, 0.88)), url('1. Dining Breakfast.jpg') center/cover;
             padding: 7.5rem 0 3.5rem;
             text-align: center;
             color: white;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .back-nav-bar {
@@ -68,30 +68,60 @@
 
         .radius-filter-pills {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
             overflow-x: auto;
-            padding-bottom: 0.4rem;
-            margin-bottom: 2rem;
+            padding-bottom: 0.6rem;
+            margin-bottom: 2.5rem;
+            scrollbar-width: thin;
         }
 
         .radius-pill {
             background: white;
-            border: 1px solid #CBD5E1;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            border: 1.5px solid #CBD5E1;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.88rem;
             font-weight: 700;
-            color: #475569;
+            color: #334155;
             cursor: pointer;
             white-space: nowrap;
             text-decoration: none;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .radius-pill:hover, .radius-pill.active {
             background: var(--sapphire-blue);
             color: white;
             border-color: var(--sapphire-blue);
+            box-shadow: 0 4px 10px rgba(15, 82, 186, 0.25);
+        }
+
+        .section-zone-header {
+            background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+            border-left: 6px solid var(--sapphire-blue);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            margin: 3rem 0 1.8rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .section-zone-title {
+            margin: 0;
+            color: var(--sapphire-blue-dark);
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        .section-zone-desc {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #64748B;
+            font-weight: 600;
         }
 
         .activity-card {
@@ -99,9 +129,9 @@
             border: 1px solid #E2E8F0;
             border-radius: 16px;
             padding: 2rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .activity-card:hover {
@@ -115,26 +145,54 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 0.8rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             border-bottom: 1px solid #F1F5F9;
             padding-bottom: 0.8rem;
         }
 
         .activity-title {
-            font-size: 1.45rem;
+            font-size: 1.35rem;
             font-weight: 800;
             color: var(--sapphire-blue-dark);
             margin: 0;
+        }
+
+        .badge-group {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .dist-badge {
             background: #EEF2FF;
             color: var(--sapphire-blue);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 0.35rem 0.8rem;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.75rem;
             border-radius: 20px;
             border: 1px solid #C7D2FE;
+        }
+
+        .fee-badge {
+            background: #DCFCE7;
+            color: #166534;
+            font-weight: 800;
+            font-size: 0.78rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .fee-paid {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .stars-badge {
+            color: #EAB308;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
         }
 
         /* 16:9 Black-bordered frame window */
@@ -166,7 +224,7 @@
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
             border-radius: 10px;
-            padding: 1rem;
+            padding: 1.2rem;
         }
 
         .feature-box h4 {
@@ -174,6 +232,7 @@
             margin-bottom: 0.4rem;
             color: var(--sapphire-blue-dark);
             font-size: 0.98rem;
+            font-weight: 700;
         }
 
         .feature-box ul {
@@ -181,7 +240,35 @@
             margin-bottom: 0;
             font-size: 0.88rem;
             color: #334155;
-            line-height: 1.6;
+            line-height: 1.65;
+        }
+
+        .contact-pill-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #E2E8F0;
+            font-size: 0.85rem;
+        }
+
+        .contact-pill {
+            background: white;
+            border: 1px solid #CBD5E1;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            color: #334155;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 600;
+        }
+
+        .contact-pill:hover {
+            background: #F1F5F9;
+            color: var(--sapphire-blue);
         }
     </style>
 </head>
@@ -212,13 +299,13 @@
     <div class="ent-hero">
         <div class="container">
             <span style="background: rgba(255,255,255,0.2); color: #FEF08A; font-weight: 800; font-size: 0.85rem; padding: 0.35rem 0.9rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 0.8rem;">
-                🏖️ Ultimate Day Trip Directory
+                🏖️ Ultimate Day Trip &amp; Entertainment Directory
             </span>
-            <h1 style="color: white; font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 0.8rem;">
+            <h1 style="color: white; font-size: clamp(2rem, 6vw, 3.2rem); margin-bottom: 0.8rem; font-family: var(--font-heading);">
                 Fun &amp; Entertainment Within 50km
             </h1>
-            <p style="font-size: 1.15rem; max-width: 750px; margin: 0 auto; color: #E2E8F0; line-height: 1.6;">
-                Strand is the ideal coastal basecamp. Within 50km, your guests have access to pristine beaches, world-renowned wine estates, adrenaline water sports, hiking, animal encounters, and family fun.
+            <p style="font-size: 1.15rem; max-width: 800px; margin: 0 auto; color: #E2E8F0; line-height: 1.6;">
+                Strand is the ideal coastal basecamp. Within roughly a 50km driving radius, your guests have instant access to blue-flag beaches, premier wine estates, adrenaline water sports, hiking gorges, wildlife sanctuaries, and family adventures.
             </p>
         </div>
     </div>
@@ -246,51 +333,63 @@
 
             <!-- Radius Filter Pills -->
             <div class="radius-filter-pills">
-                <a href="#rad-5k" class="radius-pill">🏖️ Within 5 km (Strand Local)</a>
-                <a href="#rad-15k" class="radius-pill">🌊 5–15 km (Gordon's Bay &amp; Helderberg)</a>
-                <a href="#rad-30k" class="radius-pill">🍷 15–30 km (Stellenbosch &amp; Nature)</a>
-                <a href="#rad-50k" class="radius-pill">🌲 30–50 km (Grabouw, Canopy &amp; Coast)</a>
+                <a href="#zone-5k" class="radius-pill">🏖️ Zone 1: Within 5 km (Strand Local)</a>
+                <a href="#zone-15k" class="radius-pill">🌊 Zone 2: 5–15 km (Gordon's Bay &amp; Helderberg)</a>
+                <a href="#zone-30k" class="radius-pill">🍷 Zone 3: 15–30 km (Stellenbosch, Wine &amp; Markets)</a>
+                <a href="#zone-50k" class="radius-pill">🌲 Zone 4: 30–50 km (Elgin, Grabouw &amp; Betty's Bay)</a>
             </div>
 
+
             <!-- ========================================================= -->
-            <!-- 1. STRAND & GORDON'S BAY                                  -->
+            <!-- ZONE 1: WITHIN 5 KM — STRAND BEACH & LOCAL               -->
             <!-- ========================================================= -->
-            <div class="activity-card" id="rad-5k">
+            <div class="section-zone-header" id="zone-5k">
+                <div>
+                    <h3 class="section-zone-title">🏖️ Zone 1: Within 5 km (Strand Local &amp; Beachfront)</h3>
+                    <p class="section-zone-desc">Walk or drive 2 to 5 minutes • Family, Swimming, Surfing &amp; Golf</p>
+                </div>
+            </div>
+
+            <!-- 1. Strand Beach & Watersports -->
+            <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🏖️ 1. Strand &amp; Gordon's Bay — Closest Activities</h2>
-                    <span class="dist-badge">📍 0 to 10 km • 2 to 12 mins</span>
+                    <h2 class="activity-title">🏖️ Strand Beach &amp; Watersports</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 250m to 1 km • 2–5 min</span>
+                        <span class="fee-badge">Free Public Access</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Strand features a long sandy beach with safe swimming waters and a wide range of watersports including surfing, sailing, power boating, paddleskiing, and boardsailing.
+                    Strand Beach stretches for kilometres along False Bay with warm, shallow waters and iconic mountain backdrops. Ideal for all ages, sunrise strolls, swimming, and ocean watersports.
                 </p>
 
                 <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
                 <div class="image-frame-16x9">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Strand &amp; Gordon's Bay]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Strand Beach &amp; Gordon's Bay here</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Strand Beach &amp; Watersports]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Strand Beach, Surfing &amp; Sunsets here</span>
                 </div>
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🏄 Local Strand Activities (0–5 km)</h4>
+                        <h4>🏄 Ocean &amp; Beach Activities</h4>
                         <ul>
-                            <li><strong>Strand Beach (250m):</strong> Swimming, sunbathing, long beach walks &amp; sunsets.</li>
-                            <li><strong>Son Surf School (1–2 km):</strong> Beginner &amp; advanced surfing lessons.</li>
-                            <li><strong>Strand Kayak Rentals (~2 km):</strong> Ocean kayaking &amp; paddleboards.</li>
-                            <li><strong>Putt-Putt Mini Golf (1–2 km):</strong> Classic seaside family fun.</li>
-                            <li><strong>Strand Golf Club (~3 km):</strong> 18-hole championship golf course.</li>
-                            <li><strong>Strand Bowling Club (~3 km):</strong> Welcoming lawn bowls club.</li>
-                            <li><strong>SWAT Paintball (~5 km):</strong> Action-packed outdoor tactical paintball.</li>
+                            <li><strong>Swimming &amp; Sunbathing:</strong> Safe, gently shelving coastline for all ages.</li>
+                            <li><strong>Surfing &amp; Lessons:</strong> Son Surf School operates at the beachfront (1–2 km).</li>
+                            <li><strong>Kayaking &amp; SUP:</strong> Strand Kayak rentals available near the promenade (~2 km).</li>
+                            <li><strong>Sunrise &amp; Sunset Photography:</strong> World-class False Bay &amp; Cape Point vistas.</li>
+                            <li><strong>Dolphin Spotting &amp; Fishing:</strong> Frequent sightings along the shoreline.</li>
                         </ul>
                     </div>
                     <div class="feature-box">
-                        <h4>⚓ Gordon's Bay &amp; Coastal Charm (~10 km)</h4>
+                        <h4>⛳ Local Recreation (1–3 km)</h4>
                         <ul>
-                            <li><strong>Bikini Beach (Blue Flag):</strong> Sheltered cove with warm water &amp; mountain backdrops.</li>
-                            <li><strong>Gordon's Bay Harbor:</strong> Seafood restaurants, boat charters &amp; scenic harbor strolls.</li>
-                            <li><strong>Crystal Pools Area (~15–20 km):</strong> Famous hiking trail with natural rock pools &amp; waterfalls.</li>
-                            <li><strong>Kogel Bay (~25 km):</strong> Iconic coastal beach along the rugged Clarence Drive route.</li>
+                            <li><strong>Putt-Putt Mini Golf (1 km):</strong> Classic seaside mini-golf fun for kids.</li>
+                            <li><strong>Strand Golf Club (~2.1 km):</strong> 18-hole championship coastal links course.</li>
+                            <li><strong>Strand Bowling Club (~3 km):</strong> Welcoming lawn bowls club.</li>
+                            <li><strong>Strand Municipal Heated Indoor Pool (250m):</strong> Year-round indoor swimming.</li>
+                            <li><strong>SWAT Paintball (~5 km):</strong> Action-packed outdoor tactical paintball.</li>
                         </ul>
                     </div>
                 </div>
@@ -298,41 +397,226 @@
 
 
             <!-- ========================================================= -->
-            <!-- 2. BLUE ROCK ADVENTURE PARK                               -->
+            <!-- ZONE 2: 5–15 KM — GORDON'S BAY & HELDERBERG BASIN         -->
             <!-- ========================================================= -->
-            <div class="activity-card" id="rad-15k">
+            <div class="section-zone-header" id="zone-15k">
+                <div>
+                    <h3 class="section-zone-title">🌊 Zone 2: 5–15 km (Gordon's Bay, Helderberg &amp; Adventure)</h3>
+                    <p class="section-zone-desc">10 to 20 minute drive • Cable skiing, Wine tasting, Mountain reserves &amp; Harbors</p>
+                </div>
+            </div>
+
+            <!-- 2. Blue Rock Adventure Park -->
+            <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">💦 2. Blue Rock Adventure Park</h2>
-                    <span class="dist-badge">📍 ~10.5 km • 15 mins</span>
+                    <h2 class="activity-title">💦 Blue Rock Adventure Park</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 8–10.5 km • 12–15 min</span>
+                        <span class="fee-badge fee-paid">Paid / Activity Tariffs</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Blue Rock is one of the top adrenaline and adventure parks in the Western Cape, built around a crystal-clear spring-fed lake. Highly recommended for families, younger guests, and adventure seekers.
+                    Built around a crystal-clear, spring-fed lake in Sir Lowry's Pass. Blue Rock is the Western Cape's premier destination for wakeboarding, cliff jumping, and adventure activities.
                 </p>
 
                 <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
                 <div class="image-frame-16x9">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
                     <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Blue Rock Adventure Park]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Blue Rock Lake &amp; Cable Skiing here</span>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Blue Rock Lake &amp; Cable Wakeboarding here</span>
                 </div>
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>⚡ Adrenaline &amp; Water Sports</h4>
+                        <h4>⚡ Water Sports &amp; Thrills</h4>
                         <ul>
-                            <li>🏄 <strong>Cable Wakeboarding &amp; Waterskiing:</strong> Overhead cable system for all skill levels.</li>
-                            <li>🪂 <strong>400m Zipline:</strong> High-speed zip directly over the deep blue lake.</li>
-                            <li>🧗 <strong>Rock Jumping &amp; Freediving:</strong> Safe cliff-jumping heights into fresh water.</li>
-                            <li>🤿 <strong>Scuba &amp; Sport Diving:</strong> Deep training quarry for divers.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>🍕 Day Out &amp; Leisure Facilities</h4>
-                        <ul>
+                            <li>🏄 <strong>Cable Wakeboarding &amp; Waterskiing:</strong> Overhead cable system for beginner to pro.</li>
+                            <li>🪂 <strong>400m Zipline:</strong> High-speed line soaring right across the deep lake.</li>
+                            <li>🧗 <strong>Rock Jumping &amp; Freediving:</strong> Safe cliff jumps into pristine deep water.</li>
+                            <li>🤿 <strong>Scuba Diving &amp; Training:</strong> 60-meter deep quarry dive training site.</li>
                             <li>🛶 <strong>Canoeing &amp; Stand-Up Paddleboarding (SUP)</strong></li>
-                            <li>🎯 <strong>Paintball &amp; Beach Volleyball</strong></li>
-                            <li>🍕 <strong>Italian Restaurant &amp; Pizzeria:</strong> Shaded lakeside seating.</li>
-                            <li>🧺 <strong>Lakeside Picnics &amp; Sunbathing Lawns</strong></li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🍕 Leisure &amp; Dining Facilities</h4>
+                        <ul>
+                            <li>🎯 <strong>Paintball Arena &amp; Beach Volleyball Court</strong></li>
+                            <li>🍕 <strong>Italian Restaurant &amp; Pizzeria:</strong> Wood-fired pizzas on the shaded deck.</li>
+                            <li>🧺 <strong>Lakeside Sunbathing &amp; Picnic Lawns</strong></li>
+                            <li><strong>Booking:</strong> Recommended for cable sessions and zipline.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="contact-pill-row">
+                    <a href="tel:+27218581330" class="contact-pill">📞 +27 21 858 1330</a>
+                    <a href="https://www.bluerock.co.za/" target="_blank" class="contact-pill">🌐 Official Website: bluerock.co.za</a>
+                </div>
+            </div>
+
+            <!-- 3. Gordon's Bay Beaches & Harbor Sightseeing -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">⚓ Gordon's Bay Harbor, Bikini Beach &amp; Scenic Coast</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 10–12 km • 12–15 min</span>
+                        <span class="fee-badge">Free Sightseeing</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    A charming Mediterranean-style coastal village nestled against the Hottentots Holland mountains, famous for sheltered swimming coves and sunset boat charters.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Gordon's Bay Harbor &amp; Bikini Beach]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Bikini Beach and Gordon's Bay Harbor here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🏖️ Beaches &amp; Harbor Attractions</h4>
+                        <ul>
+                            <li><strong>Bikini Beach (Blue Flag):</strong> Sheltered from the South-Easter wind with crystal clear warm waters.</li>
+                            <li><strong>Gordon's Bay Main Beach:</strong> Wide, shallow beach for family strolls and ice cream.</li>
+                            <li><strong>Gordon's Bay Old Harbor:</strong> Working fishing harbor, seafood eateries, and ocean boat charters.</li>
+                            <li><strong>Harbour Island Marina (~11 km):</strong> Waterfront restaurants, luxury yachts &amp; cocktail bars.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🚤 Ocean Cruises &amp; Scenic Drives</h4>
+                        <ul>
+                            <li><strong>Playa Cruises (067 268 4959):</strong> Sunset champagne charters &amp; dolphin watching.</li>
+                            <li><strong>Clarence Drive (Route 44) (~15 km):</strong> One of the top scenic coastal drives in the world.</li>
+                            <li><strong>Steenbras Lookout Point (~15 km):</strong> Breathtaking cliff-top viewpoint over False Bay.</li>
+                            <li><strong>Danie Miller Hiking Trail (~12 km):</strong> Gentle contour walk through mountain fynbos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Helderberg Nature Reserve & Farm -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🌿 Helderberg Nature Reserve &amp; Helderberg Farm</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 10–12 km • 15 min</span>
+                        <span class="fee-badge fee-paid">Small Entry Tariff</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    Situated on the slopes of the Helderberg Mountain, offering spectacular nature walks, birdwatching, seasonal strawberry picking, and single-track mountain biking.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Helderberg Nature Reserve &amp; Farm]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Helderberg Nature Reserve &amp; Strawberry Picking here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🥾 Helderberg Nature Reserve (~10 km)</h4>
+                        <ul>
+                            <li><strong>Hiking Trails:</strong> Ranging from easy 1km fynbos walks to the 7-hour West Peak mountain hike.</li>
+                            <li><strong>Bird &amp; Wildlife Spotting:</strong> Sugarbirds, bontebok, tortoises, and raptors.</li>
+                            <li><strong>Picnics &amp; Oak Café:</strong> Shaded lawns overlooking the ocean basin.</li>
+                            <li><strong>Website:</strong> <a href="https://helderbergnaturereserve.co.za/" target="_blank">helderbergnaturereserve.co.za</a></li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🍓 Helderberg Farm (~12 km)</h4>
+                        <ul>
+                            <li><strong>Strawberry Picking (Seasonal):</strong> Hand-pick sweet strawberries fresh from the fields.</li>
+                            <li><strong>Mountain Biking &amp; Trail Running:</strong> Dedicated farm forest tracks.</li>
+                            <li><strong>Farm Hiking:</strong> Scenic mountain trails through proteas and vineyards.</li>
+                            <li><strong>Family Play Park &amp; Tea Garden:</strong> Shaded braai spots and kids playgrounds.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Helderberg Wine Estates -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🍷 Helderberg Historic &amp; Modern Wine Estates</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 8–14 km • 10–18 min</span>
+                        <span class="fee-badge fee-paid">Tasting Fees</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    The Helderberg sub-route is world-famous for its maritime climate, 300-year-old historic Cape Dutch estates, and architectural masterpieces.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Helderberg Wine Estates]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Vergelegen, Lourensford or Waterkloof here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🏛️ Heritage &amp; Market Estates</h4>
+                        <ul>
+                            <li><strong>Vergelegen Estate (~13 km):</strong> 300-year-old camphor trees, octagonal garden, historic library &amp; bistro dining (+27 21 847 2111).</li>
+                            <li><strong>Lourensford Estate (~12 km):</strong> Weekend artisan food &amp; craft market, coffee roastery, and chocolate &amp; wine pairing.</li>
+                            <li><strong>Morgenster Estate (~12 km):</strong> Award-winning extra virgin olive oil tastings, Italian varietals &amp; paste pairings.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>✨ Modern Architecture &amp; Equestrian</h4>
+                        <ul>
+                            <li><strong>Waterkloof Wines (~12 km):</strong> Spectacular "glass box" restaurant overlooking False Bay, offering organic biodynamic wines (+27 21 858 1292).</li>
+                            <li><strong>Cavalli Estate (~12 km):</strong> World-class equestrian indoor arena, contemporary art gallery &amp; fynbos gardens (+27 21 855 3218).</li>
+                            <li><strong>Ken Forrester Wines (~10 km):</strong> Acclaimed "King of Chenin Blanc".</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Wildlife & Culture (Cheetah Outreach, Monkey Town, Lwandle) -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🐆 Wildlife Encounters &amp; Cultural Heritage</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 4–7 km • 6–10 min</span>
+                        <span class="fee-badge fee-paid">Entry Fees Apply</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    Hands-on animal conservation and profound local cultural history located just a few minutes from Cool Cat B&amp;B.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Wildlife &amp; Culture]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Cheetah Outreach or Lwandle Museum here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🐾 Animal Encounters</h4>
+                        <ul>
+                            <li><strong>Cheetah Outreach (~4 km):</strong> Educational conservation facility with personal encounters with adult cheetahs, cubs, and Anatolian shepherd dogs.</li>
+                            <li><strong>Monkey Town Primate Centre (~7 km):</strong> Home to over 28 exotic primate species, an interactive petting zoo, and bird park.</li>
+                            <li><strong>Journey's End Horseback Rides (~15 km):</strong> Mountain and vineyard horse riding trails (082 391 1693).</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🏛️ Cultural History</h4>
+                        <ul>
+                            <li><strong>Lwandle Migrant Labour Museum (~6 km):</strong> South Africa's premier museum dedicated to documenting the migrant labour hostel system.</li>
+                            <li>Educational guided township walking tours and community craft exhibitions.</li>
+                            <li>Highly recommended for history, cultural, and international guests.</li>
                         </ul>
                     </div>
                 </div>
@@ -340,358 +624,263 @@
 
 
             <!-- ========================================================= -->
-            <!-- 3. HORSE RIDING & MOUNTAIN TRAILS                         -->
+            <!-- ZONE 3: 15–30 KM — STELLENBOSCH, WINELANDS & MARKETS      -->
             <!-- ========================================================= -->
+            <div class="section-zone-header" id="zone-30k">
+                <div>
+                    <h3 class="section-zone-title">🍷 Zone 3: 15–30 km (Stellenbosch, Winelands &amp; Markets)</h3>
+                    <p class="section-zone-desc">20 to 35 minute drive • Cape Dutch heritage, E-Bike tours, Chocolate pairings &amp; Golf</p>
+                </div>
+            </div>
+
+            <!-- 7. Stellenbosch Historic Town & Culture -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🐎 3. Horse Riding (Journey's End Horseback Rides)</h2>
-                    <span class="dist-badge">📍 ~15–20 km • 20 mins</span>
+                    <h2 class="activity-title">🏛️ Historic Stellenbosch Town, Botanical Gardens &amp; Markets</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 25–28 km • 30 min</span>
+                        <span class="fee-badge">Free Town Access / Museum Fees</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    One of the most memorable outings for couples and families. Experience horseback trails winding through picturesque vineyards, fynbos valleys, and mountain foothills rather than an enclosed arena.
+                    South Africa's second oldest town, celebrated for oak-lined avenues, Cape Dutch architecture, boutique art galleries, and vibrant coffee culture.
                 </p>
 
                 <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
                 <div class="image-frame-16x9">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Horse Riding &amp; Vineyards]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Journey's End Horse Riding here</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Historic Stellenbosch &amp; Route 44 Market]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Stellenbosch streets, Botanical Garden or Route 44 Market here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🎨 Town Sightseeing &amp; Heritage</h4>
+                        <ul>
+                            <li><strong>Dorp Street Walking Tour:</strong> Shaded historic street lined with art galleries, cafés &amp; boutiques.</li>
+                            <li><strong>Stellenbosch Village Museum:</strong> Four restored heritage homes spanning four centuries.</li>
+                            <li><strong>Stellenbosch University Botanical Garden:</strong> The oldest university botanical garden in South Africa with rare tropical greenhouses.</li>
+                            <li><strong>Jan Marais Nature Reserve:</strong> Tranquil indigenous fynbos park and sculpture garden.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🥐 Artisan Markets &amp; Food Tours</h4>
+                        <ul>
+                            <li><strong>Route 44 Market (~25 km):</strong> Weekend artisan food stalls, local crafts, craft beer &amp; live music.</li>
+                            <li><strong>Foodies on Foot (Bites &amp; Sites):</strong> Guided culinary and historical walking tours through Stellenbosch.</li>
+                            <li><strong>Curio &amp; Boutique Shopping:</strong> Handcrafted leather goods, jewelry, and South African wines.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Stellenbosch Iconic Estates & Specialty Pairings -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🍇 Spier, Waterford, Delaire Graff, Tokara &amp; Muratie</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 22–31 km • 25–35 min</span>
+                        <span class="fee-badge fee-paid">Tastings &amp; Tours</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    Explore world-renowned wine estates offering unique experiences from chocolate pairings and Segway vineyard tours to full moon hikes.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Spier, Delaire Graff &amp; Muratie]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Spier, Delaire Graff art or Muratie sunset hike here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🦅 Spier &amp; Waterford Estates (~22–25 km)</h4>
+                        <ul>
+                            <li><strong>Spier Wine Farm:</strong> Eagle Encounters raptor rehab (+27 21 809 1100), Segway tours, organic wine tasting &amp; river picnics.</li>
+                            <li><strong>Waterford Estate:</strong> Famous Wine &amp; Chocolate pairing, vintage cellar tours, and wine drive safari.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🖼️ Delaire Graff, Tokara &amp; Muratie (~30–31 km)</h4>
+                        <ul>
+                            <li><strong>Delaire Graff &amp; Tokara:</strong> Monumental bronze sculptures, Laurence Graff private art, panoramic Helshoogte pass views.</li>
+                            <li><strong>Muratie &amp; Dirtopia Trail Centre:</strong> Sunset &amp; Full Moon vineyard hikes, MTB bike rentals &amp; single-tracks (078 343 3572).</li>
+                            <li><strong>Delheim &amp; Lanzerac Estates:</strong> Historic cellars and wine/food pairings.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Wineland Tours, Cycling & Golf -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🚴 E-Bikes, Wine Tractors, Jonkershoek &amp; Golf</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 20–35 km • 25–40 min</span>
+                        <span class="fee-badge fee-paid">Tour / Green Fees</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    Active, sporty, and fun ways to experience the scenic valleys without driving yourself.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Wine Tours, Jonkershoek &amp; Golf]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of E-Bike wine tours or Jonkershoek mountain trails here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🚜 Specialty Wine Tour Options</h4>
+                        <ul>
+                            <li><strong>E-Bike Wine Tours:</strong> Guided electric bicycle rides through vineyard tracks.</li>
+                            <li><strong>Stellenbosch Wine Tractor:</strong> Open-air tractor trailer hop-on hop-off estate tour.</li>
+                            <li><strong>Tuk-Tuk &amp; Open Bus Tours:</strong> Fun open-air chauffeured wine tours.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🏌️ Championship Golf &amp; Hiking (~18–35 km)</h4>
+                        <ul>
+                            <li><strong>De Zalze Golf Club (18 km):</strong> Championship course along the Blaauwklippen river.</li>
+                            <li><strong>Stellenbosch Golf Club (22 km) &amp; Devonvale (35 km)</strong></li>
+                            <li><strong>Jonkershoek Nature Reserve (35 km):</strong> Majestic mountain amphitheatre hiking trails, waterfalls &amp; MTB tracks.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ========================================================= -->
+            <!-- ZONE 4: 30–50 KM — GRABOUW, ELGIN & BETTY'S BAY           -->
+            <!-- ========================================================= -->
+            <div class="section-zone-header" id="zone-50k">
+                <div>
+                    <h3 class="section-zone-title">🌲 Zone 4: 30–50 km (Grabouw, Elgin Valley, Betty's Bay &amp; Coast)</h3>
+                    <p class="section-zone-desc">35 to 60 minute drive • Ziplining, Quad buggies, African penguins &amp; Botanical waterfalls</p>
+                </div>
+            </div>
+
+            <!-- 10. Cape Canopy Tour & Waterfall Buggy Adventures -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🪢 Cape Canopy Ziplines &amp; Waterfall Quad Buggies</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 35–40 km • 40–50 min</span>
+                        <span class="fee-badge fee-paid">Guided Adventure</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    Head over Sir Lowry's Pass into the lush Elgin Valley for world-class eco-adventure and adrenaline experiences.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Cape Canopy Tour &amp; Quad Buggies]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Cape Canopy Zipline or Elgin Quad Buggies here</span>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <h4>🪂 Cape Canopy Tour (Elgin Valley)</h4>
+                        <ul>
+                            <li><strong>World-Renowned Zipline:</strong> 13 cliff-side platforms and 320m slides soaring over deep ravines.</li>
+                            <li><strong>Suspension Bridge:</strong> Cross high above a natural mountain waterfall.</li>
+                            <li><strong>Contact:</strong> 021 300 0501 (Advance booking required).</li>
+                            <li><strong>Alternative:</strong> Houw Hoek Zipline (028 284 9646) in Grabouw.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🏎️ Waterfall Buggy &amp; Quad Bike Adventures</h4>
+                        <ul>
+                            <li><strong>Cape Town Waterfall Buggy Adventures:</strong> Off-road quad biking and mountain buggy trails through pine forests.</li>
+                            <li><strong>Waterfall Swim:</strong> Stops at secluded natural mountain rock pools.</li>
+                            <li><strong>Contact:</strong> +27 68 008 3119 (09:00–16:00 daily).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. Elgin Valley Apple Orchards & Farm Stalls -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h2 class="activity-title">🍏 Elgin Valley Apple Orchards, Farm Stalls &amp; Cider</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 ~38 km • 40–50 min</span>
+                        <span class="fee-badge">Free / Farm Dependent</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
+                </div>
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
+                    South Africa's cool-climate apple and pear capital, surrounded by pine forests, mountain passes, fresh cider tastings, and farm-gate markets.
+                </p>
+
+                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
+                <div class="image-frame-16x9">
+                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Elgin Apple Orchards &amp; Farm Stalls]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Elgin Valley orchards, Peregrine Farm Stall or cideries here</span>
                 </div>
 
                 <div class="feature-box">
-                    <h4>✨ Key Highlights:</h4>
+                    <h4>✨ Elgin Valley Highlights:</h4>
                     <ul>
-                        <li><strong>Scenic Trails:</strong> Guided rides through historic wine farms and Helderberg slopes.</li>
-                        <li><strong>All Skill Levels:</strong> Gentle horses for first-time riders, children, and experienced equestrians.</li>
-                        <li><strong>Contact:</strong> 082 391 1693 (Advance booking recommended).</li>
+                        <li><strong>Peregrine &amp; Orchard Farm Stalls:</strong> Famous venison pies, fresh artisanal breads, local preserves, and craft ciders.</li>
+                        <li><strong>Cool-Climate Wine Tasting:</strong> Acclaimed Pinot Noir, Chardonnay, and Sauvignon Blanc estates.</li>
+                        <li><strong>Scenic Mountain Drives &amp; Orchard Photography:</strong> Stunning blossom views in spring and harvest in autumn.</li>
+                        <li><strong>Tourism Info:</strong> <a href="https://elginvalleytourism.co.za/" target="_blank">elginvalleytourism.co.za</a></li>
                     </ul>
                 </div>
             </div>
 
-
-            <!-- ========================================================= -->
-            <!-- 4. WINE FARMS & TASTING ESTATES                           -->
-            <!-- ========================================================= -->
-            <div class="activity-card" id="rad-30k">
+            <!-- 12. Stony Point Penguin Colony, Harold Porter & Betty's Bay -->
+            <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🍷 4. World-Class Wine Estates &amp; Pairings</h2>
-                    <span class="dist-badge">📍 ~10 to 35 km • 15 to 30 mins</span>
+                    <h2 class="activity-title">🐧 Stony Point Penguin Colony &amp; Harold Porter Botanical Garden</h2>
+                    <div class="badge-group">
+                        <span class="dist-badge">📍 ~48 km • 50–60 min</span>
+                        <span class="fee-badge fee-paid">CapeNature / SANBI Tariff</span>
+                        <span class="stars-badge">★★★★★</span>
+                    </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Cool Cat B&amp;B is positioned right at the gateway to the world-renowned Helderberg and Stellenbosch Wine Routes. Spend the day tasting award-winning vintages and return to ocean breezes.
+                    Follow the dramatic Clarence Drive coastal road to Betty's Bay for wild African penguins, amber waterfall pools, and pristine coastal fynbos.
                 </p>
 
                 <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
                 <div class="image-frame-16x9">
                     <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Helderberg &amp; Stellenbosch Wine Farms]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Vergelegen, Lourensford or Spier here</span>
+                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Stony Point Penguins &amp; Harold Porter Garden]</strong>
+                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Stony Point African Penguins or Disa Waterfall here</span>
                 </div>
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🍇 Helderberg Wine Route (10–15 km)</h4>
+                        <h4>🐧 Stony Point Nature Reserve (African Penguins)</h4>
                         <ul>
-                            <li><strong>Vergelegen Estate:</strong> 300-year-old camphor trees, historic manor &amp; fine dining.</li>
-                            <li><strong>Lourensford Estate:</strong> Art market, coffee roastery &amp; chocolate pairings.</li>
-                            <li><strong>Waterkloof Wines:</strong> Spectacular architectural glass box &amp; biodynamic wines.</li>
-                            <li><strong>Morgenster Estate:</strong> Premium olive oils, Italian varietals &amp; paste pairings.</li>
-                            <li><strong>Ken Forrester:</strong> World-acclaimed "King of Chenin Blanc".</li>
+                            <li>One of only two mainland African Penguin breeding colonies in South Africa.</li>
+                            <li>Scenic wooden boardwalk allowing close-up, respectful viewing of nesting penguins, cormorants, and dassies.</li>
+                            <li>Significantly less crowded and more natural than Boulders Beach.</li>
+                            <li><strong>Website:</strong> <a href="https://www.capenature.co.za/" target="_blank">capenature.co.za</a></li>
                         </ul>
                     </div>
                     <div class="feature-box">
-                        <h4>🍷 Stellenbosch Wine Region (20–35 km)</h4>
+                        <h4>🌺 Harold Porter Botanical Garden &amp; Waterfalls</h4>
                         <ul>
-                            <li><strong>Spier Wine Farm:</strong> Segway vineyard tours, picnics &amp; Eagle Encounters.</li>
-                            <li><strong>Delaire Graff &amp; Tokara:</strong> World-class art collections, panoramic Helshoogte pass views.</li>
-                            <li><strong>Jordan Wine Estate:</strong> Bakery picnics and 360-degree cellar tours.</li>
-                            <li><strong>Lanzerac, Boschendal &amp; Warwick:</strong> Historic Cape Dutch architecture &amp; family lawns.</li>
+                            <li>Renowned botanical garden where coastal fynbos meets sheer mountain cliffs.</li>
+                            <li><strong>Disa Kloof Waterfall Walk:</strong> Easy stroll leading to a natural amber rock pool and cascading waterfall.</li>
+                            <li><strong>Betty's Bay Main Beach:</strong> Vast, unspoiled wild ocean beach backed by dunes.</li>
+                            <li><strong>Website:</strong> <a href="https://www.sanbi.org/" target="_blank">sanbi.org</a></li>
                         </ul>
                     </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 5. HIKING & NATURE RESERVES                               -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🥾 5. Hiking &amp; Nature Reserves</h2>
-                    <span class="dist-badge">📍 ~10 to 30 km • 15 to 35 mins</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Surrounded by the Helderberg and Hottentots Holland mountain ranges, guests have direct access to pristine fynbos hiking trails, panoramic coastal summits, and bird watching.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Hiking &amp; Nature Reserves]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Helderberg Nature Reserve or Crystal Pools here</span>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-box">
-                        <h4>🌿 Helderberg Nature Reserve (~10 km)</h4>
-                        <ul>
-                            <li>Well-marked trails from easy 1km walks to the 7-hour West Peak climb.</li>
-                            <li>Abundant birdlife, tortoises, bontebok, and indigenous fynbos gardens.</li>
-                            <li>Oak Café and picnic lawns with sweeping False Bay views.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>⛰️ Mountain &amp; Coastal Trails (~15–30 km)</h4>
-                        <ul>
-                            <li><strong>Steenbras Dam &amp; Crystal Pools:</strong> Dramatic gorge hike to cascading mountain pools (Permits required in summer).</li>
-                            <li><strong>Kogelberg Biosphere (Betty's Bay):</strong> Heart of the Cape Floral Kingdom.</li>
-                            <li><strong>Sir Lowry's Pass Viewpoint:</strong> Panoramic ocean vista over the entire False Bay basin.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 6. ZIPLINING & CANOPY TOURS                               -->
-            <!-- ========================================================= -->
-            <div class="activity-card" id="rad-50k">
-                <div class="activity-header">
-                    <h2 class="activity-title">🪢 6. Ziplining &amp; Canopy Tours (Cape Canopy Tour)</h2>
-                    <span class="dist-badge">📍 ~35 to 45 km • 40 mins</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Named by Lonely Planet as one of the best adventure experiences in the world! Located in the scenic Elgin Valley/Grabouw area, soaring over rugged mountain gorges and waterfalls.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Cape Canopy Tour Zipline]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of the Grabouw / Elgin Canopy Tour here</span>
-                </div>
-
-                <div class="feature-box">
-                    <h4>✨ Key Highlights:</h4>
-                    <ul>
-                        <li><strong>13 Platforms &amp; 320m Slides:</strong> Soar high above untouched Cape valleys.</li>
-                        <li><strong>Suspension Bridge:</strong> Cross a breathtaking ravine beside a natural waterfall.</li>
-                        <li><strong>Contact:</strong> 021 300 0501 • Advance booking required.</li>
-                        <li><strong>Alternative:</strong> Houw Hoek Zipline (028 284 9646) in Grabouw.</li>
-                    </ul>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 7. CYCLING & MOUNTAIN BIKING                              -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🚲 7. Cycling &amp; Mountain Biking Trails</h2>
-                    <span class="dist-badge">📍 0 to 30 km</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    The Helderberg and Stellenbosch regions form South Africa's premier cycling haven, boasting world-class road routes, coastal promenades, and extensive single-track MTB networks.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Cycling &amp; Mountain Biking]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of coastal cycling or Jonkershoek MTB trails here</span>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-box">
-                        <h4>🚴 Leisure &amp; Coastal Cycling</h4>
-                        <ul>
-                            <li><strong>Strand Beach Promenade:</strong> Flat, scenic coastal ride right outside our door.</li>
-                            <li><strong>Clarence Drive (Route 44):</strong> One of the world's greatest scenic road cycling routes.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>🚵 Mountain Biking Networks</h4>
-                        <ul>
-                            <li><strong>Jonkershoek Nature Reserve (Stellenbosch):</strong> Epic single-tracks &amp; mountain descents.</li>
-                            <li><strong>Helderberg Trails &amp; Lourensford:</strong> Vineyard flow trails for all rider levels.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 8. BOAT TRIPS & SUNSET CRUISES                            -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🚤 8. Boat Trips &amp; Ocean Charters (Playa Cruises)</h2>
-                    <span class="dist-badge">📍 ~10 km (Gordon's Bay Harbor) • 12 mins</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Departing from the sheltered Gordon's Bay Old Harbor, guests can take private sunset yacht charters, coastal sightseeing cruises, and ocean photography tours across False Bay.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Boat Trips &amp; Sunset Cruises]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Gordon's Bay boat charters &amp; sunsets here</span>
-                </div>
-
-                <div class="feature-box">
-                    <h4>⚓ Charter Information:</h4>
-                    <ul>
-                        <li><strong>Activities:</strong> Romantic sunset cruises, coastal dolphin watching, and private celebrations.</li>
-                        <li><strong>Operator:</strong> Playa Cruises • 067 268 4959.</li>
-                    </ul>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 9. ANIMALS & WILDLIFE EXPERIENCES                         -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🐆 9. Animals &amp; Wildlife Encounters</h2>
-                    <span class="dist-badge">📍 ~4 to 12 km • 6 to 15 mins</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Get up close with incredible wildlife and conservation efforts right around the corner from Cool Cat B&amp;B.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Cheetah Outreach &amp; Wildlife]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Cheetah Outreach or Monkey Town here</span>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-box">
-                        <h4>🐾 Cheetah Outreach (~4 km)</h4>
-                        <ul>
-                            <li>Global conservation centre dedicated to protecting free-ranging cheetahs.</li>
-                            <li>Personal encounters with adult cheetahs, cubs, and Anatolian shepherd dogs.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>🐒 Monkey Town Primate Centre (~7 km)</h4>
-                        <ul>
-                            <li>Home to over 28 exotic primate species from around the globe.</li>
-                            <li>Interactive petting zoo, bird park, and children's play park.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 10. GOLF COURSES & ESTATES                                -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🏌️ 10. Premier Championship Golf Courses</h2>
-                    <span class="dist-badge">📍 ~2 to 20 km</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    The Helderberg basin is a world-renowned golfer's paradise. Cool Cat B&amp;B offers secure golf bag storage and early breakfasts for tee-off times.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Strand &amp; Erinvale Golf Courses]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Strand Golf Club or Erinvale Estate here</span>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-box">
-                        <h4>⛳ Local Courses</h4>
-                        <ul>
-                            <li><strong>Strand Golf Club (2.1 km):</strong> True 18-hole coastal links course right next to the beach.</li>
-                            <li><strong>Erinvale Golf Estate (9.5 km):</strong> Gary Player-designed world championship course.</li>
-                            <li><strong>Somerset West Golf Club (6.5 km):</strong> Classic tree-lined parkland fairways.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>🍷 Stellenbosch Courses</h4>
-                        <ul>
-                            <li><strong>De Zalze Golf Club (18 km):</strong> Championship course set among vineyards and olive groves.</li>
-                            <li><strong>Stellenbosch Golf Club (22 km):</strong> South Africa's 4th oldest golf club.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 11. CULTURE, HISTORY & MUSEUMS                            -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🎨 11. Culture, History &amp; Museums</h2>
-                    <span class="dist-badge">📍 ~6 to 25 km</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Discover South African history, vibrant local art galleries, and authentic Cape Dutch architecture.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Culture &amp; History]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Lwandle Museum or Stellenbosch historic streets here</span>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-box">
-                        <h4>🏛️ Lwandle Migrant Labour Museum (~6 km)</h4>
-                        <ul>
-                            <li>South Africa's first museum dedicated to the migrant labour hostel system.</li>
-                            <li>Educational guided township tours and community craft centre.</li>
-                        </ul>
-                    </div>
-                    <div class="feature-box">
-                        <h4>🏛️ Historic Stellenbosch Town (~25 km)</h4>
-                        <ul>
-                            <li>Stellenbosch Village Museum: Restored houses spanning 4 centuries.</li>
-                            <li>Dorp Street: Shaded oak trees, boutique art galleries, and Cape Dutch heritage buildings.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================= -->
-            <!-- 12. FAMILY & WATER ACTIVITIES                             -->
-            <!-- ========================================================= -->
-            <div class="activity-card">
-                <div class="activity-header">
-                    <h2 class="activity-title">🎢 12. Family Activities &amp; Water Fun</h2>
-                    <span class="dist-badge">📍 0 to 12 km</span>
-                </div>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                    Ideal outings for families traveling with children of all ages.
-                </p>
-
-                <!-- 16:9 Image Placeholder Window (Black Line Frame) -->
-                <div class="image-frame-16x9">
-                    <span style="font-size: 2.2rem; margin-bottom: 0.3rem;">📷</span>
-                    <strong style="color: #000000; font-size: 1rem;">[16:9 Image Window Frame — Family Activities &amp; Waterworld]</strong>
-                    <span style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">Upload your custom photo of Strand Waterworld or tidal pools here</span>
-                </div>
-
-                <div class="feature-box">
-                    <h4>👨‍👩‍👧‍👦 Family Highlights:</h4>
-                    <ul>
-                        <li><strong>Waterworld Strand:</strong> Waterslides, supertube, and kids pools (Operates Sept–April season).</li>
-                        <li><strong>Strand Municipal Heated Indoor Pool (250m):</strong> Open year-round for swimming lessons &amp; leisure.</li>
-                        <li><strong>Harmony Park Tidal Resort (~4 km):</strong> Large ocean tidal pools &amp; beachfront braai areas.</li>
-                        <li><strong>Strand Beach Tidal Pools:</strong> Safe, wave-free shallow waters for toddlers.</li>
-                    </ul>
                 </div>
             </div>
 
