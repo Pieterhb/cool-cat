@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787489028.css">
+    <link rel="stylesheet" href="styles-v1787491549.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1298,6 +1298,18 @@
                             </li>
                         </ul>
 
+                        <!-- Referral / Promo Code Box -->
+                        <div style="margin: 0.8rem 0 1rem;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Have a Referral / Promo Code?</label>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <input type="text" id="promoCodeInput" placeholder="e.g. JANNIE10" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.85rem; text-transform: uppercase; font-weight: 700;">
+                                <button type="button" class="btn-sm" style="background: var(--sapphire-blue); color: white; border-radius: 8px; font-weight: 700; padding: 0.5rem 0.9rem;" onclick="applyPromoCodeManual()">Apply</button>
+                            </div>
+                            <div id="promoSuccessBadge" style="display: none; background: #DCFCE7; color: #166534; padding: 0.4rem 0.7rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-top: 0.5rem;">
+                                🎁 Referral Code Applied: 5% Guest Discount!
+                            </div>
+                        </div>
+
                         <!-- Smart Deposit Notice -->
                         <div class="deposit-notice-box" id="depositNoticeBox" style="display: none;">
                             <strong>💳 Payment Terms:</strong><br>
@@ -1311,6 +1323,13 @@
                         <button class="btn-reset" onclick="resetDateSelection()">
                             ✕ Clear Selected Dates
                         </button>
+
+                        <!-- Referral Program CTA -->
+                        <div style="background: #FFFBEB; border: 1px dashed #F59E0B; border-radius: 10px; padding: 0.8rem; text-align: center; margin-top: 1rem;">
+                            <div style="font-size: 0.82rem; font-weight: 800; color: #92400E; margin-bottom: 0.2rem;">🎁 Earn 10% Cash on Referrals!</div>
+                            <div style="font-size: 0.75rem; color: #78350F; margin-bottom: 0.5rem;">Share Cool Cat with friends &amp; earn 10% commission on their stay.</div>
+                            <button type="button" class="btn-sm" style="background: #D97706; color: white; border-radius: 6px; font-size: 0.76rem; width: 100%; font-weight: 700;" onclick="openReferralModal()">Get Your Unique Referral Link ➔</button>
+                        </div>
 
                         <!-- South African Perks -->
                         <div class="sa-perks">
@@ -1558,6 +1577,51 @@
             <button class="btn btn-primary" style="width: 100%; margin-top: 1.8rem;" onclick="closeRulesModal()">
                 I Understand &amp; Agree
             </button>
+        </div>
+    </div>
+
+    <!-- Referral Program Join Modal -->
+    <div class="modal-rules-overlay" id="referralModal">
+        <div class="modal-rules-card" style="max-width: 480px;">
+            <button class="modal-rules-close" onclick="closeReferralModal()">&times;</button>
+            <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">🎁</div>
+            <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.4rem;">Join the Cool Cat Referral Program</h2>
+            <p style="font-size: 0.85rem; color: #64748B; text-align: center; margin-bottom: 1.2rem;">
+                Earn <strong>10% cash commission</strong> into your bank account on every completed stay you refer to Cool Cat B&amp;B in Strand!
+            </p>
+
+            <form id="referralJoinForm" onsubmit="handleGenerateReferralLink(event)">
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">First Name</label>
+                    <input type="text" id="refFirstName" required placeholder="e.g. Jannie" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Last Name</label>
+                    <input type="text" id="refLastName" required placeholder="e.g. van der Merwe" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Email Address</label>
+                    <input type="email" id="refEmail" required placeholder="jannie@example.com" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
+                    Generate My Unique Referral Link ➔
+                </button>
+            </form>
+
+            <div id="referralSuccessBox" style="display: none; margin-top: 1.2rem; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; padding: 1.2rem;">
+                <strong style="color: #065F46; font-size: 0.95rem;">🎉 You are registered as a partner!</strong>
+                <p style="font-size: 0.82rem; color: #047857; margin: 0.4rem 0 0.8rem;">
+                    Your Referral Code: <strong id="generatedRefCode" style="font-size: 1rem; color: var(--sapphire-blue);">JANNIE10</strong><br>
+                    Your friends get <strong>5% OFF</strong> and you get <strong>10% CASH</strong> paid after their stay!
+                </p>
+                <div style="display: flex; gap: 0.4rem; margin-bottom: 0.8rem;">
+                    <input type="text" id="generatedRefUrl" readonly style="flex: 1; padding: 0.5rem; font-size: 0.8rem; background: white; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <button type="button" class="btn-sm" style="background: var(--sapphire-blue); color: white; border-radius: 6px;" onclick="copyReferralLink()">Copy</button>
+                </div>
+                <a href="#" id="shareWhatsAppBtn" target="_blank" class="btn-sm btn-wa" style="display: block; text-align: center; padding: 0.6rem; border-radius: 6px; text-decoration: none;">
+                    📲 Share Link Directly on WhatsApp
+                </a>
+            </div>
         </div>
     </div>
 
@@ -2073,6 +2137,18 @@
                 `;
             }
 
+            let discountAmount = 0;
+            if (activeReferralCode) {
+                discountAmount = Math.round(grandTotal * 0.05); // 5% friend discount
+                grandTotal = Math.max(0, grandTotal - discountAmount);
+                breakdownHtml += `
+                    <li style="color: #166534; font-weight: 700;">
+                        <span>🎁 Referral Discount (${activeReferralCode} - 5%)</span>
+                        <span>-R${discountAmount.toLocaleString()}</span>
+                    </li>
+                `;
+            }
+
             calculatedGrandTotal = grandTotal;
 
             breakdownHtml += `
@@ -2104,6 +2180,63 @@
             }
 
             continueBtn.disabled = false;
+        }
+
+        // ==========================================
+        // 7B. REFERRAL & PROMO PROGRAM ENGINE
+        // ==========================================
+        let activeReferralCode = '';
+
+        function applyPromoCodeManual() {
+            const code = (document.getElementById('promoCodeInput').value || '').trim().toUpperCase();
+            if (!code) {
+                showToast("Please enter a referral or promo code.");
+                return;
+            }
+            applyReferralCodeDirect(code);
+        }
+
+        function applyReferralCodeDirect(code) {
+            activeReferralCode = code;
+            const input = document.getElementById('promoCodeInput');
+            if (input) input.value = code;
+            const badge = document.getElementById('promoSuccessBadge');
+            if (badge) {
+                badge.style.display = 'block';
+                badge.innerHTML = `🎁 Referral Code <strong>${code}</strong> Applied: 5% Guest Discount!`;
+            }
+            updateSummarySidebar();
+            showToast(`Referral code ${code} applied! You get 5% off your stay.`);
+        }
+
+        function openReferralModal() {
+            document.getElementById('referralModal').style.display = 'flex';
+        }
+
+        function closeReferralModal() {
+            document.getElementById('referralModal').style.display = 'none';
+        }
+
+        function handleGenerateReferralLink(e) {
+            e.preventDefault();
+            const first = document.getElementById('refFirstName').value.trim();
+            const email = document.getElementById('refEmail').value.trim();
+            const cleanCode = (first.replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'FRIEND') + '10';
+            const url = `https://cool-cat.co.za/test-calendar?ref=${cleanCode}`;
+
+            document.getElementById('generatedRefCode').textContent = cleanCode;
+            document.getElementById('generatedRefUrl').value = url;
+            document.getElementById('shareWhatsAppBtn').href = `https://wa.me/?text=${encodeURIComponent('Stay at Cool Cat B&B in Strand! Use my link for 5% off your booking: ' + url)}`;
+
+            document.getElementById('referralJoinForm').style.display = 'none';
+            document.getElementById('referralSuccessBox').style.display = 'block';
+        }
+
+        function copyReferralLink() {
+            const el = document.getElementById('generatedRefUrl');
+            el.select();
+            document.execCommand('copy');
+            showToast("Referral link copied to clipboard!");
         }
 
         // ==========================================
@@ -2398,6 +2531,13 @@
             renderCalendar();
             updateSummarySidebar();
             loadLiveBookings();
+
+            // Auto-detect referral link from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref') || urlParams.get('promo');
+            if (ref) {
+                applyReferralCodeDirect(ref.toUpperCase());
+            }
         });
 
         function toggleMenu() {

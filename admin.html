@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787489028.css">
+    <link rel="stylesheet" href="styles-v1787491549.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -581,8 +581,14 @@
                 <li class="sidebar-item" onclick="switchAdminTab('rates')">
                     <span>🏷️</span> Rates &amp; Specials
                 </li>
+                <li class="sidebar-item" onclick="switchAdminTab('referrals')">
+                    <span>🎁</span> Referrals &amp; Payouts
+                </li>
                 <li class="sidebar-item" onclick="switchAdminTab('guests')">
                     <span>👥</span> Guest CRM
+                </li>
+                <li class="sidebar-item" onclick="switchAdminTab('ical')">
+                    <span>📅</span> iCal Sync (Airbnb)
                 </li>
                 <li class="sidebar-item" onclick="switchAdminTab('settings')">
                     <span>⚙️</span> System &amp; Paystack
@@ -599,7 +605,7 @@
         <!-- Main Body Area -->
         <main class="admin-main">
 
-            <!-- Top Action Header Bar -->
+            <!-- Top Header Bar -->
             <header class="admin-topbar">
                 <div class="topbar-title-wrap">
                     <button class="mobile-toggle-btn" onclick="toggleMobileSidebar()">☰</button>
@@ -607,12 +613,12 @@
                 </div>
 
                 <div class="topbar-actions">
-                    <button class="btn-adm-primary" onclick="openManualBookingModal()">
-                        ➕ Block Dates / Manual Booking
+                    <button class="btn-sm" style="background: #ECFDF5; color: #065F46; font-weight: 700; border: 1px solid #A7F3D0;" onclick="switchAdminTab('ical')">
+                        🔄 iCal Active
                     </button>
-                    <a href="/test-calendar" target="_blank" class="btn-sm" style="background: #EEF2FF; color: var(--adm-primary); text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px;">
-                        👁️ View Booking Page
-                    </a>
+                    <button class="btn-adm-primary" onclick="openManualBookingModal()">
+                        ➕ Add Manual Booking / Block Room
+                    </button>
                 </div>
             </header>
 
@@ -623,17 +629,17 @@
                 <!-- ========================================================= -->
                 <div class="tab-section active-tab" id="tabOverview">
                     
-                    <!-- KPI Revenue Cards -->
+                    <!-- 7 KPI Metric Cards -->
                     <div class="kpi-grid">
                         <div class="kpi-card">
-                            <span class="kpi-label">🟢 Today's Revenue</span>
-                            <span class="kpi-value" id="kpiToday">R1,800</span>
-                            <span class="kpi-sub">Paystack Direct</span>
+                            <span class="kpi-label">💵 Today's Revenue</span>
+                            <span class="kpi-value" id="kpiToday" style="color: var(--adm-accent);">R2,400</span>
+                            <span class="kpi-sub">Processed via Paystack</span>
                         </div>
                         <div class="kpi-card">
                             <span class="kpi-label">📈 Last 7 Days</span>
-                            <span class="kpi-value" id="kpi7Days">R8,400</span>
-                            <span class="kpi-sub">7 Confirmed Nights</span>
+                            <span class="kpi-value" id="kpi7Days">R8,950</span>
+                            <span class="kpi-sub">Direct Bookings</span>
                         </div>
                         <div class="kpi-card">
                             <span class="kpi-label">📊 Last 14 Days</span>
@@ -687,9 +693,9 @@
                                             <strong>Piet van der Merwe</strong> (👑 King Arthur)<br>
                                             <span style="font-size: 0.78rem; color: #64748B;">Arrival: 14:00 – 16:00 &bull; 2 Adults</span>
                                         </div>
-                                        <div style="text-align: right;">
-                                            <span style="color: #991B1B; font-weight: 700; font-size: 0.85rem;">Collect R1,800</span><br>
-                                            <a href="https://wa.me/27821234567" target="_blank" class="btn-sm btn-wa" style="margin-top: 4px;">Chat</a>
+                                        <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
+                                            <span style="color: #991B1B; font-weight: 700; font-size: 0.82rem;">Collect R1,800</span>
+                                            <button class="btn-sm btn-wa" onclick="sendGuestCheckinPass('Piet van der Merwe', '👑 King Arthur', '+27821234567')">📲 Check-In Pass</button>
                                         </div>
                                     </div>
                                 </div>
@@ -704,9 +710,9 @@
                                     <div class="ops-item">
                                         <div>
                                             <strong>✨ Deluxe Suite</strong><br>
-                                            <span style="font-size: 0.78rem; color: #64748B;">Sarah Smith &bull; Full Turnover Clean Required</span>
+                                            <span style="font-size: 0.78rem; color: #64748B;">Sarah Smith &bull; Stay Completed</span>
                                         </div>
-                                        <span class="status-pill status-deposit">Clean Ready</span>
+                                        <button class="btn-sm" style="background: #FEF3C7; color: #92400E; font-weight: 700;" onclick="sendGuestReviewRequest('Sarah Smith', '+27729876543')">⭐ Review Booster</button>
                                     </div>
                                 </div>
                             </div>
@@ -1014,6 +1020,140 @@
                     </div>
                 </div>
 
+                <!-- ========================================================= -->
+                <!-- TAB 6: REFERRALS & COMMISSIONS PAYOUTS                    -->
+                <!-- ========================================================= -->
+                <div class="tab-section" id="tabReferrals">
+                    
+                    <!-- Referral KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <span class="kpi-label">🎁 Registered Referrers</span>
+                            <span class="kpi-value" id="refTotalCount">3 Partners</span>
+                            <span class="kpi-sub">Active link promoters</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-label">💰 Total 10% Commission</span>
+                            <span class="kpi-value" id="refTotalCommission" style="color: var(--adm-accent);">R1,850</span>
+                            <span class="kpi-sub">Lifetime referral earnings</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-label">⏳ Pending Stay (Locked)</span>
+                            <span class="kpi-value" id="refLockedCommission" style="color: #64748B;">R950</span>
+                            <span class="kpi-sub">Paid after guest departs</span>
+                        </div>
+                        <div class="kpi-card" style="border-left: 4px solid #10B981;">
+                            <span class="kpi-label">🟢 Ready for EFT Payout</span>
+                            <span class="kpi-value" id="refReadyCommission" style="color: #166534;">R900</span>
+                            <span class="kpi-sub">Stay completed &amp; verified</span>
+                        </div>
+                    </div>
+
+                    <div class="adm-card">
+                        <div class="adm-card-header">
+                            <div>
+                                <h3 class="adm-card-title">🎁 Referral &amp; Affiliate Partner Ledger</h3>
+                                <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">
+                                    Track referred bookings and pay 10% commission via EFT strictly after the guest finishes their stay.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="adm-table-wrapper">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ref Code</th>
+                                        <th>Referrer Partner</th>
+                                        <th>Referred Guest</th>
+                                        <th>Stay Dates</th>
+                                        <th>Booking Total</th>
+                                        <th>10% Commission</th>
+                                        <th>Payout Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="referralsTbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ========================================================= -->
+                <!-- TAB 8: iCAL CALENDAR SYNCHRONIZATION (AIRBNB / BOOKING.COM) -->
+                <!-- ========================================================= -->
+                <div class="tab-section" id="tabIcal">
+                    <div class="adm-card">
+                        <div class="adm-card-header">
+                            <div>
+                                <h3 class="adm-card-title">📅 Live iCal Calendar Feeds (OTA Double-Booking Prevention)</h3>
+                                <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">
+                                    Copy these URLs into Airbnb, Booking.com, or Google Calendar to automatically synchronize real-time availability.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                            <span style="font-size: 1.5rem;">⚡</span>
+                            <div style="font-size: 0.88rem; color: #166534;">
+                                <strong>Real-Time Sync Active:</strong> Whenever a guest books or you block a date in Cool Cat Admin, your Airbnb &amp; Booking.com calendars will automatically block off those dates within minutes.
+                            </div>
+                        </div>
+
+                        <div class="adm-table-wrapper">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Live iCal .ICS URL</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>👑 King Arthur Room</strong></td>
+                                        <td><code id="ical_king">https://cool-cat.co.za/api/ical?room=king-arthur</code></td>
+                                        <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_king')">Copy URL</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🌊 Santori Room</strong></td>
+                                        <td><code id="ical_santori">https://cool-cat.co.za/api/ical?room=santori</code></td>
+                                        <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_santori')">Copy URL</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🏛️ Mykonos Room</strong></td>
+                                        <td><code id="ical_mykonos">https://cool-cat.co.za/api/ical?room=mykonos</code></td>
+                                        <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_mykonos')">Copy URL</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>✨ Cool Cat Deluxe Suite</strong></td>
+                                        <td><code id="ical_deluxe">https://cool-cat.co.za/api/ical?room=deluxe-suite</code></td>
+                                        <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_deluxe')">Copy URL</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🌐 All Rooms Combined</strong></td>
+                                        <td><code id="ical_all">https://cool-cat.co.za/api/ical?room=all</code></td>
+                                        <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_all')">Copy URL</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 3-Step OTA Sync Instructions -->
+                        <div style="margin-top: 2rem; background: #F8FAFC; border: 1px solid var(--adm-border); border-radius: 12px; padding: 1.5rem;">
+                            <h4 style="color: var(--adm-primary-dark); margin-top: 0; margin-bottom: 0.8rem;">📖 How to connect to Airbnb &amp; Booking.com in 60 Seconds:</h4>
+                            <ol style="font-size: 0.88rem; color: #475569; line-height: 1.8; margin-bottom: 0; padding-left: 1.2rem;">
+                                <li><strong>Airbnb:</strong> Go to <em>Airbnb Host Dashboard ➔ Pricing &amp; Availability ➔ Calendar Sync ➔ Import Calendar</em>. Paste the respective room's URL from above.</li>
+                                <li><strong>Booking.com:</strong> Go to <em>Extranet ➔ Rates &amp; Availability ➔ Sync Calendars ➔ Add Calendar Connection</em>. Paste the URL.</li>
+                                <li><strong>Done!</strong> Both platforms will now continuously pull live availability from Cool Cat.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -1188,7 +1328,9 @@
                 'operations': 'Daily Housekeeping Operations',
                 'finances': 'Financials & Paystack Log',
                 'rates': 'Rates, Seasons & Pricing',
+                'referrals': 'Referrals & Affiliate Payouts',
                 'guests': 'Guest Directory & CRM',
+                'ical': 'iCal Calendar Feeds (Airbnb Sync)',
                 'settings': 'System, Wi-Fi & Paystack Keys'
             };
 
@@ -1200,8 +1342,10 @@
                 'operations': { tabIdx: 2, el: 'tabOperations' },
                 'finances': { tabIdx: 3, el: 'tabFinances' },
                 'rates': { tabIdx: 4, el: 'tabRates' },
-                'guests': { tabIdx: 5, el: 'tabGuests' },
-                'settings': { tabIdx: 6, el: 'tabSettings' }
+                'referrals': { tabIdx: 5, el: 'tabReferrals' },
+                'guests': { tabIdx: 6, el: 'tabGuests' },
+                'ical': { tabIdx: 7, el: 'tabIcal' },
+                'settings': { tabIdx: 8, el: 'tabSettings' }
             };
 
             if (map[tabName]) {
@@ -1235,6 +1379,7 @@
             renderBookingsTables();
             renderFinancesTable();
             renderGuestsTable();
+            renderReferralsTable();
         }
 
         function renderBookingsTables() {
@@ -1427,6 +1572,141 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // 7. Referral & Affiliate Ledger Handlers
+        let ADMIN_REFERRALS = [
+            {
+                id: 'REF-101',
+                code: 'JANNIE10',
+                partnerName: 'Jannie van der Merwe',
+                partnerEmail: 'jannie@stellenbosch.co.za',
+                partnerPhone: '+27829988776',
+                guestName: 'Piet van der Merwe',
+                stayDates: '2026-08-29 to 2026-09-02',
+                bookingTotal: 3800,
+                commission: 380,
+                status: 'pending_stay' // locked until check-out
+            },
+            {
+                id: 'REF-102',
+                code: 'SARAH10',
+                partnerName: 'Sarah Rossouw',
+                partnerEmail: 'sarah.r@capetravel.co.za',
+                partnerPhone: '+27721122334',
+                guestName: 'Klaus Mueller',
+                stayDates: '2026-08-10 to 2026-08-14',
+                bookingTotal: 5200,
+                commission: 520,
+                status: 'ready_payout' // checked out!
+            },
+            {
+                id: 'REF-103',
+                code: 'COOLCAT10',
+                partnerName: 'Strand Tourism Info',
+                partnerEmail: 'info@strandtourism.co.za',
+                partnerPhone: '+27218540000',
+                guestName: 'David Ndebele',
+                stayDates: '2026-07-02 to 2026-07-05',
+                bookingTotal: 9500,
+                commission: 950,
+                status: 'paid_eft' // already paid
+            }
+        ];
+
+        function renderReferralsTable() {
+            const tbody = document.getElementById('referralsTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            let totalAccrued = 0;
+            let lockedTotal = 0;
+            let readyTotal = 0;
+
+            ADMIN_REFERRALS.forEach(r => {
+                totalAccrued += r.commission;
+                if (r.status === 'pending_stay') lockedTotal += r.commission;
+                if (r.status === 'ready_payout') readyTotal += r.commission;
+
+                const statusPill = r.status === 'ready_payout' 
+                    ? '<span class="status-pill status-confirmed">🟢 Ready for Payout</span>' 
+                    : (r.status === 'paid_eft' 
+                        ? '<span class="status-pill" style="background:#E2E8F0; color:#475569;">✅ Paid via EFT</span>' 
+                        : '<span class="status-pill status-deposit">⏳ Stay in Progress</span>');
+
+                const actionBtns = r.status === 'ready_payout'
+                    ? `<button class="btn-sm btn-wa" onclick="whatsappReferrer('${r.partnerPhone}', '${r.partnerName}', ${r.commission})">📲 WhatsApp Banking Details</button>
+                       <button class="btn-sm" style="background: #166534; color: white; margin-left: 4px;" onclick="markReferralPaid('${r.id}')">Mark as Paid</button>`
+                    : (r.status === 'paid_eft'
+                        ? `<span style="font-size: 0.78rem; color: #166534; font-weight: 700;">Settled ✓</span>`
+                        : `<span style="font-size: 0.78rem; color: #64748B;">Locked until checkout</span>`);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong><code style="color: var(--adm-primary);">${r.code}</code></strong></td>
+                    <td><strong>${r.partnerName}</strong><br><span style="font-size:0.75rem; color:#64748B;">${r.partnerEmail}</span></td>
+                    <td>${r.guestName}</td>
+                    <td>${r.stayDates}</td>
+                    <td>R${r.bookingTotal.toLocaleString()}</td>
+                    <td style="font-weight: 800; color: #166534;">R${r.commission.toLocaleString()} (10%)</td>
+                    <td>${statusPill}</td>
+                    <td>${actionBtns}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('refTotalCount').textContent = `${ADMIN_REFERRALS.length} Partners`;
+            document.getElementById('refTotalCommission').textContent = `R${totalAccrued.toLocaleString()}`;
+            document.getElementById('refLockedCommission').textContent = `R${lockedTotal.toLocaleString()}`;
+            document.getElementById('refReadyCommission').textContent = `R${readyTotal.toLocaleString()}`;
+        }
+
+        function markReferralPaid(refId) {
+            const item = ADMIN_REFERRALS.find(r => r.id === refId);
+            if (item) {
+                item.status = 'paid_eft';
+                renderReferralsTable();
+                alert(`✅ Commission of R${item.commission} for ${item.partnerName} marked as Paid via EFT!`);
+            }
+        }
+
+        function whatsappReferrer(phone, name, commission) {
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            const msg = `*Cool Cat B&B - Referral Commission Ready!*%0A%0AHi ${encodeURIComponent(name)}, great news! Your referred guest has completed their stay at Cool Cat B&B in Strand.%0A%0AYour 10% commission of *R${commission}* is ready for payout. Please reply with your South African bank name, account number, and branch code for instant EFT transfer.%0A%0AThank you for partnering with Cool Cat!`;
+            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+        }
+
+        function copyIcalUrl(elemId) {
+            const codeEl = document.getElementById(elemId);
+            if (codeEl) {
+                navigator.clipboard.writeText(codeEl.innerText).then(() => {
+                    alert("✅ Live iCal .ICS URL copied! Paste this into Airbnb / Booking.com calendar sync settings.");
+                });
+            }
+        }
+
+        function sendGuestCheckinPass(guestName, roomName, phone) {
+            const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+            const msg = `*Cool Cat B&B - Check-In Pass & Gate Details*%0A%0A` +
+                `Hi ${encodeURIComponent(guestName)}, we look forward to welcoming you to Cool Cat B&B today!%0A%0A` +
+                `🛏️ *Room:* ${encodeURIComponent(roomName)}%0A` +
+                `⏰ *Check-In Time:* From 14:00 onwards%0A` +
+                `📍 *Google Maps Pin:* https://maps.app.goo.gl/CoolCatStrand%0A` +
+                `🔑 *Intercom / Gate Access:* 4821%23 (Press bell at main gate)%0A` +
+                `📶 *Fast Wi-Fi:* Network: *Gouws* | Password: *004eda35aef*%0A` +
+                `⚡ *Solar Backup:* 24/7 Power (No loadshedding!)%0A%0A` +
+                `Host Michele Rossouw: 063 712 4491%0ASafe travels!`;
+            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+        }
+
+        function sendGuestReviewRequest(guestName, phone) {
+            const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+            const msg = `*Cool Cat B&B - Thank You for Staying With Us!*%0A%0A` +
+                `Hi ${encodeURIComponent(guestName)}, thank you for choosing Cool Cat B&B for your visit to Strand! We truly hope you had a relaxing and comfortable stay.%0A%0A` +
+                `If you enjoyed your time with us, would you mind taking 30 seconds to leave us a 5-star review on Google? It helps our small coastal guesthouse tremendously!%0A%0A` +
+                `⭐ *Leave a Review:* https://g.page/r/CeLXe6MDyWarEBM/review%0A%0A` +
+                `Wishing you safe travels and we hope to welcome you back soon!`;
+            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
         }
 
         function saveRatesConfig() {
