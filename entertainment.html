@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1787494046.css">
+    <link rel="stylesheet" href="styles-v1787494372.css">
     <style>
         .ent-hero {
             background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
@@ -316,10 +316,10 @@
         </div>
     </div>
 
-    <!-- Quick Navigation / Back Buttons Bar -->
+    <!-- Quick Navigation & Local Live Search Bar -->
     <div class="back-nav-bar">
         <div class="container back-nav-container">
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
                 <a href="/" class="btn-back-link">
                     <span>🏠</span> Back to Home Page
                 </a>
@@ -327,7 +327,15 @@
                     <span>📖</span> Back to Guest Guide &amp; Menus
                 </a>
             </div>
-            <a href="/test-calendar" class="btn-sm btn-primary" style="padding: 0.55rem 1.2rem; font-weight: 700; border-radius: 8px; text-decoration: none;">
+
+            <!-- Live Local Search Input (Exactly as marked by user) -->
+            <div style="flex: 1; max-width: 380px; min-width: 240px; position: relative; display: flex; align-items: center;">
+                <span style="position: absolute; left: 12px; color: #94A3B8; font-size: 0.95rem; pointer-events: none;">🔍</span>
+                <input type="text" id="activitySearchInput" placeholder="Search activities, wine, golf, kids..." oninput="handleActivitySearch()" style="width: 100%; padding: 0.55rem 2rem 0.55rem 2.2rem; border: 1.5px solid #CBD5E1; border-radius: 25px; font-size: 0.88rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; background: white;" onfocus="this.style.borderColor='var(--sapphire-blue)'; this.style.boxShadow='0 0 0 3px rgba(15, 82, 186, 0.15)';" onblur="this.style.borderColor='#CBD5E1'; this.style.boxShadow='none';">
+                <button type="button" id="clearSearchBtn" onclick="clearActivitySearch()" style="position: absolute; right: 10px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1rem; display: none; padding: 0;">✕</button>
+            </div>
+
+            <a href="/test-calendar" class="btn-sm btn-primary" style="padding: 0.55rem 1.2rem; font-weight: 700; border-radius: 8px; text-decoration: none; white-space: nowrap;">
                 📅 Check Availability &amp; Book ➔
             </a>
         </div>
@@ -337,8 +345,14 @@
     <section class="section" style="padding-top: 0;">
         <div class="container">
 
+            <!-- Search Results Feedback Banner -->
+            <div id="searchResultsBanner" style="display: none; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 0.7rem 1.2rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--sapphire-blue-dark);">
+                <span>Showing <strong id="searchMatchCount">0</strong> activities matching "<span id="searchTermDisplay"></span>"</span>
+                <button onclick="clearActivitySearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">✕ Clear Search</button>
+            </div>
+
             <!-- Radius Filter Pills -->
-            <div class="radius-filter-pills">
+            <div class="radius-filter-pills" id="radiusPillsRow">
                 <a href="#zone-5k" class="radius-pill">🏖️ Zone 1: Within 5 km (Strand Local)</a>
                 <a href="#zone-15k" class="radius-pill">🌊 Zone 2: 5–15 km (Gordon's Bay &amp; Helderberg)</a>
                 <a href="#zone-30k" class="radius-pill">🍷 Zone 3: 15–30 km (Stellenbosch, Wine &amp; Markets)</a>
@@ -1072,6 +1086,57 @@
             } else {
                 window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + address + '&su=' + subjectEncoded, '_blank');
             }
+        }
+
+        // Live Local Page Search
+        function handleActivitySearch() {
+            const query = (document.getElementById('activitySearchInput').value || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const resultsBanner = document.getElementById('searchResultsBanner');
+            const countEl = document.getElementById('searchMatchCount');
+            const termEl = document.getElementById('searchTermDisplay');
+
+            if (query.length > 0) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+
+            const cards = document.querySelectorAll('.activity-card');
+            const zoneHeaders = document.querySelectorAll('.section-zone-header');
+            let matchCount = 0;
+
+            if (!query) {
+                resultsBanner.style.display = 'none';
+                cards.forEach(card => card.style.display = 'block');
+                zoneHeaders.forEach(zh => zh.style.display = 'flex');
+                return;
+            }
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'block';
+                    matchCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Hide zone dividers during specific search to keep layout clean
+            zoneHeaders.forEach(zh => {
+                zh.style.display = 'none';
+            });
+
+            resultsBanner.style.display = 'flex';
+            countEl.textContent = matchCount;
+            termEl.textContent = query;
+        }
+
+        function clearActivitySearch() {
+            document.getElementById('activitySearchInput').value = '';
+            handleActivitySearch();
+            document.getElementById('activitySearchInput').focus();
         }
     </script>
 </body>
