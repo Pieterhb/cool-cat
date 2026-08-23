@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Calendar &amp; Rates | Cool Cat B&amp;B Strand</title>
+    <meta name="description" content="Check live room availability and seasonal rates for Cool Cat B&amp;B in Strand, Western Cape. Book direct for the best rate.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
+
+    <!-- Fonts & Main CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles-v1787481530.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="apple-mobile-web-app-title" content="Cool Cat">
+
+    <style>
+        :root {
+            --cal-bg: #FFFFFF;
+            --cal-card-bg: #FFFFFF;
+            --cal-border: #E2E8F0;
+            --cal-primary: #0F52BA;
+            --cal-primary-dark: #0A3A85;
+            --cal-accent: #FF7F50;
+            --cal-accent-hover: #FF632B;
+            --cal-success: #10B981;
+            --cal-warning: #F59E0B;
+            --cal-danger: #EF4444;
+            --cal-range-bg: rgba(15, 82, 186, 0.12);
+            --cal-range-border: rgba(15, 82, 186, 0.35);
+        }
+
+        .page-header {
+            background: linear-gradient(rgba(10, 58, 133, 0.75), rgba(15, 82, 186, 0.85)), url('1. Ocean.jpg') center/cover no-repeat;
+            padding: 7rem 0 3.5rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Calendar Master Wrapper */
+        .calendar-section {
+            padding-bottom: 5rem;
+        }
+
+        .calendar-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .calendar-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calendar-card {
+            background: var(--cal-card-bg);
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--cal-border);
+            padding: 2rem;
+            position: relative;
+        }
+
+        @media (max-width: 640px) {
+            .calendar-card {
+                padding: 1.2rem;
+                border-radius: 16px;
+            }
+        }
+
+        /* Room Switcher Tabs */
+        .room-tabs-wrapper {
+            margin-bottom: 1.75rem;
+        }
+
+        .room-tabs-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--sapphire-blue-dark);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .room-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: #F1F5F9;
+            padding: 0.4rem;
+            border-radius: 14px;
+        }
+
+        .room-tab-btn {
+            flex: 1 1 auto;
+            min-width: 130px;
+            padding: 0.65rem 0.9rem;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .room-tab-btn:hover {
+            color: var(--sapphire-blue-dark);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .room-tab-btn.active {
+            background: var(--white);
+            color: var(--sapphire-blue-dark);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .room-badge-details {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: #64748B;
+            margin-top: 0.2rem;
+        }
+
+        /* Active Room Description Banner */
+        .selected-room-info {
+            background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
+            border-left: 4px solid var(--sapphire-blue);
+            border-radius: 10px;
+            padding: 0.85rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .selected-room-info .room-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+
+        .selected-room-info .room-rate-tag {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--sapphire-blue-dark);
+            background: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        /* Calendar Controls (Header) */
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .month-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .month-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+            margin: 0;
+        }
+
+        .season-badge {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.3rem 0.75rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-festive {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .badge-peak {
+            background: #FFEDD5;
+            color: #9A3412;
+            border: 1px solid #FDBA74;
+        }
+
+        .badge-mid {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FCD34D;
+        }
+
+        .badge-low {
+            background: #DCFCE7;
+            color: #166534;
+            border: 1px solid #86EFAC;
+        }
+
+        .cal-nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cal-nav-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #CBD5E1;
+            background: white;
+            color: var(--sapphire-blue-dark);
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cal-nav-btn:hover:not(:disabled) {
+            background: var(--sapphire-blue);
+            color: white;
+            border-color: var(--sapphire-blue);
+            transform: scale(1.05);
+        }
+
+        .cal-nav-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .cal-jump-select {
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #CBD5E1;
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #334155;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Calendar Grid */
+        .cal-grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .cal-weekday {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.82rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.4rem 0;
+        }
+
+        .cal-weekday.weekend {
+            color: var(--orange);
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        /* Individual Day Cell */
+        .cal-day {
+            min-height: 74px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            padding: 0.35rem 0.35rem 0.3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: white;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            user-select: none;
+        }
+
+        @media (max-width: 640px) {
+            .cal-day {
+                min-height: 60px;
+                padding: 0.25rem;
+            }
+        }
+
+        .cal-day:hover:not(.disabled):not(.booked-out) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(15, 82, 186, 0.15);
+            border-color: var(--sapphire-blue);
+            z-index: 5;
+        }
+
+        .cal-day.empty {
+            background: transparent;
+            border-color: transparent;
+            cursor: default;
+        }
+
+        .cal-day.disabled {
+            background: #F8FAFC;
+            color: #CBD5E1;
+            border-color: #F1F5F9;
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .cal-day.today {
+            border: 2px solid var(--sapphire-blue);
+        }
+
+        .cal-day-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cal-day-num {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1E293B;
+        }
+
+        .cal-day.disabled .cal-day-num {
+            color: #94A3B8;
+        }
+
+        .cal-avail-pill {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        /* Availability Colors */
+        .avail-full {
+            background: #DCFCE7;
+            color: #15803D;
+        }
+
+        .avail-limited {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .avail-soldout {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .cal-day.booked-out {
+            background: #FEE2E2;
+            border-color: #FECACA;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .cal-day.booked-out .cal-day-num {
+            color: #991B1B;
+        }
+
+        .cal-price-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+            text-align: right;
+            margin-top: 0.15rem;
+        }
+
+        @media (max-width: 640px) {
+            .cal-price-tag {
+                font-size: 0.62rem;
+            }
+        }
+
+        /* Selection States */
+        .cal-day.selected-start {
+            background: var(--sapphire-blue) !important;
+            color: white !important;
+            border-color: var(--sapphire-blue-dark) !important;
+            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.4);
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .cal-day.selected-start .cal-day-num,
+        .cal-day.selected-start .cal-price-tag {
+            color: white !important;
+        }
+
+        .cal-day.selected-end {
+            background: var(--sapphire-blue) !important;
+            color: white !important;
+            border-color: var(--sapphire-blue-dark) !important;
+            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.4);
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .cal-day.selected-end .cal-day-num,
+        .cal-day.selected-end .cal-price-tag {
+            color: white !important;
+        }
+
+        .cal-day.in-range {
+            background: var(--cal-range-bg) !important;
+            border-color: var(--cal-range-border) !important;
+            border-radius: 4px;
+        }
+
+        .cal-day.in-range .cal-day-num {
+            color: var(--sapphire-blue-dark);
+        }
+
+        /* Desktop Hover Micro-Tooltip */
+        .cal-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0F172A;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 50;
+        }
+
+        .cal-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #0F172A transparent transparent transparent;
+        }
+
+        .cal-day:hover .cal-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        /* Season Legend Bar */
+        .season-legend-card {
+            margin-top: 1.8rem;
+            padding: 1.2rem;
+            background: #F8FAFC;
+            border-radius: 14px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .legend-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .dot-low { background: #22C55E; }
+        .dot-mid { background: #EAB308; }
+        .dot-peak { background: #F97316; }
+        .dot-festive { background: #EF4444; }
+
+        /* Booking Summary Sidebar Card */
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--cal-border);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            padding: 1.8rem;
+            position: sticky;
+            top: 90px;
+        }
+
+        .summary-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            margin-bottom: 1.2rem;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+            margin: 0;
+        }
+
+        .summary-dates-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .date-box-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748B;
+            margin-bottom: 0.2rem;
+        }
+
+        .date-box-value {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--sapphire-blue-dark);
+        }
+
+        .stay-nights-badge {
+            text-align: center;
+            background: #EEF2FF;
+            color: var(--sapphire-blue-dark);
+            font-weight: 700;
+            font-size: 0.82rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            margin-bottom: 1.2rem;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .price-breakdown {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.2rem 0;
+            font-size: 0.86rem;
+        }
+
+        .price-breakdown li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            color: #475569;
+            border-bottom: 1px dashed #E2E8F0;
+        }
+
+        .price-breakdown li.total-row {
+            font-size: 1.15rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            color: var(--sapphire-blue-dark);
+            border-bottom: none;
+            border-top: 2px solid #CBD5E1;
+            padding-top: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .deposit-notice-box {
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+            border-radius: 10px;
+            padding: 0.85rem;
+            font-size: 0.8rem;
+            color: #065F46;
+            margin-bottom: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-reset {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #CBD5E1;
+            color: #64748B;
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-top: 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: #F1F5F9;
+            color: #1E293B;
+        }
+
+        /* SA Amenities Badges */
+        .sa-perks {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .perk-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Wizard Progress Bar */
+        .wizard-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .wizard-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #94A3B8;
+        }
+
+        .wizard-step.active {
+            color: var(--sapphire-blue-dark);
+        }
+
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #E2E8F0;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .wizard-step.active .step-circle {
+            background: var(--sapphire-blue);
+            color: white;
+            box-shadow: 0 2px 8px rgba(15, 82, 186, 0.4);
+        }
+
+        .step-divider {
+            width: 30px;
+            height: 2px;
+            background: #E2E8F0;
+        }
+
+        /* Toast notification for minimum stays / validation */
+        .cal-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0F172A;
+            color: white;
+            padding: 1rem 1.4rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cal-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo-wrapper">
+                <img src="Logo.png?v=3" alt="Cool Cat B&B Logo" class="logo-img">
+                <span class="logo-text">COOL CAT B&B</span>
+            </a>
+            
+            <nav>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/rooms">Accommodation</a></li>
+                    <li><a href="/guide">Guest Guide</a></li>
+                    <li><a href="/faq">FAQ & Policies</a></li>
+                    <li><a href="/test-calendar" class="active" style="color: var(--orange); font-weight: 700;">📅 Live Calendar</a></li>
+                    <li><a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1 style="color: white; font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 0.5rem;">Live Availability &amp; Rates Calendar</h1>
+            <p style="font-size: 1.1rem; max-width: 650px; margin: 0 auto; opacity: 0.95;">
+                Select your dates to view real-time availability and dynamic pricing across all 4 guest rooms at Cool Cat B&amp;B in Strand.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Calendar Section -->
+    <section class="section calendar-section" style="padding-top: 0;">
+        <div class="container">
+
+            <!-- 3-Step Wizard Progress -->
+            <div class="wizard-steps">
+                <div class="wizard-step active">
+                    <span class="step-circle">1</span>
+                    <span>Select Dates &amp; Room</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="wizard-step">
+                    <span class="step-circle">2</span>
+                    <span>Guest Details</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="wizard-step">
+                    <span class="step-circle">3</span>
+                    <span>Pay via Paystack</span>
+                </div>
+            </div>
+
+            <!-- Calendar Layout (Left: Grid, Right: Summary Card) -->
+            <div class="calendar-layout">
+                
+                <!-- Left Column: Interactive Calendar -->
+                <div class="calendar-card">
+
+                    <!-- Room Selector Filter Tabs -->
+                    <div class="room-tabs-wrapper">
+                        <div class="room-tabs-label">
+                            <span>🛏️ Filter By Room:</span>
+                        </div>
+                        <div class="room-tabs" id="roomTabs">
+                            <button class="room-tab-btn active" onclick="switchRoom('all')">
+                                <span>🏨 All Rooms</span>
+                            </button>
+                            <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
+                                <span>👑 King Arthur</span>
+                            </button>
+                            <button class="room-tab-btn" onclick="switchRoom('santori')">
+                                <span>🌊 Santori</span>
+                            </button>
+                            <button class="room-tab-btn" onclick="switchRoom('mykonos')">
+                                <span>🏛️ Mykonos</span>
+                            </button>
+                            <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
+                                <span>✨ Deluxe Suite</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selected Room Details Bar -->
+                    <div class="selected-room-info" id="roomInfoBanner">
+                        <div class="room-meta">
+                            <strong id="bannerRoomName">All 4 Rooms Overview</strong>
+                            <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites</span>
+                        </div>
+                        <div class="room-rate-tag" id="bannerRoomRate">
+                            From R850 / night
+                        </div>
+                    </div>
+
+                    <!-- Calendar Header (Month + Navigation + Season Badge) -->
+                    <div class="calendar-header">
+                        <div class="month-title-wrapper">
+                            <h2 class="month-title" id="monthYearLabel">October 2026</h2>
+                            <span class="season-badge badge-mid" id="seasonBadge">🟡 Mid Season</span>
+                        </div>
+
+                        <div class="cal-nav-buttons">
+                            <button class="cal-nav-btn" id="prevMonthBtn" onclick="changeMonth(-1)" title="Previous Month">◀</button>
+                            <select class="cal-jump-select" id="monthJumpSelect" onchange="jumpToMonth(this.value)"></select>
+                            <button class="cal-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)" title="Next Month">▶</button>
+                        </div>
+                    </div>
+
+                    <!-- Weekday Headers -->
+                    <div class="cal-grid-header">
+                        <div class="cal-weekday weekend">Sun</div>
+                        <div class="cal-weekday">Mon</div>
+                        <div class="cal-weekday">Tue</div>
+                        <div class="cal-weekday">Wed</div>
+                        <div class="cal-weekday">Thu</div>
+                        <div class="cal-weekday">Fri</div>
+                        <div class="cal-weekday weekend">Sat</div>
+                    </div>
+
+                    <!-- Days Grid -->
+                    <div class="cal-grid" id="calendarDaysGrid">
+                        <!-- Populated dynamically by JavaScript -->
+                    </div>
+
+                    <!-- Season Legend Card -->
+                    <div class="season-legend-card">
+                        <div class="legend-title">
+                            <span>Western Cape Seasonality Guide</span>
+                        </div>
+                        <div class="legend-grid">
+                            <div class="legend-item">
+                                <span class="legend-dot dot-low"></span>
+                                <div>
+                                    <strong>🟢 Low Season (May – Aug)</strong><br>
+                                    Best value winter rates (-15% discount)
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot dot-mid"></span>
+                                <div>
+                                    <strong>🟡 Mid Season (Sep–Nov, Feb–Apr)</strong><br>
+                                    Pleasant weather &amp; standard base rates
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot dot-peak"></span>
+                                <div>
+                                    <strong>🔴 Peak Season (Dec 1–15 &amp; Easter)</strong><br>
+                                    School holiday demand (+35%)
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot dot-festive"></span>
+                                <div>
+                                    <strong>🔥 Festive High Peak (Dec 16–Jan 10)</strong><br>
+                                    Peak summer demand (+80%, 3-night min)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Stay Summary & Price Calculator -->
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <h3 class="summary-title">Your Booking Summary</h3>
+                        <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
+                    </div>
+
+                    <!-- Dates Selection Box -->
+                    <div class="summary-dates-box">
+                        <div>
+                            <div class="date-box-label">Check-In (14:00)</div>
+                            <div class="date-box-value" id="summaryCheckIn">Select Date</div>
+                        </div>
+                        <div>
+                            <div class="date-box-label">Check-Out (10:00)</div>
+                            <div class="date-box-value" id="summaryCheckOut">Select Date</div>
+                        </div>
+                    </div>
+
+                    <!-- Nights Count -->
+                    <div class="stay-nights-badge" id="summaryNightsBadge">
+                        Please select check-in &amp; check-out dates
+                    </div>
+
+                    <!-- Selected Room -->
+                    <div style="font-size: 0.88rem; color: #334155; margin-bottom: 1rem;">
+                        <strong>Room:</strong> <span id="summaryRoomName">All Rooms (Select a room for direct booking)</span>
+                    </div>
+
+                    <!-- Itemized Calculation -->
+                    <ul class="price-breakdown" id="priceBreakdownList">
+                        <li>
+                            <span>Room rate</span>
+                            <span>-</span>
+                        </li>
+                        <li>
+                            <span>Nights</span>
+                            <span>0</span>
+                        </li>
+                        <li class="total-row">
+                            <span>Total (ZAR)</span>
+                            <span id="summaryGrandTotal">R0</span>
+                        </li>
+                    </ul>
+
+                    <!-- Smart Deposit Notice -->
+                    <div class="deposit-notice-box" id="depositNoticeBox" style="display: none;">
+                        <strong>💳 Payment Terms:</strong><br>
+                        <span id="depositNoticeText">50% Deposit due now. Balance due 3 days before arrival.</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <button class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="handleContinueBooking()">
+                        <span>Lock in Dates (Step 2 Preview)</span> ➔
+                    </button>
+                    <button class="btn-reset" onclick="resetDateSelection()">
+                        ✕ Clear Selected Dates
+                    </button>
+
+                    <!-- South African Perks -->
+                    <div class="sa-perks">
+                        <div class="perk-item">⚡ 24/7 Backup Power &amp; Wi-Fi (No Loadshedding!)</div>
+                        <div class="perk-item">📶 Fast Wi-Fi: Network: Gouws</div>
+                        <div class="perk-item">🏖️ 2-Minute Walk to Strand Beach</div>
+                        <div class="perk-item">☕ Delicious Breakfast Options Available</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Toast Notification Popup -->
+    <div class="cal-toast" id="calToast">
+        <span id="toastMessage">Minimum 3 nights required for Festive High Peak.</span>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Cool Cat B&amp;B</h3>
+                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>📱 <a href="tel:0637124491">063 712 4491 (Michele Rossouw)</a></li>
+                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;">bookings@cool-cat.co.za</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/rooms">Our Rooms</a></li>
+                        <li><a href="/guide">Guest Guide</a></li>
+                        <li><a href="/faq">Policies &amp; Rules</a></li>
+                        <li><a href="/test-calendar">Calendar Engine (Test)</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; <script>document.write(new Date().getFullYear())</script> Cool Cat B&amp;B. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Calendar JavaScript Engine -->
+    <script>
+        // ==========================================
+        // 1. DATA CONFIGURATION & ROOM DEFINITIONS
+        // ==========================================
+        const ROOMS = [
+            {
+                id: 'king-arthur',
+                name: 'King Arthur Room',
+                specs: 'Regal King Bed · Shared Bathroom · Sleeps 2',
+                baseWeekday: 950,
+                baseWeekend: 1200,
+                maxGuests: 2,
+                icon: '👑'
+            },
+            {
+                id: 'santori',
+                name: 'Santori Room',
+                specs: 'Cosy Double Bed · Shared Bathroom · Sleeps 2',
+                baseWeekday: 850,
+                baseWeekend: 1100,
+                maxGuests: 2,
+                icon: '🌊'
+            },
+            {
+                id: 'mykonos',
+                name: 'Mykonos Room',
+                specs: 'Two Single Beds (Double) · Shared Bathroom · Sleeps 2',
+                baseWeekday: 850,
+                baseWeekend: 1100,
+                maxGuests: 2,
+                icon: '🏛️'
+            },
+            {
+                id: 'deluxe-suite',
+                name: 'Cool Cat Deluxe Suite',
+                specs: 'Spacious Suite & Private Lounge · Sleeps 2',
+                baseWeekday: 1350,
+                baseWeekend: 1750,
+                maxGuests: 2,
+                icon: '✨'
+            }
+        ];
+
+        // Seeded realistic mock bookings to demonstrate Green, Orange, and Red states
+        // Format: YYYY-MM-DD
+        const MOCK_BOOKINGS = [
+            // Current month bookings
+            { roomId: 'king-arthur', checkIn: '2026-08-28', checkOut: '2026-08-31' },
+            { roomId: 'santori', checkIn: '2026-08-29', checkOut: '2026-09-02' },
+            { roomId: 'mykonos', checkIn: '2026-08-29', checkOut: '2026-09-01' },
+            { roomId: 'deluxe-suite', checkIn: '2026-08-29', checkOut: '2026-08-31' }, // 29-31 Aug = 4 rooms booked (RED)
+
+            // September bookings
+            { roomId: 'king-arthur', checkIn: '2026-09-11', checkOut: '2026-09-14' },
+            { roomId: 'santori', checkIn: '2026-09-18', checkOut: '2026-09-22' },
+            { roomId: 'mykonos', checkIn: '2026-09-18', checkOut: '2026-09-21' },
+            { roomId: 'deluxe-suite', checkIn: '2026-09-24', checkOut: '2026-09-28' },
+
+            // December Festive bookings
+            { roomId: 'king-arthur', checkIn: '2026-12-23', checkOut: '2026-12-28' },
+            { roomId: 'santori', checkIn: '2026-12-24', checkOut: '2026-12-29' },
+            { roomId: 'mykonos', checkIn: '2026-12-24', checkOut: '2026-12-28' },
+            { roomId: 'deluxe-suite', checkIn: '2026-12-22', checkOut: '2026-12-27' }
+        ];
+
+        // ==========================================
+        // 2. STATE MANAGEMENT
+        // ==========================================
+        const TODAY = new Date();
+        TODAY.setHours(0, 0, 0, 0);
+
+        let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+        const MAX_DATE = new Date(2027, 11, 31); // December 31, 2027
+
+        let selectedRoomId = 'all'; // 'all' | 'king-arthur' | 'santori' | 'mykonos' | 'deluxe-suite'
+        let checkInDate = null;
+        let checkOutDate = null;
+
+        // ==========================================
+        // 3. PRICING & SEASON ENGINE
+        // ==========================================
+        function getSeasonInfo(date) {
+            const m = date.getMonth() + 1; // 1 - 12
+            const d = date.getDate();
+
+            // Festive High Peak: Dec 16 to Jan 10
+            if ((m === 12 && d >= 16) || (m === 1 && d <= 10)) {
+                return {
+                    name: '🔥 Festive High Peak',
+                    tier: 'festive',
+                    badgeClass: 'badge-festive',
+                    multiplier: 1.80, // +80%
+                    minStay: 3,
+                    desc: 'Peak summer holiday demand (Strict 3-night min)'
+                };
+            }
+
+            // Peak Season: Dec 1 to Dec 15 & Easter (approx April)
+            if ((m === 12 && d >= 1 && d <= 15) || (m === 4 && d >= 3 && d <= 6)) {
+                return {
+                    name: '🔴 Peak Season',
+                    tier: 'peak',
+                    badgeClass: 'badge-peak',
+                    multiplier: 1.35, // +35%
+                    minStay: 2,
+                    desc: 'High demand holiday period'
+                };
+            }
+
+            // Low Season: May 1 to Aug 31
+            if (m >= 5 && m <= 8) {
+                return {
+                    name: '🟢 Low Season - Best Value',
+                    tier: 'low',
+                    badgeClass: 'badge-low',
+                    multiplier: 0.85, // -15% discount
+                    minStay: 1,
+                    desc: 'Winter value rate'
+                };
+            }
+
+            // Mid Season: Sep - Nov, Feb - Apr (default)
+            return {
+                name: '🟡 Mid Season',
+                tier: 'mid',
+                badgeClass: 'badge-mid',
+                multiplier: 1.00,
+                minStay: 1,
+                desc: 'Pleasant coastal weather rate'
+            };
+        }
+
+        function calculateNightPrice(room, date) {
+            const dayOfWeek = date.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
+            const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0);
+            
+            let baseRate = isWeekend ? room.baseWeekend : room.baseWeekday;
+            const season = getSeasonInfo(date);
+            let rate = baseRate * season.multiplier;
+
+            // Future-year markup: +10% if date is in 2027 or later
+            if (date.getFullYear() > TODAY.getFullYear()) {
+                rate = rate * 1.10;
+            }
+
+            return Math.round(rate);
+        }
+
+        // ==========================================
+        // 4. AVAILABILITY CHECKING ENGINE
+        // ==========================================
+        function isRoomBookedOnDate(roomId, dateStr) {
+            return MOCK_BOOKINGS.some(b => {
+                if (b.roomId !== roomId) return false;
+                // b.checkIn <= dateStr && dateStr < b.checkOut
+                return (dateStr >= b.checkIn && dateStr < b.checkOut);
+            });
+        }
+
+        function getDateAvailability(dateStr) {
+            let bookedCount = 0;
+            const availableRooms = [];
+
+            ROOMS.forEach(room => {
+                if (isRoomBookedOnDate(room.id, dateStr)) {
+                    bookedCount++;
+                } else {
+                    availableRooms.push(room);
+                }
+            });
+
+            return {
+                totalRooms: ROOMS.length,
+                bookedCount: bookedCount,
+                availableCount: ROOMS.length - bookedCount,
+                availableRooms: availableRooms
+            };
+        }
+
+        function formatDateKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        // ==========================================
+        // 5. CALENDAR RENDERING
+        // ==========================================
+        function renderCalendar() {
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
+
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+
+            // Set Header Month/Year label & Season badge
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('monthYearLabel').textContent = `${monthNames[month]} ${year}`;
+
+            // Determine Season badge for middle of month (15th)
+            const midMonthDate = new Date(year, month, 15);
+            const midSeason = getSeasonInfo(midMonthDate);
+            const badgeEl = document.getElementById('seasonBadge');
+            badgeEl.className = `season-badge ${midSeason.badgeClass}`;
+            badgeEl.textContent = midSeason.name;
+
+            // Nav button disabling
+            const prevBtn = document.getElementById('prevMonthBtn');
+            const nextBtn = document.getElementById('nextMonthBtn');
+            
+            const isAtStart = (year === TODAY.getFullYear() && month <= TODAY.getMonth());
+            const isAtEnd = (year >= 2027 && month >= 11);
+            
+            prevBtn.disabled = isAtStart;
+            nextBtn.disabled = isAtEnd;
+
+            // Update dropdown selector
+            document.getElementById('monthJumpSelect').value = `${year}-${month}`;
+
+            // Calculate grid blanks
+            const firstDayIndex = new Date(year, month, 1).getDay(); // 0 (Sun) to 6 (Sat)
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Render empty leading cells
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'cal-day empty';
+                grid.appendChild(emptyCell);
+            }
+
+            // Render day cells
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                dateObj.setHours(0, 0, 0, 0);
+                const dateStr = formatDateKey(dateObj);
+
+                const isPast = (dateObj < TODAY);
+                const isCurrentDay = (dateObj.getTime() === TODAY.getTime());
+                const avail = getDateAvailability(dateStr);
+                const season = getSeasonInfo(dateObj);
+
+                const dayCell = document.createElement('div');
+                dayCell.className = 'cal-day';
+                if (isCurrentDay) dayCell.classList.add('today');
+                if (isPast) dayCell.classList.add('disabled');
+
+                // Determine availability based on selected room
+                let isBooked = false;
+                let priceText = '';
+                let availPillHtml = '';
+
+                if (selectedRoomId === 'all') {
+                    // All rooms overview mode
+                    if (avail.availableCount === 4) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                    } else if (avail.availableCount > 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
+                    } else {
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
+                        isBooked = true;
+                    }
+
+                    // Show starting rate from lowest available room
+                    const refRoom = ROOMS[1]; // Santori base reference
+                    const rate = calculateNightPrice(refRoom, dateObj);
+                    priceText = `From R${rate}`;
+                } else {
+                    // Single room mode
+                    const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
+                    isBooked = isRoomBookedOnDate(selectedRoomId, dateStr);
+
+                    if (isBooked) {
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Booked</span>`;
+                    } else {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
+                        const rate = calculateNightPrice(currentRoom, dateObj);
+                        priceText = `R${rate}`;
+                    }
+                }
+
+                if (isBooked && !isPast) {
+                    dayCell.classList.add('booked-out');
+                }
+
+                // Check Selection Range states
+                const dateTime = dateObj.getTime();
+                if (checkInDate && dateTime === checkInDate.getTime()) {
+                    dayCell.classList.add('selected-start');
+                }
+                if (checkOutDate && dateTime === checkOutDate.getTime()) {
+                    dayCell.classList.add('selected-end');
+                }
+                if (checkInDate && checkOutDate && dateTime > checkInDate.getTime() && dateTime < checkOutDate.getTime()) {
+                    dayCell.classList.add('in-range');
+                }
+
+                // Tooltip content
+                const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
+                const tooltipHtml = `
+                    <div class="cal-tooltip">
+                        <strong>${weekdayName}, ${day} ${monthNames[month]} ${year}</strong><br>
+                        ${season.name}<br>
+                        ${priceText} ${isBooked ? '(Unavailable)' : ''}
+                    </div>
+                `;
+
+                dayCell.innerHTML = `
+                    <div class="cal-day-top">
+                        <span class="cal-day-num">${day}</span>
+                        ${!isPast ? availPillHtml : ''}
+                    </div>
+                    <div class="cal-price-tag">${!isPast && !isBooked ? priceText : ''}</div>
+                    ${!isPast ? tooltipHtml : ''}
+                `;
+
+                // Day click listener
+                if (!isPast && !isBooked) {
+                    dayCell.onclick = () => handleDateClick(dateObj);
+                } else if (!isPast && isBooked) {
+                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another open date.");
+                }
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        // ==========================================
+        // 6. DATE SELECTION LOGIC
+        // ==========================================
+        function handleDateClick(dateObj) {
+            if (!checkInDate || (checkInDate && checkOutDate)) {
+                // First click: Set Check-In
+                checkInDate = dateObj;
+                checkOutDate = null;
+                showToast(`Check-In set for ${formatFriendlyDate(checkInDate)}. Now select your Check-Out date.`);
+            } else if (checkInDate && !checkOutDate) {
+                // Second click: Set Check-Out
+                if (dateObj.getTime() <= checkInDate.getTime()) {
+                    // Clicked same or earlier date -> Reset Check-In
+                    checkInDate = dateObj;
+                    showToast(`Check-In changed to ${formatFriendlyDate(checkInDate)}.`);
+                } else {
+                    // Validate stay requirements (e.g., minimum festive nights & room booking gaps)
+                    const season = getSeasonInfo(checkInDate);
+                    const nights = Math.round((dateObj - checkInDate) / (1000 * 60 * 60 * 24));
+
+                    if (season.minStay && nights < season.minStay) {
+                        showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
+                        return;
+                    }
+
+                    // Check if any intermediate day in range is booked for the active room
+                    if (selectedRoomId !== 'all') {
+                        let hasConflict = false;
+                        let d = new Date(checkInDate);
+                        while (d < dateObj) {
+                            if (isRoomBookedOnDate(selectedRoomId, formatDateKey(d))) {
+                                hasConflict = true;
+                                break;
+                            }
+                            d.setDate(d.getDate() + 1);
+                        }
+                        if (hasConflict) {
+                            showToast("⚠️ Your selected stay spans across already booked dates for this room.");
+                            return;
+                        }
+                    }
+
+                    checkOutDate = dateObj;
+                    showToast(`Stay selected: ${nights} Nights (${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)})`);
+                }
+            }
+
+            renderCalendar();
+            updateSummarySidebar();
+        }
+
+        function resetDateSelection() {
+            checkInDate = null;
+            checkOutDate = null;
+            renderCalendar();
+            updateSummarySidebar();
+            showToast("Date selection cleared.");
+        }
+
+        // ==========================================
+        // 7. SUMMARY & PRICE CALCULATION SIDEBAR
+        // ==========================================
+        function updateSummarySidebar() {
+            const checkInEl = document.getElementById('summaryCheckIn');
+            const checkOutEl = document.getElementById('summaryCheckOut');
+            const nightsBadge = document.getElementById('summaryNightsBadge');
+            const roomNameEl = document.getElementById('summaryRoomName');
+            const breakdownList = document.getElementById('priceBreakdownList');
+            const totalEl = document.getElementById('summaryGrandTotal');
+            const depositBox = document.getElementById('depositNoticeBox');
+            const depositText = document.getElementById('depositNoticeText');
+            const continueBtn = document.getElementById('btnContinue');
+
+            // Update room title
+            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            roomNameEl.textContent = activeRoom ? activeRoom.name : 'All Rooms (Overview Mode)';
+
+            if (checkInDate) {
+                checkInEl.textContent = formatFriendlyDate(checkInDate);
+            } else {
+                checkInEl.textContent = 'Select Date';
+            }
+
+            if (checkOutDate) {
+                checkOutEl.textContent = formatFriendlyDate(checkOutDate);
+            } else {
+                checkOutEl.textContent = 'Select Date';
+            }
+
+            if (!checkInDate || !checkOutDate) {
+                nightsBadge.textContent = 'Please select check-in & check-out dates';
+                nightsBadge.style.background = '#EEF2FF';
+                breakdownList.innerHTML = `
+                    <li><span>Room rate</span><span>-</span></li>
+                    <li><span>Nights</span><span>0</span></li>
+                    <li class="total-row"><span>Total (ZAR)</span><span>R0</span></li>
+                `;
+                totalEl.textContent = 'R0';
+                depositBox.style.display = 'none';
+                continueBtn.disabled = true;
+                return;
+            }
+
+            // Calculate nights & itemized pricing
+            const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            nightsBadge.textContent = `✨ ${nights} Night${nights > 1 ? 's' : ''} Selected`;
+            nightsBadge.style.background = '#DCFCE7';
+
+            let grandTotal = 0;
+            let breakdownHtml = '';
+
+            const targetRoom = activeRoom || ROOMS[1]; // Use Santori as default if in 'all' view
+
+            let d = new Date(checkInDate);
+            let nightIndex = 1;
+
+            while (d < checkOutDate) {
+                const nightlyRate = calculateNightPrice(targetRoom, d);
+                grandTotal += nightlyRate;
+                const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
+                
+                breakdownHtml += `
+                    <li>
+                        <span>Night ${nightIndex} (${dStr})</span>
+                        <span>R${nightlyRate.toLocaleString()}</span>
+                    </li>
+                `;
+                d.setDate(d.getDate() + 1);
+                nightIndex++;
+            }
+
+            breakdownHtml += `
+                <li class="total-row">
+                    <span>Total (${nights} Nights)</span>
+                    <span>R${grandTotal.toLocaleString()}</span>
+                </li>
+            `;
+
+            breakdownList.innerHTML = breakdownHtml;
+
+            // Smart Deposit vs Full Payment Logic
+            const daysUntilCheckIn = Math.round((checkInDate - TODAY) / (1000 * 60 * 60 * 24));
+            depositBox.style.display = 'block';
+
+            if (grandTotal > 1000 && daysUntilCheckIn > 7) {
+                const depositAmount = Math.round(grandTotal * 0.50);
+                const balanceAmount = grandTotal - depositAmount;
+                depositText.innerHTML = `
+                    <strong>50% Deposit Due Now: R${depositAmount.toLocaleString()}</strong><br>
+                    Balance of R${balanceAmount.toLocaleString()} is due 3 days before check-in or upon arrival.
+                `;
+            } else {
+                depositText.innerHTML = `
+                    <strong>100% Full Payment: R${grandTotal.toLocaleString()}</strong><br>
+                    Due to stay value or arrival within 7 days, 100% upfront payment is required.
+                `;
+            }
+
+            continueBtn.disabled = false;
+        }
+
+        // ==========================================
+        // 8. ROOM SWITCHER & NAVIGATION HELPERS
+        // ==========================================
+        function switchRoom(roomId) {
+            selectedRoomId = roomId;
+
+            // Update Tab buttons
+            const tabs = document.querySelectorAll('.room-tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const roomMap = {
+                'all': 0,
+                'king-arthur': 1,
+                'santori': 2,
+                'mykonos': 3,
+                'deluxe-suite': 4
+            };
+            tabs[roomMap[roomId]].classList.add('active');
+
+            // Update Room Banner
+            const bannerName = document.getElementById('bannerRoomName');
+            const bannerSpecs = document.getElementById('bannerRoomSpecs');
+            const bannerRate = document.getElementById('bannerRoomRate');
+
+            if (roomId === 'all') {
+                bannerName.textContent = 'All 4 Rooms Overview';
+                bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+                bannerRate.textContent = 'From R850 / night';
+            } else {
+                const r = ROOMS.find(item => item.id === roomId);
+                bannerName.textContent = `${r.icon} ${r.name}`;
+                bannerSpecs.textContent = r.specs;
+                bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
+            }
+
+            // Re-render
+            renderCalendar();
+            updateSummarySidebar();
+        }
+
+        function changeMonth(delta) {
+            currentViewDate.setMonth(currentViewDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function jumpToMonth(val) {
+            const [y, m] = val.split('-').map(Number);
+            currentViewDate = new Date(y, m, 1);
+            renderCalendar();
+        }
+
+        function populateMonthDropdown() {
+            const select = document.getElementById('monthJumpSelect');
+            select.innerHTML = '';
+
+            const startYear = TODAY.getFullYear();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            for (let y = startYear; y <= 2027; y++) {
+                const startM = (y === startYear) ? TODAY.getMonth() : 0;
+                for (let m = startM; m < 12; m++) {
+                    const opt = document.createElement('option');
+                    opt.value = `${y}-${m}`;
+                    opt.textContent = `${monthNames[m]} ${y}`;
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        function formatFriendlyDate(date) {
+            return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('calToast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        function handleContinueBooking() {
+            if (!checkInDate || !checkOutDate) return;
+            const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            alert(`🎉 Dates locked: ${formatFriendlyDate(checkInDate)} to ${formatFriendlyDate(checkOutDate)} (${nights} Nights).\n\nStep 2 (Guest Details & Auto-Registration) and Step 3 (Paystack) will be connected next!`);
+        }
+
+        // ==========================================
+        // 9. INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            populateMonthDropdown();
+            renderCalendar();
+            updateSummarySidebar();
+        });
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        function openEmail(address, subject) {
+            var isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+            var subjectEncoded = encodeURIComponent(subject);
+            if (isMobile) {
+                window.location.href = 'mailto:' + address + '?subject=' + subjectEncoded;
+            } else {
+                window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + address + '&su=' + subjectEncoded, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
