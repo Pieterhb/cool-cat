@@ -1,0 +1,7 @@
+name = "cool-cat-site"
+compatibility_date = "2026-08-23"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "COOLCAT_KV"
+id = "2eefeeddf1994c2caf07b262adec6ff5"
