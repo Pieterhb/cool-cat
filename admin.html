@@ -1173,6 +1173,7 @@
                     <div class="adm-form-group">
                         <label>Select Room</label>
                         <select id="manRoomSelect" class="adm-input" required>
+                            <option value="all">🏨 All 4 Rooms (Entire Property)</option>
                             <option value="king-arthur">👑 King Arthur Room</option>
                             <option value="santori">🌊 Santori Room</option>
                             <option value="mykonos">🏛️ Mykonos Room</option>
@@ -1499,6 +1500,7 @@
             const total = Number(document.getElementById('manTotalAmount').value) || 0;
 
             const roomNames = {
+                'all': 'All 4 Rooms (Entire Property)',
                 'king-arthur': 'King Arthur Room',
                 'santori': 'Santori Room',
                 'mykonos': 'Mykonos Room',

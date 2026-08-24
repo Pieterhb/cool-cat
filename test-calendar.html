@@ -1187,11 +1187,11 @@
                         <!-- Selected Room Details Bar -->
                         <div class="selected-room-info" id="roomInfoBanner">
                             <div class="room-meta">
-                                <strong id="bannerRoomName">All 4 Rooms Overview</strong>
-                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites</span>
+                                <strong id="bannerRoomName">All 4 Rooms (Entire Property)</strong>
+                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
                             </div>
                             <div class="room-rate-tag" id="bannerRoomRate">
-                                From R850 / night
+                                Weekday R4,000 | Weekend R5,150
                             </div>
                         </div>
 
@@ -1290,7 +1290,7 @@
 
                         <!-- Selected Room -->
                         <div style="font-size: 0.88rem; color: #334155; margin-bottom: 1rem;">
-                            <strong>Room:</strong> <span id="summaryRoomName">All Rooms (Select a room for direct booking)</span>
+                            <strong>Room:</strong> <span id="summaryRoomName">All 4 Rooms (Entire Property)</span>
                         </div>
 
                         <!-- Itemized Calculation -->
@@ -1853,7 +1853,7 @@
 
         function isRoomBookedOnDate(roomId, dateStr) {
             return MOCK_BOOKINGS.some(b => {
-                if (b.roomId !== roomId) return false;
+                if (b.roomId !== roomId && b.roomId !== 'all') return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
         }
@@ -1944,17 +1944,18 @@
                 let availPillHtml = '';
 
                 if (selectedRoomId === 'all') {
+                    const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
+                    priceText = `R${allRate.toLocaleString()}`;
+
                     if (avail.availableCount === 4) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     } else if (avail.availableCount > 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
+                        isBooked = true; // Full property booking requires all 4 rooms to be available
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
                         isBooked = true;
                     }
-                    const refRoom = ROOMS[1];
-                    const rate = calculateNightPrice(refRoom, dateObj);
-                    priceText = `From R${rate}`;
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     isBooked = isRoomBookedOnDate(selectedRoomId, dateStr);
@@ -1964,7 +1965,7 @@
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
-                        priceText = `R${rate}`;
+                        priceText = `R${rate.toLocaleString()}`;
                     }
                 }
 
@@ -1984,11 +1985,14 @@
                 }
 
                 const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
+                const statusNote = isBooked 
+                    ? (selectedRoomId === 'all' && avail.availableCount > 0 ? `(${avail.availableCount} of 4 rooms open - Entire property unavailable)` : '(Unavailable)') 
+                    : '';
                 const tooltipHtml = `
                     <div class="cal-tooltip">
                         <strong>${weekdayName}, ${day} ${monthNames[month]} ${year}</strong><br>
                         ${season.name}<br>
-                        ${priceText} ${isBooked ? '(Unavailable)' : ''}
+                        ${priceText} ${statusNote}
                     </div>
                 `;
 
@@ -2004,7 +2008,11 @@
                 if (!isPast && !isBooked) {
                     dayCell.onclick = () => handleDateClick(dateObj);
                 } else if (!isPast && isBooked) {
-                    dayCell.onclick = () => showToast("This room is already booked on this date. Please select another open date.");
+                    dayCell.onclick = () => showToast(
+                        selectedRoomId === 'all' && avail.availableCount > 0
+                            ? "All 4 rooms must be available on this date to book the entire property. Please select dates where all 4 rooms are open."
+                            : "This date is unavailable. Please select another open date."
+                    );
                 }
 
                 grid.appendChild(dayCell);
@@ -2032,7 +2040,22 @@
                         return;
                     }
 
-                    if (selectedRoomId !== 'all') {
+                    if (selectedRoomId === 'all') {
+                        let hasConflict = false;
+                        let d = new Date(checkInDate);
+                        while (d < dateObj) {
+                            const avail = getDateAvailability(formatDateKey(d));
+                            if (avail.availableCount < 4) {
+                                hasConflict = true;
+                                break;
+                            }
+                            d.setDate(d.getDate() + 1);
+                        }
+                        if (hasConflict) {
+                            showToast("⚠️ All 4 rooms must be open for every night of your stay. Please select alternative dates.");
+                            return;
+                        }
+                    } else {
                         let hasConflict = false;
                         let d = new Date(checkInDate);
                         while (d < dateObj) {
@@ -2079,8 +2102,9 @@
             const depositText = document.getElementById('depositNoticeText');
             const continueBtn = document.getElementById('btnContinue');
 
+            const isAllRooms = (selectedRoomId === 'all');
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            roomNameEl.textContent = activeRoom ? activeRoom.name : 'All Rooms (Overview Mode)';
+            roomNameEl.textContent = isAllRooms ? 'All 4 Rooms (Entire Property)' : (activeRoom ? activeRoom.name : 'All 4 Rooms');
 
             if (checkInDate) {
                 checkInEl.textContent = formatFriendlyDate(checkInDate);
@@ -2117,13 +2141,13 @@
             let grandTotal = 0;
             let breakdownHtml = '';
 
-            const targetRoom = activeRoom || ROOMS[0];
-
             let d = new Date(checkInDate);
             let nightIndex = 1;
 
             while (d < checkOutDate) {
-                const nightlyRate = calculateNightPrice(targetRoom, d);
+                const nightlyRate = isAllRooms 
+                    ? ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
+                    : calculateNightPrice(activeRoom, d);
                 grandTotal += nightlyRate;
                 const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
                 
@@ -2138,11 +2162,12 @@
             }
 
             if (includeBreakfast) {
-                const breakfastTotal = calculatedNights * 120 * 2;
+                const guestMultiplier = isAllRooms ? 8 : 2;
+                const breakfastTotal = calculatedNights * 120 * guestMultiplier;
                 grandTotal += breakfastTotal;
                 breakdownHtml += `
                     <li>
-                        <span>🍳 Breakfast Package (${calculatedNights} nights x 2)</span>
+                        <span>🍳 Breakfast Package (${calculatedNights} nights x ${guestMultiplier} guests)</span>
                         <span>R${breakfastTotal.toLocaleString()}</span>
                     </li>
                 `;
@@ -2164,7 +2189,7 @@
 
             breakdownHtml += `
                 <li class="total-row">
-                    <span>Total (${calculatedNights} Nights)</span>
+                    <span>Total (${calculatedNights} Nights${isAllRooms ? ' · All 4 Rooms' : ''})</span>
                     <span>R${grandTotal.toLocaleString()}</span>
                 </li>
             `;
@@ -2259,17 +2284,33 @@
                 return;
             }
 
-            if (selectedRoomId === 'all') {
-                selectedRoomId = 'king-arthur';
-                switchRoom('king-arthur');
-            }
-
+            const isAllRooms = (selectedRoomId === 'all');
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            const roomDisplayName = isAllRooms ? '🏨 All 4 Rooms (Entire Property)' : `${activeRoom.icon} ${activeRoom.name}`;
 
-            document.getElementById('recapRoomTitle').textContent = `${activeRoom.icon} ${activeRoom.name}`;
+            document.getElementById('recapRoomTitle').textContent = roomDisplayName;
             document.getElementById('recapStayDates').textContent = `${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)} (${calculatedNights} Nights)`;
             document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
             document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
+
+            // Adjust guest count select dropdown based on room
+            const guestSelect = document.getElementById('guestCount');
+            if (guestSelect) {
+                guestSelect.innerHTML = '';
+                if (isAllRooms) {
+                    for (let g = 8; g >= 1; g--) {
+                        const opt = document.createElement('option');
+                        opt.value = g;
+                        opt.textContent = g === 8 ? `${g} Guests (Max capacity for all 4 rooms)` : `${g} Guests`;
+                        guestSelect.appendChild(opt);
+                    }
+                } else {
+                    guestSelect.innerHTML = `
+                        <option value="2">2 Adults (Maximum for this room)</option>
+                        <option value="1">1 Adult (Solo Traveler)</option>
+                    `;
+                }
+            }
 
             document.getElementById('step1View').classList.remove('active-view');
             document.getElementById('step2View').classList.add('active-view');
@@ -2322,7 +2363,9 @@
                 return;
             }
 
+            const isAllRooms = (selectedRoomId === 'all');
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            const roomDisplayName = isAllRooms ? 'All 4 Rooms (Entire Property)' : activeRoom.name;
             const amountInCents = calculatedDepositDue * 100;
 
             if (typeof PaystackPop !== 'undefined') {
@@ -2336,7 +2379,7 @@
                         custom_fields: [
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
                             { display_name: "Phone Number", variable_name: "phone", value: "+27" + phone },
-                            { display_name: "Room", variable_name: "room", value: activeRoom.name },
+                            { display_name: "Room", variable_name: "room", value: roomDisplayName },
                             { display_name: "Check In", variable_name: "check_in", value: formatDateKey(checkInDate) },
                             { display_name: "Check Out", variable_name: "check_out", value: formatDateKey(checkOutDate) }
                         ]
@@ -2357,7 +2400,9 @@
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+            const isAllRooms = (selectedRoomId === 'all');
             const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
+            const roomDisplayName = isAllRooms ? 'All 4 Rooms (Entire Property)' : activeRoom.name;
             
             const bookingPayload = {
                 reference: refNumber,
@@ -2365,7 +2410,7 @@
                 guestEmail: email,
                 guestPhone: '+27' + phone,
                 roomId: selectedRoomId,
-                roomName: activeRoom.name,
+                roomName: roomDisplayName,
                 checkIn: formatDateKey(checkInDate),
                 checkOut: formatDateKey(checkOutDate),
                 nights: calculatedNights,
@@ -2387,17 +2432,27 @@
                 console.log("Local sync:", err);
             }
 
-            // Update local state so calendar marks room as booked
-            MOCK_BOOKINGS.push({
-                roomId: selectedRoomId,
-                checkIn: formatDateKey(checkInDate),
-                checkOut: formatDateKey(checkOutDate)
-            });
+            // Update local state so calendar marks room(s) as booked
+            if (isAllRooms) {
+                ROOMS.forEach(r => {
+                    MOCK_BOOKINGS.push({
+                        roomId: r.id,
+                        checkIn: formatDateKey(checkInDate),
+                        checkOut: formatDateKey(checkOutDate)
+                    });
+                });
+            } else {
+                MOCK_BOOKINGS.push({
+                    roomId: selectedRoomId,
+                    checkIn: formatDateKey(checkInDate),
+                    checkOut: formatDateKey(checkOutDate)
+                });
+            }
 
             // Populate Step 4 Confirmation Screen
             document.getElementById('confGuestName').textContent = name;
             document.getElementById('confBookingRef').textContent = refNumber;
-            document.getElementById('confRoomName').textContent = activeRoom.name;
+            document.getElementById('confRoomName').textContent = roomDisplayName;
             document.getElementById('confCheckIn').textContent = `${formatFriendlyDate(checkInDate)} (from 14:00)`;
             document.getElementById('confCheckOut').textContent = `${formatFriendlyDate(checkOutDate)} (by 10:00)`;
             document.getElementById('confNights').textContent = `${calculatedNights} Night${calculatedNights > 1 ? 's' : ''}`;
@@ -2474,21 +2529,48 @@
                 'mykonos': 3,
                 'deluxe-suite': 4
             };
-            tabs[roomMap[roomId]].classList.add('active');
+            if (tabs[roomMap[roomId]]) {
+                tabs[roomMap[roomId]].classList.add('active');
+            }
 
             const bannerName = document.getElementById('bannerRoomName');
             const bannerSpecs = document.getElementById('bannerRoomSpecs');
             const bannerRate = document.getElementById('bannerRoomRate');
 
             if (roomId === 'all') {
-                bannerName.textContent = 'All 4 Rooms Overview';
+                bannerName.textContent = 'All 4 Rooms (Entire Property)';
                 bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
-                bannerRate.textContent = 'From R850 / night';
+                bannerRate.textContent = 'Weekday R4,000 | Weekend R5,150';
             } else {
                 const r = ROOMS.find(item => item.id === roomId);
                 bannerName.textContent = `${r.icon} ${r.name}`;
                 bannerSpecs.textContent = r.specs;
                 bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
+            }
+
+            // Re-validate current date selection if any
+            if (checkInDate && checkOutDate) {
+                let hasConflict = false;
+                let d = new Date(checkInDate);
+                while (d < checkOutDate) {
+                    if (roomId === 'all') {
+                        if (getDateAvailability(formatDateKey(d)).availableCount < 4) {
+                            hasConflict = true;
+                            break;
+                        }
+                    } else {
+                        if (isRoomBookedOnDate(roomId, formatDateKey(d))) {
+                            hasConflict = true;
+                            break;
+                        }
+                    }
+                    d.setDate(d.getDate() + 1);
+                }
+                if (hasConflict) {
+                    checkInDate = null;
+                    checkOutDate = null;
+                    showToast("⚠️ Dates reset: Selected dates are not available for this room option.");
+                }
             }
 
             renderCalendar();

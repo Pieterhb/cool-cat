@@ -16,7 +16,7 @@ export async function onRequestGet(context) {
         const activeBookings = bookings.filter(b => {
             if (b.status === 'cancelled') return false;
             if (requestedRoom === 'all') return true;
-            return b.roomId === requestedRoom;
+            return b.roomId === requestedRoom || b.roomId === 'all';
         });
 
         // Format dates into iCal YYYYMMDD format
