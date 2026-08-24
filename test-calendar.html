@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787578799.css">
+    <link rel="stylesheet" href="styles-v1787580369.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -191,6 +191,25 @@
             align-items: center;
             justify-content: center;
             gap: 0.4rem;
+            position: relative;
+        }
+
+        .room-tab-badge {
+            background: var(--sapphire-blue);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.3rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(15, 82, 186, 0.3);
+        }
+
+        .room-tab-btn.active .room-tab-badge {
+            background: var(--orange);
         }
 
         .room-tab-btn:hover {
@@ -430,6 +449,36 @@
         }
 
         /* Selection States */
+        .cal-day.selected-stay {
+            background: var(--sapphire-blue) !important;
+            color: white !important;
+            border-color: var(--sapphire-blue-dark) !important;
+            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.4);
+        }
+
+        .cal-day.selected-stay .cal-day-num,
+        .cal-day.selected-stay .cal-price-tag {
+            color: white !important;
+        }
+
+        .cal-day.selected-pending {
+            background: #FF7F50 !important;
+            color: white !important;
+            border-color: #EA580C !important;
+            box-shadow: 0 4px 12px rgba(255, 127, 80, 0.45);
+            animation: pulsePending 1.5s infinite;
+        }
+
+        .cal-day.selected-pending .cal-day-num,
+        .cal-day.selected-pending .cal-price-tag {
+            color: white !important;
+        }
+
+        @keyframes pulsePending {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         .cal-day.selected-start, .cal-day.selected-end {
             background: var(--sapphire-blue) !important;
             color: white !important;
@@ -558,6 +607,105 @@
             font-weight: 700;
             color: var(--sapphire-blue-dark);
             margin: 0;
+        }
+
+        /* Cart Stays Container & Cards */
+        .cart-stays-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.2rem;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .cart-empty-state {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: #F8FAFC;
+            border: 1px dashed #CBD5E1;
+            border-radius: 12px;
+            color: #64748B;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .cart-stay-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            position: relative;
+            transition: border-color 0.2s ease;
+        }
+
+        .cart-stay-card:hover {
+            border-color: #CBD5E1;
+        }
+
+        .cart-stay-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.35rem;
+        }
+
+        .cart-stay-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--sapphire-blue-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .btn-stay-remove {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+            border-radius: 6px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-stay-remove:hover {
+            background: #EF4444;
+            color: white;
+            border-color: #DC2626;
+        }
+
+        .cart-stay-dates {
+            font-size: 0.8rem;
+            color: #475569;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-stay-subtotal {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #1E293B;
+            text-align: right;
+            border-top: 1px dashed #E2E8F0;
+            padding-top: 0.35rem;
+            margin-top: 0.35rem;
+        }
+
+        .pending-stay-notice {
+            background: #FFF7ED;
+            border: 1px dashed #F97316;
+            border-radius: 10px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.8rem;
+            color: #9A3412;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
         }
 
         .summary-dates-box {
@@ -1168,18 +1316,23 @@
                             <div class="room-tabs" id="roomTabs">
                                 <button class="room-tab-btn active" onclick="switchRoom('all')">
                                     <span>🏨 All Rooms</span>
+                                    <span class="room-tab-badge" id="badge_all">0</span>
                                 </button>
                                 <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
                                     <span>👑 King Arthur</span>
+                                    <span class="room-tab-badge" id="badge_king-arthur">0</span>
                                 </button>
                                 <button class="room-tab-btn" onclick="switchRoom('santori')">
                                     <span>🌊 Santori</span>
+                                    <span class="room-tab-badge" id="badge_santori">0</span>
                                 </button>
                                 <button class="room-tab-btn" onclick="switchRoom('mykonos')">
                                     <span>🏛️ Mykonos</span>
+                                    <span class="room-tab-badge" id="badge_mykonos">0</span>
                                 </button>
                                 <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
                                     <span>✨ Deluxe Suite</span>
+                                    <span class="room-tab-badge" id="badge_deluxe-suite">0</span>
                                 </button>
                             </div>
                         </div>
@@ -1271,40 +1424,30 @@
                             <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
                         </div>
 
-                        <!-- Dates Selection Box -->
-                        <div class="summary-dates-box">
-                            <div>
-                                <div class="date-box-label">Check-In (14:00)</div>
-                                <div class="date-box-value" id="summaryCheckIn">Select Date</div>
-                            </div>
-                            <div>
-                                <div class="date-box-label">Check-Out (10:00)</div>
-                                <div class="date-box-value" id="summaryCheckOut">Select Date</div>
-                            </div>
+                        <!-- In-progress check-in notice -->
+                        <div id="pendingSelectionBox" class="pending-stay-notice" style="display: none;">
+                            <span id="pendingSelectionText">Selecting check-out date...</span>
+                            <button type="button" style="background: none; border: none; color: #9A3412; font-weight: 800; cursor: pointer; text-decoration: underline;" onclick="cancelPendingSelection()">Cancel</button>
                         </div>
 
-                        <!-- Nights Count -->
+                        <!-- Active Stays Cart List -->
+                        <div id="cartStaysContainer" class="cart-stays-list">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Nights Count Badge -->
                         <div class="stay-nights-badge" id="summaryNightsBadge">
-                            Please select check-in &amp; check-out dates
-                        </div>
-
-                        <!-- Selected Room -->
-                        <div style="font-size: 0.88rem; color: #334155; margin-bottom: 1rem;">
-                            <strong>Room:</strong> <span id="summaryRoomName">All 4 Rooms (Entire Property)</span>
+                            Please select room &amp; stay dates
                         </div>
 
                         <!-- Itemized Calculation -->
                         <ul class="price-breakdown" id="priceBreakdownList">
                             <li>
-                                <span>Room rate</span>
-                                <span>-</span>
-                            </li>
-                            <li>
-                                <span>Nights</span>
-                                <span>0</span>
+                                <span>Selected Stays Subtotal</span>
+                                <span id="summaryStaysTotal">R0</span>
                             </li>
                             <li class="total-row">
-                                <span>Total (ZAR)</span>
+                                <span>Grand Total (ZAR)</span>
                                 <span id="summaryGrandTotal">R0</span>
                             </li>
                         </ul>
@@ -1331,8 +1474,8 @@
                         <button class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="goToStep2()">
                             <span>Lock in Dates (Continue to Step 2)</span> ➔
                         </button>
-                        <button class="btn-reset" onclick="resetDateSelection()">
-                            ✕ Clear Selected Dates
+                        <button class="btn-reset" id="btnClearAll" style="display: none;" onclick="clearAllStays()">
+                            ✕ Clear All Selected Stays
                         </button>
 
                         <!-- Referral Program CTA -->
@@ -1364,13 +1507,13 @@
 
                     <!-- Stay Recap Banner -->
                     <div class="recap-bar">
-                        <div>
-                            <div class="recap-title" id="recapRoomTitle">👑 King Arthur Room</div>
-                            <div class="recap-meta" id="recapStayDates">14 Oct 2026 – 17 Oct 2026 (3 Nights)</div>
+                        <div style="flex: 1;">
+                            <div class="recap-title" id="recapStaysCount">1 Reserved Stay</div>
+                            <div id="recapStaysList" style="margin-top: 0.5rem; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 0.4rem;"></div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R3,600</div>
-                            <button class="btn-edit-dates" onclick="goToStep1()">✏️ Edit Dates / Room</button>
+                        <div style="text-align: right; margin-left: 1rem;">
+                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.25rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
+                            <button class="btn-edit-dates" onclick="goToStep1()">✏️ Edit Dates / Rooms</button>
                         </div>
                     </div>
 
@@ -1429,8 +1572,7 @@
                                     Number of Guests
                                 </label>
                                 <select id="guestCount" class="form-select">
-                                    <option value="2">2 Adults (Maximum for this room)</option>
-                                    <option value="1">1 Adult (Solo Traveler)</option>
+                                    <option value="2">2 Guests</option>
                                 </select>
                             </div>
 
@@ -1440,7 +1582,7 @@
                                     <input type="checkbox" id="addBreakfastCheckbox" onchange="toggleBreakfastAddon()">
                                     <div>
                                         <strong>🍳 Add Daily Breakfast Package</strong><br>
-                                        <span style="font-size: 0.8rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night)</span>
+                                        <span id="breakfastAddonHelpText" style="font-size: 0.8rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night)</span>
                                     </div>
                                 </label>
                             </div>
@@ -1471,7 +1613,7 @@
                                 ◀ Back to Calendar
                             </button>
                             <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 250px; font-size: 1.05rem;" id="btnPaystackSubmit">
-                                🔒 Pay <span id="paystackButtonAmount">R1,800</span> via Paystack ➔
+                                🔒 Pay <span id="paystackButtonAmount">R0</span> via Paystack ➔
                             </button>
                         </div>
 
@@ -1499,33 +1641,23 @@
 
                     <!-- Itemized Confirmation Receipt -->
                     <div class="booking-receipt-box">
+                        <div style="font-size: 0.95rem; font-weight: 700; color: var(--sapphire-blue-dark); margin-bottom: 0.8rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.5rem;">Reserved Accommodations:</div>
+                        <div id="confStaysList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.8rem;"></div>
                         <div class="receipt-row">
-                            <span>Room Reserved:</span>
-                            <strong id="confRoomName">King Arthur Room</strong>
-                        </div>
-                        <div class="receipt-row">
-                            <span>Check-In:</span>
-                            <strong id="confCheckIn">14 Oct 2026 (from 14:00)</strong>
-                        </div>
-                        <div class="receipt-row">
-                            <span>Check-Out:</span>
-                            <strong id="confCheckOut">17 Oct 2026 (by 10:00)</strong>
-                        </div>
-                        <div class="receipt-row">
-                            <span>Duration:</span>
-                            <span id="confNights">3 Nights</span>
+                            <span>Total Stay Duration:</span>
+                            <span id="confNights">0 Nights</span>
                         </div>
                         <div class="receipt-row">
                             <span>Total Stay Cost:</span>
-                            <span id="confTotalStay">R3,600</span>
+                            <span id="confTotalStay">R0</span>
                         </div>
                         <div class="receipt-row">
                             <span>Amount Paid (Paystack):</span>
-                            <strong style="color: #166534;" id="confAmountPaid">R1,800 (50% Deposit)</strong>
+                            <strong style="color: #166534;" id="confAmountPaid">R0 (50% Deposit)</strong>
                         </div>
                         <div class="receipt-row">
                             <span id="confBalanceLabel">Remaining Balance Due at Check-In:</span>
-                            <strong id="confBalanceDue">R1,800</strong>
+                            <strong id="confBalanceDue">R0</strong>
                         </div>
                     </div>
 
@@ -1759,14 +1891,21 @@
 
         let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
         let selectedRoomId = 'all';
-        let checkInDate = null;
-        let checkOutDate = null;
+
+        // Multi-stay cart: Array of confirmed stays across all rooms
+        // Each item: { id, roomId, roomName, roomIcon, checkIn, checkOut, checkInStr, checkOutStr, nights, nightlyRates, subtotal }
+        let selectedStays = [];
+
+        // Pending check-in for the active room tab while user picks check-out date
+        // { roomId: string, date: Date }
+        let pendingCheckIn = null;
 
         let calculatedGrandTotal = 0;
         let calculatedDepositDue = 0;
         let calculatedBalanceDue = 0;
-        let calculatedNights = 0;
+        let totalNightsCount = 0;
         let includeBreakfast = false;
+        let activeReferralCode = '';
 
         // ==========================================
         // 3. BACKEND SYNC: FETCH LIVE BOOKINGS
@@ -1858,12 +1997,32 @@
             });
         }
 
+        function isDateInSelectedStays(roomId, dateStr) {
+            return selectedStays.some(s => {
+                if (s.roomId !== roomId && s.roomId !== 'all' && roomId !== 'all') return false;
+                return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+            });
+        }
+
+        function findStayByDateAndRoom(roomId, dateStr) {
+            return selectedStays.find(s => {
+                if (s.roomId !== roomId && s.roomId !== 'all' && roomId !== 'all') return false;
+                return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+            });
+        }
+
         function getDateAvailability(dateStr) {
             let bookedCount = 0;
             const availableRooms = [];
 
             ROOMS.forEach(room => {
-                if (isRoomBookedOnDate(room.id, dateStr)) {
+                const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
+                const bookedInCart = selectedStays.some(s => {
+                    if (s.roomId !== room.id && s.roomId !== 'all') return false;
+                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                });
+
+                if (bookedInDB || bookedInCart) {
                     bookedCount++;
                 } else {
                     availableRooms.push(room);
@@ -1915,6 +2074,21 @@
 
             document.getElementById('monthJumpSelect').value = `${year}-${month}`;
 
+            // Update badges on room selector tabs
+            const roomIds = ['all', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            roomIds.forEach(rId => {
+                const badge = document.getElementById(`badge_${rId}`);
+                if (badge) {
+                    const count = selectedStays.filter(s => s.roomId === rId).length;
+                    if (count > 0) {
+                        badge.textContent = count;
+                        badge.style.display = 'inline-flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+
             const firstDayIndex = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -1939,6 +2113,10 @@
                 if (isCurrentDay) dayCell.classList.add('today');
                 if (isPast) dayCell.classList.add('disabled');
 
+                // Check if this date is part of an already selected stay in cart for this room
+                const stayForDate = findStayByDateAndRoom(selectedRoomId, dateStr);
+                const isPendingStart = (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId && dateObj.getTime() === pendingCheckIn.date.getTime());
+
                 let isBooked = false;
                 let priceText = '';
                 let availPillHtml = '';
@@ -1947,7 +2125,9 @@
                     const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
                     priceText = `R${allRate.toLocaleString()}`;
 
-                    if (avail.availableCount === 4) {
+                    if (stayForDate) {
+                        availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ Booked in Cart</span>`;
+                    } else if (avail.availableCount === 4) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     } else if (avail.availableCount > 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
@@ -1958,9 +2138,19 @@
                     }
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
-                    isBooked = isRoomBookedOnDate(selectedRoomId, dateStr);
+                    const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
+                    const isBookedOtherStay = selectedStays.some(s => {
+                        if (s.roomId !== selectedRoomId && s.roomId !== 'all') return false;
+                        return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    });
 
-                    if (isBooked) {
+                    isBooked = (isBookedInDB || isBookedOtherStay);
+
+                    if (stayForDate) {
+                        availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
+                        const rate = calculateNightPrice(currentRoom, dateObj);
+                        priceText = `R${rate.toLocaleString()}`;
+                    } else if (isBooked) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Booked</span>`;
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
@@ -1969,30 +2159,29 @@
                     }
                 }
 
-                if (isBooked && !isPast) {
+                if (stayForDate) {
+                    dayCell.classList.add('selected-stay');
+                } else if (isPendingStart) {
+                    dayCell.classList.add('selected-pending');
+                } else if (isBooked && !isPast) {
                     dayCell.classList.add('booked-out');
                 }
 
-                const dateTime = dateObj.getTime();
-                if (checkInDate && dateTime === checkInDate.getTime()) {
-                    dayCell.classList.add('selected-start');
-                }
-                if (checkOutDate && dateTime === checkOutDate.getTime()) {
-                    dayCell.classList.add('selected-end');
-                }
-                if (checkInDate && checkOutDate && dateTime > checkInDate.getTime() && dateTime < checkOutDate.getTime()) {
-                    dayCell.classList.add('in-range');
+                const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
+                let tooltipText = `${weekdayName}, ${day} ${monthNames[month]} ${year} &bull; ${season.name}`;
+                if (stayForDate) {
+                    tooltipText += `<br><span style="color: #67E8F9; font-weight:700;">★ Selected in Cart (${stayForDate.nights}N stay) &bull; Click to Remove</span>`;
+                } else if (isPendingStart) {
+                    tooltipText += `<br><span style="color: #FDBA74; font-weight:700;">📍 Check-In selected &bull; Click Check-Out date</span>`;
+                } else if (isBooked) {
+                    tooltipText += `<br><span style="color: #FCA5A5;">(Unavailable / Booked)</span>`;
+                } else {
+                    tooltipText += `<br>${priceText} &bull; Available`;
                 }
 
-                const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
-                const statusNote = isBooked 
-                    ? (selectedRoomId === 'all' && avail.availableCount > 0 ? `(${avail.availableCount} of 4 rooms open - Entire property unavailable)` : '(Unavailable)') 
-                    : '';
                 const tooltipHtml = `
                     <div class="cal-tooltip">
-                        <strong>${weekdayName}, ${day} ${monthNames[month]} ${year}</strong><br>
-                        ${season.name}<br>
-                        ${priceText} ${statusNote}
+                        ${tooltipText}
                     </div>
                 `;
 
@@ -2001,18 +2190,23 @@
                         <span class="cal-day-num">${day}</span>
                         ${!isPast ? availPillHtml : ''}
                     </div>
-                    <div class="cal-price-tag">${!isPast && !isBooked ? priceText : ''}</div>
+                    <div class="cal-price-tag">${!isPast && (!isBooked || stayForDate) ? priceText : ''}</div>
                     ${!isPast ? tooltipHtml : ''}
                 `;
 
-                if (!isPast && !isBooked) {
-                    dayCell.onclick = () => handleDateClick(dateObj);
-                } else if (!isPast && isBooked) {
-                    dayCell.onclick = () => showToast(
-                        selectedRoomId === 'all' && avail.availableCount > 0
-                            ? "All 4 rooms must be available on this date to book the entire property. Please select dates where all 4 rooms are open."
-                            : "This date is unavailable. Please select another open date."
-                    );
+                if (!isPast) {
+                    if (stayForDate) {
+                        // Click to remove this stay
+                        dayCell.onclick = () => handleDateClick(dateObj);
+                    } else if (!isBooked || isPendingStart) {
+                        dayCell.onclick = () => handleDateClick(dateObj);
+                    } else {
+                        dayCell.onclick = () => showToast(
+                            selectedRoomId === 'all' && avail.availableCount > 0
+                                ? "All 4 rooms must be available on this date to book the entire property."
+                                : "This date is already booked. Please select an available date."
+                        );
+                    }
                 }
 
                 grid.appendChild(dayCell);
@@ -2020,162 +2214,280 @@
         }
 
         // ==========================================
-        // 6. DATE SELECTION LOGIC
+        // 6. DATE SELECTION & MULTI-STAY CART LOGIC
         // ==========================================
         function handleDateClick(dateObj) {
-            if (!checkInDate || (checkInDate && checkOutDate)) {
-                checkInDate = dateObj;
-                checkOutDate = null;
-                showToast(`Check-In set for ${formatFriendlyDate(checkInDate)}. Now select Check-Out date.`);
-            } else if (checkInDate && !checkOutDate) {
-                if (dateObj.getTime() <= checkInDate.getTime()) {
-                    checkInDate = dateObj;
-                    showToast(`Check-In changed to ${formatFriendlyDate(checkInDate)}.`);
-                } else {
-                    const season = getSeasonInfo(checkInDate);
-                    const nights = Math.round((dateObj - checkInDate) / (1000 * 60 * 60 * 24));
+            const dateStr = formatDateKey(dateObj);
 
-                    if (season.minStay && nights < season.minStay) {
-                        showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
-                        return;
-                    }
-
-                    if (selectedRoomId === 'all') {
-                        let hasConflict = false;
-                        let d = new Date(checkInDate);
-                        while (d < dateObj) {
-                            const avail = getDateAvailability(formatDateKey(d));
-                            if (avail.availableCount < 4) {
-                                hasConflict = true;
-                                break;
-                            }
-                            d.setDate(d.getDate() + 1);
-                        }
-                        if (hasConflict) {
-                            showToast("⚠️ All 4 rooms must be open for every night of your stay. Please select alternative dates.");
-                            return;
-                        }
-                    } else {
-                        let hasConflict = false;
-                        let d = new Date(checkInDate);
-                        while (d < dateObj) {
-                            if (isRoomBookedOnDate(selectedRoomId, formatDateKey(d))) {
-                                hasConflict = true;
-                                break;
-                            }
-                            d.setDate(d.getDate() + 1);
-                        }
-                        if (hasConflict) {
-                            showToast("⚠️ Your selected stay spans across already booked dates for this room.");
-                            return;
-                        }
-                    }
-
-                    checkOutDate = dateObj;
-                    showToast(`Stay selected: ${nights} Nights (${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)})`);
-                }
+            // 1. If user clicked a date that is already part of a selected stay in cart, remove it
+            const existingStay = findStayByDateAndRoom(selectedRoomId, dateStr);
+            if (existingStay) {
+                removeStay(existingStay.id);
+                return;
             }
 
+            // 2. If no pending check-in for this room:
+            if (!pendingCheckIn || pendingCheckIn.roomId !== selectedRoomId) {
+                // Validate availability
+                if (selectedRoomId === 'all') {
+                    const avail = getDateAvailability(dateStr);
+                    if (avail.availableCount < 4) {
+                        showToast("All 4 rooms must be available on this date to book the entire property.");
+                        return;
+                    }
+                } else {
+                    if (isRoomBookedOnDate(selectedRoomId, dateStr) || isDateInSelectedStays(selectedRoomId, dateStr)) {
+                        showToast("This date is already booked or in your cart. Please select another date.");
+                        return;
+                    }
+                }
+
+                const roomObj = ROOMS.find(r => r.id === selectedRoomId);
+                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                pendingCheckIn = { roomId: selectedRoomId, date: new Date(dateObj) };
+                showToast(`📍 ${roomDisplayName}: Check-in set for ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
+                renderCalendar();
+                updateSummarySidebar();
+                return;
+            }
+
+            // 3. User already has a pending check-in for this room
+            if (dateObj.getTime() <= pendingCheckIn.date.getTime()) {
+                // Clicked earlier or same date: update check-in
+                pendingCheckIn.date = new Date(dateObj);
+                const roomObj = ROOMS.find(r => r.id === selectedRoomId);
+                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                showToast(`📍 ${roomDisplayName}: Check-in updated to ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
+                renderCalendar();
+                updateSummarySidebar();
+                return;
+            }
+
+            // Check-out date selected!
+            const checkInDate = pendingCheckIn.date;
+            const checkOutDate = dateObj;
+            const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            const season = getSeasonInfo(checkInDate);
+
+            if (season.minStay && nights < season.minStay) {
+                showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
+                return;
+            }
+
+            // Verify all nights in the stay range are available
+            let d = new Date(checkInDate);
+            let hasConflict = false;
+            while (d < checkOutDate) {
+                const dKey = formatDateKey(d);
+                if (selectedRoomId === 'all') {
+                    if (getDateAvailability(dKey).availableCount < 4) {
+                        hasConflict = true;
+                        break;
+                    }
+                } else {
+                    if (isRoomBookedOnDate(selectedRoomId, dKey) || isDateInSelectedStays(selectedRoomId, dKey)) {
+                        hasConflict = true;
+                        break;
+                    }
+                }
+                d.setDate(d.getDate() + 1);
+            }
+
+            if (hasConflict) {
+                showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart.");
+                return;
+            }
+
+            // Calculate stay rates & subtotal
+            d = new Date(checkInDate);
+            let subtotal = 0;
+            const nightlyRates = [];
+            const isAll = (selectedRoomId === 'all');
+            const roomObj = ROOMS.find(r => r.id === selectedRoomId);
+
+            while (d < checkOutDate) {
+                const nightlyRate = isAll 
+                    ? ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
+                    : calculateNightPrice(roomObj, d);
+                subtotal += nightlyRate;
+                const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
+                nightlyRates.push({
+                    dateKey: formatDateKey(d),
+                    label: dStr,
+                    rate: nightlyRate
+                });
+                d.setDate(d.getDate() + 1);
+            }
+
+            const newStay = {
+                id: 'stay_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+                roomId: selectedRoomId,
+                roomName: isAll ? 'All 4 Rooms (Entire Property)' : roomObj.name,
+                roomIcon: isAll ? '🏨' : roomObj.icon,
+                checkIn: new Date(checkInDate),
+                checkOut: new Date(checkOutDate),
+                checkInStr: formatDateKey(checkInDate),
+                checkOutStr: formatDateKey(checkOutDate),
+                nights: nights,
+                nightlyRates: nightlyRates,
+                subtotal: subtotal
+            };
+
+            selectedStays.push(newStay);
+            pendingCheckIn = null;
+            showToast(`🎉 Added ${newStay.roomIcon} ${newStay.roomName} (${nights} Nights) to your booking!`);
             renderCalendar();
             updateSummarySidebar();
         }
 
-        function resetDateSelection() {
-            checkInDate = null;
-            checkOutDate = null;
+        function removeStay(stayId) {
+            const idx = selectedStays.findIndex(s => s.id === stayId);
+            if (idx !== -1) {
+                const removed = selectedStays[idx];
+                selectedStays.splice(idx, 1);
+                showToast(`Removed stay: ${removed.roomIcon} ${removed.roomName} (${formatFriendlyDate(removed.checkIn)} – ${formatFriendlyDate(removed.checkOut)}).`);
+                renderCalendar();
+                updateSummarySidebar();
+            }
+        }
+
+        function clearAllStays() {
+            selectedStays = [];
+            pendingCheckIn = null;
             renderCalendar();
             updateSummarySidebar();
-            showToast("Date selection cleared.");
+            showToast("All room stays cleared.");
+        }
+
+        function cancelPendingSelection() {
+            pendingCheckIn = null;
+            renderCalendar();
+            updateSummarySidebar();
+            showToast("Date selection cancelled.");
         }
 
         // ==========================================
         // 7. SUMMARY & PRICE CALCULATION
         // ==========================================
         function updateSummarySidebar() {
-            const checkInEl = document.getElementById('summaryCheckIn');
-            const checkOutEl = document.getElementById('summaryCheckOut');
+            const pendingBox = document.getElementById('pendingSelectionBox');
+            const pendingText = document.getElementById('pendingSelectionText');
+            const cartContainer = document.getElementById('cartStaysContainer');
             const nightsBadge = document.getElementById('summaryNightsBadge');
-            const roomNameEl = document.getElementById('summaryRoomName');
             const breakdownList = document.getElementById('priceBreakdownList');
-            const totalEl = document.getElementById('summaryGrandTotal');
+            const staysTotalEl = document.getElementById('summaryStaysTotal');
+            const grandTotalEl = document.getElementById('summaryGrandTotal');
             const depositBox = document.getElementById('depositNoticeBox');
             const depositText = document.getElementById('depositNoticeText');
             const continueBtn = document.getElementById('btnContinue');
+            const clearAllBtn = document.getElementById('btnClearAll');
 
-            const isAllRooms = (selectedRoomId === 'all');
-            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            roomNameEl.textContent = isAllRooms ? 'All 4 Rooms (Entire Property)' : (activeRoom ? activeRoom.name : 'All 4 Rooms');
-
-            if (checkInDate) {
-                checkInEl.textContent = formatFriendlyDate(checkInDate);
+            // 1. Pending check-in alert
+            if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
+                const roomObj = ROOMS.find(r => r.id === selectedRoomId);
+                const rName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
+                pendingBox.style.display = 'flex';
             } else {
-                checkInEl.textContent = 'Select Date';
+                pendingBox.style.display = 'none';
             }
 
-            if (checkOutDate) {
-                checkOutEl.textContent = formatFriendlyDate(checkOutDate);
-            } else {
-                checkOutEl.textContent = 'Select Date';
-            }
-
-            if (!checkInDate || !checkOutDate) {
+            // 2. Empty cart state
+            if (selectedStays.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="cart-empty-state">
+                        <div style="font-size: 1.3rem; margin-bottom: 0.3rem;">📅</div>
+                        <strong>No room stays selected yet.</strong><br>
+                        <span>Click any check-in date on the calendar to begin.</span>
+                    </div>
+                `;
                 nightsBadge.textContent = 'Please select check-in & check-out dates';
                 nightsBadge.style.background = '#EEF2FF';
-                breakdownList.innerHTML = `
-                    <li><span>Room rate</span><span>-</span></li>
-                    <li><span>Nights</span><span>0</span></li>
-                    <li class="total-row"><span>Total (ZAR)</span><span>R0</span></li>
-                `;
-                totalEl.textContent = 'R0';
+                staysTotalEl.textContent = 'R0';
+                grandTotalEl.textContent = 'R0';
                 depositBox.style.display = 'none';
                 continueBtn.disabled = true;
+                if (clearAllBtn) clearAllBtn.style.display = 'none';
                 calculatedGrandTotal = 0;
                 calculatedDepositDue = 0;
+                calculatedBalanceDue = 0;
+                totalNightsCount = 0;
                 return;
             }
 
-            calculatedNights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-            nightsBadge.textContent = `✨ ${calculatedNights} Night${calculatedNights > 1 ? 's' : ''} Selected`;
+            // 3. Stays in Cart
+            if (clearAllBtn) clearAllBtn.style.display = 'flex';
+            continueBtn.disabled = false;
+
+            let totalNights = 0;
+            let staysSubtotal = 0;
+            let totalGuestNights = 0;
+            let cartHtml = '';
+
+            selectedStays.forEach(stay => {
+                totalNights += stay.nights;
+                staysSubtotal += stay.subtotal;
+                const guests = (stay.roomId === 'all') ? 8 : 2;
+                totalGuestNights += (stay.nights * guests);
+
+                const breakdownRows = stay.nightlyRates.map(nr => 
+                    `<div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #64748B; padding: 0.12rem 0;">
+                        <span>${nr.label}</span>
+                        <span>R${nr.rate.toLocaleString()}</span>
+                    </div>`
+                ).join('');
+
+                cartHtml += `
+                    <div class="cart-stay-card">
+                        <div class="cart-stay-head">
+                            <div class="cart-stay-title">
+                                <span>${stay.roomIcon}</span>
+                                <span>${stay.roomName}</span>
+                            </div>
+                            <button type="button" class="btn-stay-remove" onclick="removeStay('${stay.id}')" title="Remove this stay">✕ Remove</button>
+                        </div>
+                        <div class="cart-stay-dates">
+                            <span>📅 ${formatFriendlyDate(stay.checkIn)} – ${formatFriendlyDate(stay.checkOut)}</span>
+                            <strong style="color: var(--sapphire-blue-dark); margin-left: 0.3rem;">(${stay.nights}N)</strong>
+                        </div>
+                        <div style="margin-top: 0.35rem; background: #FFFFFF; border-radius: 6px; padding: 0.4rem 0.6rem; border: 1px solid #E2E8F0;">
+                            ${breakdownRows}
+                        </div>
+                        <div class="cart-stay-subtotal">
+                            Stay Total: R${stay.subtotal.toLocaleString()}
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartContainer.innerHTML = cartHtml;
+            totalNightsCount = totalNights;
+
+            nightsBadge.textContent = `✨ ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''} (${totalNights} Total Nights) Selected`;
             nightsBadge.style.background = '#DCFCE7';
 
-            let grandTotal = 0;
-            let breakdownHtml = '';
-
-            let d = new Date(checkInDate);
-            let nightIndex = 1;
-
-            while (d < checkOutDate) {
-                const nightlyRate = isAllRooms 
-                    ? ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
-                    : calculateNightPrice(activeRoom, d);
-                grandTotal += nightlyRate;
-                const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
-                
-                breakdownHtml += `
-                    <li>
-                        <span>Night ${nightIndex} (${dStr})</span>
-                        <span>R${nightlyRate.toLocaleString()}</span>
-                    </li>
-                `;
-                d.setDate(d.getDate() + 1);
-                nightIndex++;
-            }
+            // Pricing calculation
+            let grandTotal = staysSubtotal;
+            let breakdownHtml = `
+                <li>
+                    <span>Room Stays Subtotal (${selectedStays.length} Stays, ${totalNights}N)</span>
+                    <span>R${staysSubtotal.toLocaleString()}</span>
+                </li>
+            `;
 
             if (includeBreakfast) {
-                const guestMultiplier = isAllRooms ? 8 : 2;
-                const breakfastTotal = calculatedNights * 120 * guestMultiplier;
-                grandTotal += breakfastTotal;
+                const breakfastCost = totalGuestNights * 120;
+                grandTotal += breakfastCost;
                 breakdownHtml += `
                     <li>
-                        <span>🍳 Breakfast Package (${calculatedNights} nights x ${guestMultiplier} guests)</span>
-                        <span>R${breakfastTotal.toLocaleString()}</span>
+                        <span>🍳 Breakfast Package (${totalGuestNights} guest-nights @ R120)</span>
+                        <span>R${breakfastCost.toLocaleString()}</span>
                     </li>
                 `;
             }
 
-            let discountAmount = 0;
             if (activeReferralCode) {
-                discountAmount = Math.round(grandTotal * 0.05); // 5% friend discount
+                const discountAmount = Math.round(grandTotal * 0.05);
                 grandTotal = Math.max(0, grandTotal - discountAmount);
                 breakdownHtml += `
                     <li style="color: #166534; font-weight: 700;">
@@ -2185,18 +2497,21 @@
                 `;
             }
 
-            calculatedGrandTotal = grandTotal;
-
             breakdownHtml += `
                 <li class="total-row">
-                    <span>Total (${calculatedNights} Nights${isAllRooms ? ' · All 4 Rooms' : ''})</span>
+                    <span>Grand Total (ZAR)</span>
                     <span>R${grandTotal.toLocaleString()}</span>
                 </li>
             `;
 
             breakdownList.innerHTML = breakdownHtml;
+            staysTotalEl.textContent = `R${staysSubtotal.toLocaleString()}`;
+            grandTotalEl.textContent = `R${grandTotal.toLocaleString()}`;
+            calculatedGrandTotal = grandTotal;
 
-            const daysUntilCheckIn = Math.round((checkInDate - TODAY) / (1000 * 60 * 60 * 24));
+            // Deposit calculation based on earliest check-in date
+            const earliestCheckIn = selectedStays.reduce((min, s) => s.checkIn < min ? s.checkIn : min, selectedStays[0].checkIn);
+            const daysUntilCheckIn = Math.round((earliestCheckIn - TODAY) / (1000 * 60 * 60 * 24));
             depositBox.style.display = 'block';
 
             if (grandTotal > 1000 && daysUntilCheckIn > 7) {
@@ -2211,18 +2526,14 @@
                 calculatedBalanceDue = 0;
                 depositText.innerHTML = `
                     <strong>100% Full Payment: R${grandTotal.toLocaleString()}</strong><br>
-                    Due to stay value or arrival within 7 days, full payment is required upfront.
+                    Due to arrival within 7 days or total value, full payment is required upfront.
                 `;
             }
-
-            continueBtn.disabled = false;
         }
 
         // ==========================================
         // 7B. REFERRAL & PROMO PROGRAM ENGINE
         // ==========================================
-        let activeReferralCode = '';
-
         function applyPromoCodeManual() {
             const code = (document.getElementById('promoCodeInput').value || '').trim().toUpperCase();
             if (!code) {
@@ -2256,7 +2567,6 @@
         function handleGenerateReferralLink(e) {
             e.preventDefault();
             const first = document.getElementById('refFirstName').value.trim();
-            const email = document.getElementById('refEmail').value.trim();
             const cleanCode = (first.replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'FRIEND') + '10';
             const url = `https://cool-cat.co.za/test-calendar?ref=${cleanCode}`;
 
@@ -2279,36 +2589,38 @@
         // 8. WIZARD STEP TRANSITIONS
         // ==========================================
         function goToStep2() {
-            if (!checkInDate || !checkOutDate) {
-                showToast("Please select your stay dates on the calendar first.");
+            if (selectedStays.length === 0) {
+                showToast("Please select at least one room stay on the calendar first.");
                 return;
             }
 
-            const isAllRooms = (selectedRoomId === 'all');
-            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            const roomDisplayName = isAllRooms ? '🏨 All 4 Rooms (Entire Property)' : `${activeRoom.icon} ${activeRoom.name}`;
+            // Populate Step 2 Recap Bar
+            const recapTitle = document.getElementById('recapStaysCount');
+            const recapList = document.getElementById('recapStaysList');
+            recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
 
-            document.getElementById('recapRoomTitle').textContent = roomDisplayName;
-            document.getElementById('recapStayDates').textContent = `${formatFriendlyDate(checkInDate)} – ${formatFriendlyDate(checkOutDate)} (${calculatedNights} Nights)`;
+            recapList.innerHTML = selectedStays.map(s => 
+                `<div>${s.roomIcon} <strong>${s.roomName}</strong>: ${formatFriendlyDate(s.checkIn)} – ${formatFriendlyDate(s.checkOut)} (${s.nights}N) &bull; R${s.subtotal.toLocaleString()}</div>`
+            ).join('');
+
             document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
             document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
 
-            // Adjust guest count select dropdown based on room
+            // Calculate max guest capacity across all selected rooms
+            let maxCapacity = 0;
+            selectedStays.forEach(s => {
+                maxCapacity += (s.roomId === 'all') ? 8 : 2;
+            });
+            maxCapacity = Math.min(8, Math.max(2, maxCapacity));
+
             const guestSelect = document.getElementById('guestCount');
             if (guestSelect) {
                 guestSelect.innerHTML = '';
-                if (isAllRooms) {
-                    for (let g = 8; g >= 1; g--) {
-                        const opt = document.createElement('option');
-                        opt.value = g;
-                        opt.textContent = g === 8 ? `${g} Guests (Max capacity for all 4 rooms)` : `${g} Guests`;
-                        guestSelect.appendChild(opt);
-                    }
-                } else {
-                    guestSelect.innerHTML = `
-                        <option value="2">2 Adults (Maximum for this room)</option>
-                        <option value="1">1 Adult (Solo Traveler)</option>
-                    `;
+                for (let g = maxCapacity; g >= 1; g--) {
+                    const opt = document.createElement('option');
+                    opt.value = g;
+                    opt.textContent = `${g} Guest${g > 1 ? 's' : ''} ${g === maxCapacity ? '(Max capacity)' : ''}`;
+                    guestSelect.appendChild(opt);
                 }
             }
 
@@ -2351,6 +2663,11 @@
         function handleProceedToPayment(e) {
             e.preventDefault();
 
+            if (selectedStays.length === 0) {
+                showToast("No active stays selected.");
+                return;
+            }
+
             const fullName = document.getElementById('guestFullName').value.trim();
             const email = document.getElementById('guestEmail').value.trim();
             const phone = document.getElementById('guestPhone').value.trim();
@@ -2363,9 +2680,7 @@
                 return;
             }
 
-            const isAllRooms = (selectedRoomId === 'all');
-            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            const roomDisplayName = isAllRooms ? 'All 4 Rooms (Entire Property)' : activeRoom.name;
+            const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
             if (typeof PaystackPop !== 'undefined') {
@@ -2379,9 +2694,8 @@
                         custom_fields: [
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
                             { display_name: "Phone Number", variable_name: "phone", value: "+27" + phone },
-                            { display_name: "Room", variable_name: "room", value: roomDisplayName },
-                            { display_name: "Check In", variable_name: "check_in", value: formatDateKey(checkInDate) },
-                            { display_name: "Check Out", variable_name: "check_out", value: formatDateKey(checkOutDate) }
+                            { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
+                            { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
                         ]
                     },
                     callback: function(response) {
@@ -2400,20 +2714,14 @@
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
-            const isAllRooms = (selectedRoomId === 'all');
-            const activeRoom = ROOMS.find(r => r.id === selectedRoomId);
-            const roomDisplayName = isAllRooms ? 'All 4 Rooms (Entire Property)' : activeRoom.name;
-            
             const bookingPayload = {
                 reference: refNumber,
                 guestName: name,
                 guestEmail: email,
                 guestPhone: '+27' + phone,
-                roomId: selectedRoomId,
-                roomName: roomDisplayName,
-                checkIn: formatDateKey(checkInDate),
-                checkOut: formatDateKey(checkOutDate),
-                nights: calculatedNights,
+                stays: selectedStays,
+                totalStays: selectedStays.length,
+                totalNights: totalNightsCount,
                 totalAmount: calculatedGrandTotal,
                 amountPaid: calculatedDepositDue,
                 balanceDue: calculatedBalanceDue,
@@ -2432,30 +2740,29 @@
                 console.log("Local sync:", err);
             }
 
-            // Update local state so calendar marks room(s) as booked
-            if (isAllRooms) {
-                ROOMS.forEach(r => {
-                    MOCK_BOOKINGS.push({
-                        roomId: r.id,
-                        checkIn: formatDateKey(checkInDate),
-                        checkOut: formatDateKey(checkOutDate)
+            // Update local state so calendar permanently marks rooms as booked
+            selectedStays.forEach(stay => {
+                if (stay.roomId === 'all') {
+                    ROOMS.forEach(r => {
+                        MOCK_BOOKINGS.push({
+                            roomId: r.id,
+                            checkIn: stay.checkInStr,
+                            checkOut: stay.checkOutStr
+                        });
                     });
-                });
-            } else {
-                MOCK_BOOKINGS.push({
-                    roomId: selectedRoomId,
-                    checkIn: formatDateKey(checkInDate),
-                    checkOut: formatDateKey(checkOutDate)
-                });
-            }
+                } else {
+                    MOCK_BOOKINGS.push({
+                        roomId: stay.roomId,
+                        checkIn: stay.checkInStr,
+                        checkOut: stay.checkOutStr
+                    });
+                }
+            });
 
             // Populate Step 4 Confirmation Screen
             document.getElementById('confGuestName').textContent = name;
             document.getElementById('confBookingRef').textContent = refNumber;
-            document.getElementById('confRoomName').textContent = roomDisplayName;
-            document.getElementById('confCheckIn').textContent = `${formatFriendlyDate(checkInDate)} (from 14:00)`;
-            document.getElementById('confCheckOut').textContent = `${formatFriendlyDate(checkOutDate)} (by 10:00)`;
-            document.getElementById('confNights').textContent = `${calculatedNights} Night${calculatedNights > 1 ? 's' : ''}`;
+            document.getElementById('confNights').textContent = `${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} across ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''}`;
             document.getElementById('confTotalStay').textContent = `R${calculatedGrandTotal.toLocaleString()}`;
             
             const isDeposit = (calculatedDepositDue < calculatedGrandTotal);
@@ -2468,6 +2775,16 @@
                 document.getElementById('confBalanceLabel').textContent = 'Balance Due:';
                 document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
             }
+
+            // Render list of reserved stays in receipt
+            const confStaysList = document.getElementById('confStaysList');
+            confStaysList.innerHTML = selectedStays.map(s => 
+                `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem;">
+                    <strong>${s.roomIcon} ${s.roomName}</strong><br>
+                    <span>📅 Check-in: ${formatFriendlyDate(s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
+                    <span style="font-weight: 700; color: #1E293B;">Stay Cost: R${s.subtotal.toLocaleString()}</span>
+                </div>`
+            ).join('');
 
             // Switch to Step 4 view
             document.getElementById('step1View').classList.remove('active-view');
@@ -2487,8 +2804,8 @@
         }
 
         function resetToCalendar() {
-            checkInDate = null;
-            checkOutDate = null;
+            selectedStays = [];
+            pendingCheckIn = null;
             renderCalendar();
             updateSummarySidebar();
             goToStep1();
@@ -2548,29 +2865,9 @@
                 bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
             }
 
-            // Re-validate current date selection if any
-            if (checkInDate && checkOutDate) {
-                let hasConflict = false;
-                let d = new Date(checkInDate);
-                while (d < checkOutDate) {
-                    if (roomId === 'all') {
-                        if (getDateAvailability(formatDateKey(d)).availableCount < 4) {
-                            hasConflict = true;
-                            break;
-                        }
-                    } else {
-                        if (isRoomBookedOnDate(roomId, formatDateKey(d))) {
-                            hasConflict = true;
-                            break;
-                        }
-                    }
-                    d.setDate(d.getDate() + 1);
-                }
-                if (hasConflict) {
-                    checkInDate = null;
-                    checkOutDate = null;
-                    showToast("⚠️ Dates reset: Selected dates are not available for this room option.");
-                }
+            // If user had an incomplete check-in selection on another room, clear the pending state
+            if (pendingCheckIn && pendingCheckIn.roomId !== roomId) {
+                pendingCheckIn = null;
             }
 
             renderCalendar();

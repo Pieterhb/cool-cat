@@ -57,17 +57,31 @@ export async function onRequestPost(context) {
             });
         }
 
-        // 2. Format Confirmed Booking Record
+        // 2. Format Confirmed Booking Record & Stays
+        const bookingRef = reference || ('CC-' + Math.floor(Math.random() * 899999 + 100000));
+        const staysList = (payload.stays && Array.isArray(payload.stays) && payload.stays.length > 0) ? payload.stays : [{
+            roomId: roomId || 'king-arthur',
+            roomName: roomName || 'King Arthur Room',
+            checkIn: checkIn,
+            checkOut: checkOut,
+            checkInStr: checkIn,
+            checkOutStr: checkOut,
+            nights: nights || 1,
+            subtotal: totalAmount || 0
+        }];
+
         const confirmedBooking = {
-            id: reference || ('CC-' + Math.floor(Math.random() * 899999 + 100000)),
-            roomId,
-            roomName: roomName || roomId,
-            checkIn,
-            checkOut,
-            nights,
+            id: bookingRef,
             guestName,
             guestEmail,
             guestPhone,
+            stays: staysList,
+            totalStays: staysList.length,
+            roomId: staysList[0].roomId,
+            roomName: staysList.length === 1 ? staysList[0].roomName : `${staysList.length} Reserved Stays`,
+            checkIn: staysList[0].checkInStr || staysList[0].checkIn,
+            checkOut: staysList[staysList.length - 1].checkOutStr || staysList[staysList.length - 1].checkOut,
+            nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
             arrivalTime: arrivalTime || '14:00 - 16:00',
             specialRequests: specialRequests || '',
             totalAmount,
@@ -80,7 +94,25 @@ export async function onRequestPost(context) {
         // 3. Save to Cloudflare KV storage if present
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            existing.push(confirmedBooking);
+            
+            // Push each individual stay to KV so each room/date range is blocked on the calendar
+            staysList.forEach(s => {
+                existing.push({
+                    id: bookingRef + '_' + s.roomId,
+                    parentBookingId: bookingRef,
+                    roomId: s.roomId,
+                    roomName: s.roomName,
+                    checkIn: s.checkInStr || s.checkIn,
+                    checkOut: s.checkOutStr || s.checkOut,
+                    nights: s.nights,
+                    guestName,
+                    guestEmail,
+                    guestPhone,
+                    status: balanceDue > 0 ? 'deposit_paid' : 'fully_paid',
+                    createdAt: new Date().toISOString()
+                });
+            });
+
             await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
         }
 
@@ -111,6 +143,14 @@ export async function onRequestPost(context) {
 async function dispatchBookingEmails(booking, env) {
     const resendApiKey = (env && env.RESEND_API_KEY) ? env.RESEND_API_KEY : null;
 
+    const staysRowsHtml = (booking.stays && Array.isArray(booking.stays)) ? booking.stays.map(s => `
+        <div style="padding: 8px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px;">
+            <strong>🛏️ ${s.roomName}</strong><br>
+            <span>📅 ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut} (${s.nights} Nights)</span><br>
+            <span>Subtotal: R${Number(s.subtotal || 0).toLocaleString()}</span>
+        </div>
+    `).join('') : `<p>🛏️ ${booking.roomName}: ${booking.checkIn} to ${booking.checkOut}</p>`;
+
     const guestHtml = `
     <!DOCTYPE html>
     <html>
@@ -126,11 +166,11 @@ async function dispatchBookingEmails(booking, env) {
           <p>Thank you for choosing Cool-Cat! Your reservation is officially secured.</p>
           
           <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0 0 8px; font-weight: bold; color: #0a3a85;">Booking Reference: #${booking.id}</p>
-            <p style="margin: 4px 0;">🛏️ <strong>Room:</strong> ${booking.roomName}</p>
-            <p style="margin: 4px 0;">📅 <strong>Check-In:</strong> ${booking.checkIn} (from 14:00)</p>
-            <p style="margin: 4px 0;">📅 <strong>Check-Out:</strong> ${booking.checkOut} (by 10:00)</p>
-            <p style="margin: 4px 0;">🌙 <strong>Nights:</strong> ${booking.nights}</p>
+            <p style="margin: 0 0 10px; font-weight: bold; color: #0a3a85; font-size: 16px;">Booking Reference: #${booking.id}</p>
+            <div style="margin-bottom: 12px;">
+                <strong>Reserved Stays:</strong>
+                ${staysRowsHtml}
+            </div>
             <p style="margin: 4px 0;">💰 <strong>Total Stay:</strong> R${Number(booking.totalAmount).toLocaleString()}</p>
             <p style="margin: 4px 0; color: #166534;">💳 <strong>Amount Paid:</strong> R${Number(booking.amountPaid).toLocaleString()}</p>
             ${booking.balanceDue > 0 ? `<p style="margin: 4px 0; color: #991b1b; font-weight: bold;">⏳ Balance Due at Check-In: R${Number(booking.balanceDue).toLocaleString()}</p>` : `<p style="margin: 4px 0; color: #166534;">🎉 100% Fully Paid</p>`}
@@ -160,14 +200,13 @@ async function dispatchBookingEmails(booking, env) {
     <head><meta charset="utf-8"></head>
     <body style="font-family: Arial, sans-serif; background-color: #f4f7f9; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 25px; border: 1px solid #e2e8f0;">
-        <h2 style="color: #0a3a85; margin-top: 0;">🔔 New Booking Received: ${booking.roomName}</h2>
+        <h2 style="color: #0a3a85; margin-top: 0;">🔔 New Booking Received: #${booking.id}</h2>
         <p>A new guest has completed their booking and payment via Paystack:</p>
         <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0;">
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Guest Name:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.guestName}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="mailto:${booking.guestEmail}">${booking.guestEmail}</a></td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>WhatsApp/Phone:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="https://wa.me/${booking.guestPhone.replace(/[^0-9]/g, '')}">${booking.guestPhone}</a></td></tr>
-          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Room:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.roomName}</td></tr>
-          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Dates:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.checkIn} to ${booking.checkOut} (${booking.nights} Nights)</td></tr>
+          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Stays Booked:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${staysRowsHtml}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Arrival Time:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.arrivalTime}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Special Requests:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.specialRequests || 'None'}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Amount Paid:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee; color: #166534; font-weight: bold;">R${Number(booking.amountPaid).toLocaleString()}</td></tr>
