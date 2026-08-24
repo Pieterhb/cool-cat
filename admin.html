@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Admin Dashboard | Cool Cat B&amp;B</title>
+    <title>Owner Admin Dashboard | Cool-Cat</title>
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Fonts & Styling -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787572100.css">
+    <link rel="stylesheet" href="styles-v1787572753.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -535,7 +535,7 @@
         <div class="auth-card">
             <img src="Logo.png?v=3" alt="Cool Cat Logo" class="auth-logo">
             <h2 style="font-size: 1.4rem; color: var(--adm-primary-dark); margin-bottom: 0.3rem;">Owner Admin Access</h2>
-            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Cool Cat B&amp;B Management Portal</p>
+            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Cool-Cat Management Portal</p>
             
             <form onsubmit="handleAdminLogin(event)">
                 <div style="margin-bottom: 1.2rem; text-align: left;">
@@ -1537,7 +1537,7 @@
 
         // 5. 1-Click WhatsApp Cleaner Schedule
         function sendCleanerWhatsApp() {
-            const text = `*Cool Cat B&B - Today's Housekeeping Schedule (%23Today)*%0A%0A` +
+            const text = `*Cool-Cat - Today's Housekeeping Schedule (%23Today)*%0A%0A` +
                 `🔴 *Room 1 (King Arthur):* Check-out 10:00 -> Turnover Clean (New guest arriving 14:00)%0A` +
                 `🟡 *Room 2 (Santori):* Stayover (Towel refresh only)%0A` +
                 `🟢 *Room 3 (Mykonos):* Empty & Ready%0A` +
@@ -1672,7 +1672,7 @@
 
         function whatsappReferrer(phone, name, commission) {
             const cleanPhone = phone.replace(/[^0-9]/g, '');
-            const msg = `*Cool Cat B&B - Referral Commission Ready!*%0A%0AHi ${encodeURIComponent(name)}, great news! Your referred guest has completed their stay at Cool Cat B&B in Strand.%0A%0AYour 10% commission of *R${commission}* is ready for payout. Please reply with your South African bank name, account number, and branch code for instant EFT transfer.%0A%0AThank you for partnering with Cool Cat!`;
+            const msg = `*Cool-Cat - Referral Commission Ready!*%0A%0AHi ${encodeURIComponent(name)}, great news! Your referred guest has completed their stay at Cool-Cat in Strand.%0A%0AYour 10% commission of *R${commission}* is ready for payout. Please reply with your South African bank name, account number, and branch code for instant EFT transfer.%0A%0AThank you for partnering with Cool Cat!`;
             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
         }
 
@@ -1687,8 +1687,8 @@
 
         function sendGuestCheckinPass(guestName, roomName, phone) {
             const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-            const msg = `*Cool Cat B&B - Check-In Pass & Gate Details*%0A%0A` +
-                `Hi ${encodeURIComponent(guestName)}, we look forward to welcoming you to Cool Cat B&B today!%0A%0A` +
+            const msg = `*Cool-Cat - Check-In Pass & Gate Details*%0A%0A` +
+                `Hi ${encodeURIComponent(guestName)}, we look forward to welcoming you to Cool-Cat today!%0A%0A` +
                 `🛏️ *Room:* ${encodeURIComponent(roomName)}%0A` +
                 `⏰ *Check-In Time:* From 14:00 onwards%0A` +
                 `📍 *Google Maps Pin:* https://maps.app.goo.gl/CoolCatStrand%0A` +
@@ -1701,8 +1701,8 @@
 
         function sendGuestReviewRequest(guestName, phone) {
             const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-            const msg = `*Cool Cat B&B - Thank You for Staying With Us!*%0A%0A` +
-                `Hi ${encodeURIComponent(guestName)}, thank you for choosing Cool Cat B&B for your visit to Strand! We truly hope you had a relaxing and comfortable stay.%0A%0A` +
+            const msg = `*Cool-Cat - Thank You for Staying With Us!*%0A%0A` +
+                `Hi ${encodeURIComponent(guestName)}, thank you for choosing Cool-Cat for your visit to Strand! We truly hope you had a relaxing and comfortable stay.%0A%0A` +
                 `If you enjoyed your time with us, would you mind taking 30 seconds to leave us a 5-star review on Google? It helps our small coastal guesthouse tremendously!%0A%0A` +
                 `⭐ *Leave a Review:* https://g.page/r/CeLXe6MDyWarEBM/review%0A%0A` +
                 `Wishing you safe travels and we hope to welcome you back soon!`;

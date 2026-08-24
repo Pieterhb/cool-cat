@@ -118,12 +118,12 @@ async function dispatchBookingEmails(booking, env) {
     <body style="font-family: Arial, sans-serif; background-color: #f4f7f9; margin: 0; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <div style="background: linear-gradient(135deg, #0A3A85, #0F52BA); padding: 25px; text-align: center; color: #ffffff;">
-          <h1 style="margin: 0; font-size: 24px;">Cool Cat B&B 🐾</h1>
+          <h1 style="margin: 0; font-size: 24px;">Cool-Cat 🐾</h1>
           <p style="margin: 5px 0 0; font-size: 15px; opacity: 0.9;">Booking Confirmed — Welcome to Strand!</p>
         </div>
         <div style="padding: 25px;">
           <p style="font-size: 16px;">Dear <strong>${booking.guestName}</strong>,</p>
-          <p>Thank you for choosing Cool Cat B&B! Your reservation is officially secured.</p>
+          <p>Thank you for choosing Cool-Cat! Your reservation is officially secured.</p>
           
           <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <p style="margin: 0 0 8px; font-weight: bold; color: #0a3a85;">Booking Reference: #${booking.id}</p>
@@ -139,7 +139,7 @@ async function dispatchBookingEmails(booking, env) {
           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin: 0 0 10px; color: #166534; font-size: 16px;">🏠 Check-In & Access Details:</h3>
             <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> | Pass: <code>004eda35aef</code></p>
-            <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool Cat B&B, Strand, Western Cape</p>
+            <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool-Cat, Strand, Western Cape</p>
             <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
             <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (063 712 4491)</p>
           </div>
@@ -189,9 +189,9 @@ async function dispatchBookingEmails(booking, env) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Cool Cat B&B <bookings@cool-cat.co.za>',
+                    from: 'Cool-Cat <bookings@cool-cat.co.za>',
                     to: [booking.guestEmail],
-                    subject: `Booking Confirmed #${booking.id} - Cool Cat B&B Strand`,
+                    subject: `Booking Confirmed #${booking.id} - Cool-Cat Strand`,
                     html: guestHtml
                 })
             });

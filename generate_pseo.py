@@ -48,27 +48,27 @@ def generate():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Nearby | Cool Cat B&B Strand, Western Cape</title>
-    <meta name="description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool Cat B&B in Strand, Western Cape, South Africa.">
+    <title>Explore Nearby | Cool-Cat Strand, Western Cape</title>
+    <meta name="description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool-Cat in Strand, Western Cape, South Africa.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://cool-cat.co.za/explore">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:site_name" content="Cool Cat B&B">
-    <meta property="og:title" content="Explore Nearby | Cool Cat B&B Strand">
-    <meta property="og:description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool Cat B&B in Strand, Western Cape.">
+    <meta property="og:site_name" content="Cool-Cat">
+    <meta property="og:title" content="Explore Nearby | Cool-Cat Strand">
+    <meta property="og:description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool-Cat in Strand, Western Cape.">
     <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Cool Cat B&B Strand">
+    <meta property="og:image:alt" content="Cool-Cat Strand">
     <meta property="og:url" content="https://cool-cat.co.za/explore">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_ZA">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Explore Nearby | Cool Cat B&B Strand">
-    <meta name="twitter:description" content="Explore top destinations near Cool Cat B&B in Strand, Western Cape, South Africa.">
+    <meta name="twitter:title" content="Explore Nearby | Cool-Cat Strand">
+    <meta name="twitter:description" content="Explore top destinations near Cool-Cat in Strand, Western Cape, South Africa.">
     <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
 
     <!-- JSON-LD: CollectionPage + BreadcrumbList -->
@@ -79,13 +79,13 @@ def generate():
         {{
           "@type": "CollectionPage",
           "@id": "https://cool-cat.co.za/explore",
-          "name": "Explore Nearby | Cool Cat B&B",
-          "description": "A directory of top attractions, beaches, golf courses, hospitals, and destinations near Cool Cat B&B in Strand, Western Cape.",
+          "name": "Explore Nearby | Cool-Cat",
+          "description": "A directory of top attractions, beaches, golf courses, hospitals, and destinations near Cool-Cat in Strand, Western Cape.",
           "url": "https://cool-cat.co.za/explore",
           "publisher": {{
             "@type": "LodgingBusiness",
             "@id": "https://cool-cat.co.za/#bedandbreakfast",
-            "name": "Cool Cat B&B",
+            "name": "Cool-Cat",
             "url": "https://cool-cat.co.za/"
           }}
         }},
@@ -146,8 +146,8 @@ def generate():
     <header id="navbar">
         <div class="container nav-container">
             <a href="/" class="logo-wrapper">
-                <img src="Logo.png" alt="Cool Cat B&B Logo" class="logo-img">
-                <span class="logo-text">COOL CAT B&B</span>
+                <img src="Logo.png" alt="Cool-Cat Logo" class="logo-img">
+                <span class="logo-text">COOL-CAT</span>
             </a>
             <nav>
                 <div class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('active')">☰</div>
@@ -165,7 +165,7 @@ def generate():
     <div class="page-header">
         <div class="container">
             <h1 style="color: white; font-size: clamp(2rem, 8vw, 3rem); word-break: break-word;">Explore the Western Cape</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Discover top destinations, transit hubs, and beautiful locations near Cool Cat B&B.</p>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Discover top destinations, transit hubs, and beautiful locations near Cool-Cat.</p>
         </div>
     </div>
 
@@ -190,7 +190,7 @@ def generate():
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h3>Cool Cat B&B</h3>
+                    <h3>Cool-Cat</h3>
                     <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
                 </div>
                 <div class="footer-col">
@@ -211,7 +211,7 @@ def generate():
                 </div>
             </div>
             <div class="footer-bottom">
-                &copy; <script>document.write(new Date().getFullYear())</script> Cool Cat B&B. All rights reserved.
+                &copy; <script>document.write(new Date().getFullYear())</script> Cool-Cat. All rights reserved.
             </div>
         </div>
     </footer>

@@ -30,10 +30,10 @@ export async function onRequestGet(context) {
         let ics = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//Cool Cat B&B//Calendar Sync 1.0//EN',
+            'PRODID:-//Cool-Cat//Calendar Sync 1.0//EN',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            `X-WR-CALNAME:Cool Cat B&B - ${requestedRoom.toUpperCase()}`
+            `X-WR-CALNAME:Cool-Cat - ${requestedRoom.toUpperCase()}`
         ];
 
         activeBookings.forEach((b, idx) => {
@@ -48,7 +48,7 @@ export async function onRequestGet(context) {
                 ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
                 ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
                 ics.push(`SUMMARY:Reserved (${b.roomName || b.roomId || 'Cool Cat Room'})`);
-                ics.push(`DESCRIPTION:Booking Ref #${b.id || idx} - Cool Cat B&B`);
+                ics.push(`DESCRIPTION:Booking Ref #${b.id || idx} - Cool-Cat`);
                 ics.push('STATUS:CONFIRMED');
                 ics.push('END:VEVENT');
             }
@@ -66,7 +66,7 @@ export async function onRequestGet(context) {
         });
 
     } catch (err) {
-        return new Response(`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Cool Cat B&B//EN\r\nEND:VCALENDAR`, {
+        return new Response(`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Cool-Cat//EN\r\nEND:VCALENDAR`, {
             status: 200,
             headers: { 'Content-Type': 'text/calendar; charset=utf-8' }
         });
