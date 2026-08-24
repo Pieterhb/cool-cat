@@ -18,7 +18,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="apple-mobile-web-app-title" content="Cool Cat">
+    <meta name="apple-mobile-web-app-title" content="Cool-Cat">
 </head>
 <body>
 
@@ -40,7 +40,7 @@
                     
                     <li class="coupon-dropdown">
                         <button class="coupon-btn">Coupon</button>
-                        <div class="coupon-dropdown-content">Cool Cat</div>
+                        <div class="coupon-dropdown-content">Cool-Cat</div>
                     </li>
                     
                     <li><button id="reviewsBtn" class="nav-reviews-btn">Reviews</button></li>
@@ -90,7 +90,7 @@
                 <div class="card text-center" style="padding: 2rem;">
                     <h3 class="text-orange" style="font-size: 2rem;">🍳</h3>
                     <h3>Delicious Breakfasts</h3>
-                    <p class="text-light">Start your day right with our Continental, Sunrise, or Cool Cat Signature breakfasts.</p>
+                    <p class="text-light">Start your day right with our Continental, Sunrise, or Cool-Cat Signature breakfasts.</p>
                 </div>
                 <div class="card text-center" style="padding: 2rem;">
                     <h3 class="text-orange" style="font-size: 2rem;">🛏️</h3>

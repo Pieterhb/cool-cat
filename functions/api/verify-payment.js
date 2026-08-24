@@ -204,7 +204,7 @@ async function dispatchBookingEmails(booking, env) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Cool Cat System <bookings@cool-cat.co.za>',
+                    from: 'Cool-Cat System <bookings@cool-cat.co.za>',
                     to: ['bookings@cool-cat.co.za', 'corrie@cool-cat.co.za'],
                     subject: `🔔 New Booking #${booking.id}: ${booking.guestName} (${booking.roomName})`,
                     html: ownerHtml

@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
                 ics.push(`DTSTAMP:${now}`);
                 ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
                 ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
-                ics.push(`SUMMARY:Reserved (${b.roomName || b.roomId || 'Cool Cat Room'})`);
+                ics.push(`SUMMARY:Reserved (${b.roomName || b.roomId || 'Cool-Cat Room'})`);
                 ics.push(`DESCRIPTION:Booking Ref #${b.id || idx} - Cool-Cat`);
                 ics.push('STATUS:CONFIRMED');
                 ics.push('END:VEVENT');

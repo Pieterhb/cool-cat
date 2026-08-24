@@ -1,6 +1,6 @@
 {
     "name": "Cool-Cat",
-    "short_name": "Cool Cat",
+    "short_name": "Cool-Cat",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
