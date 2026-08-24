@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787582160.css">
+    <link rel="stylesheet" href="styles-v1787582646.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -2139,7 +2139,9 @@
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
+                    // Check for conflicting cart stays — but exclude the stay already shown blue on this date
                     const isBookedOtherStay = selectedStays.some(s => {
+                        if (s === stayForDate) return false; // don't count own stay as a conflict
                         if (s.roomId !== selectedRoomId && s.roomId !== 'all') return false;
                         return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                     });
@@ -2283,7 +2285,7 @@
                 return;
             }
 
-            // Verify all nights in the stay range are available
+            // Verify all nights in the stay range are available (ignore existing stays in cart for same room — handled separately)
             let d = new Date(checkInDate);
             let hasConflict = false;
             while (d < checkOutDate) {
@@ -2294,7 +2296,9 @@
                         break;
                     }
                 } else {
-                    if (isRoomBookedOnDate(selectedRoomId, dKey) || isDateInSelectedStays(selectedRoomId, dKey)) {
+                    // Only flag as conflict if the room is booked in the DB,
+                    // NOT if there's already a cart stay (that would be a duplicate, but handled by findStayByDateAndRoom)
+                    if (isRoomBookedOnDate(selectedRoomId, dKey)) {
                         hasConflict = true;
                         break;
                     }
