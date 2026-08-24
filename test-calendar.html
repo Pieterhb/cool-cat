@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787581575.css">
+    <link rel="stylesheet" href="styles-v1787582160.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -2174,7 +2174,11 @@
                 } else if (isPendingStart) {
                     tooltipText += `<br><span style="color: #FDBA74; font-weight:700;">📍 Check-In selected &bull; Click Check-Out date</span>`;
                 } else if (isBooked) {
-                    tooltipText += `<br><span style="color: #FCA5A5;">(Unavailable / Booked)</span>`;
+                    if (selectedRoomId === 'all' && avail.availableCount > 0) {
+                        tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${avail.availableCount} of 4 rooms free — can't book All Rooms on this date</span>`;
+                    } else {
+                        tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
+                    }
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
                 }
@@ -2208,8 +2212,8 @@
                     } else {
                         dayCell.onclick = () => showToast(
                             selectedRoomId === 'all' && avail.availableCount > 0
-                                ? "All 4 rooms must be available on this date to book the entire property."
-                                : "This date is already booked. Please select an available date."
+                                ? `⚠️ Only ${avail.availableCount} of 4 rooms are free on this date. To book all 4 rooms together, you need all rooms available. Book individual rooms instead on separate tabs.`
+                                : "🚫 This date is fully booked. Please select an available date."
                         );
                     }
                 }
