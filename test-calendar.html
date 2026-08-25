@@ -208,19 +208,31 @@
             box-shadow: 0 2px 5px rgba(15, 82, 186, 0.3);
         }
 
-        .room-tab-btn.active .room-tab-badge {
-            background: var(--orange);
-        }
+
 
         .room-tab-btn:hover {
             color: var(--sapphire-blue-dark);
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         }
 
         .room-tab-btn.active {
-            background: var(--white);
-            color: var(--sapphire-blue-dark);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            background: #22C55E;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45);
+        }
+
+        .room-tab-btn.active:hover {
+            background: #16A34A;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(22, 163, 74, 0.45);
+        }
+
+        .room-tab-btn.active .room-tab-badge {
+            background: #fff;
+            color: #166534;
         }
 
         /* Selected Room Banner */
@@ -1999,14 +2011,24 @@
 
         function isDateInSelectedStays(roomId, dateStr) {
             return selectedStays.some(s => {
-                if (s.roomId !== roomId && s.roomId !== 'all' && roomId !== 'all') return false;
+                if (roomId === 'all') {
+                    // All Rooms tab only cares about its OWN 'all' stays
+                    return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                }
+                // Individual room: match this room's stays OR any 'All Rooms' stay (which occupies all rooms)
+                if (s.roomId !== roomId && s.roomId !== 'all') return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
         }
 
         function findStayByDateAndRoom(roomId, dateStr) {
             return selectedStays.find(s => {
-                if (s.roomId !== roomId && s.roomId !== 'all' && roomId !== 'all') return false;
+                if (roomId === 'all') {
+                    // All Rooms tab only highlights its OWN 'all' stays as blue
+                    return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                }
+                // Individual room: show blue for this room's stays OR any 'All Rooms' stay
+                if (s.roomId !== roomId && s.roomId !== 'all') return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
         }
@@ -2036,6 +2058,41 @@
                 availableRooms: availableRooms
             };
         }
+
+        // Checks only DB bookings + "All Rooms" cart stays — used for the "All Rooms" TAB display
+        // so that individual-room cart selections don't colour those dates red/pink on the All Rooms tab.
+        function getDateAvailabilityForAllRoomsDisplay(dateStr) {
+            let bookedCount = 0;
+            const availableRooms = [];
+
+            ROOMS.forEach(room => {
+                const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
+                // Only count "all" cart stays for display blocking — individual-room carts don't block All Rooms view
+                const bookedInAllCart = selectedStays.some(s => {
+                    if (s.roomId !== 'all') return false;
+                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                });
+
+                if (bookedInDB || bookedInAllCart) {
+                    bookedCount++;
+                } else {
+                    availableRooms.push(room);
+                }
+            });
+
+            return {
+                totalRooms: ROOMS.length,
+                bookedCount: bookedCount,
+                availableCount: ROOMS.length - bookedCount,
+                availableRooms: availableRooms
+            };
+        }
+
+        // Full check including individual-room cart stays — used for blocking when BOOKING All Rooms
+        function getDateAvailabilityForAllRoomsBooking(dateStr) {
+            return getDateAvailability(dateStr); // includes all cart stays
+        }
+
 
         function formatDateKey(date) {
             const y = date.getFullYear();
@@ -2105,7 +2162,10 @@
 
                 const isPast = (dateObj < TODAY);
                 const isCurrentDay = (dateObj.getTime() === TODAY.getTime());
-                const avail = getDateAvailability(dateStr);
+                // For All Rooms tab: use display-only availability (ignores individual-room cart stays for display)
+                const avail = selectedRoomId === 'all'
+                    ? getDateAvailabilityForAllRoomsDisplay(dateStr)
+                    : getDateAvailability(dateStr);
                 const season = getSeasonInfo(dateObj);
 
                 const dayCell = document.createElement('div');
@@ -2125,16 +2185,29 @@
                     const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
                     priceText = `R${allRate.toLocaleString()}`;
 
+                    // How many individual-room cart stays occupy this date?
+                    const indivCartCount = ROOMS.filter(r =>
+                        selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                    ).length;
+
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ Booked in Cart</span>`;
-                    } else if (avail.availableCount === 4) {
+                    } else if (avail.availableCount === 4 && indivCartCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
-                    } else if (avail.availableCount > 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
-                        isBooked = true; // Full property booking requires all 4 rooms to be available
-                    } else {
+                    } else if (avail.availableCount === 0) {
+                        // All 4 rooms fully booked in DB — fully sold out for All Rooms
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
                         isBooked = true;
+                    } else if (avail.availableCount < 4) {
+                        // Some rooms blocked by DB booking — can't book All Rooms
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
+                        isBooked = true;
+                    } else if (indivCartCount > 0) {
+                        // Individual rooms are in cart on this date — show info pill
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${4 - indivCartCount} Free</span>`;
+                        isBooked = true; // Block "All Rooms" booking on these dates
+                    } else {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     }
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
@@ -2176,8 +2249,19 @@
                 } else if (isPendingStart) {
                     tooltipText += `<br><span style="color: #FDBA74; font-weight:700;">📍 Check-In selected &bull; Click Check-Out date</span>`;
                 } else if (isBooked) {
-                    if (selectedRoomId === 'all' && avail.availableCount > 0) {
-                        tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${avail.availableCount} of 4 rooms free — can't book All Rooms on this date</span>`;
+                    if (selectedRoomId === 'all') {
+                        // Calculate full booking check (including individual carts) for tooltip detail
+                        const fullAvail = getDateAvailability(dateStr);
+                        const indivCartBlocking = ROOMS.filter(r =>
+                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        ).length;
+                        if (indivCartBlocking > 0 && avail.availableCount === 4) {
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book All Rooms on this date</span>`;
+                        } else if (fullAvail.availableCount > 0) {
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free — can't book All Rooms on this date</span>`;
+                        } else {
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All rooms fully booked — no availability</span>`;
+                        }
                     } else {
                         tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
                     }
@@ -2212,11 +2296,23 @@
                         dayCell.onclick = () => handleDateClick(dateObj);
                         dayCell.title = "Click to check out on this date (you depart, next guest arrives same day)";
                     } else {
-                        dayCell.onclick = () => showToast(
-                            selectedRoomId === 'all' && avail.availableCount > 0
-                                ? `⚠️ Only ${avail.availableCount} of 4 rooms are free on this date. To book all 4 rooms together, you need all rooms available. Book individual rooms instead on separate tabs.`
-                                : "🚫 This date is fully booked. Please select an available date."
-                        );
+                        dayCell.onclick = () => {
+                            if (selectedRoomId === 'all') {
+                                const fullAvail = getDateAvailability(formatDateKey(dateObj));
+                                const indivCartBlocking = ROOMS.filter(r =>
+                                    selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
+                                ).length;
+                                if (indivCartBlocking > 0 && fullAvail.availableCount === 4) {
+                                    showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book All Rooms on other dates.`);
+                                } else if (fullAvail.availableCount > 0) {
+                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. All Rooms requires all 4 to be available. Book rooms individually instead.`);
+                                } else {
+                                    showToast("🚫 All rooms fully booked on this date. Please select different dates.");
+                                }
+                            } else {
+                                showToast("🚫 This date is fully booked. Please select an available date.");
+                            }
+                        };
                     }
                 }
 
