@@ -211,28 +211,29 @@
 
 
         .room-tab-btn:hover {
-            color: var(--sapphire-blue-dark);
-            background: rgba(255, 255, 255, 0.7);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            color: #064E3B;
+            background: #FFFFFF;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
         }
 
         .room-tab-btn.active {
-            background: #22C55E;
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45);
+            background: #15803D;
+            color: #FFFFFF;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(21, 128, 61, 0.45);
         }
 
         .room-tab-btn.active:hover {
-            background: #16A34A;
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 18px rgba(22, 163, 74, 0.45);
+            background: #166534;
+            color: #FFFFFF;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(22, 101, 52, 0.5);
         }
 
         .room-tab-btn.active .room-tab-badge {
-            background: #fff;
-            color: #166534;
+            background: #FFFFFF;
+            color: #14532D;
         }
 
         /* Selected Room Banner */
@@ -2339,12 +2340,24 @@
                 if (selectedRoomId === 'all') {
                     const avail = getDateAvailability(dateStr);
                     if (avail.availableCount < 4) {
-                        showToast("All 4 rooms must be available on this date to book the entire property.");
+                        const indivCount = ROOMS.filter(r =>
+                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        ).length;
+                        if (indivCount > 0) {
+                            showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book All Rooms.`);
+                        } else {
+                            showToast("All 4 rooms must be available on this date to book the entire property.");
+                        }
                         return;
                     }
                 } else {
                     if (isRoomBookedOnDate(selectedRoomId, dateStr) || isDateInSelectedStays(selectedRoomId, dateStr)) {
-                        showToast("This date is already booked or in your cart. Please select another date.");
+                        const allRoomsStay = selectedStays.find(s => s.roomId === 'all' && dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                        if (allRoomsStay) {
+                            showToast("⚠️ All Rooms is already in your cart on this date. Remove that stay to book individual rooms.");
+                        } else {
+                            showToast("This date is already booked or in your cart. Please select another date.");
+                        }
                         return;
                     }
                 }
@@ -2381,7 +2394,7 @@
                 return;
             }
 
-            // Verify all nights in the stay range are available (ignore existing stays in cart for same room — handled separately)
+            // Verify all nights in the stay range are available (prevent conflicts with DB bookings and cart stays)
             let d = new Date(checkInDate);
             let hasConflict = false;
             while (d < checkOutDate) {
@@ -2392,9 +2405,7 @@
                         break;
                     }
                 } else {
-                    // Only flag as conflict if the room is booked in the DB,
-                    // NOT if there's already a cart stay (that would be a duplicate, but handled by findStayByDateAndRoom)
-                    if (isRoomBookedOnDate(selectedRoomId, dKey)) {
+                    if (isRoomBookedOnDate(selectedRoomId, dKey) || isDateInSelectedStays(selectedRoomId, dKey)) {
                         hasConflict = true;
                         break;
                     }
@@ -2403,7 +2414,11 @@
             }
 
             if (hasConflict) {
-                showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart.");
+                if (selectedRoomId === 'all') {
+                    showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart for other rooms.");
+                } else {
+                    showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart for this room.");
+                }
                 return;
             }
 
