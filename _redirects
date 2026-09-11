@@ -1,0 +1,10 @@
+# Cloudflare Pages 301 Permanent Redirects for SEO Canonicalization
+/index.html               /                                       301
+/rooms.html               /rooms                                  301
+/guide.html               /guide                                  301
+/faq.html                 /faq                                    301
+/explore.html             /explore                                301
+/privacy.html             /privacy                                301
+/entertainment.html       /entertainment                          301
+/test-calendar.html       /test-calendar                          301
+/explore/:slug.html       /explore/:slug                          301

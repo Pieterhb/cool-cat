@@ -1,32 +1,38 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B&B Near Blue Rock Adventure Park | Cool-Cat</title>
-    <meta name="description" content="Planning an action-packed day at Blue Rock Adventure Park? Cool-Cat is the ideal place to rest and recharge, located just 15 minutes away in Strand.">
+    <title>B&B Near Blue Rock Adventure Park | Cool-Cat Strand</title>
+    <meta name="description" content="Planning an action-packed day at Blue Rock Adventure Park? Cool-Cat is the ideal place to rest and recharge, located just 15 minutes away in Strand. Located just 10.5 km (15 minutes) from Blue Rock Adventure Park. Book direct for best rates & breakfast.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://cool-cat.co.za/explore/blue-rock-adventure-park">
 
+    <!-- Geo Meta Tags for Local SEO -->
+    <meta name="geo.region" content="ZA-WC">
+    <meta name="geo.placename" content="Strand">
+    <meta name="geo.position" content="-34.1167;18.8282">
+    <meta name="ICBM" content="-34.1167, 18.8282">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content="Cool-Cat">
-    <meta property="og:title" content="B&B Near Blue Rock Adventure Park | Cool-Cat">
+    <meta property="og:title" content="B&B Near Blue Rock Adventure Park | Cool-Cat Strand">
     <meta property="og:description" content="Planning an action-packed day at Blue Rock Adventure Park? Cool-Cat is the ideal place to rest and recharge, located just 15 minutes away in Strand.">
     <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Cool-Cat Strand">
     <meta property="og:url" content="https://cool-cat.co.za/explore/blue-rock-adventure-park">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="article">
     <meta property="og:locale" content="en_ZA">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="B&B Near Blue Rock Adventure Park | Cool-Cat">
+    <meta name="twitter:title" content="B&B Near Blue Rock Adventure Park | Cool-Cat Strand">
     <meta name="twitter:description" content="Planning an action-packed day at Blue Rock Adventure Park? Cool-Cat is the ideal place to rest and recharge, located just 15 minutes away in Strand.">
     <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
 
-    <!-- JSON-LD Structured Data: TouristAttraction proximity + BreadcrumbList -->
+    <!-- JSON-LD: LodgingBusiness + TouristAttraction + BreadcrumbList + FAQPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -62,8 +68,29 @@
           "nearbyLocation": {
             "@type": "TouristAttraction",
             "name": "Blue Rock Adventure Park",
-            "description": "Blue Rock Adventure Park is located approximately 10.5 km (15 minutes) from Cool-Cat."
+            "description": "Blue Rock Adventure Park is located approximately 10.5 km (15 minutes) from Cool-Cat B&B in Strand."
           }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Do I need prior experience to cable wakeboard at Blue Rock?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No prior experience is necessary. Blue Rock provides equipment rentals and beginner coaching on the overhead cable system."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How far is Cool-Cat from Strand Beach?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Cool-Cat is situated under 250 meters from Strand Beach—a quick 2 to 3 minute walk to the sand and ocean promenade."
+              }
+            }
+          ]
         },
         {
           "@type": "BreadcrumbList",
@@ -95,11 +122,23 @@
     <link rel="stylesheet" href="../styles-v1787671426.css">
     <style>
         .page-header {
-            background: linear-gradient(rgba(10, 58, 133, 0.5), rgba(15, 82, 186, 0.6)), url('../1. Ocean.jpg') center/cover;
-            padding: 8rem 0 4rem;
+            background: linear-gradient(rgba(10, 58, 133, 0.65), rgba(15, 82, 186, 0.75)), url('../1. Ocean.jpg') center/cover;
+            padding: 7.5rem 0 4rem;
             text-align: center;
             color: white;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+        }
+        .category-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: #FEF08A;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
         }
         .distance-card {
             background: var(--white);
@@ -109,13 +148,29 @@
             margin-bottom: 2rem;
             border-top: 4px solid var(--orange);
         }
+        .route-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .route-card h4 {
+            color: var(--sapphire-blue-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
         ul.custom-list {
             list-style: none;
+            padding-left: 0;
         }
         ul.custom-list li {
             margin-bottom: 0.8rem;
-            padding-left: 1.5rem;
+            padding-left: 1.6rem;
             position: relative;
+            line-height: 1.6;
         }
         ul.custom-list li::before {
             content: '✓';
@@ -123,6 +178,35 @@
             left: 0;
             color: var(--orange);
             font-weight: bold;
+        }
+        .faq-box {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--sapphire-blue);
+            margin-top: 2rem;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .related-card {
+            background: var(--white);
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #E2E8F0;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: block;
+        }
+        .related-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--sapphire-blue);
         }
     </style>
 </head>
@@ -142,8 +226,8 @@
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
                     <li><a href="/guide">Guest Guide</a></li>
-                    <li><a href="/faq">FAQ & Policies</a></li>
-                    <li><a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                    <li><a href="/faq">FAQ &amp; Policies</a></li>
+                    <li><a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
         </div>
@@ -152,46 +236,115 @@
     <!-- Page Header -->
     <div class="page-header">
         <div class="container">
-            <h1 style="color: white; font-size: clamp(2rem, 8vw, 3rem); word-break: break-word;">B&B Near Blue Rock Adventure Park</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Only 10.5 km (15 minutes) from Blue Rock Adventure Park. Relax in premium comfort by the sea.</p>
+            <span class="category-pill">Adventure Sports</span>
+            <h1 style="color: white; font-size: clamp(1.8rem, 6vw, 2.8rem); word-break: break-word;">B&B Near Blue Rock Adventure Park</h1>
+            <p style="font-size: 1.15rem; max-width: 700px; margin: 0 auto; line-height: 1.6;">Only 10.5 km (15 minutes) from Blue Rock Adventure Park. Relax in beachside comfort at Cool-Cat in Strand.</p>
         </div>
     </div>
 
+    <!-- Main Content Section -->
     <section class="section" style="padding-top: 0; padding-bottom: 2rem;">
         <div class="container">
             <div class="grid-2">
                 
                 <!-- Left Column -->
                 <div>
-                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">Welcome to Cool-Cat</h2>
-                    <p style="font-size: 1.1rem; color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.8;">
+                    <h2 style="font-size: 1.9rem; margin-bottom: 1rem; color: var(--sapphire-blue-dark);">Welcome to Cool-Cat Strand</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-dark); margin-bottom: 1.5rem; line-height: 1.8;">
                         Planning an action-packed day at Blue Rock Adventure Park? Cool-Cat is the ideal place to rest and recharge, located just 15 minutes away in Strand.
                     </p>
-                    
+
+                    <!-- Route Directions -->
+                    <div class="route-card">
+                        <h4>🚗 Getting There from Cool-Cat</h4>
+                        <p style="color: #334155; line-height: 1.6;"><strong>Driving Route:</strong> Take the N2 highway south towards Sir Lowry's Pass, turning left into Sir Lowry's Pass Village Road.</p>
+                        <p style="color: #64748B; font-size: 0.9rem; margin-top: 0.5rem;">Estimated travel time: <strong>15 minutes</strong> (10.5 km).</p>
+                    </div>
+
+                    <!-- Landmark Highlights -->
                     <div class="distance-card">
-                        <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 1rem;">Why Guests Choose Us</h3>
-                        <p style="margin-bottom: 1.5rem;"><strong>Host Tip for this location:</strong> Perfect for wakeboarding and adrenaline junkies. Return to our B&B for a hot shower and relaxing evening.</p>
-                        
+                        <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 1rem;">Destination Highlights</h3>
                         <ul class="custom-list">
-                            <li><strong>Driving Distance:</strong> 10.5 km (approx. 15 minutes)</li>
-                            <li><strong>Beach Proximity:</strong> Under 500 meters walk to Strand Beach</li>
-                            <li><strong>Breakfast:</strong> Available daily (Continental, Sunrise, or Signature)</li>
-                            <li><strong>Secure Parking:</strong> Off-street and safe</li>
+                            <li>Cable waterskiing, wakeboarding, and kneeboarding on a deep crystal-clear quarry lake.</li>
+<li>400-meter zipline across the water, high rock jumping cliffs, and stand-up paddling.</li>
+<li>Lakeside restaurant and shaded Boma areas for groups and celebrations.</li>
+<li>Just 15 minutes back to Cool-Cat's comfortable beds and relaxation lounges.</li>
                         </ul>
+
+                        <div style="margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid #E2E8F0;">
+                            <p style="margin-bottom: 0.6rem;">💡 <strong>Host Insider Tip:</strong> Perfect for wakeboarding and adrenaline junkies. Return to our B&B for a hot shower and relaxing evening.</p>
+                            <p style="margin-bottom: 0.4rem;">🛏️ <strong>Recommended Room:</strong> Holiday Accommodation (Great for adventure groups) or King Arthur Room</p>
+                            <p style="color: var(--text-light); font-size: 0.92rem;">✨ <strong>Best Suited For:</strong> Wakeboarders, adventure seekers, groups, and active families</p>
+                        </div>
                     </div>
                     
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
                         <a href="https://wa.me/27637124491" target="_blank" class="btn btn-primary">WhatsApp Us</a>
                         <a href="/rooms" class="btn btn-outline" style="color: var(--sapphire-blue); border-color: var(--sapphire-blue);">View Our Rooms</a>
+                        <a href="/explore" class="btn btn-outline" style="color: #475569; border-color: #CBD5E1;">← All Attractions</a>
                     </div>
                 </div>
 
-                <!-- Right Column: Image -->
+                <!-- Right Column: Image & Feature Card -->
                 <div>
-                    <img src="../1. Dining Breakfast.jpg" alt="Cool-Cat Dining Room" style="width: 100%; border-radius: 16px; box-shadow: var(--shadow-md); object-fit: cover; height: 100%; max-height: 450px;">
+                    <img src="../1. Dining Breakfast.jpg" alt="Cool-Cat Strand Accommodation" style="width: 100%; border-radius: 16px; box-shadow: var(--shadow-md); object-fit: cover; height: 320px; margin-bottom: 1.5rem;">
+                    
+                    <div class="distance-card" style="border-top-color: var(--sapphire-blue);">
+                        <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 0.8rem;">Why Stay at Cool-Cat?</h3>
+                        <ul class="custom-list">
+                            <li><strong>Beachside Location:</strong> Under 250m stroll to Strand Main Beach</li>
+                            <li><strong>Daily Breakfast:</strong> Continental, Sunrise, or Cool-Cat Signature</li>
+                            <li><strong>Secure Parking:</strong> Gated, off-street parking for vehicles &amp; gear</li>
+                            <li><strong>Fast Wi-Fi:</strong> High-speed fiber connectivity for work and streaming</li>
+                            <li><strong>Guest Lounges:</strong> Relaxation room with massage chair &amp; Smart TV</li>
+                        </ul>
+                    </div>
                 </div>
 
             </div>
+
+            <!-- FAQ Section for Location -->
+            <div class="faq-box">
+                <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 0.8rem;">Frequently Asked Questions</h3>
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="font-size: 1.05rem; color: var(--sapphire-blue); margin-bottom: 0.3rem;">Q: Do I need prior experience to cable wakeboard at Blue Rock?</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">No prior experience is necessary. Blue Rock provides equipment rentals and beginner coaching on the overhead cable system.</p>
+                </div>
+            </div>
+
+            <!-- Contextual Cross-Linking -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #E2E8F0;">
+                <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 0.5rem;">Explore Other Top Nearby Attractions</h3>
+                <p style="color: var(--text-light); font-size: 0.95rem;">Discover more top destinations, outdoor adventures, and wine estates around Strand and the Helderberg basin:</p>
+                <div class="related-grid">
+                    
+                    <a href="/explore/steenbras-dam" class="related-card">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                        <h4 style="margin: 0.3rem 0; font-size: 0.98rem; color: var(--sapphire-blue-dark);">Steenbras Dam & Gorge</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">15.0 km away (20 minutes)</p>
+                    </a>
+                
+                    <a href="/explore/sir-lowrys-pass" class="related-card">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                        <h4 style="margin: 0.3rem 0; font-size: 0.98rem; color: var(--sapphire-blue-dark);">Sir Lowry's Pass</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">12.0 km away (15 minutes)</p>
+                    </a>
+                
+                    <a href="/explore/clarence-drive-scenic-route" class="related-card">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                        <h4 style="margin: 0.3rem 0; font-size: 0.98rem; color: var(--sapphire-blue-dark);">Clarence Drive Scenic Route</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">9.0 km away (12 minutes (to start of route))</p>
+                    </a>
+                
+                    <a href="/explore/monkey-town-primate-centre" class="related-card">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
+                        <h4 style="margin: 0.3rem 0; font-size: 0.98rem; color: var(--sapphire-blue-dark);">Monkey Town (Family Day & Splash Venue)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">7.0 km away (10 minutes)</p>
+                    </a>
+                
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -208,8 +361,8 @@
                     <ul>
                         <li>📱 <a href="tel:0637124491">063 712 4491 (Michele Rossouw)</a></li>
                         <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;">bookings@cool-cat.co.za</a></li>
-                        <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;">corrie@cool-cat.co.za</a></li>
+                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="mailto:corrie@cool-cat.co.za?subject=General%20Inquiry" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -218,6 +371,7 @@
                         <li><a href="/rooms">Our Rooms</a></li>
                         <li><a href="/guide">Guest Guide &amp; Menus</a></li>
                         <li><a href="/explore">Explore Nearby</a></li>
+                        <li><a href="/entertainment">50km Entertainment</a></li>
                         <li><a href="/test-calendar">Booking Calendar</a></li>
                     </ul>
                 </div>

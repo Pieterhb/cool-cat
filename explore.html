@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Nearby | Cool-Cat Strand, Western Cape</title>
-    <meta name="description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool-Cat in Strand, Western Cape, South Africa.">
+    <title>Explore Nearby Attractions, Wine &amp; Beaches | Cool-Cat Strand</title>
+    <meta name="description" content="Discover 30 top destinations, beaches, golf courses, award-winning wine estates, hiking trails, and medical centers near Cool-Cat B&amp;B in Strand, Western Cape.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://cool-cat.co.za/explore">
 
+    <!-- Geo Meta Tags -->
+    <meta name="geo.region" content="ZA-WC">
+    <meta name="geo.placename" content="Strand">
+    <meta name="geo.position" content="-34.1167;18.8282">
+    <meta name="ICBM" content="-34.1167, 18.8282">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content="Cool-Cat">
-    <meta property="og:title" content="Explore Nearby | Cool-Cat Strand">
-    <meta property="og:description" content="Explore top destinations, attractions, golf courses, beaches, and medical facilities near Cool-Cat in Strand, Western Cape.">
+    <meta property="og:title" content="Explore Nearby Attractions, Wine &amp; Beaches | Cool-Cat Strand">
+    <meta property="og:description" content="Explore top destinations, attractions, golf courses, beaches, and wine estates near Cool-Cat in Strand, Western Cape.">
     <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -22,7 +28,7 @@
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Explore Nearby | Cool-Cat Strand">
+    <meta name="twitter:title" content="Explore Nearby Attractions, Wine &amp; Beaches | Cool-Cat Strand">
     <meta name="twitter:description" content="Explore top destinations near Cool-Cat in Strand, Western Cape, South Africa.">
     <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
 
@@ -34,8 +40,8 @@
         {
           "@type": "CollectionPage",
           "@id": "https://cool-cat.co.za/explore",
-          "name": "Explore Nearby | Cool-Cat",
-          "description": "A directory of top attractions, beaches, golf courses, hospitals, and destinations near Cool-Cat in Strand, Western Cape.",
+          "name": "Explore Nearby | Cool-Cat Strand",
+          "description": "A curated directory of 30 top attractions, beaches, golf courses, hospitals, and wine estates near Cool-Cat in Strand, Western Cape.",
           "url": "https://cool-cat.co.za/explore",
           "publisher": {
             "@type": "LodgingBusiness",
@@ -68,7 +74,7 @@
     <link rel="stylesheet" href="styles-v1787671426.css">
     <style>
         .page-header {
-            background: linear-gradient(rgba(10, 58, 133, 0.5), rgba(15, 82, 186, 0.6)), url('2. Ocean.jpg') center/cover;
+            background: linear-gradient(rgba(10, 58, 133, 0.65), rgba(15, 82, 186, 0.75)), url('2. Ocean.jpg') center/cover;
             padding: 8rem 0 4rem;
             text-align: center;
             color: white;
@@ -82,18 +88,16 @@
         .location-card {
             background: var(--white);
             padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 14px;
             box-shadow: var(--shadow-sm);
             border-left: 4px solid var(--orange);
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            display: block;
         }
         .location-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-md);
-        }
-        .location-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
         }
     </style>
 </head>
@@ -105,13 +109,13 @@
                 <span class="logo-text">COOL-CAT</span>
             </a>
             <nav>
-                <div class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('active')">☰</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
                     <li><a href="/guide">Guest Guide</a></li>
-                    <li><a href="/faq">FAQ & Policies</a></li>
-                    <li><a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                    <li><a href="/faq">FAQ &amp; Policies</a></li>
+                    <li><a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
         </div>
@@ -120,195 +124,295 @@
     <div class="page-header">
         <div class="container">
             <h1 style="color: white; font-size: clamp(2rem, 8vw, 3rem); word-break: break-word;">Explore the Western Cape</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Discover top destinations, transit hubs, and beautiful locations near Cool-Cat.</p>
+            <p style="font-size: 1.2rem; max-width: 650px; margin: 0 auto; line-height: 1.6;">Discover 30 top destinations, beaches, nature reserves, wine estates, and attractions around Cool-Cat in Strand.</p>
         </div>
     </div>
 
     <section class="section" style="padding-top: 0;">
         <div class="container">
-            <div class="grid-3">
-
-                <a href="/explore/busamed-paardevlei-hospital" class="location-card">
-                    <h3>Busamed Paardevlei Private Hospital</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">4.2 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/strand-golf-club" class="location-card">
-                    <h3>Strand Golf Club</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">2.1 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/erinvale-golf-estate" class="location-card">
-                    <h3>Erinvale Golf Estate</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">9.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/somerset-mall" class="location-card">
-                    <h3>Somerset Mall</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">4.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/cheetah-outreach-somerset-west" class="location-card">
-                    <h3>Cheetah Outreach (Somerset West)</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">4.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🏖️</span> Beaches & Coastal
+                </h2>
+                <div class="grid-3">
+                    
                 <a href="/explore/melkbaai-beach-strand" class="location-card">
-                    <h3>Melkbaai Beach</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">0.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Melkbaai Beach</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">0.5 km away &bull; 2 minutes (or a short walk)</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
-                <a href="/explore/helderberg-nature-reserve" class="location-card">
-                    <h3>Helderberg Nature Reserve</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">10.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/stellenbosch-wine-route" class="location-card">
-                    <h3>Stellenbosch Wine Route</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">20.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/cape-town-international-airport" class="location-card">
-                    <h3>Cape Town International Airport</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">32.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
                 <a href="/explore/gordons-bay-harbor" class="location-card">
-                    <h3>Gordon's Bay Harbor</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">7.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Gordon's Bay Harbor</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">7.5 km away &bull; 12 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
-                <a href="/explore/somerset-west-business-district" class="location-card">
-                    <h3>Somerset West Business District</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">6.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/waterkloof-wines" class="location-card">
-                    <h3>Waterkloof Wines</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">9.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/vergelegen-wine-estate" class="location-card">
-                    <h3>Vergelegen Wine Estate</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">8.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/lourensford-wine-estate" class="location-card">
-                    <h3>Lourensford Wine Estate</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">9.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/monkey-town-primate-centre" class="location-card">
-                    <h3>Monkey Town (Family Day & Splash Venue)</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">7.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
                 <a href="/explore/macassar-beach" class="location-card">
-                    <h3>Macassar Beach</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">12.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Macassar Beach</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">12.0 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
+            
                 <a href="/explore/bikini-beach-gordons-bay" class="location-card">
-                    <h3>Bikini Beach (Gordon's Bay)</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">8.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Bikini Beach (Gordon's Bay)</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.0 km away &bull; 14 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
-                <a href="/explore/blue-rock-adventure-park" class="location-card">
-                    <h3>Blue Rock Adventure Park</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">10.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/helderberg-hospital" class="location-card">
-                    <h3>Helderberg Provincial Hospital</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">6.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
                 <a href="/explore/strand-municipal-indoor-pool" class="location-card">
-                    <h3>Strand Municipal Indoor Pool</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">1.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Strand Municipal Indoor Pool</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">1.0 km away &bull; 3 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
-                <a href="/explore/clarence-drive-scenic-route" class="location-card">
-                    <h3>Clarence Drive Scenic Route</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">9.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/sir-lowrys-pass" class="location-card">
-                    <h3>Sir Lowry's Pass</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">12.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/cape-town-cycle-tour" class="location-card">
-                    <h3>Cape Town Cycle Tour</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">45.0 km (to start) away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/helderberg-wine-tasting" class="location-card">
-                    <h3>Helderberg Wine Region</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">8.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/kogelberg-nature-reserve" class="location-card">
-                    <h3>Kogelberg Nature Reserve</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">28.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
                 <a href="/explore/harmony-park" class="location-card">
-                    <h3>Harmony Park Resort</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">4.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Harmony Park Resort</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.0 km away &bull; 7 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
-
-                <a href="/explore/lwandle-migrant-labour-museum" class="location-card">
-                    <h3>Lwandle Migrant Labour Museum</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">6.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/somerset-west-golf-club" class="location-card">
-                    <h3>Somerset West Golf Club</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">6.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/steenbras-dam" class="location-card">
-                    <h3>Steenbras Dam & Gorge</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">15.0 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
-                <a href="/explore/twin-palm-centre-strand" class="location-card">
-                    <h3>Twin Palm Shopping Centre</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">1.5 km away</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 500;">View Accommodation →</p>
-                </a>
-
+            
+                </div>
             </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🍷</span> Wine & Dine
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/stellenbosch-wine-route" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Stellenbosch Wine Route</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">20.0 km away &bull; 25 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/waterkloof-wines" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Waterkloof Wines</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/vergelegen-wine-estate" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Vergelegen Wine Estate</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.5 km away &bull; 14 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/lourensford-wine-estate" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Lourensford Wine Estate</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/helderberg-wine-tasting" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Wine Region</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.0 km away &bull; 10-15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🥾</span> Nature & Hiking
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/helderberg-nature-reserve" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Nature Reserve</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">10.0 km away &bull; 16 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/clarence-drive-scenic-route" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Clarence Drive Scenic Route</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 12 minutes (to start of route)</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/sir-lowrys-pass" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Sir Lowry's Pass</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">12.0 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/kogelberg-nature-reserve" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Kogelberg Nature Reserve</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">28.0 km away &bull; 35 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/steenbras-dam" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Steenbras Dam & Gorge</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">15.0 km away &bull; 20 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>⛳</span> Golf Courses
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/strand-golf-club" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Strand Golf Club</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">2.1 km away &bull; 4 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/erinvale-golf-estate" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Erinvale Golf Estate</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.5 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/somerset-west-golf-club" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset West Golf Club</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.5 km away &bull; 10 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🏄</span> Adventure Sports
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/blue-rock-adventure-park" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Adventure Sports</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Blue Rock Adventure Park</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">10.5 km away &bull; 15 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/cape-town-cycle-tour" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Adventure Sports</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cape Town Cycle Tour</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">45.0 km (to start) away &bull; 40 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🐾</span> Family & Wildlife
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/cheetah-outreach-somerset-west" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cheetah Outreach (Somerset West)</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.0 km away &bull; 6 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/monkey-town-primate-centre" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Monkey Town (Family Day & Splash Venue)</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">7.0 km away &bull; 10 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/lwandle-migrant-labour-museum" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Lwandle Migrant Labour Museum</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.0 km away &bull; 10 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🛍️</span> Shopping & Essentials
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/somerset-mall" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset Mall</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.5 km away &bull; 7 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/cape-town-international-airport" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cape Town International Airport</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">32.0 km away &bull; 30 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/somerset-west-business-district" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset West Business District</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.5 km away &bull; 10 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/twin-palm-centre-strand" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Twin Palm Shopping Centre</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">1.5 km away &bull; 3 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
+            <div style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
+                    <span>🏥</span> Medical Facilities
+                </h2>
+                <div class="grid-3">
+                    
+                <a href="/explore/busamed-paardevlei-hospital" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Medical Facilities</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Busamed Paardevlei Private Hospital</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.2 km away &bull; 6 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                <a href="/explore/helderberg-hospital" class="location-card">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Medical Facilities</span>
+                    <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Provincial Hospital</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.0 km away &bull; 10 minutes</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
+                </a>
+            
+                </div>
+            </div>
+        
         </div>
     </section>
     
@@ -324,20 +428,35 @@
                     <ul>
                         <li>📱 <a href="tel:0637124491">063 712 4491 (Michele Rossouw)</a></li>
                         <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;">bookings@cool-cat.co.za</a></li>
+                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="mailto:corrie@cool-cat.co.za?subject=General%20Inquiry" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h3>Quick Links</h3>
                     <ul>
                         <li><a href="/rooms">Our Rooms</a></li>
-                        <li><a href="/guide">Guest Guide & Menus</a></li>
+                        <li><a href="/guide">Guest Guide &amp; Menus</a></li>
                         <li><a href="/explore">Explore Nearby</a></li>
+                        <li><a href="/entertainment">50km Entertainment</a></li>
+                        <li><a href="/test-calendar">Booking Calendar</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Legal &amp; Policies</h3>
+                    <ul>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/faq">FAQ &amp; Policies</a></li>
+                        <li><a href="https://www.facebook.com/people/COOL-CAT-BB/61592448388185/" target="_blank">Facebook</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                &copy; <script>document.write(new Date().getFullYear())</script> Cool-Cat. All rights reserved.
+            <div class="footer-bottom" style="line-height: 1.7; font-size: 0.82rem; opacity: 0.9;">
+                <div>&copy; <script>document.write(new Date().getFullYear())</script> Cool-Cat. All rights reserved. &bull; Strand, Western Cape, 7140, South Africa</div>
+                <div style="font-size: 0.76rem; color: #94A3B8; margin-top: 0.4rem;">
+                    <strong>ECT Act Compliance:</strong> CIPC Reg. [ Pending Registration ] &bull; Physical Location: Strand, Western Cape &bull; 
+                    <strong>POPIA Notice:</strong> Guest personal and booking data is processed in strict compliance with the South African Protection of Personal Information Act (POPIA) and never shared with third parties.
+                </div>
             </div>
         </div>
     </footer>
@@ -350,6 +469,10 @@
             } else {
                 window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + address + '&su=' + subjectEncoded, '_blank');
             }
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
         }
     </script>
 </body>

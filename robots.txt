@@ -1,8 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /cdn-cgi/
+Disallow: /admin
+Disallow: /admin.html
 Disallow: /signature.html
 Disallow: /*backup*
 Disallow: /*.txt$
 Disallow: /data/
 
-Sitemap: https://cool-cat.co.za/sitemap.xml
+Sitemap: https://cool-cat.co.za/sitemap.xml
