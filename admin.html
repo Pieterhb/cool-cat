@@ -668,7 +668,7 @@
                         </div>
                         <div class="kpi-card" style="border-left: 4px solid var(--adm-accent);">
                             <span class="kpi-label">⏳ Pending Balances Due</span>
-                            <span class="kpi-value" id="kpiPendingBalances" style="color: var(--adm-accent);">R5,400</span>
+                            <span class="kpi-value" id="kpiPendingBalances" style="color: var(--adm-accent);">R0</span>
                             <span class="kpi-sub">Due upon arrival (50% deposits)</span>
                         </div>
                     </div>
@@ -685,18 +685,11 @@
                             <div class="ops-box">
                                 <div class="ops-box-title">
                                     <span>🚪 Checking In Today (from 14:00)</span>
-                                    <span class="status-pill status-confirmed" id="todayCheckinsCount">1 Guest</span>
+                                    <span class="status-pill status-confirmed" id="todayCheckinsCount">0 Guests</span>
                                 </div>
                                 <div id="todayCheckinsList">
-                                    <div class="ops-item">
-                                        <div>
-                                            <strong>Piet van der Merwe</strong> (👑 King Arthur)<br>
-                                            <span style="font-size: 0.78rem; color: #64748B;">Arrival: 14:00 – 16:00 &bull; 2 Adults</span>
-                                        </div>
-                                        <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
-                                            <span style="color: #991B1B; font-weight: 700; font-size: 0.82rem;">Collect R1,800</span>
-                                            <button class="btn-sm btn-wa" onclick="sendGuestCheckinPass('Piet van der Merwe', '👑 King Arthur', '+27821234567')">📲 Check-In Pass</button>
-                                        </div>
+                                    <div style="padding: 1rem; text-align: center; color: #64748B; font-size: 0.88rem;">
+                                        ✨ No guest check-ins scheduled for today.
                                     </div>
                                 </div>
                             </div>
@@ -704,15 +697,11 @@
                             <div class="ops-box">
                                 <div class="ops-box-title">
                                     <span>🧹 Checking Out Today (by 10:00)</span>
-                                    <span class="status-pill status-deposit" id="todayCheckoutsCount">1 Room</span>
+                                    <span class="status-pill status-deposit" id="todayCheckoutsCount">0 Rooms</span>
                                 </div>
                                 <div id="todayCheckoutsList">
-                                    <div class="ops-item">
-                                        <div>
-                                            <strong>✨ Deluxe Suite</strong><br>
-                                            <span style="font-size: 0.78rem; color: #64748B;">Sarah Smith &bull; Stay Completed</span>
-                                        </div>
-                                        <button class="btn-sm" style="background: #FEF3C7; color: #92400E; font-weight: 700;" onclick="sendGuestReviewRequest('Sarah Smith', '+27729876543')">⭐ Review Booster</button>
+                                    <div style="padding: 1rem; text-align: center; color: #64748B; font-size: 0.88rem;">
+                                        ✨ No check-outs scheduled for today.
                                     </div>
                                 </div>
                             </div>
@@ -1238,73 +1227,8 @@
     <!-- DASHBOARD JAVASCRIPT ENGINE                               -->
     <!-- ========================================================= -->
     <script>
-        // Sample baseline data for the Dashboard
-        let ADMIN_BOOKINGS = [
-            {
-                id: 'CC-90142',
-                guestName: 'Piet van der Merwe',
-                guestEmail: 'piet@example.com',
-                guestPhone: '+27821234567',
-                roomId: 'king-arthur',
-                roomName: 'King Arthur Room',
-                checkIn: '2026-08-28',
-                checkOut: '2026-08-31',
-                nights: 3,
-                totalAmount: 3600,
-                amountPaid: 1800,
-                balanceDue: 1800,
-                status: 'deposit_paid',
-                createdAt: '2026-08-23'
-            },
-            {
-                id: 'CC-88412',
-                guestName: 'Sarah Smith',
-                guestEmail: 'sarah@globaltravel.com',
-                guestPhone: '+27729876543',
-                roomId: 'deluxe-suite',
-                roomName: 'Cool-Cat Deluxe Suite',
-                checkIn: '2026-08-29',
-                checkOut: '2026-08-31',
-                nights: 2,
-                totalAmount: 3500,
-                amountPaid: 3500,
-                balanceDue: 0,
-                status: 'confirmed',
-                createdAt: '2026-08-20'
-            },
-            {
-                id: 'CC-77319',
-                guestName: 'Jan de Villiers',
-                guestEmail: 'jan@devilliers.co.za',
-                guestPhone: '+27834567890',
-                roomId: 'santori',
-                roomName: 'Santori Room',
-                checkIn: '2026-09-18',
-                checkOut: '2026-09-22',
-                nights: 4,
-                totalAmount: 4400,
-                amountPaid: 2200,
-                balanceDue: 2200,
-                status: 'deposit_paid',
-                createdAt: '2026-08-21'
-            },
-            {
-                id: 'CC-66201',
-                guestName: 'Room Painting & Maintenance',
-                guestEmail: 'maintenance@cool-cat.co.za',
-                guestPhone: '+27637124491',
-                roomId: 'mykonos',
-                roomName: 'Mykonos Room',
-                checkIn: '2026-08-29',
-                checkOut: '2026-09-01',
-                nights: 3,
-                totalAmount: 0,
-                amountPaid: 0,
-                balanceDue: 0,
-                status: 'blocked',
-                createdAt: '2026-08-15'
-            }
-        ];
+        // Live bookings — loaded from Cloudflare KV via /api/bookings on dashboard init
+        let ADMIN_BOOKINGS = [];
 
         // 1. Auth Gate Handlers
         function handleAdminLogin(e) {
@@ -1439,14 +1363,7 @@
                 }
             });
 
-            // Ensure display shows realistic aggregate figures if fresh DB
-            if (revToday === 0 && ADMIN_BOOKINGS.length > 0) revToday = 2400;
-            if (rev7Days === 0) rev7Days = 8950;
-            if (rev14Days === 0) rev14Days = 16800;
-            if (rev30Days === 0) rev30Days = 35200;
-            if (rev3Months === 0) rev3Months = 94500;
-            if (rev6Months === 0) rev6Months = 182000;
-            if (revYtd === 0) revYtd = 320000;
+            // KPIs show live totals only — no fallback dummy values
 
             const elToday = document.getElementById('kpiToday');
             if (elToday) elToday.textContent = `R${revToday.toLocaleString()}`;
@@ -1754,44 +1671,8 @@
         }
 
         // 7. Referral & Affiliate Ledger Handlers
-        let ADMIN_REFERRALS = [
-            {
-                id: 'REF-101',
-                code: 'JANNIE10',
-                partnerName: 'Jannie van der Merwe',
-                partnerEmail: 'jannie@stellenbosch.co.za',
-                partnerPhone: '+27829988776',
-                guestName: 'Piet van der Merwe',
-                stayDates: '2026-08-29 to 2026-09-02',
-                bookingTotal: 3800,
-                commission: 380,
-                status: 'pending_stay' // locked until check-out
-            },
-            {
-                id: 'REF-102',
-                code: 'SARAH10',
-                partnerName: 'Sarah Rossouw',
-                partnerEmail: 'sarah.r@capetravel.co.za',
-                partnerPhone: '+27721122334',
-                guestName: 'Klaus Mueller',
-                stayDates: '2026-08-10 to 2026-08-14',
-                bookingTotal: 5200,
-                commission: 520,
-                status: 'ready_payout' // checked out!
-            },
-            {
-                id: 'REF-103',
-                code: 'COOLCAT10',
-                partnerName: 'Strand Tourism Info',
-                partnerEmail: 'info@strandtourism.co.za',
-                partnerPhone: '+27218540000',
-                guestName: 'David Ndebele',
-                stayDates: '2026-07-02 to 2026-07-05',
-                bookingTotal: 9500,
-                commission: 950,
-                status: 'paid_eft' // already paid
-            }
-        ];
+        // Live referrals — loaded from Cloudflare KV via initDashboard
+        let ADMIN_REFERRALS = [];
 
         function renderReferralsTable() {
             const tbody = document.getElementById('referralsTbody');
