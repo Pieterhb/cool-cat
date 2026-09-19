@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
         let paystackVerified = true;
         let paystackData = null;
 
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315';
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : null;
 
         if (paystackSecret && reference) {
             try {
@@ -45,9 +45,11 @@ export async function onRequestPost(context) {
                 }
             } catch (pErr) {
                 console.error("Paystack verification warning:", pErr);
-                // Fallback to true if in test sandbox
-                paystackVerified = true;
+                paystackVerified = true; // allow through on network error
             }
+        } else if (!paystackSecret) {
+            // No key configured — log warning but allow through (test mode)
+            console.warn("PAYSTACK_SECRET_KEY not configured in env — skipping verification (test mode)");
         }
 
         if (!paystackVerified) {

@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
     try {
         const bodyText = await request.text();
         const signature = request.headers.get('x-paystack-signature');
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315';
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : null;
 
         // Verify HMAC SHA512 signature if secret key is configured
         if (paystackSecret && signature) {
