@@ -1,6 +1,8 @@
 {
-    "name": "Cool-Cat",
+    "name": "Cool-Cat Guesthouse & Booking",
     "short_name": "Cool-Cat",
+    "description": "Direct accommodation booking and local entertainment guide for Cool-Cat in Strand, Western Cape.",
+    "start_url": "/",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +15,8 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#0F52BA",
+    "background_color": "#0A192F",
     "display": "standalone"
 }
+

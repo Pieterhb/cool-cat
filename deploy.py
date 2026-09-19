@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: Phase 3 complete - full Cloudflare KV CRUD, dynamic admin KPI autopilot, post-checkout hospitality actions, and iCal feed sync'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'feat: Phase 4 complete - dynamic housekeeping roster, referral affiliate tracking in KV, PWA webmanifest, and repository backup'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare

@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1789809052.css">
+    <link rel="stylesheet" href="styles-v1789809280.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1688,12 +1688,40 @@
         // 5. 1-Click WhatsApp Cleaner Schedule
         function sendCleanerWhatsApp() {
             const todayStr = new Date().toISOString().split('T')[0];
-            const text = `*Cool-Cat - Today's Housekeeping Schedule (%23${todayStr})*%0A%0A` +
-                `🔴 *Room 1 (King Arthur):* Check-out 10:00 -> Turnover Clean (New guest arriving 14:00)%0A` +
-                `🟡 *Room 2 (Santori):* Stayover (Towel refresh only)%0A` +
-                `🟢 *Room 3 (Mykonos):* Empty & Ready%0A` +
-                `🟢 *Room 4 (Deluxe Suite):* Checked out & Ready%0A%0A` +
-                `_Sent via Cool-Cat Admin Autopilot_`;
+            const roomKeys = [
+                { id: 'king-arthur', name: 'Room 1 (👑 King Arthur)' },
+                { id: 'santori', name: 'Room 2 (🌊 Santori)' },
+                { id: 'mykonos', name: 'Room 3 (🏛️ Mykonos)' },
+                { id: 'deluxe-suite', name: 'Room 4 (✨ Deluxe Suite)' }
+            ];
+
+            let lines = [];
+            roomKeys.forEach(r => {
+                const isCheckout = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkOut === todayStr && b.status !== 'cancelled');
+                const isCheckin = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkIn === todayStr && b.status !== 'cancelled');
+                const isStayover = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkIn < todayStr && b.checkOut > todayStr && b.status !== 'cancelled');
+
+                if (isCheckout && isCheckin) {
+                    lines.push(`🔴 *${r.name}:* Turnover Clean (Departing 10:00 ➔ Arriving 14:00)`);
+                } else if (isCheckout) {
+                    lines.push(`🟡 *${r.name}:* Departure Clean (Guest departs 10:00)`);
+                } else if (isCheckin) {
+                    lines.push(`🟢 *${r.name}:* Arrival Preparation (Guest arrives 14:00)`);
+                } else if (isStayover) {
+                    lines.push(`🔵 *${r.name}:* Stayover (Towel & amenities refresh only)`);
+                } else {
+                    lines.push(`⚪ *${r.name}:* Vacant & Ready`);
+                }
+            });
+
+            const text = `*Cool-Cat - Housekeeping Job List (%23${todayStr})*%0A%0A` +
+                lines.map(l => encodeURIComponent(l)).join('%0A') +
+                `%0A%0A*Turnaround Checklist:*%0A` +
+                `1. Strip bed linen and sanitize bathroom.%0A` +
+                `2. Restock fresh bath towels & bathmat.%0A` +
+                `3. Restock complimentary coffee, tea, sugar & milk.%0A` +
+                `4. Check inverter lights (solar backup running).%0A%0A` +
+                `_Sent via Cool-Cat Operations Autopilot_`;
             
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }

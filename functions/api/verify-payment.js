@@ -84,6 +84,7 @@ export async function onRequestPost(context) {
             nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
             arrivalTime: arrivalTime || '14:00 - 16:00',
             specialRequests: specialRequests || '',
+            referralCode: payload.referralCode || '',
             totalAmount,
             amountPaid,
             balanceDue,
@@ -108,6 +109,7 @@ export async function onRequestPost(context) {
                     guestName,
                     guestEmail,
                     guestPhone,
+                    referralCode: payload.referralCode || '',
                     status: balanceDue > 0 ? 'deposit_paid' : 'fully_paid',
                     createdAt: new Date().toISOString()
                 });
