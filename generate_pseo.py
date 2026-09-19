@@ -222,8 +222,8 @@ def generate():
     <header id="navbar">
         <div class="container nav-container">
             <a href="/" class="logo-wrapper">
-                <img src="Logo.png" alt="Cool-Cat Logo" class="logo-img">
-                <span class="logo-text">COOL-CAT</span>
+                <img src="Logo.png" alt="Cool Cat Logo" class="logo-img">
+                <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
             </a>
             <nav>
                 <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
