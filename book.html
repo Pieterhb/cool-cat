@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1789807900.css">
+    <link rel="stylesheet" href="styles-v1789809052.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1694,12 +1694,28 @@
                         <div class="access-item">📱 <strong>Host Contact:</strong> Michele Rossouw (<a href="tel:0637124491" style="color: var(--sapphire-blue); font-weight: 700;">063 712 4491</a>)</div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="printReceipt()">
-                            🖨️ Print / Download Tax Invoice (PDF)
+                    <!-- Instant Guest Action Buttons -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-top: 1.5rem;">
+                        <a id="confWhatsAppBtn" href="https://wa.me/27637124491" target="_blank" class="btn" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            📲 WhatsApp Michele (Host)
+                        </a>
+                        <a href="/guide" class="btn" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            📖 View Guest Guide &amp; Menus
+                        </a>
+                        <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" class="btn" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            🗺️ Google Maps Directions
+                        </a>
+                        <button type="button" class="btn" style="background: #0284C7; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700;" onclick="downloadGuestIcs()">
+                            📅 Add Stay to Calendar
                         </button>
-                        <button class="btn" style="background: #F1F5F9; color: #334155;" onclick="resetToCalendar()">
+                    </div>
+
+                    <!-- Print & Re-book Actions -->
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.2rem;">
+                        <button class="btn" style="background: #E2E8F0; color: #1E293B; font-weight: 700;" onclick="printReceipt()">
+                            🖨️ Print / Save PDF Receipt
+                        </button>
+                        <button class="btn" style="background: #F8FAFC; color: #64748B; border: 1px solid #CBD5E1;" onclick="resetToCalendar()">
                             Book Another Stay
                         </button>
                     </div>
@@ -2919,6 +2935,20 @@
                 </div>`
             ).join('');
 
+            // Wire dynamic WhatsApp button
+            const waBtn = document.getElementById('confWhatsAppBtn');
+            if (waBtn) {
+                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${refNumber}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
+                waBtn.href = `https://wa.me/27637124491?text=${waText}`;
+            }
+
+            // Store current booking in window memory for ICS export
+            window._lastConfirmedBooking = {
+                id: refNumber,
+                guestName: name,
+                stays: selectedStays
+            };
+
             // Switch to Step 4 view
             document.getElementById('step1View').classList.remove('active-view');
             document.getElementById('step2View').classList.remove('active-view');
@@ -2934,6 +2964,51 @@
 
             window.scrollTo({ top: 150, behavior: 'smooth' });
             showToast("🎉 Booking secured! Confirmation email dispatched.");
+        }
+
+        function downloadGuestIcs() {
+            const b = window._lastConfirmedBooking;
+            if (!b || !b.stays || b.stays.length === 0) {
+                showToast("No active booking data found to export.");
+                return;
+            }
+
+            const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            let ics = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Cool-Cat Guesthouse//Direct Booking//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH'
+            ];
+
+            b.stays.forEach((s, idx) => {
+                const dtStart = s.checkInStr ? s.checkInStr.replace(/[^0-9]/g, '') : '';
+                const dtEnd = s.checkOutStr ? s.checkOutStr.replace(/[^0-9]/g, '') : '';
+                if (dtStart && dtEnd) {
+                    ics.push('BEGIN:VEVENT');
+                    ics.push(`UID:coolcat-booking-${b.id}-${idx}@cool-cat.co.za`);
+                    ics.push(`DTSTAMP:${now}`);
+                    ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
+                    ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
+                    ics.push(`SUMMARY:Stay at Cool-Cat (${s.roomName})`);
+                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: Gouws (Pass: 004eda35aef)\\nHost Michele: 063 712 4491`);
+                    ics.push(`LOCATION:Cool-Cat B&B, Strand, Western Cape, South Africa`);
+                    ics.push('STATUS:CONFIRMED');
+                    ics.push('END:VEVENT');
+                }
+            });
+
+            ics.push('END:VCALENDAR');
+
+            const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `cool-cat-booking-${b.id}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("📅 Calendar event downloaded!");
         }
 
         function resetToCalendar() {
