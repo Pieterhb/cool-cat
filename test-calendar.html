@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1789813188.css">
+    <link rel="stylesheet" href="styles-v1789814203.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -165,8 +165,8 @@
         }
 
         .room-tabs {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
             gap: 0.5rem;
             background: #F1F5F9;
             padding: 0.5rem;
@@ -174,14 +174,12 @@
         }
 
         .room-tab-btn {
-            flex: 1 1 auto;
-            min-width: 130px;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.5rem;
             border-radius: 10px;
             border: none;
             background: transparent;
             font-family: var(--font-heading);
-            font-size: 1.17rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #475569;
             cursor: pointer;
@@ -190,8 +188,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
+            white-space: nowrap;
             position: relative;
+        }
+
+        @media (max-width: 900px) {
+            .room-tabs {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .room-tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .room-tabs {
+                grid-template-columns: 1fr;
+            }
         }
 
         .room-tab-badge {
@@ -346,7 +363,7 @@
         }
 
         .cal-jump-select {
-            padding: 0.5rem 0.8rem;
+            padding: 0.45rem 0.75rem;
             border-radius: 8px;
             border: 1px solid #CBD5E1;
             font-family: var(--font-heading);
@@ -356,6 +373,8 @@
             background: white;
             cursor: pointer;
             outline: none;
+            min-width: 115px;
+            height: 38px;
         }
 
         /* Calendar Grid */

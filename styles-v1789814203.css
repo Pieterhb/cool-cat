@@ -478,6 +478,22 @@ footer {
 .google-btn:hover { background-color: #f8f9fa; }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .logo-text {
+    font-size: 1.02rem;
+  }
+  .nav-links {
+    gap: 0.5rem;
+  }
+  .nav-links a {
+    font-size: 0.9rem;
+  }
+  .coupon-btn, .nav-reviews-btn, .nav-links .btn-primary {
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.88rem !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .logo-text {
     font-size: 1.05rem;

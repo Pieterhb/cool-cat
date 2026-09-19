@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: update admin passcode to 70007, update header logo brand to COOL CAT HOLIDAY ACCOMMODATION, and normalize navbar button and link spacing'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'fix: resolve calendar JS syntax error, restore full interactive calendar engine, and polish room tabs layout'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare
