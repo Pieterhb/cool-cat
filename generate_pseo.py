@@ -264,7 +264,7 @@ def generate():
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h3>Cool-Cat</h3>
+                    <h3>Cool Cat Holiday Accommodation</h3>
                     <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
                 </div>
                 <div class="footer-col">
@@ -289,16 +289,17 @@ def generate():
                 <div class="footer-col">
                     <h3>Legal &amp; Policies</h3>
                     <ul>
+                        <li><a href="/terms">Terms &amp; Conditions</a></li>
                         <li><a href="/privacy">Privacy Policy</a></li>
-                        <li><a href="/faq">FAQ &amp; Policies</a></li>
+                        <li><a href="/faq">FAQ &amp; House Rules</a></li>
                         <li><a href="https://www.facebook.com/people/COOL-CAT-BB/61592448388185/" target="_blank">Facebook</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom" style="line-height: 1.7; font-size: 0.82rem; opacity: 0.9;">
-                <div>&copy; <script>document.write(new Date().getFullYear())</script> Cool-Cat. All rights reserved. &bull; Strand, Western Cape, 7140, South Africa</div>
+                <div>&copy; 2026 Cool Cat Holiday Accommodation (Pty) Ltd (Reg. No. 2026/626178/07). All rights reserved. &bull; Strand, Western Cape, 7140, South Africa</div>
                 <div style="font-size: 0.76rem; color: #94A3B8; margin-top: 0.4rem;">
-                    <strong>ECT Act Compliance:</strong> CIPC Reg. [ Pending Registration ] &bull; Physical Location: Strand, Western Cape &bull; 
+                    <strong>ECT Act Compliance:</strong> CIPC Reg. 9463921745 &bull; Reg. No. 2026/626178/07 &bull; Physical Location: Strand, Western Cape, 7140 &bull; 
                     <strong>POPIA Notice:</strong> Guest personal and booking data is processed in strict compliance with the South African Protection of Personal Information Act (POPIA) and never shared with third parties.
                 </div>
             </div>
@@ -337,6 +338,7 @@ def generate():
     <url><loc>{base_url}/entertainment</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>{base_url}/explore</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>{base_url}/faq</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>{base_url}/terms</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
     <url><loc>{base_url}/privacy</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 """
     for loc in locations:
