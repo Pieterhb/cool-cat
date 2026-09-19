@@ -148,7 +148,7 @@ header {
 }
 
 .logo-img {
-  height: 44px;
+  height: 48px;
   width: auto;
   border-radius: 50%;
   border: 2px solid var(--sapphire-blue);
@@ -156,7 +156,7 @@ header {
 
 .logo-text {
   font-family: var(--font-heading);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--sapphire-blue);
   letter-spacing: 0.8px;
@@ -173,7 +173,7 @@ nav {
 
 .nav-links {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.45rem;
   list-style: none;
   align-items: center;
   justify-content: center;
@@ -191,7 +191,7 @@ nav {
   font-weight: 600;
   color: var(--text-dark);
   font-family: var(--font-heading);
-  font-size: 0.96rem;
+  font-size: 1.2rem;
   white-space: nowrap;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -202,8 +202,8 @@ nav {
 }
 
 .nav-links .btn-primary {
-  padding: 0.38rem 1.2rem !important;
-  font-size: 0.94rem !important;
+  padding: 0.45rem 1.4rem !important;
+  font-size: 1.2rem !important;
   font-weight: 700 !important;
   white-space: nowrap;
 }
@@ -404,12 +404,12 @@ footer {
 .coupon-btn {
   background-color: #000 !important;
   color: #fff !important;
-  padding: 0.38rem 0.85rem;
+  padding: 0.42rem 1.15rem;
   border: none;
   border-radius: 50px;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   cursor: pointer;
   white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
@@ -439,9 +439,9 @@ footer {
   background-color: transparent;
   color: #333;
   border: 1px solid #CBD5E1;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 1.15rem;
   border-radius: 20px;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -499,6 +499,15 @@ footer {
 /* Responsive */
 .page-header {
   padding: 8.5rem 0 3.5rem;
+}
+
+@media (max-width: 1200px) {
+  .nav-links {
+    gap: 1.1rem;
+  }
+  .nav-links a, .coupon-btn, .nav-reviews-btn, .nav-links .btn-primary {
+    font-size: 1.08rem !important;
+  }
 }
 
 @media (max-width: 900px) {
