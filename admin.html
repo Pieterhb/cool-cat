@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1787671426.css">
+    <link rel="stylesheet" href="styles-v1789807900.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -984,17 +984,17 @@
                             <div class="adm-form-group">
                                 <label>Paystack Mode</label>
                                 <select id="paystackModeSelect" class="adm-input">
-                                    <option value="test">🧪 Test Mode (Sandbox / No Real Money)</option>
+                                    <option value="test" selected>🧪 Test Mode (Sandbox / No Real Money)</option>
                                     <option value="live">🟢 Live Production Mode (Real Card Processing)</option>
                                 </select>
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Public Key (pk_test_... or pk_live_...)</label>
-                                <input type="text" id="paystackPublicKey" class="adm-input" value="pk_test_d3a3f019b78e470876543210abcdef1234567890">
+                                <input type="text" id="paystackPublicKey" class="adm-input" value="pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407">
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Secret Key (sk_test_... or sk_live_...)</label>
-                                <input type="password" id="paystackSecretKey" class="adm-input" value="sk_test_••••••••••••••••">
+                                <input type="password" id="paystackSecretKey" class="adm-input" value="sk_test_40067fbb064905a9a1e33127111e043eeaee7315">
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Webhook Endpoint (Copy into Paystack Dashboard)</label>
@@ -1016,6 +1016,25 @@
                                 <label>Standard Check-Out Time</label>
                                 <input type="text" id="checkOutTime" class="adm-input" value="10:00">
                             </div>
+                        </div>
+
+                        <!-- Google Calendar iCal Synchronization -->
+                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--adm-border);">
+                            <h4 style="color: var(--adm-primary-dark); margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📅</span> Google Calendar Live Sync (.ics Feed)
+                            </h4>
+                            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1rem;">
+                                Subscribe to this link in your Google Calendar (under "Add calendar by URL") to automatically see all confirmed bookings on your phone and laptop in real time.
+                            </p>
+                            <div style="display: flex; gap: 0.5rem; max-width: 650px;">
+                                <input type="text" id="googleCalIcsUrl" class="adm-input" value="https://cool-cat.co.za/api/ical?room=all" readonly style="background: #F8FAFC; color: #0F52BA; font-weight: 700;">
+                                <button type="button" class="btn-sm btn-adm-primary" onclick="navigator.clipboard.writeText(document.getElementById('googleCalIcsUrl').value); alert('Google Calendar feed URL copied!');">
+                                    📋 Copy
+                                </button>
+                            </div>
+                            <p style="font-size: 0.78rem; color: #94A3B8; margin-top: 0.5rem;">
+                                ℹ️ <em>Airbnb &amp; Booking.com channel managers will be connected next year.</em>
+                            </p>
                         </div>
                     </div>
                 </div>

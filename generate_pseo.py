@@ -1,4 +1,4 @@
-﻿import json
+import json
 import os
 import re
 import datetime
@@ -230,9 +230,18 @@ def generate():
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
+                    <li><a href="/entertainment">Entertainment</a></li>
                     <li><a href="/guide">Guest Guide</a></li>
                     <li><a href="/faq">FAQ &amp; Policies</a></li>
-                    <li><a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                    
+                    <li class="coupon-dropdown">
+                        <button class="coupon-btn">Coupon</button>
+                        <div class="coupon-dropdown-content">Cool-Cat</div>
+                    </li>
+                    
+                    <li><button id="reviewsBtn" class="nav-reviews-btn">Reviews</button></li>
+
+                    <li><a href="/book" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
         </div>
@@ -263,18 +272,18 @@ def generate():
                     <ul>
                         <li>📱 <a href="tel:0637124491">063 712 4491 (Michele Rossouw)</a></li>
                         <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>✉️ <a href="mailto:bookings@cool-cat.co.za?subject=Booking%20Inquiry" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
-                        <li>✉️ <a href="mailto:corrie@cool-cat.co.za?subject=General%20Inquiry" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h3>Quick Links</h3>
                     <ul>
                         <li><a href="/rooms">Our Rooms</a></li>
+                        <li><a href="/entertainment">Entertainment</a></li>
                         <li><a href="/guide">Guest Guide &amp; Menus</a></li>
                         <li><a href="/explore">Explore Nearby</a></li>
-                        <li><a href="/entertainment">50km Entertainment</a></li>
-                        <li><a href="/test-calendar">Booking Calendar</a></li>
+                        <li><a href="/book">Booking Calendar</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -322,6 +331,7 @@ def generate():
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url><loc>{base_url}/</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+    <url><loc>{base_url}/book</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
     <url><loc>{base_url}/rooms</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
     <url><loc>{base_url}/guide</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>{base_url}/entertainment</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>

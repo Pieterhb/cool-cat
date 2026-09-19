@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1787671426.css">
+    <link rel="stylesheet" href="styles-v1789807900.css">
     <style>
         .ent-hero {
             background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
@@ -302,9 +302,18 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
+                    <li><a href="/entertainment" class="active">Entertainment</a></li>
                     <li><a href="/guide">Guest Guide</a></li>
                     <li><a href="/faq">FAQ &amp; Policies</a></li>
-                    <li><a href="/test-calendar" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                    
+                    <li class="coupon-dropdown">
+                        <button class="coupon-btn">Coupon</button>
+                        <div class="coupon-dropdown-content">Cool-Cat</div>
+                    </li>
+                    
+                    <li><button id="reviewsBtn" class="nav-reviews-btn">Reviews</button></li>
+
+                    <li><a href="/book" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
                 </ul>
             </nav>
         </div>
@@ -344,7 +353,7 @@
                 <button type="button" id="clearSearchBtn" onclick="clearActivitySearch()" style="position: absolute; right: 10px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1rem; display: none; padding: 0;">✕</button>
             </div>
 
-            <a href="/test-calendar" class="btn-sm btn-primary" style="padding: 0.55rem 1.2rem; font-weight: 700; border-radius: 8px; text-decoration: none; white-space: nowrap;">
+            <a href="/book" class="btn-sm btn-primary" style="padding: 0.55rem 1.2rem; font-weight: 700; border-radius: 8px; text-decoration: none; white-space: nowrap;">
                 📅 Check Availability &amp; Book ➔
             </a>
         </div>
@@ -1004,7 +1013,7 @@
                 <a href="/guide" class="btn-back-link" style="font-size: 1rem; padding: 0.7rem 1.4rem;">
                     <span>📖</span> Return to Guest Guide &amp; Menus
                 </a>
-                <a href="/test-calendar" class="btn btn-primary" style="font-size: 1rem; padding: 0.7rem 1.6rem; color: white;">
+                <a href="/book" class="btn btn-primary" style="font-size: 1rem; padding: 0.7rem 1.6rem; color: white;">
                     <span>📅</span> Book Your Stay at Cool-Cat
                 </a>
             </div>
@@ -1038,7 +1047,7 @@
                         <li><a href="/guide">Guest Guide &amp; Menus</a></li>
                         <li><a href="/entertainment">50km Entertainment</a></li>
                         <li><a href="/explore">Explore Nearby</a></li>
-                        <li><a href="/test-calendar">Check Availability &amp; Book</a></li>
+                        <li><a href="/book">Booking Calendar</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -1123,6 +1132,82 @@
             handleActivitySearch();
             document.getElementById('activitySearchInput').focus();
         }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviewsBtn = document.getElementById('reviewsBtn');
+            const reviewsModal = document.getElementById('reviewsModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (reviewsBtn && reviewsModal && closeModalBtn) {
+                reviewsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    reviewsModal.style.display = 'flex';
+                });
+                closeModalBtn.addEventListener('click', () => {
+                    reviewsModal.style.display = 'none';
+                });
+                window.addEventListener('click', (event) => {
+                    if (event.target === reviewsModal) {
+                        reviewsModal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
     </script>
+
+<div id="reviewsModal" class="modal-overlay">
+  <div class="modal-card">
+    <button id="closeModalBtn" class="modal-close-btn">&times;</button>
+    
+    <div class="modal-header-content">
+      <h2>Guest Reviews</h2>
+      <p>Cool-Cat • Strand, South Africa</p>
+      <div class="stars-badge">
+        ★★★★★ <span style="color: #666; font-size: 14px;">(5.0 Rating)</span>
+      </div>
+    </div>
+
+    <div class="modal-body-content">
+      <p>Have you stayed with us? We’d love to hear your feedback!</p>
+      
+      <a href="https://g.page/r/CeLXe6MDyWarEBM/review" target="_blank" rel="noopener" class="google-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:8px; vertical-align:middle;">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Write a Review on Google
+      </a>
+
+      <div id="elfsightContainer" style="margin-top: 20px;">
+        <script src="https://elfsightcdn.com/platform.js" async>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviewsBtn = document.getElementById('reviewsBtn');
+            const reviewsModal = document.getElementById('reviewsModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (reviewsBtn && reviewsModal && closeModalBtn) {
+                reviewsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    reviewsModal.style.display = 'flex';
+                });
+                closeModalBtn.addEventListener('click', () => {
+                    reviewsModal.style.display = 'none';
+                });
+                window.addEventListener('click', (event) => {
+                    if (event.target === reviewsModal) {
+                        reviewsModal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+    </script>
+        <div class="elfsight-app-f3b57c27-9991-4764-bccb-c23acbff9f10" data-elfsight-app-lazy></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

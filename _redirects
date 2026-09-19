@@ -6,5 +6,7 @@
 /explore.html             /explore                                301
 /privacy.html             /privacy                                301
 /entertainment.html       /entertainment                          301
-/test-calendar.html       /test-calendar                          301
+/book.html                /book                                   301
+/test-calendar.html       /book                                   301
+/test-calendar            /book                                   301
 /explore/:slug.html       /explore/:slug                          301

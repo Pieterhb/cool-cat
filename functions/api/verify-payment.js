@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
         let paystackVerified = true;
         let paystackData = null;
 
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : null;
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315';
 
         if (paystackSecret && reference) {
             try {
