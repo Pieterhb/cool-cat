@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles-v1789814599.css">
+    <link rel="stylesheet" href="styles-v1789815146.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1920,26 +1920,8 @@
             }
         ];
 
-        // Seeded realistic mock bookings to demonstrate Green, Orange, and Red states
-        let MOCK_BOOKINGS = [
-            // Current month bookings
-            { roomId: 'king-arthur', checkIn: '2026-08-28', checkOut: '2026-08-31' },
-            { roomId: 'santori', checkIn: '2026-08-29', checkOut: '2026-09-02' },
-            { roomId: 'mykonos', checkIn: '2026-08-29', checkOut: '2026-09-01' },
-            { roomId: 'deluxe-suite', checkIn: '2026-08-29', checkOut: '2026-08-31' }, // 29-31 Aug = 4 rooms booked (RED)
-
-            // September bookings
-            { roomId: 'king-arthur', checkIn: '2026-09-11', checkOut: '2026-09-14' },
-            { roomId: 'santori', checkIn: '2026-09-18', checkOut: '2026-09-22' },
-            { roomId: 'mykonos', checkIn: '2026-09-18', checkOut: '2026-09-21' },
-            { roomId: 'deluxe-suite', checkIn: '2026-09-24', checkOut: '2026-09-28' },
-
-            // December Festive bookings
-            { roomId: 'king-arthur', checkIn: '2026-12-23', checkOut: '2026-12-28' },
-            { roomId: 'santori', checkIn: '2026-12-24', checkOut: '2026-12-29' },
-            { roomId: 'mykonos', checkIn: '2026-12-24', checkOut: '2026-12-28' },
-            { roomId: 'deluxe-suite', checkIn: '2026-12-22', checkOut: '2026-12-27' }
-        ];
+        // Live bookings store (populated dynamically from Cloudflare KV / backend)
+        let MOCK_BOOKINGS = [];
 
         // ==========================================
         // 2. STATE MANAGEMENT

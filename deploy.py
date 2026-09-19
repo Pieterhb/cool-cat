@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: center header logo branding and arrange navigation buttons into a centered second row'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'feat: clear demo mock bookings to open all calendar dates with live pricing across all months'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare
