@@ -192,7 +192,7 @@ def generate():
     <style>
         .page-header {{
             background: linear-gradient(rgba(10, 58, 133, 0.65), rgba(15, 82, 186, 0.75)), url('2. Ocean.jpg') center/cover;
-            padding: 8rem 0 4rem;
+            padding: 8.5rem 0 4rem;
             text-align: center;
             color: white;
             margin-bottom: 3rem;

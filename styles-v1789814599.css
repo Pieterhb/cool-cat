@@ -115,10 +115,11 @@ a {
   padding: 5rem 0;
 }
 
-/* Header & Navigation */
+/* Header & Navigation (Centered Two-Row Layout) */
 header {
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1000;
   background: var(--glass-bg);
@@ -126,24 +127,28 @@ header {
   -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--glass-border);
   box-shadow: var(--shadow-sm);
-  padding: 1rem 0;
+  padding: 0.65rem 0 0.55rem;
   transition: all 0.3s ease;
 }
 
 .nav-container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .logo-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 12px;
+  text-decoration: none;
 }
 
 .logo-img {
-  height: 50px;
+  height: 44px;
   width: auto;
   border-radius: 50%;
   border: 2px solid var(--sapphire-blue);
@@ -151,18 +156,30 @@ header {
 
 .logo-text {
   font-family: var(--font-heading);
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--sapphire-blue);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   white-space: nowrap;
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .nav-links {
   display: flex;
-  gap: 0.75rem;
+  gap: 1.25rem;
   list-style: none;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links > li {
@@ -174,8 +191,10 @@ header {
   font-weight: 600;
   color: var(--text-dark);
   font-family: var(--font-heading);
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover, .nav-links a.active {
@@ -183,8 +202,8 @@ header {
 }
 
 .nav-links .btn-primary {
-  padding: 0.45rem 1.1rem !important;
-  font-size: 0.95rem !important;
+  padding: 0.38rem 1.2rem !important;
+  font-size: 0.94rem !important;
   font-weight: 700 !important;
   white-space: nowrap;
 }
@@ -478,27 +497,38 @@ footer {
 .google-btn:hover { background-color: #f8f9fa; }
 
 /* Responsive */
-@media (max-width: 1200px) {
-  .logo-text {
-    font-size: 1.02rem;
-  }
-  .nav-links {
-    gap: 0.5rem;
-  }
-  .nav-links a {
-    font-size: 0.9rem;
-  }
-  .coupon-btn, .nav-reviews-btn, .nav-links .btn-primary {
-    padding: 0.35rem 0.65rem !important;
-    font-size: 0.88rem !important;
-  }
+.page-header {
+  padding: 8.5rem 0 3.5rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
+  header {
+    padding: 0.75rem 0;
+  }
+
+  .nav-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+  }
+
+  .logo-wrapper {
+    justify-content: flex-start;
+  }
+
   .logo-text {
     font-size: 1.05rem;
-    white-space: normal;
-    line-height: 1.15;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  nav {
+    width: auto;
+  }
+
+  .mobile-menu-btn {
+    display: block;
   }
 
   .nav-links {
@@ -515,13 +545,13 @@ footer {
     box-shadow: var(--shadow-md);
     align-items: center;
   }
-  
+
   .nav-links.active {
     display: flex;
   }
-  
-  .mobile-menu-btn {
-    display: block;
+
+  .page-header {
+    padding: 7rem 0 3rem;
   }
 }
 
@@ -535,10 +565,11 @@ footer {
   }
   
   .logo-text {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     color: var(--sapphire-blue);
     line-height: 1.15;
-    max-width: 200px;
+    max-width: 230px;
+    white-space: normal;
   }
   
   .logo-img {
