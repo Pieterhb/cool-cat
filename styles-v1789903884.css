@@ -23,8 +23,8 @@
   --glass-blur: blur(12px);
 
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Reset */
@@ -188,7 +188,7 @@ nav {
 }
 
 .nav-links a {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-dark);
   font-family: var(--font-heading);
   font-size: 1.2rem;
@@ -408,7 +408,7 @@ footer {
   border: none;
   border-radius: 50px;
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1.2rem;
   cursor: pointer;
   white-space: nowrap;
@@ -442,7 +442,7 @@ footer {
   padding: 0.4rem 1.15rem;
   border-radius: 20px;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -501,12 +501,12 @@ footer {
   padding: 8.5rem 0 3.5rem;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1080px) {
   .nav-links {
-    gap: 1.1rem;
+    gap: 1rem;
   }
   .nav-links a, .coupon-btn, .nav-reviews-btn, .nav-links .btn-primary {
-    font-size: 1.08rem !important;
+    font-size: 1.15rem !important;
   }
 }
 
