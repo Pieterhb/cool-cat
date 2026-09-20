@@ -270,7 +270,7 @@ def generate():
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>📱 <a href="tel:0637124491">063 712 4491 (Michele Rossouw)</a></li>
+                        <li>📱 <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
                         <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
                         <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
                         <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
