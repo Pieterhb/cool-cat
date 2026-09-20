@@ -234,14 +234,8 @@ def generate():
                     <li><a href="/guide">Guest Guide</a></li>
                     <li><a href="/faq">FAQ &amp; Policies</a></li>
                     
-                    <li class="coupon-dropdown">
-                        <button class="coupon-btn">Coupon</button>
-                        <div class="coupon-dropdown-content">Cool-Cat</div>
-                    </li>
-                    
-                    <li><button id="reviewsBtn" class="nav-reviews-btn">Reviews</button></li>
-
                     <li><a href="/book" class="btn btn-primary" style="padding: 0.5rem 1.5rem; color: white;">Book Now</a></li>
+                    <li><button id="reviewsBtn" class="nav-reviews-btn">Reviews</button></li>
                 </ul>
             </nav>
         </div>

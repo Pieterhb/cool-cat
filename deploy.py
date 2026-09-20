@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'fix: 20% bigger header text & buttons with added vertical padding, update footer contact info to (Enquiries) without phone popup'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'fix: remove Coupon button, move Book Now into second row before Reviews, compact 2-row centered header'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare
