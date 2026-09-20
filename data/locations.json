@@ -24,7 +24,9 @@
       "somerset-mall",
       "strand-golf-club",
       "twin-palm-centre-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&q=80&fit=crop",
+    "image_alt": "Modern private hospital building with clean medical facilities – Busamed Paardevlei Hospital"
   },
   {
     "slug": "strand-golf-club",
@@ -51,7 +53,9 @@
       "somerset-west-golf-club",
       "melkbaai-beach-strand",
       "somerset-mall"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&q=80&fit=crop",
+    "image_alt": "Lush green coastal golf course fairways with ocean backdrop – Strand Golf Club"
   },
   {
     "slug": "erinvale-golf-estate",
@@ -78,7 +82,9 @@
       "somerset-west-golf-club",
       "vergelegen-wine-estate",
       "lourensford-wine-estate"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&q=80&fit=crop",
+    "image_alt": "Championship golf course set against dramatic Helderberg Mountains – Erinvale Golf Estate"
   },
   {
     "slug": "somerset-mall",
@@ -105,7 +111,9 @@
       "strand-golf-club",
       "cheetah-outreach-somerset-west",
       "twin-palm-centre-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80&fit=crop",
+    "image_alt": "Modern shopping mall interior with stores and open spaces – Somerset Mall Somerset West"
   },
   {
     "slug": "cheetah-outreach-somerset-west",
@@ -132,7 +140,9 @@
       "monkey-town-primate-centre",
       "somerset-mall",
       "melkbaai-beach-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1456926631375-92c8ce872def?w=800&q=80&fit=crop",
+    "image_alt": "Magnificent cheetah resting in African wildlife sanctuary – Cheetah Outreach Somerset West"
   },
   {
     "slug": "melkbaai-beach-strand",
@@ -159,7 +169,9 @@
       "bikini-beach-gordons-bay",
       "gordons-bay-harbor",
       "macassar-beach"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80&fit=crop",
+    "image_alt": "White sandy beach with calm blue ocean waters – Melkbaai Beach Strand"
   },
   {
     "slug": "helderberg-nature-reserve",
@@ -186,7 +198,9 @@
       "steenbras-dam",
       "erinvale-golf-estate",
       "vergelegen-wine-estate"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80&fit=crop",
+    "image_alt": "Lush mountain fynbos hiking trail with valley and ocean views – Helderberg Nature Reserve"
   },
   {
     "slug": "stellenbosch-wine-route",
@@ -213,7 +227,9 @@
       "waterkloof-wines",
       "vergelegen-wine-estate",
       "lourensford-wine-estate"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=800&q=80&fit=crop",
+    "image_alt": "Rolling Stellenbosch vineyards with Cape mountains in background – Stellenbosch Wine Route"
   },
   {
     "slug": "cape-town-international-airport",
@@ -240,7 +256,9 @@
       "somerset-mall",
       "strand-golf-club",
       "melkbaai-beach-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80&fit=crop",
+    "image_alt": "Busy international airport terminal with aircraft on runway – Cape Town International Airport"
   },
   {
     "slug": "gordons-bay-harbor",
@@ -267,7 +285,9 @@
       "clarence-drive-scenic-route",
       "melkbaai-beach-strand",
       "harmony-park"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80&fit=crop",
+    "image_alt": "Scenic harbour with fishing boats and mountain backdrop – Gordon's Bay Harbor"
   },
   {
     "slug": "somerset-west-business-district",
@@ -294,7 +314,9 @@
       "busamed-paardevlei-hospital",
       "helderberg-hospital",
       "strand-golf-club"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80&fit=crop",
+    "image_alt": "Modern business district office buildings and commercial area – Somerset West Business"
   },
   {
     "slug": "waterkloof-wines",
@@ -321,7 +343,9 @@
       "lourensford-wine-estate",
       "helderberg-wine-tasting",
       "stellenbosch-wine-route"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1569929289431-31b43a121025?w=800&q=80&fit=crop",
+    "image_alt": "Modern wine estate tasting room with panoramic valley views – Waterkloof Wines Somerset West"
   },
   {
     "slug": "vergelegen-wine-estate",
@@ -348,7 +372,9 @@
       "erinvale-golf-estate",
       "waterkloof-wines",
       "helderberg-nature-reserve"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80&fit=crop",
+    "image_alt": "Historic Cape Dutch wine estate homestead with ancient camphor trees – Vergelegen Wine Estate"
   },
   {
     "slug": "lourensford-wine-estate",
@@ -375,7 +401,9 @@
       "erinvale-golf-estate",
       "helderberg-nature-reserve",
       "helderberg-wine-tasting"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=800&q=80&fit=crop",
+    "image_alt": "Sprawling wine estate with vineyard rows and Helderberg Mountains – Lourensford Wine Estate"
   },
   {
     "slug": "monkey-town-primate-centre",
@@ -402,7 +430,9 @@
       "blue-rock-adventure-park",
       "harmony-park",
       "melkbaai-beach-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1560807707-8cc77767d783?w=800&q=80&fit=crop",
+    "image_alt": "Children enjoying a family splash park with water slides and play areas"
   },
   {
     "slug": "macassar-beach",
@@ -429,7 +459,9 @@
       "strand-golf-club",
       "somerset-mall",
       "cape-town-international-airport"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=800&q=80&fit=crop",
+    "image_alt": "Vast coastal sand dunes meeting the ocean – Macassar Beach False Bay"
   },
   {
     "slug": "bikini-beach-gordons-bay",
@@ -456,7 +488,9 @@
       "clarence-drive-scenic-route",
       "melkbaai-beach-strand",
       "harmony-park"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&q=80&fit=crop",
+    "image_alt": "Sheltered Blue Flag beach cove with crystal clear water – Bikini Beach Gordon's Bay"
   },
   {
     "slug": "blue-rock-adventure-park",
@@ -483,7 +517,9 @@
       "sir-lowrys-pass",
       "clarence-drive-scenic-route",
       "monkey-town-primate-centre"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=800&q=80&fit=crop",
+    "image_alt": "Wakeboarding and cable water sports on a crystal clear quarry lake – Blue Rock Adventure Park"
   },
   {
     "slug": "helderberg-hospital",
@@ -510,7 +546,9 @@
       "somerset-west-business-district",
       "somerset-mall",
       "twin-palm-centre-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&q=80&fit=crop",
+    "image_alt": "Hospital exterior and medical facility near Somerset West – Helderberg Hospital"
   },
   {
     "slug": "strand-municipal-indoor-pool",
@@ -537,7 +575,9 @@
       "strand-golf-club",
       "cape-town-cycle-tour",
       "twin-palm-centre-strand"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=800&q=80&fit=crop",
+    "image_alt": "Olympic-sized indoor heated swimming pool with blue water – Strand Municipal Indoor Pool"
   },
   {
     "slug": "clarence-drive-scenic-route",
@@ -564,7 +604,9 @@
       "gordons-bay-harbor",
       "bikini-beach-gordons-bay",
       "steenbras-dam"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80&fit=crop",
+    "image_alt": "Dramatic coastal road carved into sea cliffs above False Bay – Clarence Drive Route 44"
   },
   {
     "slug": "sir-lowrys-pass",
@@ -591,7 +633,9 @@
       "steenbras-dam",
       "kogelberg-nature-reserve",
       "waterkloof-wines"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80&fit=crop",
+    "image_alt": "Mountain pass viewpoint overlooking wide valley and ocean – Sir Lowry's Pass"
   },
   {
     "slug": "cape-town-cycle-tour",
@@ -618,7 +662,9 @@
       "strand-municipal-indoor-pool",
       "helderberg-nature-reserve",
       "steenbras-dam"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=80&fit=crop",
+    "image_alt": "Cyclists riding along a scenic coastal road – Cape Town Cycle Tour Western Cape"
   },
   {
     "slug": "helderberg-wine-tasting",
@@ -645,7 +691,9 @@
       "vergelegen-wine-estate",
       "lourensford-wine-estate",
       "stellenbosch-wine-route"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=800&q=80&fit=crop",
+    "image_alt": "Wine glasses being filled at a Helderberg wine estate tasting room"
   },
   {
     "slug": "kogelberg-nature-reserve",
@@ -672,7 +720,9 @@
       "steenbras-dam",
       "helderberg-nature-reserve",
       "sir-lowrys-pass"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80&fit=crop",
+    "image_alt": "UNESCO Biosphere Reserve fynbos landscape with Palmiet River – Kogelberg Nature Reserve"
   },
   {
     "slug": "harmony-park",
@@ -699,7 +749,9 @@
       "bikini-beach-gordons-bay",
       "gordons-bay-harbor",
       "strand-municipal-indoor-pool"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1530053969600-caed2596d242?w=800&q=80&fit=crop",
+    "image_alt": "Coastal tidal pools and grassy picnic area at sunset – Harmony Park Strand"
   },
   {
     "slug": "lwandle-migrant-labour-museum",
@@ -726,7 +778,9 @@
       "somerset-mall",
       "cheetah-outreach-somerset-west",
       "strand-golf-club"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80&fit=crop",
+    "image_alt": "Museum exhibit showcasing South African cultural and historical heritage – Lwandle Museum"
   },
   {
     "slug": "somerset-west-golf-club",
@@ -753,7 +807,9 @@
       "erinvale-golf-estate",
       "somerset-west-business-district",
       "somerset-mall"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=800&q=80&fit=crop",
+    "image_alt": "Parkland golf course with tree-lined fairways and mountain views – Somerset West Golf Club"
   },
   {
     "slug": "steenbras-dam",
@@ -780,7 +836,9 @@
       "kogelberg-nature-reserve",
       "blue-rock-adventure-park",
       "sir-lowrys-pass"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80&fit=crop",
+    "image_alt": "Crystal clear mountain gorge with natural swimming pools – Steenbras Dam Crystal Pools"
   },
   {
     "slug": "twin-palm-centre-strand",
@@ -807,6 +865,8 @@
       "melkbaai-beach-strand",
       "somerset-mall",
       "strand-golf-club"
-    ]
+    ],
+    "image_url": "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=800&q=80&fit=crop",
+    "image_alt": "Convenience shopping centre with supermarket and local stores – Twin Palm Centre Strand"
   }
 ]

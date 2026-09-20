@@ -63,6 +63,8 @@ def generate():
         page_content = page_content.replace('{{faq_question}}', loc.get('faq_question', f"How far is Cool-Cat from {loc['landmark']}?"))
         page_content = page_content.replace('{{faq_answer}}', loc.get('faq_answer', f"{loc['landmark']} is located approximately {loc['distance_km']} from Cool-Cat in Strand."))
         page_content = page_content.replace('{{related_html}}', related_html)
+        page_content = page_content.replace('{{image_url}}', loc.get('image_url', '../1. Dining Breakfast.jpg'))
+        page_content = page_content.replace('{{image_alt}}', loc.get('image_alt', f"{loc['landmark']} – near Cool-Cat Strand B&B"))
         
         # Update CSS path
         page_content = re.sub(r'href="\.\./styles-[^"]+\.css"', f'href="../{css_file}"', page_content)
