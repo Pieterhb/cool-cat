@@ -218,8 +218,9 @@ nav {
 /* Hero Section (Video Banner) */
 .hero {
   position: relative;
-  height: 100vh;
-  min-height: 600px;
+  height: calc(100vh - 125px);
+  min-height: 520px;
+  margin-top: 125px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -509,7 +510,7 @@ footer {
 
 /* Responsive */
 .page-header {
-  padding: 9rem 0 3.5rem;
+  padding: 12.5rem 1.5rem 4.7rem;
 }
 
 @media (max-width: 1350px) {
@@ -586,7 +587,7 @@ footer {
   }
 
   .page-header {
-    padding: 7rem 0 3rem;
+  padding: 12.5rem 1.5rem 4.7rem;
   }
 }
 
@@ -612,16 +613,16 @@ footer {
   }
   
   .hero {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top: 85px; /* Just enough to clear the fixed header */
-    padding-bottom: 10px;
-    height: auto; /* Remove 100dvh so it doesn't force full height */
-    min-height: 0;
-    overflow-y: visible;
-    overflow-x: hidden;
-  }
+  position: relative;
+  height: calc(100vh - 125px);
+  min-height: 520px;
+  margin-top: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000;
+}
   
   .hero-overlay {
     display: none;
