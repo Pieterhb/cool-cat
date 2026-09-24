@@ -197,7 +197,7 @@ def generate():
             padding: 12.5rem 1.5rem 4.7rem;
             text-align: center;
             color: white;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }}
         .grid-3 {{
             display: grid;
