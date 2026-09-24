@@ -194,10 +194,10 @@ def generate():
     <style>
         .page-header {{
             background: linear-gradient(rgba(10, 58, 133, 0.65), rgba(15, 82, 186, 0.75)), url('2. Ocean.jpg') center/cover;
-            padding: 12.5rem 1.5rem 4.7rem;
+            padding: 11rem 1.5rem 2.4rem;
             text-align: center;
             color: white;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.4rem;
         }}
         .grid-3 {{
             display: grid;
