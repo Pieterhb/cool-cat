@@ -107,7 +107,7 @@ def generate():
             """
             
         cat_sections_html += f"""
-            <div style="margin-bottom: 3.5rem;">
+            <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
                     <span>{icon}</span> {cat_name}
                 </h2>
@@ -250,8 +250,31 @@ def generate():
         </div>
     </div>
 
-    <section class="section" style="padding-top: 0;">
+    <section class="section" style="padding-top: 0; padding-bottom: 0.5rem;">
         <div class="container">
+            <!-- Local Page Live Search Bar -->
+            <div style="display: flex; justify-content: center; margin: 0.5rem 0 1.8rem 0;">
+                <div style="width: 100%; max-width: 480px; position: relative; display: flex; align-items: center;">
+                    <span style="position: absolute; left: 14px; color: #64748B; font-size: 1rem; pointer-events: none;">🔍</span>
+                    <input type="text" id="exploreSearchInput" placeholder="Search 30 destinations, beaches, wine, golf, hiking..." oninput="handleExploreSearch()" style="width: 100%; padding: 0.65rem 2.2rem 0.65rem 2.5rem; border: 1.5px solid #BFDBFE; border-radius: 30px; font-size: 0.95rem; outline: none; transition: all 0.2s ease; background: #DBEAFE; color: var(--sapphire-blue-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.04);" onfocus="this.style.background='white'; this.style.borderColor='var(--sapphire-blue)'; this.style.boxShadow='0 0 0 3px rgba(15, 82, 186, 0.15)';" onblur="this.style.background=this.value ? 'white' : '#DBEAFE'; this.style.borderColor=this.value ? 'var(--sapphire-blue)' : '#BFDBFE'; this.style.boxShadow='none';">
+                    <button type="button" id="clearExploreSearchBtn" onclick="clearExploreSearch()" style="position: absolute; right: 12px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1.1rem; display: none; padding: 0; line-height: 1;">✕</button>
+                </div>
+            </div>
+
+            <!-- Search Results Feedback Banner -->
+            <div id="exploreSearchBanner" style="display: none; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 0.7rem 1.2rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; font-size: 0.92rem; color: var(--sapphire-blue-dark);">
+                <span>Showing <strong id="exploreMatchCount">0</strong> of 30 destinations matching "<span id="exploreTermDisplay"></span>"</span>
+                <button onclick="clearExploreSearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">✕ Clear Search</button>
+            </div>
+
+            <!-- No results container -->
+            <div id="noExploreResults" style="display: none; text-align: center; background: white; border: 1px solid #E2E8F0; border-radius: 14px; padding: 2.5rem 1.5rem; margin-bottom: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+                <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 0.5rem;">No destinations found</h3>
+                <p style="color: #64748B; max-width: 450px; margin: 0 auto 1.2rem;">We couldn't find any of our 30 destinations matching "<span id="noResultsTerm"></span>".</p>
+                <button onclick="clearExploreSearch()" class="btn btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;">View All 30 Destinations</button>
+            </div>
+
             {cat_sections_html}
         </div>
     </section>
@@ -314,6 +337,80 @@ def generate():
 
         function toggleMenu() {{
             document.getElementById('navLinks').classList.toggle('active');
+        }}
+
+        // Live Local Page Search for 30 Explore Destinations
+        function handleExploreSearch() {{
+            var input = document.getElementById('exploreSearchInput');
+            var query = (input.value || '').trim().toLowerCase();
+            var clearBtn = document.getElementById('clearExploreSearchBtn');
+            var banner = document.getElementById('exploreSearchBanner');
+            var matchCountEl = document.getElementById('exploreMatchCount');
+            var termDisplayEl = document.getElementById('exploreTermDisplay');
+            var noResults = document.getElementById('noExploreResults');
+            var noResultsTerm = document.getElementById('noResultsTerm');
+
+            if (query.length > 0) {{
+                clearBtn.style.display = 'block';
+            }} else {{
+                clearBtn.style.display = 'none';
+            }}
+
+            var sections = document.querySelectorAll('.explore-cat-section');
+            var totalMatches = 0;
+
+            if (!query) {{
+                banner.style.display = 'none';
+                noResults.style.display = 'none';
+                sections.forEach(function(section) {{
+                    section.style.display = 'block';
+                    var cards = section.querySelectorAll('.location-card');
+                    cards.forEach(function(card) {{
+                        card.style.display = 'block';
+                    }});
+                }});
+                return;
+            }}
+
+            sections.forEach(function(section) {{
+                var cards = section.querySelectorAll('.location-card');
+                var sectionMatches = 0;
+                cards.forEach(function(card) {{
+                    var text = card.textContent.toLowerCase();
+                    if (text.indexOf(query) !== -1) {{
+                        card.style.display = 'block';
+                        sectionMatches++;
+                        totalMatches++;
+                    }} else {{
+                        card.style.display = 'none';
+                    }}
+                }});
+                if (sectionMatches > 0) {{
+                    section.style.display = 'block';
+                }} else {{
+                    section.style.display = 'none';
+                }}
+            }});
+
+            if (totalMatches === 0) {{
+                banner.style.display = 'none';
+                noResults.style.display = 'block';
+                noResultsTerm.textContent = query;
+            }} else {{
+                noResults.style.display = 'none';
+                banner.style.display = 'flex';
+                matchCountEl.textContent = totalMatches;
+                termDisplayEl.textContent = query;
+            }}
+        }}
+
+        function clearExploreSearch() {{
+            var input = document.getElementById('exploreSearchInput');
+            input.value = '';
+            input.style.background = '#DBEAFE';
+            input.style.borderColor = '#BFDBFE';
+            handleExploreSearch();
+            input.focus();
         }}
     </script>
 </body>
