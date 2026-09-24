@@ -49,9 +49,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            background: white;
+            background: #DBEAFE;
             color: var(--sapphire-blue-dark);
-            border: 1px solid #CBD5E1;
+            border: 1px solid #BFDBFE;
             padding: 0.5rem 1rem;
             border-radius: 8px;
             font-weight: 700;
@@ -64,37 +64,40 @@
             background: var(--sapphire-blue);
             color: white;
             border-color: var(--sapphire-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(15, 82, 186, 0.25);
         }
 
         .radius-filter-pills {
             display: flex;
-            gap: 0.6rem;
-            overflow-x: auto;
-            padding-bottom: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.7rem;
+            padding-bottom: 0.4rem;
             margin-bottom: 2.5rem;
-            scrollbar-width: thin;
         }
 
         .radius-pill {
-            background: white;
-            border: 1.5px solid #CBD5E1;
+            background: #DBEAFE;
+            border: 1.5px solid #BFDBFE;
             padding: 0.6rem 1.2rem;
             border-radius: 25px;
             font-size: 0.88rem;
             font-weight: 700;
-            color: #334155;
+            color: #1e3a5f;
             cursor: pointer;
             white-space: nowrap;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
         }
 
         .radius-pill:hover, .radius-pill.active {
             background: var(--sapphire-blue);
             color: white;
             border-color: var(--sapphire-blue);
-            box-shadow: 0 4px 10px rgba(15, 82, 186, 0.25);
+            box-shadow: 0 6px 16px rgba(15, 82, 186, 0.25);
+            transform: translateY(-2px);
         }
 
         .section-zone-header {
@@ -363,12 +366,18 @@
                 <button onclick="clearActivitySearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">✕ Clear Search</button>
             </div>
 
-            <!-- Radius Filter Pills -->
+            <!-- Radius Filter Pills — Row 1: Zone 1 & 2 | Row 2: Zone 3 & 4 -->
             <div class="radius-filter-pills" id="radiusPillsRow">
-                <a href="#zone-5k" class="radius-pill">🏖️ Zone 1: Within 5 km (Strand Local)</a>
-                <a href="#zone-15k" class="radius-pill">🌊 Zone 2: 5–15 km (Gordon's Bay &amp; Helderberg)</a>
-                <a href="#zone-30k" class="radius-pill">🍷 Zone 3: 15–30 km (Stellenbosch, Wine &amp; Markets)</a>
-                <a href="#zone-50k" class="radius-pill">🌲 Zone 4: 30–50 km (Elgin, Grabouw &amp; Betty's Bay)</a>
+                <!-- Row 1 -->
+                <div style="display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%;">
+                    <a href="#zone-5k" class="radius-pill">🏖️ Zone 1: Within 5 km (Strand Local)</a>
+                    <a href="#zone-15k" class="radius-pill">🌊 Zone 2: 5–15 km (Gordon's Bay &amp; Helderberg)</a>
+                </div>
+                <!-- Row 2 -->
+                <div style="display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%;">
+                    <a href="#zone-30k" class="radius-pill">🍷 Zone 3: 15–30 km (Stellenbosch, Wine &amp; Markets)</a>
+                    <a href="#zone-50k" class="radius-pill">🌲 Zone 4: 30–50 km (Elgin, Grabouw &amp; Betty's Bay)</a>
+                </div>
             </div>
 
 
