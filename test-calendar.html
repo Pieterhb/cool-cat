@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790331196.css">
+    <link rel="stylesheet" href="styles-v1790335962.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1535,14 +1535,17 @@
                 <div class="step2-card">
 
                     <!-- Stay Recap Banner -->
-                    <div class="recap-bar">
+                    <div class="recap-bar" style="background: #F0F7FF; border: 1.5px solid #BFDBFE; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;">
                         <div style="flex: 1;">
-                            <div class="recap-title" id="recapStaysCount">1 Reserved Stay</div>
+                            <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark);">1 Reserved Stay</div>
                             <div id="recapStaysList" style="margin-top: 0.5rem; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+                            <div id="recapBreakfastLine" style="margin-top: 0.45rem; font-size: 0.88rem; color: #166534; font-weight: 600; display: none;"></div>
                         </div>
-                        <div style="text-align: right; margin-left: 1rem;">
-                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.25rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
-                            <button class="btn-edit-dates" onclick="goToStep1()">✏️ Edit Dates / Rooms</button>
+                        <div style="text-align: right; margin-left: 1rem; min-width: 190px;">
+                            <div style="font-size: 0.75rem; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
+                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
+                            <div id="recapDepositSubtext" style="font-size: 0.8rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
+                            <button type="button" class="btn-edit-dates" onclick="goToStep1()" style="margin-top: 0.4rem;">✏️ Edit Dates / Rooms</button>
                         </div>
                     </div>
 
@@ -1600,7 +1603,7 @@
                                 <label class="form-label" for="guestCount">
                                     Number of Guests
                                 </label>
-                                <select id="guestCount" class="form-select">
+                                <select id="guestCount" class="form-select" onchange="handleGuestCountChange()">
                                     <option value="2">2 Guests</option>
                                 </select>
                             </div>
@@ -1918,6 +1921,7 @@
         let calculatedBalanceDue = 0;
         let totalNightsCount = 0;
         let includeBreakfast = false;
+        let selectedGuestCount = 0;
         let activeReferralCode = '';
 
         // ==========================================
@@ -2545,14 +2549,11 @@
 
             let totalNights = 0;
             let staysSubtotal = 0;
-            let totalGuestNights = 0;
             let cartHtml = '';
 
             selectedStays.forEach(stay => {
                 totalNights += stay.nights;
                 staysSubtotal += stay.subtotal;
-                const guests = (stay.roomId === 'all') ? 8 : 2;
-                totalGuestNights += (stay.nights * guests);
 
                 const breakdownRows = stay.nightlyRates.map(nr => 
                     `<div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #64748B; padding: 0.12rem 0;">
@@ -2590,8 +2591,11 @@
             nightsBadge.textContent = `✨ ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''} (${totalNights} Total Nights) Selected`;
             nightsBadge.style.background = '#DCFCE7';
 
-            // Pricing calculation
+            // Pricing calculation linked to guest count
+            const currentGuests = getCurrentGuests();
+            const breakfastTotal = (includeBreakfast && totalNights > 0) ? (currentGuests * totalNights * 120) : 0;
             let grandTotal = staysSubtotal;
+
             let breakdownHtml = `
                 <li>
                     <span>Room Stays Subtotal (${selectedStays.length} Stays, ${totalNights}N)</span>
@@ -2599,13 +2603,12 @@
                 </li>
             `;
 
-            if (includeBreakfast) {
-                const breakfastCost = totalGuestNights * 120;
-                grandTotal += breakfastCost;
+            if (includeBreakfast && breakfastTotal > 0) {
+                grandTotal += breakfastTotal;
                 breakdownHtml += `
-                    <li>
-                        <span>🍳 Breakfast Package (${totalGuestNights} guest-nights @ R120)</span>
-                        <span>R${breakfastCost.toLocaleString()}</span>
+                    <li style="color: #166534; font-weight: 600;">
+                        <span>🍳 Breakfast Package (${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNights}N @ R120)</span>
+                        <span>+R${breakfastTotal.toLocaleString()}</span>
                     </li>
                 `;
             }
@@ -2652,6 +2655,87 @@
                     <strong>100% Full Payment: R${grandTotal.toLocaleString()}</strong><br>
                     Due to arrival within 7 days or total value, full payment is required upfront.
                 `;
+            }
+
+            // Synchronize Step 2 recap bar and buttons
+            updateStep2Recap();
+        }
+
+        function getMaxGuests() {
+            let max = 0;
+            selectedStays.forEach(s => {
+                max += (s.roomId === 'all') ? 8 : 2;
+            });
+            return Math.min(8, Math.max(1, max || 2));
+        }
+
+        function getCurrentGuests() {
+            const max = getMaxGuests();
+            if (!selectedGuestCount || selectedGuestCount > max) {
+                selectedGuestCount = max;
+            }
+            return selectedGuestCount;
+        }
+
+        function updateStep2Recap() {
+            const recapTitle = document.getElementById('recapStaysCount');
+            const recapList = document.getElementById('recapStaysList');
+            const recapBreakfastLine = document.getElementById('recapBreakfastLine');
+            const recapTotalAmount = document.getElementById('recapTotalAmount');
+            const recapDepositSubtext = document.getElementById('recapDepositSubtext');
+            const paystackButtonAmount = document.getElementById('paystackButtonAmount');
+            const breakfastAddonHelpText = document.getElementById('breakfastAddonHelpText');
+
+            if (!recapTitle) return;
+
+            const currentGuests = getCurrentGuests();
+            recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
+
+            if (recapList) {
+                recapList.innerHTML = selectedStays.map(s => 
+                    `<div>${s.roomIcon} <strong>${s.roomName}</strong>: ${formatFriendlyDate(s.checkIn)} – ${formatFriendlyDate(s.checkOut)} (${s.nights}N) &bull; R${s.subtotal.toLocaleString()}</div>`
+                ).join('');
+            }
+
+            const breakfastTotal = (includeBreakfast && totalNightsCount > 0) ? (currentGuests * totalNightsCount * 120) : 0;
+
+            if (recapBreakfastLine) {
+                if (includeBreakfast && breakfastTotal > 0) {
+                    recapBreakfastLine.style.display = 'block';
+                    recapBreakfastLine.innerHTML = `🍳 <strong>Daily Breakfast Package:</strong> ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} @ R120/day = <strong>+R${breakfastTotal.toLocaleString()}</strong>`;
+                } else {
+                    recapBreakfastLine.style.display = 'none';
+                    recapBreakfastLine.innerHTML = '';
+                }
+            }
+
+            if (breakfastAddonHelpText) {
+                if (includeBreakfast) {
+                    breakfastAddonHelpText.innerHTML = `<strong style="color: #166534;">✓ Active:</strong> ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} = <strong>R${breakfastTotal.toLocaleString()}</strong> (+R120 per guest / night)`;
+                } else {
+                    breakfastAddonHelpText.innerHTML = `Farm-fresh breakfast (+R120 per guest / night) — <em>For ${currentGuests} guest${currentGuests > 1 ? 's' : ''}: R${(currentGuests * totalNightsCount * 120).toLocaleString()} total</em>`;
+                }
+            }
+
+            if (recapTotalAmount) {
+                recapTotalAmount.textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
+            }
+
+            const isDeposit = (calculatedDepositDue < calculatedGrandTotal);
+            if (recapDepositSubtext) {
+                if (isDeposit) {
+                    recapDepositSubtext.innerHTML = `💳 <strong>50% Deposit: R${calculatedDepositDue.toLocaleString()} Due Now</strong><br><span style="color: #64748B; font-weight: normal; font-size: 0.76rem;">(Remaining R${calculatedBalanceDue.toLocaleString()} due at check-in)</span>`;
+                } else {
+                    recapDepositSubtext.innerHTML = `💳 <strong>100% Full Payment Required</strong>`;
+                }
+            }
+
+            if (paystackButtonAmount) {
+                if (isDeposit) {
+                    paystackButtonAmount.textContent = `R${calculatedDepositDue.toLocaleString()} (50% Deposit)`;
+                } else {
+                    paystackButtonAmount.textContent = `R${calculatedGrandTotal.toLocaleString()} (Full Payment)`;
+                }
             }
         }
 
@@ -2718,24 +2802,10 @@
                 return;
             }
 
-            // Populate Step 2 Recap Bar
-            const recapTitle = document.getElementById('recapStaysCount');
-            const recapList = document.getElementById('recapStaysList');
-            recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
-
-            recapList.innerHTML = selectedStays.map(s => 
-                `<div>${s.roomIcon} <strong>${s.roomName}</strong>: ${formatFriendlyDate(s.checkIn)} – ${formatFriendlyDate(s.checkOut)} (${s.nights}N) &bull; R${s.subtotal.toLocaleString()}</div>`
-            ).join('');
-
-            document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
-            document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
-
-            // Calculate max guest capacity across all selected rooms
-            let maxCapacity = 0;
-            selectedStays.forEach(s => {
-                maxCapacity += (s.roomId === 'all') ? 8 : 2;
-            });
-            maxCapacity = Math.min(8, Math.max(2, maxCapacity));
+            const maxCapacity = getMaxGuests();
+            if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
+                selectedGuestCount = maxCapacity;
+            }
 
             const guestSelect = document.getElementById('guestCount');
             if (guestSelect) {
@@ -2744,9 +2814,18 @@
                     const opt = document.createElement('option');
                     opt.value = g;
                     opt.textContent = `${g} Guest${g > 1 ? 's' : ''} ${g === maxCapacity ? '(Max capacity)' : ''}`;
+                    if (g === selectedGuestCount) opt.selected = true;
                     guestSelect.appendChild(opt);
                 }
             }
+
+            // Sync breakfast checkbox state
+            const breakfastChk = document.getElementById('addBreakfastCheckbox');
+            if (breakfastChk) {
+                breakfastChk.checked = includeBreakfast;
+            }
+
+            updateSummarySidebar();
 
             document.getElementById('step1View').classList.remove('active-view');
             document.getElementById('step2View').classList.add('active-view');
@@ -2759,6 +2838,14 @@
             document.getElementById('wizStep2').classList.add('active');
 
             window.scrollTo({ top: 180, behavior: 'smooth' });
+        }
+
+        function handleGuestCountChange() {
+            const guestSelect = document.getElementById('guestCount');
+            if (guestSelect) {
+                selectedGuestCount = parseInt(guestSelect.value) || 1;
+            }
+            updateSummarySidebar();
         }
 
         function goToStep1() {
@@ -2777,8 +2864,6 @@
         function toggleBreakfastAddon() {
             includeBreakfast = document.getElementById('addBreakfastCheckbox').checked;
             updateSummarySidebar();
-            document.getElementById('recapTotalAmount').textContent = `Total: R${calculatedGrandTotal.toLocaleString()}`;
-            document.getElementById('paystackButtonAmount').textContent = `R${calculatedDepositDue.toLocaleString()}`;
         }
 
         // ==========================================

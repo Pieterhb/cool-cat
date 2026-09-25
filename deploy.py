@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'fix: update walk time to 3-minute, fix booking financial amounts in KV storage and admin dashboard'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'fix: link guest count to breakfast calculation, synchronize Step 2 recap breakdown with payment total and deposit amounts'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare
