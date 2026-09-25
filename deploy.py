@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'style: reduce spacing by 50% on page headers, section padding, FAQ cards, and bottom nav buttons'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'fix: remove black bars above and below hero video in mobile 9:16 mode'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare

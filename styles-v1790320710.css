@@ -613,16 +613,19 @@ footer {
   }
   
   .hero {
-  position: relative;
-  height: calc(100vh - 125px);
-  min-height: 520px;
-  margin-top: 125px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-color: #000;
-}
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 85px; /* Just enough to clear the fixed header */
+    padding-bottom: 10px;
+    height: auto; /* Remove fixed height so it doesn't force full height */
+    min-height: 0;
+    margin-top: 0;
+    overflow-y: visible;
+    overflow-x: hidden;
+  }
   
   .hero-overlay {
     display: none;
