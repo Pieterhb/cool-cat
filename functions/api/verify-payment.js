@@ -77,6 +77,9 @@ export async function onRequestPost(context) {
             guestName,
             guestEmail,
             guestPhone,
+            guestCount: Number(payload.guestCount) || 2,
+            includeBreakfast: !!payload.includeBreakfast,
+            breakfastCount: Number(payload.breakfastCount) || 0,
             stays: staysList,
             totalStays: staysList.length,
             roomId: staysList[0].roomId,
@@ -120,6 +123,9 @@ export async function onRequestPost(context) {
                 guestName,
                 guestEmail,
                 guestPhone,
+                guestCount: Number(payload.guestCount) || 2,
+                includeBreakfast: !!payload.includeBreakfast,
+                breakfastCount: Number(payload.breakfastCount) || 0,
                 totalAmount: Number(totalAmount || 0),
                 amountPaid: Number(amountPaid || 0),
                 balanceDue: Number(balanceDue || 0),
@@ -218,6 +224,8 @@ async function dispatchBookingEmails(booking, env) {
                 <strong>Reserved Stays:</strong>
                 ${staysRowsHtml}
             </div>
+            <p style="margin: 4px 0;">👥 <strong>Total Guests Staying:</strong> ${booking.guestCount || 2} Guests</p>
+            ${booking.includeBreakfast && booking.breakfastCount > 0 ? `<p style="margin: 4px 0; color: #166534;">🍳 <strong>Daily Breakfast:</strong> ${booking.breakfastCount} of ${booking.guestCount || 2} Guests (${booking.nights} Nights @ R120/person/day = R${Number(booking.breakfastCount * booking.nights * 120).toLocaleString()})</p>` : ''}
             <p style="margin: 4px 0;">💰 <strong>Total Stay:</strong> R${Number(booking.totalAmount).toLocaleString()}</p>
             <p style="margin: 4px 0; color: #166534;">💳 <strong>Amount Paid:</strong> R${Number(booking.amountPaid).toLocaleString()}</p>
             ${booking.balanceDue > 0 ? `<p style="margin: 4px 0; color: #991b1b; font-weight: bold;">⏳ Balance Due at Check-In: R${Number(booking.balanceDue).toLocaleString()}</p>` : `<p style="margin: 4px 0; color: #166534;">🎉 100% Fully Paid</p>`}
@@ -253,6 +261,8 @@ async function dispatchBookingEmails(booking, env) {
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Guest Name:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.guestName}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="mailto:${booking.guestEmail}">${booking.guestEmail}</a></td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>WhatsApp/Phone:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="https://wa.me/${booking.guestPhone.replace(/[^0-9]/g, '')}">${booking.guestPhone}</a></td></tr>
+          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Guests Staying:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.guestCount || 2} Guests</td></tr>
+          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Breakfast Package:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.includeBreakfast && booking.breakfastCount > 0 ? `🍳 ${booking.breakfastCount} of ${booking.guestCount || 2} Guests Daily (R${Number(booking.breakfastCount * booking.nights * 120).toLocaleString()})` : 'No breakfast'}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Stays Booked:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${staysRowsHtml}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Arrival Time:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.arrivalTime}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Special Requests:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.specialRequests || 'None'}</td></tr>

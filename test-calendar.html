@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790335962.css">
+    <link rel="stylesheet" href="styles-v1790336837.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1610,13 +1610,25 @@
 
                             <!-- Optional Breakfast Add-on -->
                             <div class="form-group" style="justify-content: flex-end;">
-                                <label class="option-checkbox-card">
-                                    <input type="checkbox" id="addBreakfastCheckbox" onchange="toggleBreakfastAddon()">
-                                    <div>
-                                        <strong>🍳 Add Daily Breakfast Package</strong><br>
-                                        <span id="breakfastAddonHelpText" style="font-size: 0.8rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night)</span>
+                                <div class="option-checkbox-card" style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                                    <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; margin: 0;">
+                                        <input type="checkbox" id="addBreakfastCheckbox" onchange="toggleBreakfastAddon()" style="margin-top: 3px;">
+                                        <div>
+                                            <strong>🍳 Add Daily Breakfast Package</strong><br>
+                                            <span id="breakfastAddonHelpText" style="font-size: 0.8rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night)</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Dynamic Breakfast Quantity Selector (Visible when checked) -->
+                                    <div id="breakfastGuestSelectorBox" style="display: none; padding-top: 0.4rem; border-top: 1px dashed #CBD5E1; margin-top: 0.2rem; align-items: center; justify-content: space-between; gap: 0.8rem;">
+                                        <label for="breakfastGuestCount" style="font-size: 0.82rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                            How many guests want breakfast?
+                                        </label>
+                                        <select id="breakfastGuestCount" class="form-select" style="width: auto; min-width: 140px; padding: 0.35rem 0.6rem; font-size: 0.84rem;" onchange="handleBreakfastGuestCountChange()">
+                                            <option value="1">1 Guest</option>
+                                        </select>
                                     </div>
-                                </label>
+                                </div>
                             </div>
 
                             <!-- Special Requests -->
@@ -1922,6 +1934,7 @@
         let totalNightsCount = 0;
         let includeBreakfast = false;
         let selectedGuestCount = 0;
+        let selectedBreakfastCount = 0;
         let activeReferralCode = '';
 
         // ==========================================
@@ -2593,7 +2606,8 @@
 
             // Pricing calculation linked to guest count
             const currentGuests = getCurrentGuests();
-            const breakfastTotal = (includeBreakfast && totalNights > 0) ? (currentGuests * totalNights * 120) : 0;
+            const bGuests = getCurrentBreakfastGuests();
+            const breakfastTotal = (includeBreakfast && totalNights > 0) ? (bGuests * totalNights * 120) : 0;
             let grandTotal = staysSubtotal;
 
             let breakdownHtml = `
@@ -2607,7 +2621,7 @@
                 grandTotal += breakfastTotal;
                 breakdownHtml += `
                     <li style="color: #166534; font-weight: 600;">
-                        <span>🍳 Breakfast Package (${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNights}N @ R120)</span>
+                        <span>🍳 Breakfast Package (${bGuests} of ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNights}N @ R120)</span>
                         <span>+R${breakfastTotal.toLocaleString()}</span>
                     </li>
                 `;
@@ -2677,6 +2691,45 @@
             return selectedGuestCount;
         }
 
+        function getCurrentBreakfastGuests() {
+            const totalG = getCurrentGuests();
+            if (!selectedBreakfastCount || selectedBreakfastCount > totalG) {
+                selectedBreakfastCount = totalG;
+            }
+            return selectedBreakfastCount;
+        }
+
+        function syncBreakfastDropdown() {
+            const box = document.getElementById('breakfastGuestSelectorBox');
+            const select = document.getElementById('breakfastGuestCount');
+            if (!box || !select) return;
+
+            if (includeBreakfast) {
+                box.style.display = 'flex';
+                const totalG = getCurrentGuests();
+                const curB = getCurrentBreakfastGuests();
+
+                select.innerHTML = '';
+                for (let i = 1; i <= totalG; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `${i} Person${i > 1 ? 's' : ''} ${i === totalG ? '(All staying guests)' : ''}`;
+                    if (i === curB) opt.selected = true;
+                    select.appendChild(opt);
+                }
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        function handleBreakfastGuestCountChange() {
+            const select = document.getElementById('breakfastGuestCount');
+            if (select) {
+                selectedBreakfastCount = parseInt(select.value) || 1;
+            }
+            updateSummarySidebar();
+        }
+
         function updateStep2Recap() {
             const recapTitle = document.getElementById('recapStaysCount');
             const recapList = document.getElementById('recapStaysList');
@@ -2689,6 +2742,7 @@
             if (!recapTitle) return;
 
             const currentGuests = getCurrentGuests();
+            const bGuests = getCurrentBreakfastGuests();
             recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
 
             if (recapList) {
@@ -2697,12 +2751,12 @@
                 ).join('');
             }
 
-            const breakfastTotal = (includeBreakfast && totalNightsCount > 0) ? (currentGuests * totalNightsCount * 120) : 0;
+            const breakfastTotal = (includeBreakfast && totalNightsCount > 0) ? (bGuests * totalNightsCount * 120) : 0;
 
             if (recapBreakfastLine) {
                 if (includeBreakfast && breakfastTotal > 0) {
                     recapBreakfastLine.style.display = 'block';
-                    recapBreakfastLine.innerHTML = `🍳 <strong>Daily Breakfast Package:</strong> ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} @ R120/day = <strong>+R${breakfastTotal.toLocaleString()}</strong>`;
+                    recapBreakfastLine.innerHTML = `🍳 <strong>Daily Breakfast Package:</strong> ${bGuests} of ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} @ R120/day = <strong>+R${breakfastTotal.toLocaleString()}</strong>`;
                 } else {
                     recapBreakfastLine.style.display = 'none';
                     recapBreakfastLine.innerHTML = '';
@@ -2711,9 +2765,9 @@
 
             if (breakfastAddonHelpText) {
                 if (includeBreakfast) {
-                    breakfastAddonHelpText.innerHTML = `<strong style="color: #166534;">✓ Active:</strong> ${currentGuests} Guest${currentGuests > 1 ? 's' : ''} × ${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} = <strong>R${breakfastTotal.toLocaleString()}</strong> (+R120 per guest / night)`;
+                    breakfastAddonHelpText.innerHTML = `<strong style="color: #166534;">✓ Active:</strong> ${bGuests} of ${currentGuests} Guests × ${totalNightsCount} Nights = <strong>R${breakfastTotal.toLocaleString()}</strong> (+R120 per person / day)`;
                 } else {
-                    breakfastAddonHelpText.innerHTML = `Farm-fresh breakfast (+R120 per guest / night) — <em>For ${currentGuests} guest${currentGuests > 1 ? 's' : ''}: R${(currentGuests * totalNightsCount * 120).toLocaleString()} total</em>`;
+                    breakfastAddonHelpText.innerHTML = `Farm-fresh breakfast (+R120 per person / day) — <em>Estimated for ${currentGuests} guest${currentGuests > 1 ? 's' : ''}: R${(currentGuests * totalNightsCount * 120).toLocaleString()} total</em>`;
                 }
             }
 
@@ -2806,6 +2860,9 @@
             if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
                 selectedGuestCount = maxCapacity;
             }
+            if (!selectedBreakfastCount || selectedBreakfastCount > selectedGuestCount) {
+                selectedBreakfastCount = selectedGuestCount;
+            }
 
             const guestSelect = document.getElementById('guestCount');
             if (guestSelect) {
@@ -2819,11 +2876,12 @@
                 }
             }
 
-            // Sync breakfast checkbox state
+            // Sync breakfast checkbox state & dynamic dropdown
             const breakfastChk = document.getElementById('addBreakfastCheckbox');
             if (breakfastChk) {
                 breakfastChk.checked = includeBreakfast;
             }
+            syncBreakfastDropdown();
 
             updateSummarySidebar();
 
@@ -2844,6 +2902,10 @@
             const guestSelect = document.getElementById('guestCount');
             if (guestSelect) {
                 selectedGuestCount = parseInt(guestSelect.value) || 1;
+                if (selectedBreakfastCount > selectedGuestCount) {
+                    selectedBreakfastCount = selectedGuestCount;
+                }
+                syncBreakfastDropdown();
             }
             updateSummarySidebar();
         }
@@ -2863,6 +2925,10 @@
 
         function toggleBreakfastAddon() {
             includeBreakfast = document.getElementById('addBreakfastCheckbox').checked;
+            if (includeBreakfast) {
+                selectedBreakfastCount = getCurrentGuests();
+            }
+            syncBreakfastDropdown();
             updateSummarySidebar();
         }
 
@@ -2923,6 +2989,9 @@
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+            const curG = getCurrentGuests();
+            const bG = getCurrentBreakfastGuests();
+
             const bookingPayload = {
                 reference: refNumber,
                 guestName: name,
@@ -2931,6 +3000,9 @@
                 stays: selectedStays,
                 totalStays: selectedStays.length,
                 totalNights: totalNightsCount,
+                guestCount: curG,
+                includeBreakfast: !!includeBreakfast,
+                breakfastCount: includeBreakfast ? bG : 0,
                 totalAmount: calculatedGrandTotal,
                 amountPaid: calculatedDepositDue,
                 balanceDue: calculatedBalanceDue,
@@ -2987,13 +3059,26 @@
 
             // Render list of reserved stays in receipt
             const confStaysList = document.getElementById('confStaysList');
-            confStaysList.innerHTML = selectedStays.map(s => 
-                `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem;">
+            let confHtml = selectedStays.map(s => 
+                `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem; margin-bottom: 0.4rem;">
                     <strong>${s.roomIcon} ${s.roomName}</strong><br>
                     <span>📅 Check-in: ${formatFriendlyDate(s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
                     <span style="font-weight: 700; color: #1E293B;">Stay Cost: R${s.subtotal.toLocaleString()}</span>
                 </div>`
             ).join('');
+
+            if (includeBreakfast) {
+                const bCost = bG * totalNightsCount * 120;
+                confHtml += `
+                    <div style="padding: 0.5rem 0.8rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; font-size: 0.88rem; color: #166534;">
+                        <strong>🍳 Daily Breakfast Package Included</strong><br>
+                        <span>${bG} of ${curG} Guest${curG > 1 ? 's' : ''} &bull; ${totalNightsCount} Nights @ R120/guest/night</span><br>
+                        <span style="font-weight: 700;">Breakfast Total: R${bCost.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+
+            confStaysList.innerHTML = confHtml;
 
             // Switch to Step 4 view
             document.getElementById('step1View').classList.remove('active-view');

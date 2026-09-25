@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790335962.css">
+    <link rel="stylesheet" href="styles-v1790336837.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1416,7 +1416,7 @@
                     <div class="ops-item">
                         <div>
                             <strong>${b.guestName}</strong> (${b.roomName || b.roomId})<br>
-                            <span style="font-size: 0.78rem; color: #64748B;">Arrival: ${b.arrivalTime || '14:00 – 16:00'} &bull; ${b.nights || 1}N Stay</span>
+                            <span style="font-size: 0.78rem; color: #64748B;">Arrival: ${b.arrivalTime || '14:00 – 16:00'} &bull; ${b.nights || 1}N &bull; ${b.guestCount || 2} Guests${b.includeBreakfast && b.breakfastCount > 0 ? ` &bull; 🍳 ${b.breakfastCount} Breakfasts` : ''}</span>
                         </div>
                         <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
                             ${b.balanceDue > 0 ? `<span style="color: #991B1B; font-weight: 700; font-size: 0.82rem;">Collect R${Number(b.balanceDue).toLocaleString()}</span>` : `<span style="color: #166534; font-weight: 700; font-size: 0.82rem;">Paid in Full ✓</span>`}
@@ -1444,13 +1444,15 @@
                 const statusClass = b.status === 'confirmed' || b.status === 'fully_paid' ? 'status-confirmed' : (b.status === 'deposit_paid' ? 'status-deposit' : 'status-blocked');
                 const statusLabel = b.status === 'confirmed' || b.status === 'fully_paid' ? '100% Paid' : (b.status === 'deposit_paid' ? 'Deposit Paid' : (b.status === 'cancelled' ? 'Cancelled' : 'Blocked'));
 
+                const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
+
                 // Recent Row
                 if (recentTbody && idx < 10) {
                     const rRow = document.createElement('tr');
                     rRow.innerHTML = `
                         <td><strong>#${b.id}</strong></td>
                         <td>${b.guestName}</td>
-                        <td>${b.roomName || b.roomId}</td>
+                        <td>${b.roomName || b.roomId}<br>${breakfastTag}</td>
                         <td>${b.checkIn} &bull; ${b.nights || 1}N</td>
                         <td>R${Number(b.totalAmount || 0).toLocaleString()}</td>
                         <td style="color: #166534; font-weight: 700;">R${Number(b.amountPaid || 0).toLocaleString()}</td>
@@ -1472,7 +1474,7 @@
                         <td><strong>#${b.id}</strong></td>
                         <td>${b.guestName}</td>
                         <td><a href="tel:${b.guestPhone}" style="color: var(--adm-primary); font-weight: 600;">${b.guestPhone || '-'}</a></td>
-                        <td>${b.roomName || b.roomId}</td>
+                        <td>${b.roomName || b.roomId}<br>${breakfastTag}</td>
                         <td>${b.checkIn}</td>
                         <td>${b.checkOut}</td>
                         <td>${b.nights || 1}</td>
