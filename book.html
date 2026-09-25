@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/book">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790339004.css">
+    <link rel="stylesheet" href="styles-v1790343002.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1472,7 +1472,7 @@
                         </div>
 
                         <!-- Amount of Guests Selection in Step 1 Sidebar -->
-                        <div id="sidebarGuestSelectorBox" style="display: none; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem; margin: 0.8rem 0;">
+                        <div id="sidebarGuestSelectorBox" style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem; margin: 0.8rem 0;">
                             <label for="sidebarGuestCount" style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem; font-weight: 800; color: #0F172A; margin-bottom: 0.4rem;">
                                 <span>👥 Amount of Guests:</span>
                                 <span id="sidebarGuestMaxNotice" style="font-size: 0.75rem; font-weight: 600; color: #0284C7;">(Max 8 Guests)</span>
@@ -2559,12 +2559,15 @@
             // 1. Pending check-in alert
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const rName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                const rName = (selectedRoomId === 'all') ? 'All 4 Rooms' : (roomObj ? roomObj.name : 'Room');
                 pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
                 pendingBox.style.display = 'flex';
             } else {
                 pendingBox.style.display = 'none';
             }
+
+            // Always synchronize Sidebar Guest Selector
+            updateSidebarGuestSelector();
 
             // 2. Empty cart state
             if (selectedStays.length === 0) {
@@ -2589,6 +2592,7 @@
                 calculatedDepositDue = 0;
                 calculatedBalanceDue = 0;
                 totalNightsCount = 0;
+                updateStep2Recap();
                 return;
             }
 
@@ -2607,7 +2611,7 @@
                 totalNights += stay.nights;
                 staysSubtotal += stay.subtotal;
 
-                const breakdownRows = stay.nightlyRates.map(nr => 
+                const breakdownRows = (stay.nightlyRates || []).map(nr => 
                     `<div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #64748B; padding: 0.12rem 0;">
                         <span>${nr.label}</span>
                         <span>R${nr.rate.toLocaleString()}</span>
@@ -2642,38 +2646,6 @@
 
             nightsBadge.textContent = `✨ ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''} (${totalNights} Total Nights) Selected`;
             nightsBadge.style.background = '#DCFCE7';
-
-            // Synchronize Sidebar Guest Selector
-            const maxCapacity = getMaxGuests();
-            const sidebarGuestBox = document.getElementById('sidebarGuestSelectorBox');
-            const sidebarGuestSelect = document.getElementById('sidebarGuestCount');
-            const sidebarGuestMaxNotice = document.getElementById('sidebarGuestMaxNotice');
-
-            if (sidebarGuestBox && sidebarGuestSelect) {
-                sidebarGuestBox.style.display = 'block';
-                if (sidebarGuestMaxNotice) {
-                    sidebarGuestMaxNotice.textContent = `(Max ${maxCapacity} Guest${maxCapacity > 1 ? 's' : ''})`;
-                }
-
-                if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
-                    selectedGuestCount = maxCapacity;
-                }
-
-                const currentVal = selectedGuestCount;
-                sidebarGuestSelect.innerHTML = '';
-                for (let g = 1; g <= maxCapacity; g++) {
-                    const opt = document.createElement('option');
-                    opt.value = g;
-                    opt.textContent = `${g} Guest${g > 1 ? 's' : ''} ${g === maxCapacity ? `(Max capacity)` : ''}`;
-                    if (g === currentVal) opt.selected = true;
-                    sidebarGuestSelect.appendChild(opt);
-                }
-            }
-
-            const step2Display = document.getElementById('step2GuestDisplay');
-            if (step2Display) {
-                step2Display.value = `${getCurrentGuests()} Guest${getCurrentGuests() > 1 ? 's' : ''}`;
-            }
 
             // Pricing calculation linked to guest count & breakfast quantity
             const currentGuests = getCurrentGuests();
@@ -2722,7 +2694,11 @@
             calculatedGrandTotal = grandTotal;
 
             // Deposit calculation based on earliest check-in date
-            const earliestCheckIn = selectedStays.reduce((min, s) => s.checkIn < min ? s.checkIn : min, selectedStays[0].checkIn);
+            const earliestCheckIn = selectedStays.reduce((min, s) => {
+                const cDate = (s.checkIn instanceof Date) ? s.checkIn : new Date(s.checkIn);
+                return cDate < min ? cDate : min;
+            }, (selectedStays[0].checkIn instanceof Date) ? selectedStays[0].checkIn : new Date(selectedStays[0].checkIn));
+
             const daysUntilCheckIn = Math.round((earliestCheckIn - TODAY) / (1000 * 60 * 60 * 24));
             depositBox.style.display = 'block';
 
@@ -2746,12 +2722,52 @@
             updateStep2Recap();
         }
 
+        function updateSidebarGuestSelector() {
+            const sidebarGuestBox = document.getElementById('sidebarGuestSelectorBox');
+            const sidebarGuestSelect = document.getElementById('sidebarGuestCount');
+            const sidebarGuestMaxNotice = document.getElementById('sidebarGuestMaxNotice');
+
+            if (!sidebarGuestBox || !sidebarGuestSelect) return;
+
+            sidebarGuestBox.style.display = 'block';
+
+            const maxCapacity = getMaxGuests();
+            if (sidebarGuestMaxNotice) {
+                sidebarGuestMaxNotice.textContent = `(Max ${maxCapacity} Guest${maxCapacity > 1 ? 's' : ''})`;
+            }
+
+            if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
+                selectedGuestCount = maxCapacity;
+            } else if (selectedStays.length === 0) {
+                selectedGuestCount = maxCapacity;
+            }
+
+            const currentVal = selectedGuestCount;
+            sidebarGuestSelect.innerHTML = '';
+            for (let g = 1; g <= maxCapacity; g++) {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = `${g} Guest${g > 1 ? 's' : ''} ${g === maxCapacity ? `(Max capacity)` : ''}`;
+                if (g === currentVal) opt.selected = true;
+                sidebarGuestSelect.appendChild(opt);
+            }
+            sidebarGuestSelect.value = currentVal;
+
+            const step2Display = document.getElementById('step2GuestDisplay');
+            if (step2Display) {
+                step2Display.value = `${currentVal} Guest${currentVal > 1 ? 's' : ''}`;
+            }
+        }
+
         function getMaxGuests() {
-            let max = 0;
-            selectedStays.forEach(s => {
-                max += (s.roomId === 'all') ? 8 : 2;
-            });
-            return Math.min(8, Math.max(1, max || 2));
+            if (selectedStays && selectedStays.length > 0) {
+                let max = 0;
+                selectedStays.forEach(s => {
+                    max += (s.roomId === 'all') ? 8 : 2;
+                });
+                return Math.min(8, Math.max(1, max));
+            }
+            return (selectedRoomId === 'all') ? 8 : 2;
         }
 
         function getCurrentGuests() {
@@ -3355,19 +3371,35 @@
             const bannerRate = document.getElementById('bannerRoomRate');
 
             if (roomId === 'all') {
-                bannerName.textContent = 'All 4 Rooms (Entire Property)';
-                bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
-                bannerRate.textContent = 'Weekday R4,000 | Weekend R5,150';
+                if (bannerName) bannerName.textContent = 'All 4 Rooms (Entire Property)';
+                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+                if (bannerRate) bannerRate.textContent = 'Weekday R4,000 | Weekend R5,150';
             } else {
                 const r = ROOMS.find(item => item.id === roomId);
-                bannerName.textContent = `${r.icon} ${r.name}`;
-                bannerSpecs.textContent = r.specs;
-                bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
+                if (r) {
+                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
+                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
+                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
+                }
             }
 
             // If user had an incomplete check-in selection on another room, clear the pending state
             if (pendingCheckIn && pendingCheckIn.roomId !== roomId) {
                 pendingCheckIn = null;
+            }
+
+            // Immediately adjust guest capacity for the selected room
+            const roomMax = (roomId === 'all') ? 8 : 2;
+            if (selectedStays.length === 0) {
+                selectedGuestCount = roomMax;
+            } else {
+                const maxCap = getMaxGuests();
+                if (selectedGuestCount > maxCap) {
+                    selectedGuestCount = maxCap;
+                }
+            }
+            if (selectedBreakfastCount > selectedGuestCount) {
+                selectedBreakfastCount = selectedGuestCount;
             }
 
             renderCalendar();
@@ -3404,16 +3436,22 @@
         }
 
         function formatFriendlyDate(date) {
-            return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+            if (!date) return '';
+            const d = (date instanceof Date) ? date : new Date(date);
+            if (isNaN(d.getTime())) return '';
+            return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
         function showToast(msg) {
             const toast = document.getElementById('calToast');
-            document.getElementById('toastMessage').textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3500);
+            const toastMsg = document.getElementById('toastMessage');
+            if (toast && toastMsg) {
+                toastMsg.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3500);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
