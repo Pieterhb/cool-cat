@@ -97,23 +97,66 @@ export async function onRequestPost(context) {
         // 3. Save to Cloudflare KV storage if present
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            
-            // Push each individual stay to KV so each room/date range is blocked on the calendar
+
+            // Determine roomName and primary room for consolidated display
+            const isAllRooms = staysList.length >= 4 || staysList.some(s => s.roomId === 'all');
+            const displayRoomName = isAllRooms
+                ? 'All 4 Rooms (Entire Property)'
+                : staysList.length === 1
+                    ? staysList[0].roomName
+                    : `${staysList.length} Rooms`;
+
+            // 3a. Push a consolidated PARENT booking record with full financial data
+            //     This is what admin Master Bookings, Financials & Guest CRM read
+            existing.push({
+                id: bookingRef,
+                parentBookingId: null,
+                isParentBooking: true,
+                roomId: isAllRooms ? 'all' : staysList[0].roomId,
+                roomName: displayRoomName,
+                checkIn: staysList[0].checkInStr || staysList[0].checkIn,
+                checkOut: staysList[staysList.length - 1].checkOutStr || staysList[staysList.length - 1].checkOut,
+                nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
+                guestName,
+                guestEmail,
+                guestPhone,
+                totalAmount: Number(totalAmount || 0),
+                amountPaid: Number(amountPaid || 0),
+                balanceDue: Number(balanceDue || 0),
+                stays: staysList,
+                totalStays: staysList.length,
+                referralCode: payload.referralCode || '',
+                arrivalTime: arrivalTime || '14:00 - 16:00',
+                specialRequests: specialRequests || '',
+                status: Number(balanceDue || 0) > 0 ? 'deposit_paid' : 'fully_paid',
+                createdAt: new Date().toISOString()
+            });
+
+            // 3b. Push individual per-room calendar block records so each room date is blocked
             staysList.forEach(s => {
-                existing.push({
-                    id: bookingRef + '_' + s.roomId,
-                    parentBookingId: bookingRef,
-                    roomId: s.roomId,
-                    roomName: s.roomName,
-                    checkIn: s.checkInStr || s.checkIn,
-                    checkOut: s.checkOutStr || s.checkOut,
-                    nights: s.nights,
-                    guestName,
-                    guestEmail,
-                    guestPhone,
-                    referralCode: payload.referralCode || '',
-                    status: balanceDue > 0 ? 'deposit_paid' : 'fully_paid',
-                    createdAt: new Date().toISOString()
+                const stayRooms = s.roomId === 'all'
+                    ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
+                    : [s.roomId];
+                stayRooms.forEach(rid => {
+                    existing.push({
+                        id: bookingRef + '_' + rid,
+                        parentBookingId: bookingRef,
+                        isCalendarBlock: true,
+                        roomId: rid,
+                        roomName: s.roomName,
+                        checkIn: s.checkInStr || s.checkIn,
+                        checkOut: s.checkOutStr || s.checkOut,
+                        nights: s.nights,
+                        guestName,
+                        guestEmail,
+                        guestPhone,
+                        totalAmount: 0,
+                        amountPaid: 0,
+                        balanceDue: 0,
+                        referralCode: payload.referralCode || '',
+                        status: Number(balanceDue || 0) > 0 ? 'deposit_paid' : 'fully_paid',
+                        createdAt: new Date().toISOString()
+                    });
                 });
             });
 

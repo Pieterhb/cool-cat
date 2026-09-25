@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790320710.css">
+    <link rel="stylesheet" href="styles-v1790331196.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1324,6 +1324,16 @@
             renderReferralsTable();
         }
 
+        function getDisplayBookings() {
+            // Only show master parent bookings in tables (hide internal room-blocking sub-records)
+            const parentIds = new Set(ADMIN_BOOKINGS.filter(b => b.isParentBooking || !b.parentBookingId).map(b => b.id));
+            return ADMIN_BOOKINGS.filter(b => {
+                if (b.isCalendarBlock) return false;
+                if (b.parentBookingId && parentIds.has(b.parentBookingId)) return false;
+                return true;
+            });
+        }
+
         function calculateKpis() {
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -1338,8 +1348,9 @@
             let pendingTotal = 0;
 
             const msInDay = 24 * 60 * 60 * 1000;
+            const displayList = getDisplayBookings();
 
-            ADMIN_BOOKINGS.forEach(b => {
+            displayList.forEach(b => {
                 const bPaid = Number(b.amountPaid || 0);
                 const bBal = Number(b.balanceDue || 0);
                 const bCreated = new Date(b.createdAt || b.checkIn || today);
@@ -1387,7 +1398,8 @@
 
             if (!checkinsList) return;
 
-            const todayCheckins = ADMIN_BOOKINGS.filter(b => b.checkIn === todayStr && b.status !== 'cancelled' && b.status !== 'blocked');
+            const displayList = getDisplayBookings();
+            const todayCheckins = displayList.filter(b => b.checkIn === todayStr && b.status !== 'cancelled' && b.status !== 'blocked');
 
             if (checkinsCount) {
                 checkinsCount.textContent = `${todayCheckins.length} Guest${todayCheckins.length === 1 ? '' : 's'}`;
@@ -1423,8 +1435,9 @@
             if (masterTbody) masterTbody.innerHTML = '';
 
             let pendingTotal = 0;
+            const displayList = getDisplayBookings();
 
-            ADMIN_BOOKINGS.forEach((b, idx) => {
+            displayList.forEach((b, idx) => {
                 const isDeposit = (b.balanceDue > 0);
                 if (isDeposit && b.status !== 'cancelled') pendingTotal += Number(b.balanceDue || 0);
 
@@ -1484,7 +1497,8 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            ADMIN_BOOKINGS.filter(b => Number(b.amountPaid || 0) > 0).forEach(b => {
+            const displayList = getDisplayBookings();
+            displayList.filter(b => Number(b.amountPaid || 0) > 0).forEach(b => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><code>PAY_${b.id}</code></td>
@@ -1504,7 +1518,8 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            ADMIN_BOOKINGS.filter(b => b.status !== 'blocked').forEach(b => {
+            const displayList = getDisplayBookings();
+            displayList.filter(b => b.status !== 'blocked').forEach(b => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${b.guestName}</strong></td>
@@ -1591,7 +1606,11 @@
                 } catch (err) {
                     console.error("Delete booking error:", err);
                 }
-                ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => b.id !== id && b.parentBookingId !== id);
+                const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
+                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                    return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
+                });
                 calculateKpis();
                 renderBookingsTables();
                 renderFinancesTable();

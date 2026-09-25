@@ -160,7 +160,12 @@ export async function onRequestDelete(context) {
     try {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            existing = existing.filter(b => b.id !== id && b.parentBookingId !== id);
+            // Remove matching parent, children with parentBookingId, or prefixed room blocks
+            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            existing = existing.filter(b => {
+                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
+            });
             await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
         }
 
