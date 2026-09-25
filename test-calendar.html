@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790337883.css">
+    <link rel="stylesheet" href="styles-v1790339004.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -869,11 +869,11 @@
 
         /* Step Views */
         .step-view {
-            display: none;
+            display: none !important;
         }
 
         .step-view.active-view {
-            display: block;
+            display: block !important;
             animation: fadeIn 0.3s ease;
         }
 
@@ -1312,17 +1312,17 @@
 
             <!-- 3-Step Wizard Progress -->
             <div class="wizard-steps">
-                <div class="wizard-step active" id="wizStep1">
+                <div class="wizard-step active" id="wizStep1" onclick="goToStep1()" style="cursor: pointer;" title="Step 1: Select Dates & Room">
                     <span class="step-circle" id="circle1">1</span>
                     <span>Select Dates &amp; Room</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step" id="wizStep2">
+                <div class="wizard-step" id="wizStep2" onclick="if(selectedStays && selectedStays.length > 0) goToStep2();" style="cursor: pointer;" title="Step 2: Guest Details & Breakfast">
                     <span class="step-circle" id="circle2">2</span>
-                    <span>Guest Details</span>
+                    <span>Guest Details &amp; Breakfast</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step" id="wizStep3">
+                <div class="wizard-step" id="wizStep3" title="Step 3: Pay via Paystack">
                     <span class="step-circle" id="circle3">3</span>
                     <span>Pay via Paystack</span>
                 </div>
@@ -1514,7 +1514,7 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <button class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="goToStep2()">
+                        <button type="button" class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="goToStep2()" title="Lock in your selected dates and continue to Guest Details">
                             <span>Lock in Dates (Continue to Step 2)</span> ➔
                         </button>
                         <button class="btn-reset" id="btnClearAll" style="display: none;" onclick="clearAllStays()">
@@ -2562,7 +2562,10 @@
                 staysTotalEl.textContent = 'R0';
                 grandTotalEl.textContent = 'R0';
                 depositBox.style.display = 'none';
-                continueBtn.disabled = true;
+                if (continueBtn) {
+                    continueBtn.disabled = true;
+                    continueBtn.setAttribute('disabled', 'disabled');
+                }
                 if (clearAllBtn) clearAllBtn.style.display = 'none';
                 calculatedGrandTotal = 0;
                 calculatedDepositDue = 0;
@@ -2573,7 +2576,10 @@
 
             // 3. Stays in Cart
             if (clearAllBtn) clearAllBtn.style.display = 'flex';
-            continueBtn.disabled = false;
+            if (continueBtn) {
+                continueBtn.disabled = false;
+                continueBtn.removeAttribute('disabled');
+            }
 
             let totalNights = 0;
             let staysSubtotal = 0;
@@ -2914,82 +2920,128 @@
         // 8. WIZARD STEP TRANSITIONS
         // ==========================================
         function goToStep2() {
-            if (selectedStays.length === 0) {
-                showToast("Please select at least one room stay on the calendar first.");
-                return;
+            try {
+                if (!selectedStays || selectedStays.length === 0) {
+                    showToast("Please select at least one room stay on the calendar first.");
+                    return;
+                }
+
+                const maxCapacity = getMaxGuests();
+                const sidebarGuestSelect = document.getElementById('sidebarGuestCount');
+                if (sidebarGuestSelect && sidebarGuestSelect.value) {
+                    selectedGuestCount = parseInt(sidebarGuestSelect.value) || selectedGuestCount || maxCapacity;
+                } else if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
+                    selectedGuestCount = maxCapacity;
+                }
+
+                if (selectedBreakfastCount > selectedGuestCount) {
+                    selectedBreakfastCount = selectedGuestCount;
+                }
+
+                const step2Display = document.getElementById('step2GuestDisplay');
+                if (step2Display) {
+                    step2Display.value = `${selectedGuestCount} Guest${selectedGuestCount > 1 ? 's' : ''}`;
+                }
+
+                // Sync breakfast checkbox state & dynamic dropdown
+                const breakfastChk = document.getElementById('addBreakfastCheckbox');
+                if (breakfastChk) {
+                    breakfastChk.checked = includeBreakfast;
+                }
+                syncBreakfastDropdown();
+
+                updateSummarySidebar();
+
+                // Switch to Step 2 View
+                const s1 = document.getElementById('step1View');
+                const s2 = document.getElementById('step2View');
+                const s4 = document.getElementById('step4View');
+                if (s1) {
+                    s1.classList.remove('active-view');
+                    s1.style.display = 'none';
+                }
+                if (s2) {
+                    s2.classList.add('active-view');
+                    s2.style.display = 'block';
+                }
+                if (s4) {
+                    s4.classList.remove('active-view');
+                    s4.style.display = 'none';
+                }
+
+                const w1 = document.getElementById('wizStep1');
+                const c1 = document.getElementById('circle1');
+                const w2 = document.getElementById('wizStep2');
+                const w3 = document.getElementById('wizStep3');
+                const c2 = document.getElementById('circle2');
+                if (w1) {
+                    w1.classList.remove('active');
+                    w1.classList.add('completed');
+                }
+                if (c1) c1.textContent = '✓';
+                if (w2) {
+                    w2.classList.add('active');
+                    w2.classList.remove('completed');
+                }
+                if (c2) c2.textContent = '2';
+                if (w3) {
+                    w3.classList.remove('active');
+                    w3.classList.remove('completed');
+                }
+
+                window.scrollTo({ top: 120, behavior: 'smooth' });
+            } catch (err) {
+                console.error('Error transitioning to Step 2:', err);
             }
-
-            const maxCapacity = getMaxGuests();
-            const sidebarGuestSelect = document.getElementById('sidebarGuestCount');
-            if (sidebarGuestSelect && sidebarGuestSelect.value) {
-                selectedGuestCount = parseInt(sidebarGuestSelect.value) || selectedGuestCount || maxCapacity;
-            } else if (!selectedGuestCount || selectedGuestCount > maxCapacity) {
-                selectedGuestCount = maxCapacity;
-            }
-
-            if (selectedBreakfastCount > selectedGuestCount) {
-                selectedBreakfastCount = selectedGuestCount;
-            }
-
-            const step2Display = document.getElementById('step2GuestDisplay');
-            if (step2Display) {
-                step2Display.value = `${selectedGuestCount} Guest${selectedGuestCount > 1 ? 's' : ''}`;
-            }
-
-            // Sync breakfast checkbox state & dynamic dropdown
-            const breakfastChk = document.getElementById('addBreakfastCheckbox');
-            if (breakfastChk) {
-                breakfastChk.checked = includeBreakfast;
-            }
-            syncBreakfastDropdown();
-
-            updateSummarySidebar();
-
-            // Switch to Step 2 View
-            const s1 = document.getElementById('step1View');
-            const s2 = document.getElementById('step2View');
-            const s4 = document.getElementById('step4View');
-            if (s1) s1.classList.remove('active-view');
-            if (s2) s2.classList.add('active-view');
-            if (s4) s4.classList.remove('active-view');
-
-            const w1 = document.getElementById('wizStep1');
-            const c1 = document.getElementById('circle1');
-            const w2 = document.getElementById('wizStep2');
-            if (w1) {
-                w1.classList.remove('active');
-                w1.classList.add('completed');
-            }
-            if (c1) c1.textContent = '✓';
-            if (w2) w2.classList.add('active');
-
-            window.scrollTo({ top: 180, behavior: 'smooth' });
         }
 
         function goToStep1() {
-            const s1 = document.getElementById('step1View');
-            const s2 = document.getElementById('step2View');
-            const s4 = document.getElementById('step4View');
-            if (s2) s2.classList.remove('active-view');
-            if (s1) s1.classList.add('active-view');
-            if (s4) s4.classList.remove('active-view');
+            try {
+                const s1 = document.getElementById('step1View');
+                const s2 = document.getElementById('step2View');
+                const s4 = document.getElementById('step4View');
+                if (s2) {
+                    s2.classList.remove('active-view');
+                    s2.style.display = 'none';
+                }
+                if (s1) {
+                    s1.classList.add('active-view');
+                    s1.style.display = 'block';
+                }
+                if (s4) {
+                    s4.classList.remove('active-view');
+                    s4.style.display = 'none';
+                }
 
-            const w1 = document.getElementById('wizStep1');
-            const c1 = document.getElementById('circle1');
-            const w2 = document.getElementById('wizStep2');
-            if (w1) {
-                w1.classList.add('active');
-                w1.classList.remove('completed');
+                const w1 = document.getElementById('wizStep1');
+                const c1 = document.getElementById('circle1');
+                const w2 = document.getElementById('wizStep2');
+                const w3 = document.getElementById('wizStep3');
+                const c2 = document.getElementById('circle2');
+                if (w1) {
+                    w1.classList.add('active');
+                    w1.classList.remove('completed');
+                }
+                if (c1) c1.textContent = '1';
+                if (w2) {
+                    w2.classList.remove('active');
+                    w2.classList.remove('completed');
+                }
+                if (c2) c2.textContent = '2';
+                if (w3) {
+                    w3.classList.remove('active');
+                    w3.classList.remove('completed');
+                }
+
+                window.scrollTo({ top: 120, behavior: 'smooth' });
+            } catch (err) {
+                console.error('Error transitioning to Step 1:', err);
             }
-            if (c1) c1.textContent = '1';
-            if (w2) w2.classList.remove('active');
-
-            window.scrollTo({ top: 180, behavior: 'smooth' });
         }
 
         function toggleBreakfastAddon() {
             includeBreakfast = document.getElementById('addBreakfastCheckbox').checked;
-            if (includeBreakfast) {
+            if (includeBreakfast && !selectedBreakfastCount) {
                 selectedBreakfastCount = getCurrentGuests();
             }
             syncBreakfastDropdown();
@@ -3145,9 +3197,21 @@
             confStaysList.innerHTML = confHtml;
 
             // Switch to Step 4 view
-            document.getElementById('step1View').classList.remove('active-view');
-            document.getElementById('step2View').classList.remove('active-view');
-            document.getElementById('step4View').classList.add('active-view');
+            const s1 = document.getElementById('step1View');
+            const s2 = document.getElementById('step2View');
+            const s4 = document.getElementById('step4View');
+            if (s1) {
+                s1.classList.remove('active-view');
+                s1.style.display = 'none';
+            }
+            if (s2) {
+                s2.classList.remove('active-view');
+                s2.style.display = 'none';
+            }
+            if (s4) {
+                s4.classList.add('active-view');
+                s4.style.display = 'block';
+            }
 
             document.getElementById('wizStep2').classList.remove('active');
             document.getElementById('wizStep2').classList.add('completed');
@@ -3285,6 +3349,15 @@
             const ref = urlParams.get('ref') || urlParams.get('promo');
             if (ref) {
                 applyReferralCodeDirect(ref.toUpperCase());
+            }
+
+            // Wire explicit click listener to Continue button
+            const btnContinueEl = document.getElementById('btnContinue');
+            if (btnContinueEl) {
+                btnContinueEl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    goToStep2();
+                });
             }
         });
 
