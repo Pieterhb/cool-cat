@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/book">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790344347.css">
+    <link rel="stylesheet" href="styles-v1790345317.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1968,6 +1968,7 @@
         let includeBreakfast = false;
         let selectedGuestCount = 0;
         let selectedBreakfastCount = 0;
+        let userManuallyChangedGuestCount = false;
         let activeReferralCode = '';
 
         // ==========================================
@@ -2752,7 +2753,7 @@
                 sidebarGuestMaxNotice.textContent = `(Max ${roomMax} Guest${roomMax > 1 ? 's' : ''})`;
             }
 
-            if (!selectedGuestCount || selectedGuestCount > roomMax) {
+            if (!selectedGuestCount || !userManuallyChangedGuestCount || selectedGuestCount > roomMax) {
                 selectedGuestCount = roomMax;
             }
 
@@ -2797,6 +2798,7 @@
             const select = document.getElementById('sidebarGuestCount');
             if (select && select.value) {
                 selectedGuestCount = parseInt(select.value) || 1;
+                userManuallyChangedGuestCount = true;
                 if (selectedBreakfastCount > selectedGuestCount) {
                     selectedBreakfastCount = selectedGuestCount;
                 }
@@ -3334,6 +3336,8 @@
         function resetToCalendar() {
             selectedStays = [];
             pendingCheckIn = null;
+            userManuallyChangedGuestCount = false;
+            selectedGuestCount = getActiveTabMaxGuests();
             renderCalendar();
             updateSummarySidebar();
             goToStep1();
@@ -3400,16 +3404,11 @@
                 pendingCheckIn = null;
             }
 
-            // Immediately adjust guest capacity for the selected room
+            // For ANY room tab chosen/activated, always default to max guests for that room
             const roomMax = (roomId === 'all') ? 8 : 2;
-            if (selectedStays.length === 0) {
-                selectedGuestCount = roomMax;
-            } else {
-                const maxCap = getMaxGuests();
-                if (selectedGuestCount > maxCap) {
-                    selectedGuestCount = maxCap;
-                }
-            }
+            selectedGuestCount = roomMax;
+            userManuallyChangedGuestCount = false;
+
             if (selectedBreakfastCount > selectedGuestCount) {
                 selectedBreakfastCount = selectedGuestCount;
             }
