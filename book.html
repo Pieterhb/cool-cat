@@ -2675,15 +2675,22 @@
             calculatedGrandTotal = grandTotal;
 
             // Deposit calculation based on earliest check-in date
-            const earliestCheckIn = selectedStays.reduce((min, s) => {
+            // Normalize earliestCheckIn to local midnight so DST/timezone offsets
+            // don't cause Math.floor to round a 3-day gap to 8+ days.
+            const earliestCheckInRaw = selectedStays.reduce((min, s) => {
                 const cDate = (s.checkIn instanceof Date) ? s.checkIn : new Date(s.checkIn);
                 return cDate < min ? cDate : min;
             }, (selectedStays[0].checkIn instanceof Date) ? selectedStays[0].checkIn : new Date(selectedStays[0].checkIn));
 
-            const daysUntilCheckIn = Math.round((earliestCheckIn - TODAY) / (1000 * 60 * 60 * 24));
+            const earliestCheckIn = new Date(earliestCheckInRaw);
+            earliestCheckIn.setHours(0, 0, 0, 0); // normalise to midnight local time
+
+            // Use Math.floor (conservative): 7.9 days is still ≤ 7 full days away.
+            const daysUntilCheckIn = Math.floor((earliestCheckIn - TODAY) / (1000 * 60 * 60 * 24));
             depositBox.style.display = 'block';
 
             if (grandTotal > 1000 && daysUntilCheckIn > 7) {
+                // Standard booking: more than 7 days in advance & total > R1,000 → 50% deposit
                 calculatedDepositDue = Math.round(grandTotal * 0.50);
                 calculatedBalanceDue = grandTotal - calculatedDepositDue;
                 depositText.innerHTML = `
@@ -2691,11 +2698,14 @@
                     Balance of R${calculatedBalanceDue.toLocaleString()} is due 3 days before check-in or upon arrival.
                 `;
             } else {
+                // Last-minute or low-value booking: within 7 days OR total ≤ R1,000 → 100% upfront
                 calculatedDepositDue = grandTotal;
                 calculatedBalanceDue = 0;
                 depositText.innerHTML = `
-                    <strong>100% Full Payment: R${grandTotal.toLocaleString()}</strong><br>
-                    Due to arrival within 7 days or total value, full payment is required upfront.
+                    <strong>100% Full Payment Due Now: R${grandTotal.toLocaleString()}</strong><br>
+                    ${daysUntilCheckIn <= 7
+                        ? `Booking is within 7 days of arrival — full payment is required upfront.`
+                        : `Total stay value is R1,000 or less — full payment is required upfront.`}
                 `;
             }
 
