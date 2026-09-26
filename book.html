@@ -1281,6 +1281,59 @@
             opacity: 1;
         }
 
+        /* Confirmation Action Button Hover Effects */
+        .btn-conf-action {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .btn-conf-action:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.18) !important;
+        }
+
+        .btn-receipt-print {
+            background: #EA580C !important;
+            color: #FFFFFF !important;
+            border: 2.5px solid #000000 !important;
+            font-weight: 800 !important;
+            font-size: 0.95rem !important;
+            padding: 0.75rem 1.6rem !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+        }
+        .btn-receipt-print:hover {
+            background: #C2410C !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 7px 18px rgba(0,0,0,0.25) !important;
+        }
+
+        .btn-rebook-stay {
+            background: #FACC15 !important;
+            color: #000000 !important;
+            border: 2.5px solid #000000 !important;
+            font-weight: 800 !important;
+            font-size: 0.95rem !important;
+            padding: 0.75rem 1.6rem !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+        }
+        .btn-rebook-stay:hover {
+            background: #EAB308 !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 7px 18px rgba(0,0,0,0.25) !important;
+        }
+
         /* ========================================== */
         /* PRINT & PDF RECEIPT STYLES                 */
         /* ========================================== */
@@ -1870,27 +1923,31 @@
                     </div>
 
                     <!-- Instant Guest Action Buttons -->
-                    <div class="conf-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-top: 1.5rem;">
-                        <a id="confWhatsAppBtn" href="https://wa.me/27637124491" target="_blank" class="btn" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
-                            📲 WhatsApp Michele (Host)
-                        </a>
-                        <a href="/guide" class="btn" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
-                            📖 View Guest Guide &amp; Menus
-                        </a>
-                        <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" class="btn" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
-                            🗺️ Google Maps Directions
-                        </a>
-                        <button type="button" class="btn" style="background: #0284C7; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700;" onclick="downloadGuestIcs()">
-                            📅 Add Stay to Calendar
-                        </button>
+                    <div class="conf-actions-grid" style="margin-top: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem;">
+                            <a id="confWhatsAppBtn" href="https://wa.me/27637124491" target="_blank" class="btn btn-conf-action" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                                📲 WhatsApp Michele (Host)
+                            </a>
+                            <a href="/guide" class="btn btn-conf-action" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                                📖 View Guest Guide &amp; Menus
+                            </a>
+                            <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" class="btn btn-conf-action" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                                🗺️ Google Maps Directions
+                            </a>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <button type="button" class="btn btn-conf-action" style="background: #0284C7; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 700; min-width: 250px; padding: 0.65rem 1.4rem; border-radius: 8px;" onclick="downloadGuestIcs()">
+                                📅 Add Stay to Calendar
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Print & Re-book Actions -->
                     <div class="confirmation-bottom-actions" style="display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-top: 1.5rem;">
-                        <button class="btn" style="background: var(--orange); color: #FFFFFF; border: 2.5px solid #000000; font-weight: 800; font-size: 0.95rem; padding: 0.75rem 1.6rem; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);" onclick="printReceipt()">
+                        <button class="btn btn-receipt-print" onclick="printReceipt()">
                             🖨️ Print / Save PDF Receipt
                         </button>
-                        <button class="btn" style="background: #FEF08A; color: #000000; border: 2.5px solid #000000; font-weight: 800; font-size: 0.95rem; padding: 0.75rem 1.6rem; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);" onclick="resetToCalendar()">
+                        <button class="btn btn-rebook-stay" onclick="resetToCalendar()">
                             Book Another Stay
                         </button>
                     </div>
