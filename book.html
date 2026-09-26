@@ -2720,7 +2720,9 @@
                     depositText.innerHTML = `
                         <strong>100% Full Payment Due Now: R${grandTotal.toLocaleString()}</strong><br>
                         ${daysUntilCheckIn <= 7
-                            ? `Booking is within 7 days of arrival — full payment is required upfront.`
+                            ? (selectedStays.length > 1
+                                ? `Earliest booking arrival is within 7 days — full payment is required upfront.`
+                                : `Booking is within 7 days of arrival — full payment is required upfront.`)
                             : `Total stay value is R1,000 or less — full payment is required upfront.`}
                     `;
                 }
