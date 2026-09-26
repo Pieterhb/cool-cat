@@ -2717,11 +2717,18 @@
                 calculatedDepositDue = grandTotal;
                 calculatedBalanceDue = 0;
                 if (depositText) {
+                    const hasLaterStay = selectedStays.length > 1 && selectedStays.some(s => {
+                        const cDate = (s.checkIn instanceof Date) ? s.checkIn : new Date(s.checkIn);
+                        const d = new Date(cDate);
+                        d.setHours(0, 0, 0, 0);
+                        return Math.floor((d - TODAY) / (1000 * 60 * 60 * 24)) > 7;
+                    });
+
                     depositText.innerHTML = `
                         <strong>100% Full Payment Due Now: R${grandTotal.toLocaleString()}</strong><br>
                         ${daysUntilCheckIn <= 7
                             ? (selectedStays.length > 1
-                                ? `Earliest booking arrival is within 7 days — full payment is required upfront.`
+                                ? `Earliest booking arrival is within 7 days — full payment is required upfront.${hasLaterStay ? '<br><span style="font-size: 0.76rem; color: #0369A1; display: inline-block; margin-top: 0.25rem;">💡 <em>Tip: Book your later stay(s) separately to qualify for a 50% deposit on those dates.</em></span>' : ''}`
                                 : `Booking is within 7 days of arrival — full payment is required upfront.`)
                             : `Total stay value is R1,000 or less — full payment is required upfront.`}
                     `;
