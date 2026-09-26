@@ -1446,6 +1446,29 @@
                             </div>
                         </div>
 
+                        <!-- Calendar Bottom Info Grid: SA Amenities & Referral Program -->
+                        <div class="cal-bottom-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <!-- SA Amenities Perks Card -->
+                            <div style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; justify-content: center;">
+                                <div style="font-size: 0.85rem; font-weight: 800; color: #1E293B; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem;">
+                                    <span>🛡️</span> <span>Included Stay Amenities</span>
+                                </div>
+                                <div class="perk-item" style="margin-bottom: 0.45rem;">⚡ <strong>24/7 Backup Power &amp; Wi-Fi</strong> (No Loadshedding!)</div>
+                                <div class="perk-item" style="margin-bottom: 0.45rem;">📶 Fast Wi-Fi Network</div>
+                                <div class="perk-item" style="margin-bottom: 0.45rem;">🏖️ 3-Minute Walk to Strand Beach</div>
+                                <div class="perk-item" style="margin-bottom: 0;">☕ Delicious Breakfast Options Available</div>
+                            </div>
+
+                            <!-- Referral Program CTA Card -->
+                            <div style="background: #FFFBEB; border: 1.5px dashed #F59E0B; border-radius: 14px; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
+                                <div>
+                                    <div style="font-size: 0.86rem; font-weight: 800; color: #92400E; margin-bottom: 0.3rem;">🎁 Earn 10% Cash on Referrals!</div>
+                                    <div style="font-size: 0.77rem; color: #78350F; line-height: 1.45; margin-bottom: 0.75rem;">Share Cool-Cat with friends &amp; earn 10% commission on their stay.</div>
+                                </div>
+                                <button type="button" class="btn-sm" style="background: #D97706; color: white; border-radius: 8px; font-size: 0.78rem; width: 100%; font-weight: 700; padding: 0.5rem 0.8rem;" onclick="openReferralModal()">Get Your Unique Referral Link ➔</button>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Right Column: Stay Summary & Price Calculator -->
@@ -1522,21 +1545,6 @@
                         <button class="btn-reset" id="btnClearAll" style="display: none;" onclick="clearAllStays()">
                             ✕ Clear All Selected Stays
                         </button>
-
-                        <!-- Referral Program CTA -->
-                        <div style="background: #FFFBEB; border: 1px dashed #F59E0B; border-radius: 10px; padding: 0.8rem; text-align: center; margin-top: 1rem;">
-                            <div style="font-size: 0.82rem; font-weight: 800; color: #92400E; margin-bottom: 0.2rem;">🎁 Earn 10% Cash on Referrals!</div>
-                            <div style="font-size: 0.75rem; color: #78350F; margin-bottom: 0.5rem;">Share Cool-Cat with friends &amp; earn 10% commission on their stay.</div>
-                            <button type="button" class="btn-sm" style="background: #D97706; color: white; border-radius: 6px; font-size: 0.76rem; width: 100%; font-weight: 700;" onclick="openReferralModal()">Get Your Unique Referral Link ➔</button>
-                        </div>
-
-                        <!-- South African Perks -->
-                        <div class="sa-perks">
-                            <div class="perk-item">⚡ 24/7 Backup Power &amp; Wi-Fi (No Loadshedding!)</div>
-                            <div class="perk-item">📶 Fast WiFi Network</div>
-                            <div class="perk-item">🏖️ 3-Minute Walk to Strand Beach</div>
-                            <div class="perk-item">☕ Delicious Breakfast Options Available</div>
-                        </div>
 
                     </div>
 
