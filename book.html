@@ -831,23 +831,33 @@
             background: #EF4444;
             border: 1px solid #DC2626;
             color: #FFFFFF;
-            font-weight: 600;
-            padding: 0.6rem;
+            font-weight: 700;
+            padding: 0.65rem 1rem;
             border-radius: 8px;
             margin-top: 0.6rem;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
         }
 
-        .btn-reset:hover {
+        .btn-reset:hover:not(:disabled) {
             background: #DC2626;
             color: #FFFFFF;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: #F87171;
+            border-color: #EF4444;
+            box-shadow: none;
+            transform: none;
         }
 
         /* SA Amenities Badges */
@@ -1301,9 +1311,10 @@
     <!-- Page Header -->
     <div class="page-header">
         <div class="container">
-            <h1 style="color: white; font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 0.5rem;">Live Availability &amp; Booking Engine</h1>
-            <p style="font-size: 1.1rem; max-width: 650px; margin: 0 auto; opacity: 0.95;">
-                Select your dates, enter guest details, and pay securely via Paystack for Cool-Cat in Strand.
+            <h1 style="color: white; font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 0.6rem; text-align: center;">Live Availability &amp; Booking Engine</h1>
+            <p style="font-size: 1.15rem; max-width: 780px; margin: 0 auto; opacity: 0.95; text-align: center; line-height: 1.6;">
+                Select your dates, enter guest details, and pay securely via Paystack for<br>
+                Cool Cat Holiday Accommodation in Strand.
             </p>
         </div>
     </div>
@@ -1542,7 +1553,7 @@
                         <button type="button" class="btn btn-primary btn-continue" id="btnContinue" disabled onclick="goToStep2()" title="Lock in your selected dates and continue to Guest Details">
                             <span>Lock in Dates (Continue to Step 2)</span> ➔
                         </button>
-                        <button class="btn-reset" id="btnClearAll" style="display: none;" onclick="clearAllStays()">
+                        <button class="btn-reset" id="btnClearAll" disabled onclick="clearAllStays()" title="Clear all selected room stays">
                             ✕ Clear All Selected Stays
                         </button>
 
@@ -2586,7 +2597,11 @@
                     continueBtn.disabled = true;
                     continueBtn.setAttribute('disabled', 'disabled');
                 }
-                if (clearAllBtn) clearAllBtn.style.display = 'none';
+                if (clearAllBtn) {
+                    clearAllBtn.disabled = true;
+                    clearAllBtn.setAttribute('disabled', 'disabled');
+                    clearAllBtn.style.display = 'flex';
+                }
                 calculatedGrandTotal = 0;
                 calculatedDepositDue = 0;
                 calculatedBalanceDue = 0;
@@ -2596,7 +2611,11 @@
             }
 
             // 3. Stays in Cart
-            if (clearAllBtn) clearAllBtn.style.display = 'flex';
+            if (clearAllBtn) {
+                clearAllBtn.disabled = false;
+                clearAllBtn.removeAttribute('disabled');
+                clearAllBtn.style.display = 'flex';
+            }
             if (continueBtn) {
                 continueBtn.disabled = false;
                 continueBtn.removeAttribute('disabled');
