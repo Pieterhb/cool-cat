@@ -1510,9 +1510,9 @@
                         </div>
 
                         <!-- Smart Deposit Notice -->
-                        <div class="deposit-notice-box" id="depositNoticeBox" style="display: none;">
+                        <div class="deposit-notice-box" id="depositNoticeBox">
                             <strong>💳 Payment Terms:</strong><br>
-                            <span id="depositNoticeText">50% Deposit due now. Balance due 3 days before arrival.</span>
+                            <span id="depositNoticeText">Select booking dates above to see your payment terms.</span>
                         </div>
 
                         <!-- Action Buttons -->
@@ -2560,7 +2560,8 @@
                 nightsBadge.style.background = '#EEF2FF';
                 staysTotalEl.textContent = 'R0';
                 grandTotalEl.textContent = 'R0';
-                depositBox.style.display = 'none';
+                depositBox.style.display = 'block';
+                if (depositText) depositText.innerHTML = 'Select booking dates above to see your payment terms.';
                 if (continueBtn) {
                     continueBtn.disabled = true;
                     continueBtn.setAttribute('disabled', 'disabled');
