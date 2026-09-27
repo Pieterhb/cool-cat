@@ -173,7 +173,7 @@ header {
 
 .btn-nav-admin {
   position: absolute;
-  left: calc(100% + 14px);
+  left: calc(100% + 48px);
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
