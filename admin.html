@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790522757.css">
+    <link rel="stylesheet" href="styles-v1790524081.css">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -394,6 +394,59 @@
             background: #0F766E !important;
             box-shadow: 0 6px 14px rgba(13, 148, 136, 0.35) !important;
             color: #FFFFFF !important;
+        }
+
+        .btn-reset-red {
+            background: #EF4444 !important;
+            color: #FFFFFF !important;
+            font-weight: 800 !important;
+            font-size: 0.76rem !important;
+            letter-spacing: 0.05em !important;
+            padding: 0.32rem 0.85rem !important;
+            border-radius: 6px !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .btn-reset-red:hover {
+            transform: translateY(-2px) !important;
+            background: #DC2626 !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.45) !important;
+            color: #FFFFFF !important;
+        }
+
+        .sort-arrows {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 0.55;
+            vertical-align: middle;
+            margin-left: 6px;
+            user-select: none;
+        }
+
+        .sort-arrow {
+            font-size: 0.58rem;
+            color: #0F172A;
+            cursor: pointer;
+            transition: transform 0.15s ease, color 0.15s ease;
+            padding: 1px 2px;
+            line-height: 1;
+        }
+
+        .sort-arrow:hover {
+            color: #0F52BA;
+            transform: scale(1.35);
+        }
+
+        .sort-arrow.active {
+            color: #0D9488;
+            font-weight: 900;
         }
 
         .btn-adm-primary {
@@ -916,12 +969,17 @@
                 <div class="tab-section" id="tabGuests">
                     <div class="adm-card">
                         <div class="adm-card-header">
-                            <h3 class="adm-card-title">👥 Guest Directory &amp; Contact CRM</h3>
+                            <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+                                <h3 class="adm-card-title" style="margin: 0;">👥 Guest Directory &amp; Contact CRM</h3>
+                                <button class="btn-reset-red" onclick="resetGuestSort()" title="Reset to original recording order">
+                                    RESET
+                                </button>
+                            </div>
                             <button class="btn-export-turquoise" onclick="exportGuestsToXLSX()">
                                 📥 Export Guest Email List (.xlsx)
                             </button>
                         </div>
-                        <p style="font-size: 0.88rem; color: #64748B; margin-top: 0;">
+                        <p style="font-size: 0.88rem; color: #64748B; margin-top: 0.3rem;">
                             Directory of all past and upcoming visitors with one-click WhatsApp links.
                         </p>
 
@@ -929,8 +987,24 @@
                             <table class="adm-table">
                                 <thead>
                                     <tr>
-                                        <th>Guest Name</th>
-                                        <th>Email</th>
+                                        <th style="white-space: nowrap;">
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Guest Name</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="name" data-dir="asc" onclick="sortGuests('name', 'asc')" title="Sort A to Z">▲</span>
+                                                    <span class="sort-arrow" data-col="name" data-dir="desc" onclick="sortGuests('name', 'desc')" title="Sort Z to A">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th style="white-space: nowrap;">
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Email</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="email" data-dir="asc" onclick="sortGuests('email', 'asc')" title="Sort A to Z">▲</span>
+                                                    <span class="sort-arrow" data-col="email" data-dir="desc" onclick="sortGuests('email', 'desc')" title="Sort Z to A">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>WhatsApp / Phone</th>
                                         <th>Last Room</th>
                                         <th>Total Spent</th>
@@ -1537,13 +1611,65 @@
             });
         }
 
+        // Guest CRM Sorting State
+        let guestSortColumn = null;
+        let guestSortDirection = 'asc';
+
+        function sortGuests(column, direction) {
+            guestSortColumn = column;
+            guestSortDirection = direction;
+            renderGuestsTable();
+        }
+
+        function resetGuestSort() {
+            guestSortColumn = null;
+            guestSortDirection = 'asc';
+            renderGuestsTable();
+        }
+
+        function compareAlphaNumeric(aStr, bStr, isAsc) {
+            const strA = (aStr || '').trim();
+            const strB = (bStr || '').trim();
+
+            if (!strA && strB) return 1;
+            if (strA && !strB) return -1;
+            if (!strA && !strB) return 0;
+
+            const aStartsLetter = /^[a-zA-Z]/.test(strA);
+            const bStartsLetter = /^[a-zA-Z]/.test(strB);
+
+            if (aStartsLetter && !bStartsLetter) return -1;
+            if (!aStartsLetter && bStartsLetter) return 1;
+
+            const cmp = strA.localeCompare(strB, undefined, { numeric: true, sensitivity: 'base' });
+            return isAsc ? cmp : -cmp;
+        }
+
         function renderGuestsTable() {
             const tbody = document.getElementById('guestsTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const displayList = getDisplayBookings();
-            displayList.filter(b => b.status !== 'blocked').forEach(b => {
+            const displayList = getDisplayBookings().filter(b => b.status !== 'blocked');
+            let listToRender = [...displayList];
+
+            if (guestSortColumn) {
+                const isAsc = (guestSortDirection === 'asc');
+                listToRender.sort((a, b) => {
+                    const valA = guestSortColumn === 'name' ? (a.guestName || '') : (a.guestEmail || '');
+                    const valB = guestSortColumn === 'name' ? (b.guestName || '') : (b.guestEmail || '');
+                    return compareAlphaNumeric(valA, valB, isAsc);
+                });
+            }
+
+            // Highlight active sort arrow
+            document.querySelectorAll('.sort-arrow').forEach(el => el.classList.remove('active'));
+            if (guestSortColumn) {
+                const activeArrow = document.querySelector(`.sort-arrow[data-col="${guestSortColumn}"][data-dir="${guestSortDirection}"]`);
+                if (activeArrow) activeArrow.classList.add('active');
+            }
+
+            listToRender.forEach(b => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${b.guestName}</strong></td>
@@ -1728,12 +1854,23 @@
         }
 
         function exportGuestsToXLSX() {
-            const displayList = getDisplayBookings();
+            const displayList = getDisplayBookings().filter(b => b.status !== 'blocked');
+            let listToExport = [...displayList];
+
+            if (guestSortColumn) {
+                const isAsc = (guestSortDirection === 'asc');
+                listToExport.sort((a, b) => {
+                    const valA = guestSortColumn === 'name' ? (a.guestName || '') : (a.guestEmail || '');
+                    const valB = guestSortColumn === 'name' ? (b.guestName || '') : (b.guestEmail || '');
+                    return compareAlphaNumeric(valA, valB, isAsc);
+                });
+            }
+
             const seen = new Set();
             const rows = [
                 ["Guest Name", "Email", "Phone", "Last Room", "Total Spent ZAR"]
             ];
-            displayList.filter(b => b.status !== 'blocked').forEach(b => {
+            listToExport.forEach(b => {
                 const key = (b.guestEmail || b.guestName || '').toLowerCase();
                 if (!seen.has(key)) {
                     seen.add(key);

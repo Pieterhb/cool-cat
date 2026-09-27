@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: Move ADMIN header button right and style admin XLSX export buttons in turquoise with hover animation'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'feat: Add Guest Name and Email column sorting (A-Z/0-9 & Z-A/9-0) with RESET button in Guest CRM'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare
