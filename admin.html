@@ -38,37 +38,6 @@
             padding: 0;
         }
 
-        /* Master Auth Login Overlay */
-        .auth-overlay {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #0A192F 0%, #0F52BA 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            z-index: 9999;
-        }
-
-        .auth-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        .auth-logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-bottom: 1rem;
-            object-fit: cover;
-            border: 3px solid var(--adm-primary);
-        }
-
         /* Admin Dashboard Layout */
         .admin-layout {
             display: flex;
@@ -151,28 +120,6 @@
             background: var(--adm-sidebar-hover);
             color: white;
             border-left-color: var(--adm-accent);
-        }
-
-        .sidebar-footer {
-            padding: 1.2rem;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .btn-logout {
-            width: 100%;
-            background: rgba(239, 68, 68, 0.15);
-            color: #F87171;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 0.6rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-
-        .btn-logout:hover {
-            background: var(--adm-danger);
-            color: white;
         }
 
         /* Main Content Body */
@@ -529,34 +476,9 @@
 <body>
 
     <!-- ========================================================= -->
-    <!-- MASTER LOGIN / PIN GATE                                  -->
-    <!-- ========================================================= -->
-    <div class="auth-overlay" id="authGate">
-        <div class="auth-card">
-            <img src="Logo.png?v=3" alt="Cool Cat Logo" class="auth-logo">
-            <h2 style="font-size: 1.4rem; color: var(--adm-primary-dark); margin-bottom: 0.3rem;">Owner Admin Access</h2>
-            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Cool Cat Holiday Accommodation Portal</p>
-            
-            <form onsubmit="handleAdminLogin(event)">
-                <div style="margin-bottom: 1.2rem; text-align: left;">
-                    <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Enter Admin Passcode / PIN</label>
-                    <input type="password" id="adminPinInput" class="adm-input" style="width: 100%; font-size: 1.2rem; text-align: center; letter-spacing: 0.3em; margin-top: 0.4rem;" placeholder="•••••" required autofocus>
-                </div>
-                <button type="submit" class="btn-adm-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
-                    Unlock Dashboard ➔
-                </button>
-                <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 1rem;">
-                    Authorized Owner &amp; Management Access
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- ========================================================= -->
     <!-- ADMIN DASHBOARD SHELL                                     -->
     <!-- ========================================================= -->
-    <div class="admin-layout" id="adminDashboard" style="display: none;">
+    <div class="admin-layout" id="adminDashboard">
 
         <!-- Left Sidebar Navigation -->
         <aside class="admin-sidebar" id="sidebar">
@@ -594,12 +516,6 @@
                     <span>⚙️</span> System &amp; Paystack
                 </li>
             </ul>
-
-            <div class="sidebar-footer">
-                <button class="btn-logout" onclick="handleAdminLogout()">
-                    🔒 Lock / Logout
-                </button>
-            </div>
         </aside>
 
         <!-- Main Body Area -->
@@ -1230,32 +1146,9 @@
         // Live bookings — loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
 
-        // 1. Auth Gate Handlers
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const pin = document.getElementById('adminPinInput').value.trim();
-            if (pin === '70007' || pin === 'coolcat' || pin === 'admin') {
-                sessionStorage.setItem('coolcat_admin_auth', 'true');
-                document.getElementById('authGate').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'flex';
-                initDashboard();
-            } else {
-                alert("Incorrect Passcode. Please enter your valid 5-digit admin PIN.");
-            }
-        }
-
-        function handleAdminLogout() {
-            sessionStorage.removeItem('coolcat_admin_auth');
-            location.reload();
-        }
-
-        // Check if already authenticated in session
+        // Auto-initialize dashboard directly on page load
         document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('coolcat_admin_auth') === 'true') {
-                document.getElementById('authGate').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'flex';
-                initDashboard();
-            }
+            initDashboard();
         });
 
         // 2. Tab Navigation
