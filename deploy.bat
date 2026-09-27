@@ -6,7 +6,7 @@ echo.
 echo Step 1: Uploading files...
 echo (If a browser window opens, please log in to Cloudflare and click "Allow")
 echo.
-call npx wrangler pages deploy . --project-name cool-cat-site --branch main
+call npx wrangler pages deploy . --project-name cool-cat-site --branch production
 
 echo.
 echo Step 2: Linking your custom domain (cool-cat.co.za)...
