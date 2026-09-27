@@ -2141,25 +2141,36 @@
             }
         ];
 
-        // Apply any saved rate overrides from the Admin "Rates & Specials" panel
-        (function applySavedRates() {
-            try {
-                const cfg = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
-                const rateMap = {
-                    'king-arthur': { wd: cfg.king_wd,    we: cfg.king_we    },
-                    'santori':     { wd: cfg.santori_wd, we: cfg.santori_we },
-                    'mykonos':     { wd: cfg.mykonos_wd, we: cfg.mykonos_we },
-                    'deluxe-suite':{ wd: cfg.deluxe_wd,  we: cfg.deluxe_we  }
-                };
-                ROOMS.forEach(room => {
-                    const saved = rateMap[room.id];
-                    if (saved) {
-                        if (saved.wd !== undefined && saved.wd > 0) room.baseWeekday = saved.wd;
-                        if (saved.we !== undefined && saved.we > 0) room.baseWeekend  = saved.we;
-                    }
-                });
-            } catch(e) { /* ignore if no saved config */ }
-        })();
+        // Global Site Settings from Cloudflare KV (Markup %, Base Rates)
+        let SITE_CONFIG = {
+            nextYearMarkupPct: 10
+        };
+
+        function applyConfigToRooms(cfg) {
+            if (!cfg) return;
+            if (cfg.nextYearMarkupPct !== undefined) {
+                SITE_CONFIG.nextYearMarkupPct = Number(cfg.nextYearMarkupPct);
+            }
+            const rateMap = {
+                'king-arthur': { wd: cfg.king_wd,    we: cfg.king_we    },
+                'santori':     { wd: cfg.santori_wd, we: cfg.santori_we },
+                'mykonos':     { wd: cfg.mykonos_wd, we: cfg.mykonos_we },
+                'deluxe-suite':{ wd: cfg.deluxe_wd,  we: cfg.deluxe_we  }
+            };
+            ROOMS.forEach(room => {
+                const saved = rateMap[room.id];
+                if (saved) {
+                    if (saved.wd !== undefined && saved.wd > 0) room.baseWeekday = Number(saved.wd);
+                    if (saved.we !== undefined && saved.we > 0) room.baseWeekend  = Number(saved.we);
+                }
+            });
+        }
+
+        // Apply any cached rate overrides from localStorage immediately
+        try {
+            const cachedCfg = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
+            applyConfigToRooms(cachedCfg);
+        } catch(e) { /* ignore */ }
 
         // Live bookings store (populated dynamically from Cloudflare KV / backend)
         let MOCK_BOOKINGS = [];
@@ -2192,7 +2203,7 @@
         let activeReferralCode = '';
 
         // ==========================================
-        // 3. BACKEND SYNC: FETCH LIVE BOOKINGS
+        // 3. BACKEND SYNC: FETCH LIVE BOOKINGS & SETTINGS
         // ==========================================
         async function loadLiveBookings() {
             try {
@@ -2206,6 +2217,24 @@
                 }
             } catch (e) {
                 console.log("Using initial seeded bookings:", e);
+            }
+        }
+
+        async function loadSiteSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.success && data.config) {
+                        applyConfigToRooms(data.config);
+                        localStorage.setItem('coolcat_rates_config', JSON.stringify(data.config));
+                        renderCalendar();
+                        updateSummarySidebar();
+                        updateBannerRoomInfo();
+                    }
+                }
+            } catch (e) {
+                console.log("Using cached site settings:", e);
             }
         }
 
@@ -2267,14 +2296,10 @@
             const season = getSeasonInfo(date);
             let rate = baseRate * season.multiplier;
 
-            // Apply next-year markup if the booking date is in a future year vs today
+            // Apply next-year markup if the booking date is in a future year vs today (2027+)
             if (date.getFullYear() > TODAY.getFullYear()) {
-                const savedConfig = (() => {
-                    try { return JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}'); }
-                    catch(e) { return {}; }
-                })();
-                const markupPct = (savedConfig.nextYearMarkupPct !== undefined)
-                    ? Number(savedConfig.nextYearMarkupPct)
+                const markupPct = (SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
+                    ? Number(SITE_CONFIG.nextYearMarkupPct)
                     : 10;
                 rate = rate * (1 + markupPct / 100);
             }
@@ -3651,6 +3676,27 @@
             }
         };
 
+        function updateBannerRoomInfo() {
+            const bannerName = document.getElementById('bannerRoomName');
+            const bannerSpecs = document.getElementById('bannerRoomSpecs');
+            const bannerRate = document.getElementById('bannerRoomRate');
+
+            if (selectedRoomId === 'all') {
+                if (bannerName) bannerName.textContent = 'All 4 Rooms (Entire Property)';
+                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+                const allWd = ROOMS.reduce((s, r) => s + (r.baseWeekday || 0), 0);
+                const allWe = ROOMS.reduce((s, r) => s + (r.baseWeekend || 0), 0);
+                if (bannerRate) bannerRate.textContent = `Weekday R${allWd.toLocaleString()} | Weekend R${allWe.toLocaleString()}`;
+            } else {
+                const r = ROOMS.find(item => item.id === selectedRoomId);
+                if (r) {
+                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
+                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
+                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday.toLocaleString()} | Weekend R${r.baseWeekend.toLocaleString()}`;
+                }
+            }
+        }
+
         function switchRoom(roomId) {
             selectedRoomId = roomId;
             const tabs = document.querySelectorAll('.room-tab-btn');
@@ -3667,22 +3713,7 @@
                 tabs[roomMap[roomId]].classList.add('active');
             }
 
-            const bannerName = document.getElementById('bannerRoomName');
-            const bannerSpecs = document.getElementById('bannerRoomSpecs');
-            const bannerRate = document.getElementById('bannerRoomRate');
-
-            if (roomId === 'all') {
-                if (bannerName) bannerName.textContent = 'All 4 Rooms (Entire Property)';
-                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
-                if (bannerRate) bannerRate.textContent = 'Weekday R4,000 | Weekend R5,150';
-            } else {
-                const r = ROOMS.find(item => item.id === roomId);
-                if (r) {
-                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
-                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
-                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
-                }
-            }
+            updateBannerRoomInfo();
 
             // If user had an incomplete check-in selection on another room, clear the pending state
             if (pendingCheckIn && pendingCheckIn.roomId !== roomId) {
@@ -3780,7 +3811,9 @@
             populateMonthDropdown();
             renderCalendar();
             updateSummarySidebar();
+            updateBannerRoomInfo();
             loadLiveBookings();
+            loadSiteSettings();
 
             // Auto-detect referral link from URL
             const ref = urlParams.get('ref') || urlParams.get('promo');

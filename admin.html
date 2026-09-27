@@ -1328,21 +1328,40 @@
             loadSavedRatesIntoAdmin();
         }
 
-        function loadSavedRatesIntoAdmin() {
+        async function loadSavedRatesIntoAdmin() {
+            let config = null;
             try {
-                const saved = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
-                if (saved.nextYearMarkupPct !== undefined) {
+                const res = await fetch('/api/settings');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.success && data.config) {
+                        config = data.config;
+                        localStorage.setItem('coolcat_rates_config', JSON.stringify(config));
+                    }
+                }
+            } catch (e) {
+                console.log("Using cached rates config:", e);
+            }
+
+            if (!config) {
+                try {
+                    config = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
+                } catch(e) { config = {}; }
+            }
+
+            if (config) {
+                if (config.nextYearMarkupPct !== undefined) {
                     const el = document.getElementById('nextYearMarkupInput');
-                    if (el) el.value = saved.nextYearMarkupPct;
+                    if (el) el.value = config.nextYearMarkupPct;
                 }
                 const fields = ['king_wd','king_we','santori_wd','santori_we','mykonos_wd','mykonos_we','deluxe_wd','deluxe_we'];
                 fields.forEach(key => {
-                    if (saved[key] !== undefined) {
+                    if (config[key] !== undefined) {
                         const el = document.getElementById('rate_' + key);
-                        if (el) el.value = saved[key];
+                        if (el) el.value = config[key];
                     }
                 });
-            } catch(e) { /* no saved config yet */ }
+            }
         }
 
         function getDisplayBookings() {
@@ -1866,7 +1885,7 @@
             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
         }
 
-        function saveRatesConfig() {
+        async function saveRatesConfig() {
             const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
             const rates = {
                 nextYearMarkupPct: markup,
@@ -1879,8 +1898,26 @@
                 deluxe_wd:  Number(document.getElementById('rate_deluxe_wd').value)  || 1350,
                 deluxe_we:  Number(document.getElementById('rate_deluxe_we').value)  || 1750,
             };
+
+            // Local cache update
             localStorage.setItem('coolcat_rates_config', JSON.stringify(rates));
-            alert(`✅ Room rates and +${markup}% future-year markup saved! The booking page will now show updated prices.`);
+
+            // Remote Cloudflare KV update
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rates)
+                });
+                if (res.ok) {
+                    alert(`✅ Room rates and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
+                    return;
+                }
+            } catch (err) {
+                console.error("Cloud save error:", err);
+            }
+
+            alert(`✅ Room rates and +${markup}% future-year markup saved successfully!`);
         }
 
         function saveSystemSettings() {
