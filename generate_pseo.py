@@ -223,10 +223,13 @@ def generate():
 <body>
     <header id="navbar">
         <div class="container nav-container">
-            <a href="/" class="logo-wrapper">
-                <img src="Logo.png" alt="Cool Cat Logo" class="logo-img">
-                <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
-            </a>
+            <div class="logo-header-row">
+                <a href="/" class="logo-wrapper">
+                    <img src="Logo.png" alt="Cool Cat Logo" class="logo-img">
+                    <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
+                </a>
+                <a href="/admin" class="btn-nav-admin" id="adminHeaderBtn" style="display: none;">ADMIN</a>
+            </div>
             <nav>
                 <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
@@ -325,6 +328,18 @@ def generate():
         </div>
     </footer>
     <script>
+        (function() {{
+            try {{
+                if (localStorage.getItem('coolcat_admin_logged_in') === 'true' || 
+                    sessionStorage.getItem('coolcat_admin_logged_in') === 'true' ||
+                    localStorage.getItem('coolcat_admin_session') === '1' ||
+                    sessionStorage.getItem('coolcat_admin_session') === '1') {{
+                    var btn = document.getElementById('adminHeaderBtn');
+                    if (btn) btn.style.display = 'inline-flex';
+                }}
+            }} catch(e) {{}}
+        }})();
+
         function openEmail(address, subject) {{
             var isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
             var subjectEncoded = encodeURIComponent(subject);

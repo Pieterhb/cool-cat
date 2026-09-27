@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1790348852.css">
+    <link rel="stylesheet" href="styles-v1790521795.css">
     <style>
         .ent-hero {
             background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
@@ -299,10 +299,13 @@
     <!-- Header / Navigation -->
     <header id="navbar">
         <div class="container nav-container">
-            <a href="/" class="logo-wrapper">
-                <img src="Logo.png?v=3" alt="Cool Cat Logo" class="logo-img">
-                <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
-            </a>
+            <div class="logo-header-row">
+                <a href="/" class="logo-wrapper">
+                    <img src="Logo.png?v=3" alt="Cool Cat Logo" class="logo-img">
+                    <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
+                </a>
+                <a href="/admin" class="btn-nav-admin" id="adminHeaderBtn" style="display: none;">ADMIN</a>
+            </div>
             
             <nav>
                 <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
@@ -1076,6 +1079,18 @@
     </footer>
 
     <script>
+        (function() {
+            try {
+                if (localStorage.getItem('coolcat_admin_logged_in') === 'true' || 
+                    sessionStorage.getItem('coolcat_admin_logged_in') === 'true' ||
+                    localStorage.getItem('coolcat_admin_session') === '1' ||
+                    sessionStorage.getItem('coolcat_admin_session') === '1') {
+                    var btn = document.getElementById('adminHeaderBtn');
+                    if (btn) btn.style.display = 'inline-flex';
+                }
+            } catch(e) {}
+        })();
+
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');
         }

@@ -37,7 +37,7 @@ def auto_deploy():
     # 4. Commit to Git
     print("Committing changes to Git...")
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: per-stay breakfast cards with individual guest count selectors and daily breakfast toggles in Step 2'], check=True)
+    subprocess.run(['git', 'commit', '-m', 'feat: Add top-center HOME button to admin dashboard and dynamic authenticated ADMIN button to customer site header'], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare

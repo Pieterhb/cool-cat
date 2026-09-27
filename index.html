@@ -44,7 +44,7 @@
 
     <!-- Performance: Preload LCP Banner -->
     <link rel="preload" as="image" href="Cool%20Cat%20Banner.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="styles-v1790348852.css">
+    <link rel="stylesheet" href="styles-v1790521795.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -147,10 +147,13 @@
     <!-- Header / Navigation -->
     <header id="navbar">
         <div class="container nav-container">
-            <a href="/" class="logo-wrapper">
-                <img src="Logo.png?v=3" alt="Cool Cat Holiday Accommodation Logo" class="logo-img">
-                <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
-            </a>
+            <div class="logo-header-row">
+                <a href="/" class="logo-wrapper">
+                    <img src="Logo.png?v=3" alt="Cool Cat Holiday Accommodation Logo" class="logo-img">
+                    <span class="logo-text">COOL CAT HOLIDAY ACCOMMODATION</span>
+                </a>
+                <a href="/admin" class="btn-nav-admin" id="adminHeaderBtn" style="display: none;">ADMIN</a>
+            </div>
             
             <nav>
                 <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" tabindex="0" onclick="toggleMenu()">☰</div>
@@ -302,6 +305,18 @@
 </div>
 
 <script>
+(function() {
+    try {
+        if (localStorage.getItem('coolcat_admin_logged_in') === 'true' || 
+            sessionStorage.getItem('coolcat_admin_logged_in') === 'true' ||
+            localStorage.getItem('coolcat_admin_session') === '1' ||
+            sessionStorage.getItem('coolcat_admin_session') === '1') {
+            var btn = document.getElementById('adminHeaderBtn');
+            if (btn) btn.style.display = 'inline-flex';
+        }
+    } catch(e) {}
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const reviewsBtn = document.getElementById('reviewsBtn');
   const reviewsModal = document.getElementById('reviewsModal');
