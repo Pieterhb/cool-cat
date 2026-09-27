@@ -1224,7 +1224,7 @@
         async function loadSavedRatesIntoAdmin() {
             let config = null;
             try {
-                const res = await fetch('/api/settings');
+                const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.success && data.config) {
@@ -1779,6 +1779,13 @@
         }
 
         async function saveRatesConfig() {
+            const btn = document.querySelector('#tabRates .btn-adm-primary');
+            const originalBtnText = btn ? btn.innerHTML : '💾 Save Pricing Changes';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Saving to Cloud...';
+            }
+
             const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
             const rates = {
                 nextYearMarkupPct: markup,
@@ -1803,14 +1810,25 @@
                     body: JSON.stringify(rates)
                 });
                 if (res.ok) {
+                    const data = await res.json();
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalBtnText;
+                    }
                     alert(`✅ Room rates and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
                     return;
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with status ${res.status}`);
                 }
             } catch (err) {
                 console.error("Cloud save error:", err);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnText;
+                }
+                alert(`❌ Cloud save error: ${err.message}\nPlease check your network connection and try again.`);
             }
-
-            alert(`✅ Room rates and +${markup}% future-year markup saved successfully!`);
         }
 
         function saveSystemSettings() {
