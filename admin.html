@@ -9,6 +9,9 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="styles-v1790348852.css">
 
+    <!-- SheetJS for proper .xlsx Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 
@@ -709,8 +712,8 @@
                     <div class="adm-card">
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">📋 Recent Live Bookings</h3>
-                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportBookingsToCSV()">
-                                📥 Export to Excel / CSV
+                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportBookingsToXLSX()">
+                                📥 Export to Excel (.xlsx)
                             </button>
                         </div>
                         <div class="adm-table-wrapper">
@@ -824,8 +827,8 @@
                     <div class="adm-card">
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">💰 Paystack Financial Transactions</h3>
-                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportBookingsToCSV()">
-                                📥 Export Full Financials for Tax
+                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportFinancialsToXLSX()">
+                                📥 Export Full Financials for Tax (.xlsx)
                             </button>
                         </div>
                         <p style="font-size: 0.88rem; color: #64748B; margin-top: 0;">
@@ -927,8 +930,8 @@
                     <div class="adm-card">
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">👥 Guest Directory &amp; Contact CRM</h3>
-                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportGuestsToCSV()">
-                                📥 Export Guest Email List (Marketing)
+                            <button class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="exportGuestsToXLSX()">
+                                📥 Export Guest Email List (.xlsx)
                             </button>
                         </div>
                         <p style="font-size: 0.88rem; color: #64748B; margin-top: 0;">
@@ -1322,6 +1325,24 @@
             renderFinancesTable();
             renderGuestsTable();
             renderReferralsTable();
+            loadSavedRatesIntoAdmin();
+        }
+
+        function loadSavedRatesIntoAdmin() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
+                if (saved.nextYearMarkupPct !== undefined) {
+                    const el = document.getElementById('nextYearMarkupInput');
+                    if (el) el.value = saved.nextYearMarkupPct;
+                }
+                const fields = ['king_wd','king_we','santori_wd','santori_we','mykonos_wd','mykonos_we','deluxe_wd','deluxe_we'];
+                fields.forEach(key => {
+                    if (saved[key] !== undefined) {
+                        const el = document.getElementById('rate_' + key);
+                        if (el) el.value = saved[key];
+                    }
+                });
+            } catch(e) { /* no saved config yet */ }
         }
 
         function getDisplayBookings() {
@@ -1661,34 +1682,88 @@
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }
 
-        // 6. CSV Export for Tax & Accountant
-        function exportBookingsToCSV() {
-            let csv = "Reference,Guest Name,Email,Phone,Room,Check-In,Check-Out,Nights,Total ZAR,Paid ZAR,Balance ZAR,Status\n";
+        // 6. XLSX Exports (proper Excel format — each field in its own cell/column)
+        function exportBookingsToXLSX() {
+            const rows = [
+                ["Reference", "Guest Name", "Email", "Phone", "Room", "Check-In", "Check-Out", "Nights", "Total ZAR", "Paid ZAR", "Balance ZAR", "Status"]
+            ];
             ADMIN_BOOKINGS.forEach(b => {
-                csv += `"${b.id}","${b.guestName}","${b.guestEmail || ''}","${b.guestPhone || ''}","${b.roomName || b.roomId}","${b.checkIn}","${b.checkOut}",${b.nights || 1},${b.totalAmount || 0},${b.amountPaid || 0},${b.balanceDue || 0},"${b.status}"\n`;
+                rows.push([
+                    b.id,
+                    b.guestName,
+                    b.guestEmail || '',
+                    b.guestPhone || '',
+                    b.roomName || b.roomId,
+                    b.checkIn,
+                    b.checkOut,
+                    b.nights || 1,
+                    Number(b.totalAmount || 0),
+                    Number(b.amountPaid || 0),
+                    Number(b.balanceDue || 0),
+                    b.status
+                ]);
             });
-            downloadCSV(csv, "cool-cat-bookings-export.csv");
+            downloadXLSX(rows, "cool-cat-bookings-export.xlsx", "Bookings");
         }
 
-        function exportGuestsToCSV() {
-            let csv = "Guest Name,Email,Phone,Total Spent ZAR\n";
-            ADMIN_BOOKINGS.forEach(b => {
-                csv += `"${b.guestName}","${b.guestEmail || ''}","${b.guestPhone || ''}",${b.totalAmount || 0}\n`;
+        function exportFinancialsToXLSX() {
+            const displayList = getDisplayBookings();
+            const rows = [
+                ["Transaction ID", "Date", "Guest Name", "Guest Email", "Room", "Gateway Method", "Amount ZAR", "Gateway Status"]
+            ];
+            displayList.filter(b => Number(b.amountPaid || 0) > 0).forEach(b => {
+                rows.push([
+                    'PAY_' + b.id,
+                    b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || ''),
+                    b.guestName,
+                    b.guestEmail || 'direct@cool-cat.co.za',
+                    b.roomName || b.roomId,
+                    'Card / Paystack',
+                    Number(b.amountPaid),
+                    'SETTLED (SUCCESS)'
+                ]);
             });
-            downloadCSV(csv, "cool-cat-guests-crm.csv");
+            downloadXLSX(rows, "cool-cat-financials-tax.xlsx", "Financials");
         }
 
-        function downloadCSV(content, fileName) {
-            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        function exportGuestsToXLSX() {
+            const displayList = getDisplayBookings();
+            const seen = new Set();
+            const rows = [
+                ["Guest Name", "Email", "Phone", "Last Room", "Total Spent ZAR"]
+            ];
+            displayList.filter(b => b.status !== 'blocked').forEach(b => {
+                const key = (b.guestEmail || b.guestName || '').toLowerCase();
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    rows.push([
+                        b.guestName,
+                        b.guestEmail || '',
+                        b.guestPhone || '',
+                        b.roomName || b.roomId,
+                        Number(b.totalAmount || 0)
+                    ]);
+                }
+            });
+            downloadXLSX(rows, "cool-cat-guests-crm.xlsx", "Guests CRM");
+        }
+
+        function downloadXLSX(rows, fileName, sheetName) {
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+
+            // Auto-width columns
+            const colWidths = rows[0].map((_, colIdx) => ({
+                wch: Math.max(...rows.map(r => String(r[colIdx] ?? '').length)) + 4
+            }));
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, sheetName || 'Data');
+            XLSX.writeFile(wb, fileName);
         }
 
         // 7. Referral & Affiliate Ledger Handlers
+
         // Live referrals — loaded from Cloudflare KV via initDashboard
         let ADMIN_REFERRALS = [];
 
@@ -1792,7 +1867,20 @@
         }
 
         function saveRatesConfig() {
-            alert("✅ Room rates and +10% future-year markup settings saved successfully!");
+            const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
+            const rates = {
+                nextYearMarkupPct: markup,
+                king_wd:    Number(document.getElementById('rate_king_wd').value)    || 950,
+                king_we:    Number(document.getElementById('rate_king_we').value)    || 1200,
+                santori_wd: Number(document.getElementById('rate_santori_wd').value) || 850,
+                santori_we: Number(document.getElementById('rate_santori_we').value) || 1100,
+                mykonos_wd: Number(document.getElementById('rate_mykonos_wd').value) || 850,
+                mykonos_we: Number(document.getElementById('rate_mykonos_we').value) || 1100,
+                deluxe_wd:  Number(document.getElementById('rate_deluxe_wd').value)  || 1350,
+                deluxe_we:  Number(document.getElementById('rate_deluxe_we').value)  || 1750,
+            };
+            localStorage.setItem('coolcat_rates_config', JSON.stringify(rates));
+            alert(`✅ Room rates and +${markup}% future-year markup saved! The booking page will now show updated prices.`);
         }
 
         function saveSystemSettings() {

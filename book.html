@@ -2141,6 +2141,26 @@
             }
         ];
 
+        // Apply any saved rate overrides from the Admin "Rates & Specials" panel
+        (function applySavedRates() {
+            try {
+                const cfg = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
+                const rateMap = {
+                    'king-arthur': { wd: cfg.king_wd,    we: cfg.king_we    },
+                    'santori':     { wd: cfg.santori_wd, we: cfg.santori_we },
+                    'mykonos':     { wd: cfg.mykonos_wd, we: cfg.mykonos_we },
+                    'deluxe-suite':{ wd: cfg.deluxe_wd,  we: cfg.deluxe_we  }
+                };
+                ROOMS.forEach(room => {
+                    const saved = rateMap[room.id];
+                    if (saved) {
+                        if (saved.wd !== undefined && saved.wd > 0) room.baseWeekday = saved.wd;
+                        if (saved.we !== undefined && saved.we > 0) room.baseWeekend  = saved.we;
+                    }
+                });
+            } catch(e) { /* ignore if no saved config */ }
+        })();
+
         // Live bookings store (populated dynamically from Cloudflare KV / backend)
         let MOCK_BOOKINGS = [];
 
@@ -2247,8 +2267,16 @@
             const season = getSeasonInfo(date);
             let rate = baseRate * season.multiplier;
 
+            // Apply next-year markup if the booking date is in a future year vs today
             if (date.getFullYear() > TODAY.getFullYear()) {
-                rate = rate * 1.10;
+                const savedConfig = (() => {
+                    try { return JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}'); }
+                    catch(e) { return {}; }
+                })();
+                const markupPct = (savedConfig.nextYearMarkupPct !== undefined)
+                    ? Number(savedConfig.nextYearMarkupPct)
+                    : 10;
+                rate = rate * (1 + markupPct / 100);
             }
 
             return Math.round(rate);
