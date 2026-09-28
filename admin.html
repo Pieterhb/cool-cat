@@ -347,6 +347,8 @@
         .status-confirmed { background: #DCFCE7; color: #166534; }
         .status-deposit { background: #FEF3C7; color: #92400E; }
         .status-blocked { background: #FEE2E2; color: #991B1B; }
+        .status-unpaid { background: #FEE2E2; color: #991B1B; }
+        .status-cancelled { background: #E2E8F0; color: #475569; }
 
         /* Action Buttons */
         .btn-sm {
@@ -1858,6 +1860,136 @@
         </div>
     </div>
 
+    <!-- ========================================================= -->
+    <!-- RECORD / UPDATE PAYMENT MODAL                             -->
+    <!-- ========================================================= -->
+    <div class="adm-modal-overlay" id="recordPaymentModal" style="display:none;" onclick="if(event.target===this) closePaymentModal()">
+        <div class="adm-modal-card" style="max-width: 480px;">
+            <div class="adm-modal-header">
+                <div>
+                    <h3 class="adm-modal-title" style="font-size: 1.15rem;">💳 Record / Update Payment</h3>
+                    <span class="adm-modal-subtitle" id="payModalSubtitle">Update payment status for booking</span>
+                </div>
+                <button class="adm-modal-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+
+            <form id="recordPaymentForm" onsubmit="handleSavePayment(event)" style="padding: 1.2rem;">
+                <input type="hidden" id="payBookingId">
+                
+                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.88rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                        <span style="color: #64748B;">Guest:</span>
+                        <strong id="payModalGuestName">-</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                        <span style="color: #64748B;">Room / Stay:</span>
+                        <span id="payModalRoomStay" style="font-weight: 600;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                        <span style="color: #64748B;">Total Quote (ZAR):</span>
+                        <strong id="payModalTotalAmount" style="color: var(--adm-primary);">R0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748B;">Current Status:</span>
+                        <span id="payModalCurrentStatus" class="status-pill status-unpaid">NOT PAID</span>
+                    </div>
+                </div>
+
+                <!-- Quick Preset Buttons -->
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem; display: block;">Quick Payment Amount:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button type="button" class="btn-sm" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;" onclick="setPayModalPreset(0.5)">
+                        💰 50% Deposit (<span id="payModalPresetDeposit">R0</span>)
+                    </button>
+                    <button type="button" class="btn-sm" style="background: #DCFCE7; color: #166534; border: 1px solid #86EFAC;" onclick="setPayModalPreset(1.0)">
+                        ✅ 100% Paid in Full (<span id="payModalPresetFull">R0</span>)
+                    </button>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.8rem;">
+                    <label>Amount Paid (ZAR)</label>
+                    <input type="number" step="any" id="payModalAmountPaid" class="adm-input" required oninput="updatePayModalBalance()">
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.8rem;">
+                    <label>Remaining Balance Due (ZAR)</label>
+                    <input type="number" step="any" id="payModalBalanceDue" class="adm-input" readonly style="background: #F8FAFC; color: #64748B;">
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.8rem;">
+                    <label>Payment Method</label>
+                    <select id="payModalMethod" class="adm-input">
+                        <option value="eft">🏦 Direct EFT / Bank Transfer</option>
+                        <option value="card">💳 Card / Paystack</option>
+                        <option value="cash">💵 Cash on Arrival</option>
+                    </select>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 1.2rem;">
+                    <label>Payment Status</label>
+                    <select id="payModalStatusSelect" class="adm-input">
+                        <option value="deposit_paid">🟡 Deposit Paid (Partially Settled)</option>
+                        <option value="fully_paid">🟢 100% Paid (Fully Settled)</option>
+                        <option value="not_paid">🔴 NOT PAID (Pending Payment)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+                    <button type="button" class="btn-sm" style="background: #F1F5F9; color: #475569;" onclick="closePaymentModal()">Cancel</button>
+                    <button type="submit" class="btn-adm-primary" id="payModalSubmitBtn">💾 Update Payment Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- HYBRID PAYMENT: SHARE QUOTE & PAY LINK MODAL              -->
+    <!-- ========================================================= -->
+    <div class="adm-modal-overlay" id="shareQuoteModal" style="display:none;" onclick="if(event.target===this) closeShareQuoteModal()">
+        <div class="adm-modal-card" style="max-width: 540px;">
+            <div class="adm-modal-header">
+                <div>
+                    <h3 class="adm-modal-title" style="font-size: 1.15rem;">📲 Send Payment Quote &amp; Links</h3>
+                    <span class="adm-modal-subtitle" id="shareModalSubtitle">Share Paystack online link + Direct EFT bank details</span>
+                </div>
+                <button class="adm-modal-close" onclick="closeShareQuoteModal()">&times;</button>
+            </div>
+
+            <div style="padding: 1.2rem;">
+                <input type="hidden" id="shareBookingId">
+                <input type="hidden" id="shareGuestPhone">
+
+                <!-- Summary Badge -->
+                <div style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.88rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                        <span style="color:#475569;">Guest:</span>
+                        <strong id="shareGuestName">-</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                        <span style="color:#475569;">Room:</span>
+                        <span id="shareRoomStay" style="font-weight:600;">-</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#475569;">Total Quote / 50% Deposit:</span>
+                        <strong id="shareAmountSummary" style="color:var(--adm-primary);">-</strong>
+                    </div>
+                </div>
+
+                <!-- Message Preview Box -->
+                <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;">Message Text Preview (WhatsApp / Email / SMS):</label>
+                <textarea id="shareQuoteMessageText" class="adm-input" rows="10" style="font-family:monospace; font-size:0.8rem; line-height:1.4; resize:vertical; margin-bottom:1rem;"></textarea>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; flex-wrap:wrap;">
+                    <button type="button" class="btn-sm" style="background:#F1F5F9; color:#475569;" onclick="copyQuoteToClipboard()">📋 Copy to Clipboard</button>
+                    <div style="display:flex; gap:0.6rem;">
+                        <button type="button" class="btn-sm" style="background:#F1F5F9; color:#475569;" onclick="closeShareQuoteModal()">Close</button>
+                        <button type="button" class="btn-sm btn-wa" style="font-size:0.85rem;" onclick="sendQuoteWhatsApp()">📲 Send via WhatsApp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ========================================================= -->
     <!-- DASHBOARD JAVASCRIPT ENGINE                               -->
@@ -1999,11 +2131,46 @@
 
         function getDisplayBookings() {
             // Only show master parent bookings in tables (hide internal room-blocking sub-records)
-            const parentIds = new Set(ADMIN_BOOKINGS.filter(b => b.isParentBooking || !b.parentBookingId).map(b => b.id));
+            const parentIds = new Set(
+                ADMIN_BOOKINGS.filter(b => b.isParentBooking || (!b.parentBookingId && !b.isCalendarBlock)).map(b => b.id)
+            );
+            const seenLegacyBases = new Set();
+
             return ADMIN_BOOKINGS.filter(b => {
                 if (b.isCalendarBlock) return false;
                 if (b.parentBookingId && parentIds.has(b.parentBookingId)) return false;
+
+                // Handle legacy multi-room records like MAN-44982_king-arthur if saved without parent record
+                const match = (b.id || '').match(/^(MAN-\d+)_(king-arthur|santori|mykonos|deluxe-suite)$/);
+                if (match) {
+                    const baseId = match[1];
+                    if (parentIds.has(baseId)) return false;
+                    if (seenLegacyBases.has(baseId)) return false;
+                    seenLegacyBases.add(baseId);
+                    b.roomName = 'All 4 Rooms (Entire Property)';
+                }
                 return true;
+            }).map(b => {
+                // Sanitize legacy manual bookings that had amountPaid erroneously equal to total without payment
+                const isManual = b.isManual || (b.id && b.id.startsWith('MAN-'));
+                const hasRealPayment = b.isPaidEft === true || b.isRecordedPayment === true || b.paystackRef || b.paymentMethod === 'eft' || b.paymentMethod === 'card';
+                if (isManual && !hasRealPayment && b.status !== 'deposit_paid' && b.status !== 'fully_paid' && b.status !== 'cancelled') {
+                    return {
+                        ...b,
+                        amountPaid: 0,
+                        balanceDue: Number(b.totalAmount || 0),
+                        status: 'not_paid'
+                    };
+                }
+                // Cancelled manual bookings always show R0
+                if (b.status === 'cancelled') {
+                    return {
+                        ...b,
+                        amountPaid: 0,
+                        balanceDue: 0
+                    };
+                }
+                return b;
             });
         }
 
@@ -2114,8 +2281,25 @@
                 const isDeposit = (b.balanceDue > 0);
                 if (isDeposit && b.status !== 'cancelled') pendingTotal += Number(b.balanceDue || 0);
 
-                const statusClass = b.status === 'confirmed' || b.status === 'fully_paid' ? 'status-confirmed' : (b.status === 'deposit_paid' ? 'status-deposit' : 'status-blocked');
-                const statusLabel = b.status === 'confirmed' || b.status === 'fully_paid' ? '100% Paid' : (b.status === 'deposit_paid' ? 'Deposit Paid' : (b.status === 'cancelled' ? 'Cancelled' : 'Blocked'));
+                let statusClass = 'status-unpaid';
+                let statusLabel = 'NOT PAID';
+
+                if (b.status === 'cancelled') {
+                    statusClass = 'status-cancelled';
+                    statusLabel = 'Cancelled';
+                } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
+                    statusClass = 'status-unpaid';
+                    statusLabel = 'NOT PAID';
+                } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
+                    statusClass = 'status-deposit';
+                    statusLabel = 'Deposit Paid';
+                } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                    statusClass = 'status-confirmed';
+                    statusLabel = '100% Paid';
+                } else if (b.status === 'blocked') {
+                    statusClass = 'status-unpaid';
+                    statusLabel = 'NOT PAID';
+                }
 
                 const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
 
@@ -2128,13 +2312,16 @@
                         <td>${b.roomName || b.roomId}<br>${breakfastTag}</td>
                         <td>${b.checkIn} &bull; ${b.nights || 1}N</td>
                         <td>R${Number(b.totalAmount || 0).toLocaleString()}</td>
-                        <td style="color: #166534; font-weight: 700;">R${Number(b.amountPaid || 0).toLocaleString()}</td>
+                        <td style="color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'}; font-weight: ${Number(b.amountPaid || 0) > 0 ? '700' : 'normal'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                         <td style="color: ${isDeposit ? '#991B1B' : '#64748B'}; font-weight: ${isDeposit ? '700' : 'normal'};">
                             R${Number(b.balanceDue || 0).toLocaleString()}
                         </td>
                         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-                        <td>
-                            <a href="https://wa.me/${(b.guestPhone||'').replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa">WA</a>
+                        <td style="white-space: nowrap;">
+                            ${b.status === 'cancelled' 
+                                ? `<span style="font-size: 0.75rem; color: #94A3B8;">Cancelled</span>` 
+                                : `<button class="btn-sm btn-wa" style="padding: 3px 6px; font-size: 0.75rem;" onclick="shareBookingQuote('${b.id}')" title="Share Quote & Link">📲 Quote</button>`
+                            }
                         </td>
                     `;
                     recentTbody.appendChild(rRow);
@@ -2142,7 +2329,24 @@
 
                 // Master Row
                 if (masterTbody) {
+                    const isCancelled = (b.status === 'cancelled');
                     const mRow = document.createElement('tr');
+                    if (isCancelled) mRow.style.opacity = '0.75';
+
+                    let actionsHtml = '';
+                    if (isCancelled) {
+                        actionsHtml = `
+                            <button class="btn-sm" style="background: #EEF2FF; color: #4338CA; padding: 4px 8px; font-size: 0.75rem; margin-right: 4px;" onclick="restoreBooking('${b.id}')" title="Restore this cancelled booking back to active">🔄 Restore</button>
+                            <button class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 4px 8px; font-size: 0.75rem;" onclick="wipeBookingPermanently('${b.id}')" title="Permanently delete this cancelled record from database">🗑️ Wipe</button>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <button class="btn-sm btn-adm-primary" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 4px;" onclick="openPaymentModal('${b.id}')" title="Record or update payment (EFT / Paystack)">💳 Record Payment</button>
+                            <button class="btn-sm btn-wa" style="padding: 4px 8px; font-size: 0.75rem; margin-right: 4px;" onclick="shareBookingQuote('${b.id}')" title="Send WhatsApp quote with Paystack Online Link & Bank EFT details">📲 Share Quote</button>
+                            <button class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 4px 8px; font-size: 0.75rem;" onclick="cancelBooking('${b.id}')" title="Soft-cancel booking and free dates on calendar">Cancel</button>
+                        `;
+                    }
+
                     mRow.innerHTML = `
                         <td><strong>#${b.id}</strong></td>
                         <td>${b.guestName}</td>
@@ -2152,11 +2356,13 @@
                         <td>${b.checkOut}</td>
                         <td>${b.nights || 1}</td>
                         <td>R${Number(b.totalAmount || 0).toLocaleString()}</td>
-                        <td style="color: #166534; font-weight: 700;">R${Number(b.amountPaid || 0).toLocaleString()}</td>
-                        <td style="color: ${isDeposit ? '#991B1B' : '#64748B'};">R${Number(b.balanceDue || 0).toLocaleString()}</td>
+                        <td style="color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'}; font-weight: ${Number(b.amountPaid || 0) > 0 ? '700' : 'normal'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
+                        <td style="color: ${isDeposit ? '#991B1B' : '#64748B'}; font-weight: ${isDeposit ? '700' : 'normal'};">
+                            ${isCancelled ? `<span style="color:#94A3B8; text-decoration: line-through;">R${Number(b.totalAmount || 0).toLocaleString()}</span>` : `R${Number(b.balanceDue || 0).toLocaleString()}`}
+                        </td>
                         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
-                        <td>
-                            <button class="btn-sm" style="background: #FEE2E2; color: #991B1B;" onclick="cancelBooking('${b.id}')">Cancel</button>
+                        <td style="white-space: nowrap;">
+                            ${actionsHtml}
                         </td>
                     `;
                     masterTbody.appendChild(mRow);
@@ -2173,16 +2379,22 @@
             tbody.innerHTML = '';
 
             const displayList = getDisplayBookings();
-            displayList.filter(b => Number(b.amountPaid || 0) > 0).forEach(b => {
+            displayList.forEach(b => {
+                const isPaid = Number(b.amountPaid || 0) > 0;
+                const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
+                const methodLabel = isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending';
+                const statusClass = isPaid ? 'status-confirmed' : 'status-unpaid';
+                const statusLabel = isPaid ? (isEft ? 'Settled (EFT)' : 'Settled (Success)') : 'NOT PAID';
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><code>PAY_${b.id}</code></td>
                     <td>${b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || '2026-08-23')}</td>
                     <td>${b.guestName} (${b.guestEmail || 'direct@cool-cat.co.za'})</td>
                     <td>${b.roomName || b.roomId}</td>
-                    <td><span style="font-weight: 600;">Card / Paystack</span></td>
-                    <td style="font-weight: 700; color: #166534;">R${Number(b.amountPaid).toLocaleString()}</td>
-                    <td><span class="status-pill status-confirmed">Settled (Success)</span></td>
+                    <td><span style="font-weight: 600;">${methodLabel}</span></td>
+                    <td style="font-weight: 700; color: ${isPaid ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
+                    <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -2253,7 +2465,7 @@
                     <td>${b.guestEmail || '-'}</td>
                     <td>${b.guestPhone || '-'}</td>
                     <td>${b.roomName || b.roomId}</td>
-                    <td style="font-weight: 700;">R${Number(b.totalAmount || 0).toLocaleString()}</td>
+                    <td style="font-weight: 700; color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                     <td>
                         <a href="https://wa.me/${(b.guestPhone||'').replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa">Chat WhatsApp</a>
                     </td>
@@ -2769,19 +2981,26 @@
                 document.getElementById('manRoomSelect').value = adminCalRoomId;
             }
 
+            // Do NOT preselect today and tomorrow by default to avoid confusion (dates start empty)
             if (initialCheckIn) {
                 document.getElementById('manCheckIn').value = initialCheckIn;
             } else {
-                document.getElementById('manCheckIn').value = formatDateStr(new Date());
+                document.getElementById('manCheckIn').value = '';
             }
 
             if (initialCheckOut) {
                 document.getElementById('manCheckOut').value = initialCheckOut;
             } else {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                document.getElementById('manCheckOut').value = formatDateStr(tomorrow);
+                document.getElementById('manCheckOut').value = '';
             }
+
+            // Reset guest form fields
+            const nameEl = document.getElementById('manGuestName');
+            if (nameEl) nameEl.value = '';
+            const phoneEl = document.getElementById('manGuestPhone');
+            if (phoneEl) phoneEl.value = '';
+            const totalEl = document.getElementById('manTotalAmount');
+            if (totalEl) totalEl.value = '0';
 
             modalPendingCheckIn = null;
             const cIn = document.getElementById('manCheckIn').value;
@@ -2885,7 +3104,7 @@
                     }
                 }
 
-                // Selection highlights
+                // Selection highlights - only active when dates are explicitly selected
                 if (checkInVal && dateStr === checkInVal) {
                     dayCell.classList.add('sel-start');
                 } else if (checkOutVal && dateStr === checkOutVal) {
@@ -2909,16 +3128,12 @@
             if (!modalPendingCheckIn) {
                 modalPendingCheckIn = clickedDate;
                 document.getElementById('manCheckIn').value = dateStr;
-                const nextDay = new Date(clickedDate);
-                nextDay.setDate(nextDay.getDate() + 1);
-                document.getElementById('manCheckOut').value = formatDateStr(nextDay);
+                document.getElementById('manCheckOut').value = '';
             } else {
                 if (clickedDate <= modalPendingCheckIn) {
                     modalPendingCheckIn = clickedDate;
                     document.getElementById('manCheckIn').value = dateStr;
-                    const nextDay = new Date(clickedDate);
-                    nextDay.setDate(nextDay.getDate() + 1);
-                    document.getElementById('manCheckOut').value = formatDateStr(nextDay);
+                    document.getElementById('manCheckOut').value = '';
                 } else {
                     document.getElementById('manCheckOut').value = dateStr;
                     modalPendingCheckIn = null;
@@ -2940,6 +3155,12 @@
 
             if (!checkInStr || !checkOutStr) {
                 if (statusBox) statusBox.innerHTML = '';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.5';
+                    submitBtn.title = "Please select check-in and check-out dates";
+                }
+                if (priceHelper) priceHelper.style.display = 'none';
                 return;
             }
 
@@ -3051,6 +3272,11 @@
             const phone = document.getElementById('manGuestPhone').value;
             const total = Number(document.getElementById('manTotalAmount').value) || 0;
 
+            if (!checkIn || !checkOut) {
+                alert("⚠️ Please select Check-In and Check-Out dates.");
+                return;
+            }
+
             if (new Date(checkOut) <= new Date(checkIn)) {
                 alert("⚠️ Check-Out date must be after Check-In date.");
                 return;
@@ -3063,20 +3289,27 @@
                 return;
             }
 
+            const bookingId = 'MAN-' + Math.floor(Math.random() * 89999 + 10000);
+            const nightsCount = Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
+
             const newB = {
-                id: 'MAN-' + Math.floor(Math.random() * 89999 + 10000),
-                guestName: guestName,
+                id: bookingId,
+                parentBookingId: null,
+                isParentBooking: true,
+                isManual: true,
+                guestName: guestName || (total > 0 ? 'Direct Guest' : 'Room Block / Maintenance'),
                 guestEmail: 'direct@cool-cat.co.za',
                 guestPhone: phone || '+27637124491',
                 roomId: room,
                 roomName: ADMIN_ROOM_NAMES[room] || room,
                 checkIn: checkIn,
                 checkOut: checkOut,
-                nights: Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))),
+                nights: nightsCount,
                 totalAmount: total,
-                amountPaid: total,
-                balanceDue: 0,
-                status: total > 0 ? 'confirmed' : 'blocked',
+                amountPaid: 0, // Client has not paid yet!
+                balanceDue: total, // Entire amount is due
+                paymentMethod: 'pending',
+                status: 'not_paid', // NOT PAID!
                 createdAt: new Date().toISOString()
             };
 
@@ -3108,30 +3341,381 @@
             renderGuestsTable();
             renderAdminCalendar();
             closeManualBookingModal();
-            alert("✅ Manual date block / booking saved to Cloudflare calendar successfully!");
+            alert("✅ Manual room block / booking saved to Cloudflare calendar as NOT PAID successfully!");
+        }
+
+        // ==========================================
+        // RECORD / UPDATE PAYMENT MODAL HANDLERS
+        // ==========================================
+        let currentPayBooking = null;
+
+        function openPaymentModal(bookingId) {
+            const b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId || bk.parentBookingId === bookingId);
+            if (!b) return;
+            currentPayBooking = b;
+
+            document.getElementById('payBookingId').value = b.id;
+            document.getElementById('payModalSubtitle').textContent = `Update payment status for #${b.id}`;
+            document.getElementById('payModalGuestName').textContent = b.guestName || 'Guest';
+            document.getElementById('payModalRoomStay').textContent = `${b.roomName || b.roomId} (${b.checkIn} ➔ ${b.checkOut})`;
+            
+            const total = Number(b.totalAmount || 0);
+            const paid = Number(b.amountPaid || 0);
+            const balance = Number(b.balanceDue !== undefined ? b.balanceDue : (total - paid));
+
+            document.getElementById('payModalTotalAmount').textContent = `R${total.toLocaleString()}`;
+            document.getElementById('payModalPresetDeposit').textContent = `R${(Math.round(total * 0.5)).toLocaleString()}`;
+            document.getElementById('payModalPresetFull').textContent = `R${total.toLocaleString()}`;
+
+            const curStatusEl = document.getElementById('payModalCurrentStatus');
+            if (curStatusEl) {
+                if (b.status === 'fully_paid' || b.status === 'confirmed' || (paid > 0 && balance === 0)) {
+                    curStatusEl.className = 'status-pill status-confirmed';
+                    curStatusEl.textContent = '100% PAID';
+                } else if (b.status === 'deposit_paid' || (paid > 0 && balance > 0)) {
+                    curStatusEl.className = 'status-pill status-deposit';
+                    curStatusEl.textContent = 'DEPOSIT PAID';
+                } else {
+                    curStatusEl.className = 'status-pill status-unpaid';
+                    curStatusEl.textContent = 'NOT PAID';
+                }
+            }
+
+            document.getElementById('payModalAmountPaid').value = paid;
+            document.getElementById('payModalBalanceDue').value = balance;
+            document.getElementById('payModalMethod').value = b.paymentMethod || (b.paystackRef ? 'card' : 'eft');
+
+            const statusSel = document.getElementById('payModalStatusSelect');
+            if (statusSel) {
+                if (paid >= total && total > 0) statusSel.value = 'fully_paid';
+                else if (paid > 0) statusSel.value = 'deposit_paid';
+                else statusSel.value = 'not_paid';
+            }
+
+            const modal = document.getElementById('recordPaymentModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById('recordPaymentModal');
+            if (modal) modal.style.display = 'none';
+            currentPayBooking = null;
+        }
+
+        function setPayModalPreset(factor) {
+            if (!currentPayBooking) return;
+            const total = Number(currentPayBooking.totalAmount || 0);
+            const amt = Math.round(total * factor * 100) / 100;
+            document.getElementById('payModalAmountPaid').value = amt;
+            updatePayModalBalance();
+        }
+
+        function updatePayModalBalance() {
+            if (!currentPayBooking) return;
+            const total = Number(currentPayBooking.totalAmount || 0);
+            const paid = Number(document.getElementById('payModalAmountPaid').value) || 0;
+            const balance = Math.max(0, total - paid);
+            document.getElementById('payModalBalanceDue').value = balance;
+
+            const statusSel = document.getElementById('payModalStatusSelect');
+            if (statusSel) {
+                if (paid >= total && total > 0) {
+                    statusSel.value = 'fully_paid';
+                } else if (paid > 0) {
+                    statusSel.value = 'deposit_paid';
+                } else {
+                    statusSel.value = 'not_paid';
+                }
+            }
+        }
+
+        async function handleSavePayment(e) {
+            e.preventDefault();
+            if (!currentPayBooking) return;
+
+            const bookingId = document.getElementById('payBookingId').value;
+            const total = Number(currentPayBooking.totalAmount || 0);
+            const amountPaid = Number(document.getElementById('payModalAmountPaid').value) || 0;
+            const balanceDue = Math.max(0, total - amountPaid);
+            const status = document.getElementById('payModalStatusSelect').value;
+            const paymentMethod = document.getElementById('payModalMethod').value;
+
+            const payload = {
+                id: bookingId,
+                amountPaid: amountPaid,
+                balanceDue: balanceDue,
+                status: status,
+                paymentMethod: paymentMethod,
+                isPaidEft: (paymentMethod === 'eft' && amountPaid > 0)
+            };
+
+            try {
+                const res = await fetch('/api/bookings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
+                        ADMIN_BOOKINGS = data.bookings;
+                    } else {
+                        updateLocalBookingPayment(bookingId, payload);
+                    }
+                } else {
+                    updateLocalBookingPayment(bookingId, payload);
+                }
+            } catch (err) {
+                console.error("Save payment error:", err);
+                updateLocalBookingPayment(bookingId, payload);
+            }
+
+            calculateKpis();
+            renderBookingsTables();
+            renderOperationsToday();
+            renderFinancesTable();
+            renderGuestsTable();
+            renderAdminCalendar();
+            closePaymentModal();
+            alert(`✅ Payment status for #${bookingId} updated successfully to ${status === 'fully_paid' ? '100% PAID' : (status === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
+        }
+
+        function updateLocalBookingPayment(id, payload) {
+            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            ADMIN_BOOKINGS = ADMIN_BOOKINGS.map(b => {
+                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                if (b.id === id || b.parentBookingId === id || bBase === baseId) {
+                    return {
+                        ...b,
+                        amountPaid: b.isCalendarBlock ? 0 : payload.amountPaid,
+                        balanceDue: b.isCalendarBlock ? 0 : payload.balanceDue,
+                        status: payload.status,
+                        paymentMethod: payload.paymentMethod,
+                        isPaidEft: payload.isPaidEft
+                    };
+                }
+                return b;
+            });
         }
 
         async function cancelBooking(id) {
-            if (confirm(`Are you sure you want to cancel booking #${id}? This will free the dates on the live booking calendar.`)) {
-                try {
-                    await fetch(`/api/bookings?id=${id}`, {
-                        method: 'DELETE'
-                    });
-                } catch (err) {
-                    console.error("Delete booking error:", err);
-                }
-                const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
-                ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
-                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
-                    return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
-                });
-                calculateKpis();
-                renderBookingsTables();
-                renderOperationsToday();
-                renderFinancesTable();
-                renderGuestsTable();
-                renderAdminCalendar();
+            if (!confirm(`Are you sure you want to cancel booking #${id}?\n\nThis will instantly free the dates on the availability calendar so new guests can book, while keeping the cancelled reservation on record with a 'CANCELLED' status.`)) {
+                return;
             }
+
+            try {
+                const res = await fetch(`/api/bookings?id=${encodeURIComponent(id)}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
+                        ADMIN_BOOKINGS = data.bookings;
+                    } else {
+                        updateLocalBookingStatus(id, 'cancelled');
+                    }
+                } else {
+                    updateLocalBookingStatus(id, 'cancelled');
+                }
+            } catch (err) {
+                console.error("Soft cancel error:", err);
+                updateLocalBookingStatus(id, 'cancelled');
+            }
+
+            calculateKpis();
+            renderBookingsTables();
+            renderOperationsToday();
+            renderFinancesTable();
+            renderGuestsTable();
+            renderAdminCalendar();
+            alert(`✅ Booking #${id} has been soft-cancelled.\nThe room dates are now OPEN and available on the calendar!`);
+        }
+
+        async function restoreBooking(id) {
+            const b = ADMIN_BOOKINGS.find(bk => bk.id === id || bk.parentBookingId === id);
+            if (!b) return;
+
+            // Check if dates conflict with an active booking before restoring
+            const conflictResult = checkBookingConflicts(b.roomId, b.checkIn, b.checkOut, b.id);
+            if (conflictResult.hasConflict) {
+                const c = conflictResult.conflicts[0];
+                alert(`⚠️ Cannot restore booking #${id}: The dates (${b.checkIn} to ${b.checkOut}) are already booked by #${c.booking.id} (${c.booking.guestName}). Please free the dates first.`);
+                return;
+            }
+
+            if (!confirm(`Restore booking #${id} (${b.guestName} - ${b.roomName || b.roomId}) back to active status?\n\nThis will lock these dates on the live calendar again.`)) {
+                return;
+            }
+
+            const total = Number(b.totalAmount || 0);
+            const paid = Number(b.amountPaid || 0);
+            let restoredStatus = 'not_paid';
+            if (paid >= total && total > 0) restoredStatus = 'fully_paid';
+            else if (paid > 0) restoredStatus = 'deposit_paid';
+
+            const payload = {
+                id: id,
+                status: restoredStatus,
+                balanceDue: Math.max(0, total - paid)
+            };
+
+            try {
+                const res = await fetch('/api/bookings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
+                        ADMIN_BOOKINGS = data.bookings;
+                    } else {
+                        updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
+                    }
+                } else {
+                    updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
+                }
+            } catch (err) {
+                console.error("Restore booking error:", err);
+                updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
+            }
+
+            calculateKpis();
+            renderBookingsTables();
+            renderOperationsToday();
+            renderFinancesTable();
+            renderGuestsTable();
+            renderAdminCalendar();
+            alert(`✅ Booking #${id} restored successfully to ${restoredStatus === 'fully_paid' ? '100% PAID' : (restoredStatus === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
+        }
+
+        async function wipeBookingPermanently(id) {
+            if (!confirm(`⚠️ PERMANENT WIPE:\n\nAre you sure you want to permanently delete booking #${id} from the database?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await fetch(`/api/bookings?id=${encodeURIComponent(id)}&hard=true`, {
+                    method: 'DELETE'
+                });
+            } catch (err) {
+                console.error("Hard delete error:", err);
+            }
+
+            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
+                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
+            });
+
+            calculateKpis();
+            renderBookingsTables();
+            renderOperationsToday();
+            renderFinancesTable();
+            renderGuestsTable();
+            renderAdminCalendar();
+            alert(`🗑️ Booking #${id} permanently wiped from the database.`);
+        }
+
+        function updateLocalBookingStatus(id, status, balanceDue = 0) {
+            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            ADMIN_BOOKINGS = ADMIN_BOOKINGS.map(b => {
+                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                if (b.id === id || b.parentBookingId === id || bBase === baseId) {
+                    return {
+                        ...b,
+                        status: status,
+                        balanceDue: b.isCalendarBlock ? 0 : balanceDue
+                    };
+                }
+                return b;
+            });
+        }
+
+        // ==========================================
+        // SHARE QUOTE & HYBRID PAYMENT GENERATOR
+        // ==========================================
+        function shareBookingQuote(bookingId) {
+            const b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId || bk.parentBookingId === bookingId);
+            if (!b) return;
+
+            const total = Number(b.totalAmount || 0);
+            const paid = Number(b.amountPaid || 0);
+            const deposit = Math.round(total * 0.5);
+            const guestName = b.guestName || 'Valued Guest';
+            const roomName = b.roomName || ADMIN_ROOM_NAMES[b.roomId] || b.roomId;
+            const guestPhone = b.guestPhone || '';
+
+            document.getElementById('shareBookingId').value = b.id;
+            document.getElementById('shareGuestPhone').value = guestPhone;
+            document.getElementById('shareGuestName').textContent = guestName;
+            document.getElementById('shareRoomStay').textContent = `${roomName} (${b.checkIn} ➔ ${b.checkOut} • ${b.nights || 1}N)`;
+            document.getElementById('shareAmountSummary').textContent = `Total: R${total.toLocaleString()} (50% Deposit: R${deposit.toLocaleString()})`;
+
+            // Generate direct booking & quick pay link
+            const origin = window.location.origin || 'https://cool-cat.co.za';
+            const payUrl = `${origin}/book.html?payRef=${encodeURIComponent(b.id)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
+
+            const msgText = 
+`*Cool-Cat Guesthouse - Accommodation Quote & Payment Details*
+
+Dear ${guestName},
+
+Thank you for your enquiry to stay at Cool-Cat in Strand, Western Cape! Here are your reservation details:
+
+🏨 *Room:* ${roomName}
+📅 *Check-In:* ${b.checkIn} (from 14:00)
+📅 *Check-Out:* ${b.checkOut} (by 10:00)
+🌙 *Duration:* ${b.nights || 1} Night(s)
+💰 *Total Amount:* R${total.toLocaleString()}
+🔒 *50% Deposit to Secure:* R${deposit.toLocaleString()}
+📌 *Booking Reference:* #${b.id}
+
+----------------------------------------
+💳 *OPTION 1: Instant Card / Apple Pay / EFT (Online Paystack)*
+Click here to securely pay your 50% deposit (R${deposit.toLocaleString()}) or full amount:
+${payUrl}
+
+----------------------------------------
+🏛️ *OPTION 2: Direct Bank EFT Transfer*
+*Bank:* Capitec Bank
+*Account Name:* P H Botes
+*Account Number:* 1485601132
+*Branch Code:* 470010
+*Reference:* ${b.id} ${guestName}
+*(Please WhatsApp Proof of Payment to 063 712 4491 once done)*
+
+----------------------------------------
+⚡ *Solar Backup Power:* 24/7 uninterrupted power & fast Wi-Fi (No load shedding!)
+📍 *Location:* Strand, Western Cape (150m from swimming beach)
+📞 *Host Contact:* Michele Rossouw (063 712 4491)
+
+We look forward to hosting you at Cool-Cat!`;
+
+            document.getElementById('shareQuoteMessageText').value = msgText;
+            document.getElementById('shareQuoteModal').style.display = 'flex';
+        }
+
+        function closeShareQuoteModal() {
+            document.getElementById('shareQuoteModal').style.display = 'none';
+        }
+
+        function copyQuoteToClipboard() {
+            const text = document.getElementById('shareQuoteMessageText').value;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("📋 Quote message copied to clipboard!\nYou can paste it directly into WhatsApp, Email, or SMS.");
+            }).catch(() => {
+                alert("📋 Quote copied!");
+            });
+        }
+
+        function sendQuoteWhatsApp() {
+            const phone = (document.getElementById('shareGuestPhone').value || '').replace(/[^0-9]/g, '');
+            const text = document.getElementById('shareQuoteMessageText').value;
+            if (!text) return;
+            const url = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
         }
 
         // 5. 1-Click WhatsApp Cleaner Schedule
@@ -3204,16 +3788,18 @@
             const rows = [
                 ["Transaction ID", "Date", "Guest Name", "Guest Email", "Room", "Gateway Method", "Amount ZAR", "Gateway Status"]
             ];
-            displayList.filter(b => Number(b.amountPaid || 0) > 0).forEach(b => {
+            displayList.forEach(b => {
+                const isPaid = Number(b.amountPaid || 0) > 0;
+                const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
                 rows.push([
                     'PAY_' + b.id,
                     b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || ''),
                     b.guestName,
                     b.guestEmail || 'direct@cool-cat.co.za',
                     b.roomName || b.roomId,
-                    'Card / Paystack',
-                    Number(b.amountPaid),
-                    'SETTLED (SUCCESS)'
+                    isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending',
+                    Number(b.amountPaid || 0),
+                    isPaid ? (isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)') : 'NOT PAID'
                 ]);
             });
             downloadXLSX(rows, "cool-cat-financials-tax.xlsx", "Financials");
@@ -3245,7 +3831,7 @@
                         b.guestEmail || '',
                         b.guestPhone || '',
                         b.roomName || b.roomId,
-                        Number(b.totalAmount || 0)
+                        Number(b.amountPaid || 0)
                     ]);
                 }
             });

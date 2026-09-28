@@ -2048,6 +2048,77 @@
         </div>
     </div>
 
+    <!-- Direct Quote / Manual Booking Quick-Pay Modal -->
+    <div class="modal-rules-overlay" id="quotePayModal" style="display: none;">
+        <div class="modal-rules-card" style="max-width: 540px; border-radius: 16px; border: 1px solid #C7D2FE; box-shadow: 0 20px 45px rgba(15, 82, 186, 0.18);">
+            <button class="modal-rules-close" onclick="closeQuotePayModal()">&times;</button>
+            <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">💳</div>
+            <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.35rem;">Secure Reservation Payment</h2>
+            <p style="font-size: 0.85rem; color: #64748B; text-align: center; margin-bottom: 1.2rem;">
+                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#MAN-XXXXX</strong>
+            </p>
+
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+                    <span style="color:#64748B;">Guest Name:</span>
+                    <strong id="qpGuestName">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+                    <span style="color:#64748B;">Room / Unit:</span>
+                    <span id="qpRoomName" style="font-weight:600;">-</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+                    <span style="color:#64748B;">Stay Dates:</span>
+                    <span id="qpDates" style="font-weight:600;">-</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed #CBD5E1;">
+                    <span style="color:#475569; font-weight:700;">Total Quote:</span>
+                    <strong id="qpTotalAmount" style="color:var(--sapphire-blue-dark); font-size:1.05rem;">R0</strong>
+                </div>
+            </div>
+
+            <!-- Payment Amount Selection -->
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;">Select Amount to Pay Today:</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:1.2rem;">
+                <button type="button" class="btn-sm" id="qpBtnDeposit" style="background:#EEF2FF; color:var(--sapphire-blue); border:2px solid var(--sapphire-blue); padding:0.7rem 0.5rem; border-radius:8px; font-weight:700; cursor:pointer;" onclick="selectQuotePayOption('deposit')">
+                    50% Deposit<br><span id="qpDepositAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
+                </button>
+                <button type="button" class="btn-sm" id="qpBtnFull" style="background:#F1F5F9; color:#475569; border:2px solid transparent; padding:0.7rem 0.5rem; border-radius:8px; font-weight:700; cursor:pointer;" onclick="selectQuotePayOption('full')">
+                    100% Full Amount<br><span id="qpFullAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
+                </button>
+            </div>
+
+            <!-- Guest Contact for Receipt -->
+            <div style="margin-bottom: 0.8rem;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Your Email Address (for confirmation receipt):</label>
+                <input type="email" id="qpEmail" required placeholder="your.name@example.com" style="width: 100%; padding: 0.55rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+            <div style="margin-bottom: 1.2rem;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">Your Cell / WhatsApp Number:</label>
+                <input type="tel" id="qpPhone" required placeholder="e.g. 082 123 4567" style="width: 100%; padding: 0.55rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+
+            <button type="button" id="qpPaystackBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 700; margin-bottom: 1rem;" onclick="processQuotePaystackPayment()">
+                🔒 Pay Now with Paystack (Card / Apple Pay / EFT)
+            </button>
+
+            <!-- Toggle EFT Details -->
+            <div style="border-top: 1px solid #E2E8F0; padding-top: 0.8rem; text-align: center;">
+                <button type="button" style="background: none; border: none; color: var(--sapphire-blue); font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: underline;" onclick="toggleQuoteEftDetails()">
+                    🏛️ Prefer Direct Bank EFT Transfer? Click here for Banking Details
+                </button>
+                <div id="qpEftBox" style="display: none; text-align: left; margin-top: 0.8rem; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0.8rem; font-size: 0.82rem;">
+                    <strong>Capitec Bank</strong><br>
+                    Account Name: <strong>P H Botes</strong><br>
+                    Account Number: <strong>1485601132</strong><br>
+                    Branch Code: <strong>470010</strong><br>
+                    Reference: <strong id="qpEftRefText">MAN-XXXXX</strong><br>
+                    <a href="#" id="qpEftWaBtn" target="_blank" class="btn-sm btn-wa" style="display:inline-block; margin-top:0.6rem; text-decoration:none;">📲 Send Proof of Payment on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
         <span id="toastMessage">Minimum 3 nights required for Festive High Peak.</span>
@@ -2324,6 +2395,7 @@
 
         function isRoomBookedOnDate(roomId, dateStr) {
             return MOCK_BOOKINGS.some(b => {
+                if (b.status === 'cancelled') return false;
                 if (b.roomId !== roomId && b.roomId !== 'all') return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -3836,6 +3908,9 @@
                 applyReferralCodeDirect(ref.toUpperCase());
             }
 
+            // Auto-detect Direct Quote / Manual Payment Link (?payRef=MAN-...)
+            checkQuotePaymentUrl();
+
             // Wire explicit click listener to Continue button
             const btnContinueEl = document.getElementById('btnContinue');
             if (btnContinueEl) {
@@ -3845,6 +3920,192 @@
                 });
             }
         });
+
+        // ==========================================
+        // DIRECT QUOTE / QUICK PAY LOGIC
+        // ==========================================
+        let activeQuotePay = {
+            ref: '',
+            room: '',
+            roomName: '',
+            checkIn: '',
+            checkOut: '',
+            name: '',
+            totalAmount: 0,
+            depositAmount: 0,
+            chosenAmount: 0,
+            chosenType: 'deposit'
+        };
+
+        function checkQuotePaymentUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const payRef = urlParams.get('payRef');
+            if (!payRef) return;
+
+            const total = Number(urlParams.get('amt') || 0);
+            const dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
+            const name = urlParams.get('name') || 'Valued Guest';
+            const room = urlParams.get('room') || 'all';
+            const cIn = urlParams.get('in') || '';
+            const cOut = urlParams.get('out') || '';
+
+            const roomNames = {
+                'all': 'All 4 Rooms (Entire Property)',
+                'king-arthur': 'King Arthur Room',
+                'santori': 'Santori Room',
+                'mykonos': 'Mykonos Room',
+                'deluxe-suite': 'Cool-Cat Deluxe Suite'
+            };
+
+            activeQuotePay = {
+                ref: payRef,
+                room: room,
+                roomName: roomNames[room] || room,
+                checkIn: cIn,
+                checkOut: cOut,
+                name: name,
+                totalAmount: total,
+                depositAmount: dep,
+                chosenAmount: dep,
+                chosenType: 'deposit'
+            };
+
+            const refEl = document.getElementById('qpBookingRef');
+            if (refEl) refEl.textContent = `#${payRef}`;
+            const nameEl = document.getElementById('qpGuestName');
+            if (nameEl) nameEl.textContent = name;
+            const roomEl = document.getElementById('qpRoomName');
+            if (roomEl) roomEl.textContent = activeQuotePay.roomName;
+            const datesEl = document.getElementById('qpDates');
+            if (datesEl) datesEl.textContent = (cIn && cOut) ? `${cIn} ➔ ${cOut}` : 'Direct Booking';
+            const totEl = document.getElementById('qpTotalAmount');
+            if (totEl) totEl.textContent = `R${total.toLocaleString()}`;
+            const depEl = document.getElementById('qpDepositAmount');
+            if (depEl) depEl.textContent = `R${dep.toLocaleString()}`;
+            const fullEl = document.getElementById('qpFullAmount');
+            if (fullEl) fullEl.textContent = `R${total.toLocaleString()}`;
+            const eftRef = document.getElementById('qpEftRefText');
+            if (eftRef) eftRef.textContent = `${payRef} ${name}`;
+
+            const waMsg = `Hi Michele, I have made an EFT payment for Cool-Cat booking ref ${payRef} (${name}). Here is my proof of payment:`;
+            const waBtn = document.getElementById('qpEftWaBtn');
+            if (waBtn) waBtn.href = `https://wa.me/27637124491?text=${encodeURIComponent(waMsg)}`;
+
+            selectQuotePayOption('deposit');
+
+            const modal = document.getElementById('quotePayModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeQuotePayModal() {
+            const modal = document.getElementById('quotePayModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function selectQuotePayOption(type) {
+            activeQuotePay.chosenType = type;
+            const btnDep = document.getElementById('qpBtnDeposit');
+            const btnFull = document.getElementById('qpBtnFull');
+            const payBtn = document.getElementById('qpPaystackBtn');
+
+            if (type === 'deposit') {
+                activeQuotePay.chosenAmount = activeQuotePay.depositAmount;
+                if (btnDep) {
+                    btnDep.style.background = '#EEF2FF';
+                    btnDep.style.color = 'var(--sapphire-blue)';
+                    btnDep.style.borderColor = 'var(--sapphire-blue)';
+                }
+                if (btnFull) {
+                    btnFull.style.background = '#F1F5F9';
+                    btnFull.style.color = '#475569';
+                    btnFull.style.borderColor = 'transparent';
+                }
+                if (payBtn) payBtn.innerHTML = `🔒 Pay 50% Deposit (R${activeQuotePay.depositAmount.toLocaleString()}) via Paystack`;
+            } else {
+                activeQuotePay.chosenAmount = activeQuotePay.totalAmount;
+                if (btnFull) {
+                    btnFull.style.background = '#EEF2FF';
+                    btnFull.style.color = 'var(--sapphire-blue)';
+                    btnFull.style.borderColor = 'var(--sapphire-blue)';
+                }
+                if (btnDep) {
+                    btnDep.style.background = '#F1F5F9';
+                    btnDep.style.color = '#475569';
+                    btnDep.style.borderColor = 'transparent';
+                }
+                if (payBtn) payBtn.innerHTML = `🔒 Pay 100% Full (R${activeQuotePay.totalAmount.toLocaleString()}) via Paystack`;
+            }
+        }
+
+        function toggleQuoteEftDetails() {
+            const el = document.getElementById('qpEftBox');
+            if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+        }
+
+        function processQuotePaystackPayment() {
+            const email = (document.getElementById('qpEmail').value || '').trim();
+            const phone = (document.getElementById('qpPhone').value || '').trim();
+
+            if (!email || !email.includes('@')) {
+                alert("Please enter a valid email address for your payment receipt.");
+                return;
+            }
+
+            const amountInCents = activeQuotePay.chosenAmount * 100;
+            const paystackRef = 'PAY_' + activeQuotePay.ref + '_' + Math.floor(Math.random() * 899 + 100);
+
+            if (typeof PaystackPop !== 'undefined') {
+                const handler = PaystackPop.setup({
+                    key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                    email: email,
+                    amount: amountInCents,
+                    currency: 'ZAR',
+                    ref: paystackRef,
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Booking Ref", variable_name: "booking_ref", value: activeQuotePay.ref },
+                            { display_name: "Guest Name", variable_name: "guest_name", value: activeQuotePay.name },
+                            { display_name: "Phone Number", variable_name: "phone", value: phone },
+                            { display_name: "Payment Type", variable_name: "payment_type", value: activeQuotePay.chosenType }
+                        ]
+                    },
+                    callback: async function(response) {
+                        const total = activeQuotePay.totalAmount;
+                        const paid = activeQuotePay.chosenAmount;
+                        const bal = Math.max(0, total - paid);
+                        const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
+
+                        try {
+                            await fetch('/api/bookings', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    id: activeQuotePay.ref,
+                                    amountPaid: paid,
+                                    balanceDue: bal,
+                                    status: newStatus,
+                                    paymentMethod: 'card'
+                                })
+                            });
+                        } catch (err) {
+                            console.error("Payment sync error:", err);
+                        }
+
+                        closeQuotePayModal();
+                        alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
+                        window.location.href = '/book.html';
+                    },
+                    onClose: function() {
+                        showToast("Payment window closed.");
+                    }
+                });
+
+                handler.openIframe();
+            } else {
+                alert(`Paystack simulated success for R${activeQuotePay.chosenAmount.toLocaleString()}`);
+                closeQuotePayModal();
+            }
+        }
 
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');

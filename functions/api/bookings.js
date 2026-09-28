@@ -18,8 +18,29 @@ export async function onRequestGet(context) {
             }
         }
 
-        // Combine default with stored
-        const allBookings = [...defaultBookings, ...storedBookings];
+        // Combine default with stored and sanitize any legacy manual test records in KV
+        const allBookings = [...defaultBookings, ...storedBookings].map(b => {
+            const isManual = b.isManual || (b.id && b.id.startsWith('MAN-'));
+            const isExplicitlyPaid = b.isPaidEft === true || b.isRecordedPayment === true || (b.paystackRef && b.paystackRef.startsWith('PAY_'));
+            if (isManual && !isExplicitlyPaid) {
+                if (b.status === 'cancelled') {
+                    return {
+                        ...b,
+                        amountPaid: 0,
+                        balanceDue: 0,
+                        status: 'cancelled'
+                    };
+                }
+                return {
+                    ...b,
+                    amountPaid: 0,
+                    balanceDue: Number(b.totalAmount || 0),
+                    status: 'not_paid',
+                    paymentMethod: 'pending'
+                };
+            }
+            return b;
+        });
 
         return new Response(JSON.stringify({
             success: true,
@@ -50,7 +71,7 @@ export async function onRequestPost(context) {
 
     try {
         const payload = await request.json();
-        const { roomId, checkIn, checkOut, guestName, guestEmail, guestPhone, totalAmount, depositPaid, amountPaid, balanceDue, status, ref, id } = payload;
+        const { roomId, checkIn, checkOut, guestName, guestEmail, guestPhone, totalAmount, depositPaid, amountPaid, balanceDue, status, ref, id, paymentMethod } = payload;
 
         if (!roomId || !checkIn || !checkOut) {
             return new Response(JSON.stringify({ success: false, error: "Missing required booking fields (roomId, checkIn, checkOut)" }), {
@@ -67,12 +88,30 @@ export async function onRequestPost(context) {
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
-        const bookingRef = id || ref || ('CC-' + Math.floor(Math.random() * 899999 + 100000));
-        const finalStatus = status || (balanceDue > 0 ? 'deposit_paid' : 'confirmed');
+        const bookingRef = id || ref || ('MAN-' + Math.floor(Math.random() * 89999 + 10000));
+        const numTotal = Number(totalAmount || 0);
+        const numPaid = Number(amountPaid !== undefined ? amountPaid : (depositPaid !== undefined ? depositPaid : 0));
+        const numBalance = Number(balanceDue !== undefined ? balanceDue : (numTotal - numPaid));
+        
+        let finalStatus = status;
+        if (!finalStatus) {
+            if (numTotal > 0 && numPaid === 0) {
+                finalStatus = 'not_paid';
+            } else if (numBalance > 0 && numPaid > 0) {
+                finalStatus = 'deposit_paid';
+            } else if (numTotal > 0 && numBalance === 0 && numPaid > 0) {
+                finalStatus = 'fully_paid';
+            } else {
+                finalStatus = 'not_paid';
+            }
+        }
         const nightsCount = payload.nights || Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
 
         const newBooking = {
             id: bookingRef,
+            parentBookingId: null,
+            isParentBooking: true,
+            isManual: true,
             roomId,
             roomName: payload.roomName || roomNames[roomId] || roomId,
             checkIn,
@@ -81,9 +120,10 @@ export async function onRequestPost(context) {
             guestName: guestName || 'Direct / Owner Block',
             guestEmail: guestEmail || 'direct@cool-cat.co.za',
             guestPhone: guestPhone || '+27637124491',
-            totalAmount: Number(totalAmount || 0),
-            amountPaid: Number(amountPaid || depositPaid || totalAmount || 0),
-            balanceDue: Number(balanceDue !== undefined ? balanceDue : (Number(totalAmount || 0) - Number(depositPaid || amountPaid || 0))),
+            totalAmount: numTotal,
+            amountPaid: numPaid,
+            balanceDue: numBalance,
+            paymentMethod: paymentMethod || (numPaid > 0 ? 'Card / Paystack' : 'pending'),
             status: finalStatus,
             createdAt: new Date().toISOString()
         };
@@ -92,13 +132,15 @@ export async function onRequestPost(context) {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
             
-            // If booking all rooms, store 4 separate blocks so calendar locks all 4 rooms
+            // If booking all rooms, store parent booking + 4 separate blocks so calendar locks all 4 rooms
             if (roomId === 'all') {
+                existing.push(newBooking);
                 const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
                 individualRooms.forEach(r => {
                     existing.push({
                         id: `${bookingRef}_${r}`,
                         parentBookingId: bookingRef,
+                        isCalendarBlock: true,
                         roomId: r,
                         roomName: roomNames[r],
                         checkIn,
@@ -107,8 +149,8 @@ export async function onRequestPost(context) {
                         guestName: newBooking.guestName,
                         guestEmail: newBooking.guestEmail,
                         guestPhone: newBooking.guestPhone,
-                        totalAmount: newBooking.totalAmount / 4,
-                        amountPaid: newBooking.amountPaid / 4,
+                        totalAmount: 0,
+                        amountPaid: 0,
                         balanceDue: 0,
                         status: finalStatus,
                         createdAt: new Date().toISOString()
@@ -142,6 +184,7 @@ export async function onRequestDelete(context) {
     const { request, env } = context;
     const url = new URL(request.url);
     let id = url.searchParams.get('id');
+    const isHardDelete = (url.searchParams.get('hard') === 'true');
 
     if (!id) {
         try {
@@ -160,18 +203,35 @@ export async function onRequestDelete(context) {
     try {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            // Remove matching parent, children with parentBookingId, or prefixed room blocks
             const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
-            existing = existing.filter(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
-                return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
-            });
+
+            if (isHardDelete) {
+                // Permanently remove matching parent, children with parentBookingId, or prefixed room blocks
+                existing = existing.filter(b => {
+                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                    return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
+                });
+            } else {
+                // Soft Cancel: Mark status as cancelled to free calendar inventory while preserving audit history
+                existing = existing.map(b => {
+                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                    if (b.id === id || b.parentBookingId === id || bBase === baseId) {
+                        return {
+                            ...b,
+                            status: 'cancelled',
+                            cancelledAt: new Date().toISOString(),
+                            balanceDue: 0
+                        };
+                    }
+                    return b;
+                });
+            }
             await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
         }
 
         return new Response(JSON.stringify({
             success: true,
-            message: `Booking #${id} deleted successfully.`
+            message: isHardDelete ? `Booking #${id} permanently deleted.` : `Booking #${id} soft-cancelled. Room dates freed.`
         }), {
             headers: {
                 'Content-Type': 'application/json',
@@ -191,7 +251,7 @@ export async function onRequestPut(context) {
 
     try {
         const payload = await request.json();
-        const { id, status, amountPaid, balanceDue } = payload;
+        const { id, status, amountPaid, balanceDue, paymentMethod, isPaidEft } = payload;
 
         if (!id) {
             return new Response(JSON.stringify({ success: false, error: "Booking ID is required" }), {
@@ -204,14 +264,30 @@ export async function onRequestPut(context) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
             let updated = false;
 
+            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+
             existing = existing.map(b => {
-                if (b.id === id || b.parentBookingId === id) {
+                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     updated = true;
+                    if (b.isCalendarBlock) {
+                        return {
+                            ...b,
+                            status: status || b.status
+                        };
+                    }
+                    const newAmountPaid = amountPaid !== undefined ? Number(amountPaid) : b.amountPaid;
+                    // Mark isRecordedPayment=true when a real payment amount is recorded so the GET sanitizer
+                    // knows NOT to zero out this booking's payment data on next load
+                    const wasPaymentRecorded = newAmountPaid > 0;
                     return {
                         ...b,
                         status: status || b.status,
-                        amountPaid: amountPaid !== undefined ? amountPaid : b.amountPaid,
-                        balanceDue: balanceDue !== undefined ? balanceDue : b.balanceDue
+                        amountPaid: newAmountPaid,
+                        balanceDue: balanceDue !== undefined ? Number(balanceDue) : b.balanceDue,
+                        paymentMethod: paymentMethod !== undefined ? paymentMethod : b.paymentMethod,
+                        isPaidEft: isPaidEft !== undefined ? isPaidEft : b.isPaidEft,
+                        isRecordedPayment: wasPaymentRecorded ? true : (b.isRecordedPayment || false)
                     };
                 }
                 return b;
