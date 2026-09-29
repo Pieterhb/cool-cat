@@ -1840,13 +1840,13 @@
                             <div class="adm-form-group">
                                 <label>Total Price (ZAR)</label>
                                 <input type="number" id="manTotalAmount" class="adm-input" placeholder="0" value="0">
-                                <span id="suggestedPriceHelper" style="font-size: 0.74rem; color: #0284C7; cursor: pointer; margin-top: 0.2rem; display: none;" onclick="applySuggestedPrice()">
-                                    💡 Apply suggested: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 600;">(50% amount)</span>
-                                </span>
                             </div>
                             <div class="adm-form-group">
                                 <label>Guest Phone (Optional)</label>
                                 <input type="tel" id="manGuestPhone" class="adm-input" placeholder="082 123 4567">
+                            </div>
+                            <div id="suggestedPriceHelper" style="grid-column: 1 / -1; font-size: 0.78rem; color: #0A3A85; font-weight: 600; cursor: pointer; margin-top: -0.35rem; white-space: nowrap; display: none;" onclick="applySuggestedPrice()">
+                                💡 Apply suggested: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 700; color: #0A3A85;">(50% amount)</span>
                             </div>
                         </div>
 
@@ -3217,7 +3217,7 @@
             }
 
             if (priceVal) priceVal.textContent = calculatedTotal.toLocaleString();
-            if (priceHelper) priceHelper.style.display = 'inline-block';
+            if (priceHelper) priceHelper.style.display = 'block';
 
             // Check conflicts
             const conflictResult = checkBookingConflicts(roomId, checkInStr, checkOutStr);
