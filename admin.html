@@ -1838,15 +1838,15 @@
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem;">
                             <div class="adm-form-group">
-                                <label>Guest Phone (Optional)</label>
-                                <input type="tel" id="manGuestPhone" class="adm-input" placeholder="082 123 4567">
-                            </div>
-                            <div class="adm-form-group">
                                 <label>Total Price (ZAR)</label>
                                 <input type="number" id="manTotalAmount" class="adm-input" placeholder="0" value="0">
                                 <span id="suggestedPriceHelper" style="font-size: 0.74rem; color: #0284C7; cursor: pointer; margin-top: 0.2rem; display: none;" onclick="applySuggestedPrice()">
-                                    💡 Apply suggested: R<span id="suggestedPriceVal">0</span>
+                                    💡 Apply suggested: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 600;">(50% amount)</span>
                                 </span>
+                            </div>
+                            <div class="adm-form-group">
+                                <label>Guest Phone (Optional)</label>
+                                <input type="tel" id="manGuestPhone" class="adm-input" placeholder="082 123 4567">
                             </div>
                         </div>
 
@@ -2823,7 +2823,14 @@
                         dayCell.classList.add('blocked-day');
                     }
                     if (avail.bookedCount > 0) {
-                        const names = avail.bookedRooms.map(br => br.booking.guestName || 'Guest').slice(0, 2).join(', ');
+                        const uniqueNames = [];
+                        avail.bookedRooms.forEach(br => {
+                            const name = (br.booking.guestName || 'Guest').trim();
+                            if (name && !uniqueNames.includes(name)) {
+                                uniqueNames.push(name);
+                            }
+                        });
+                        const names = uniqueNames.slice(0, 2).join(', ');
                         midHtml = `<div class="adm-cal-day-mid">👤 ${names}</div>`;
                     }
                 } else {
@@ -3194,6 +3201,20 @@
                 curr.setDate(curr.getDate() + 1);
             }
             currentSuggestedPrice = calculatedTotal;
+
+            // Determine if 50% deposit or 100% full payment applies based on app payment rules:
+            // Standard rule: > 7 days in advance AND total > R1,000 -> 50% deposit, otherwise 100% full payment
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const cInDate = new Date(checkIn);
+            cInDate.setHours(0, 0, 0, 0);
+            const daysUntilCheckIn = Math.floor((cInDate - today) / (1000 * 60 * 60 * 24));
+            const is50PercentDeposit = (calculatedTotal > 1000 && daysUntilCheckIn > 7);
+
+            const ruleEl = document.getElementById('suggestedDepositRule');
+            if (ruleEl) {
+                ruleEl.textContent = is50PercentDeposit ? '(50% amount)' : '(100% amount)';
+            }
 
             if (priceVal) priceVal.textContent = calculatedTotal.toLocaleString();
             if (priceHelper) priceHelper.style.display = 'inline-block';
