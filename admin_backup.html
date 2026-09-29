@@ -310,7 +310,7 @@
         .adm-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.88rem;
+            font-size: 0.83rem;
             text-align: left;
         }
 
@@ -318,15 +318,24 @@
             background: #F8FAFC;
             color: #475569;
             font-weight: 700;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.45rem;
             border-bottom: 2px solid #E2E8F0;
             white-space: nowrap;
+            font-size: 0.81rem;
         }
 
         .adm-table td {
-            padding: 0.85rem 1rem;
+            padding: 0.65rem 0.45rem;
             border-bottom: 1px solid #F1F5F9;
             vertical-align: middle;
+        }
+
+        .adm-table th:first-child, .adm-table td:first-child {
+            padding-left: 0.75rem;
+        }
+
+        .adm-table th:last-child, .adm-table td:last-child {
+            padding-right: 0.75rem;
         }
 
         .adm-table tr:hover {
