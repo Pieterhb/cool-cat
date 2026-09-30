@@ -14,8 +14,10 @@ const CORS_HEADERS = {
 };
 
 // Default config — used when nothing has been saved yet
+// Default config — used when nothing has been saved yet
 const DEFAULT_CONFIG = {
     nextYearMarkupPct: 10,
+    // Mid Season (Standard Base Rates)
     king_wd:     950,
     king_we:    1200,
     santori_wd:  850,
@@ -23,7 +25,37 @@ const DEFAULT_CONFIG = {
     mykonos_wd:  850,
     mykonos_we: 1100,
     deluxe_wd:  1350,
-    deluxe_we:  1750
+    deluxe_we:  1750,
+
+    // Low Season (May-Aug)
+    low_king_wd:     808,
+    low_king_we:    1020,
+    low_santori_wd:  723,
+    low_santori_we:  935,
+    low_mykonos_wd:  723,
+    low_mykonos_we:  935,
+    low_deluxe_wd:  1148,
+    low_deluxe_we:  1488,
+
+    // Peak Season (Dec 1-15 & Easter)
+    peak_king_wd:    1283,
+    peak_king_we:    1620,
+    peak_santori_wd: 1148,
+    peak_santori_we: 1485,
+    peak_mykonos_wd: 1148,
+    peak_mykonos_we: 1485,
+    peak_deluxe_wd:  1823,
+    peak_deluxe_we:  2363,
+
+    // Festive High Peak (Dec 16-Jan 10)
+    festive_king_wd:    1710,
+    festive_king_we:    2160,
+    festive_santori_wd: 1530,
+    festive_santori_we: 1980,
+    festive_mykonos_wd: 1530,
+    festive_mykonos_we: 1980,
+    festive_deluxe_wd:  2430,
+    festive_deluxe_we:  3150
 };
 
 export async function onRequestGet(context) {
@@ -51,8 +83,13 @@ export async function onRequestPost(context) {
         const payload = await request.json();
 
         // Validate — only allow known numeric fields
-        const allowed = ['nextYearMarkupPct', 'king_wd', 'king_we', 'santori_wd', 'santori_we',
-                         'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we'];
+        const allowed = [
+            'nextYearMarkupPct',
+            'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
+            'low_king_wd', 'low_king_we', 'low_santori_wd', 'low_santori_we', 'low_mykonos_wd', 'low_mykonos_we', 'low_deluxe_wd', 'low_deluxe_we',
+            'peak_king_wd', 'peak_king_we', 'peak_santori_wd', 'peak_santori_we', 'peak_mykonos_wd', 'peak_mykonos_we', 'peak_deluxe_wd', 'peak_deluxe_we',
+            'festive_king_wd', 'festive_king_we', 'festive_santori_wd', 'festive_santori_we', 'festive_mykonos_wd', 'festive_mykonos_we', 'festive_deluxe_wd', 'festive_deluxe_we'
+        ];
 
         const update = {};
         allowed.forEach(key => {

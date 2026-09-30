@@ -1470,8 +1470,8 @@
                                 <div class="legend-item">
                                     <span class="legend-dot dot-low"></span>
                                     <div>
-                                        <strong>🟢 Low Season (May – Aug)</strong><br>
-                                        Best value winter rates (-15% discount)
+                                        <strong>🟢 Low Season (May-Aug)</strong><br>
+                                        Best value winter rates
                                     </div>
                                 </div>
                                 <div class="legend-item">
@@ -1485,14 +1485,14 @@
                                     <span class="legend-dot dot-peak"></span>
                                     <div>
                                         <strong>🔴 Peak Season (Dec 1–15 &amp; Easter)</strong><br>
-                                        School holiday demand (+35%)
+                                        School holiday demand
                                     </div>
                                 </div>
                                 <div class="legend-item">
                                     <span class="legend-dot dot-festive"></span>
                                     <div>
                                         <strong>🔥 Festive High Peak (Dec 16–Jan 10)</strong><br>
-                                        Peak summer demand (+80%, 3-night min)
+                                        Peak summer demand
                                     </div>
                                 </div>
                             </div>
@@ -2063,13 +2063,63 @@
         function calculateNightPrice(room, date) {
             const dayOfWeek = date.getDay();
             const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0);
-            
-            let baseRate = isWeekend ? room.baseWeekend : room.baseWeekday;
             const season = getSeasonInfo(date);
-            let rate = baseRate * season.multiplier;
+            const dayType = isWeekend ? 'we' : 'wd';
 
+            // Room prefix mapping for settings
+            const prefixMap = {
+                'king-arthur': 'king',
+                'santori': 'santori',
+                'mykonos': 'mykonos',
+                'deluxe-suite': 'deluxe'
+            };
+            const prefix = prefixMap[room.id] || room.id;
+
+            // Check if a direct custom Rand tariff is saved in SITE_CONFIG for this season & room
+            let rate = null;
+            if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
+                if (season.tier === 'low') {
+                    const key = `low_${prefix}_${dayType}`;
+                    if (SITE_CONFIG[key] !== undefined && Number(SITE_CONFIG[key]) > 0) {
+                        rate = Number(SITE_CONFIG[key]);
+                    }
+                } else if (season.tier === 'peak') {
+                    const key = `peak_${prefix}_${dayType}`;
+                    if (SITE_CONFIG[key] !== undefined && Number(SITE_CONFIG[key]) > 0) {
+                        rate = Number(SITE_CONFIG[key]);
+                    }
+                } else if (season.tier === 'festive') {
+                    const key = `festive_${prefix}_${dayType}`;
+                    if (SITE_CONFIG[key] !== undefined && Number(SITE_CONFIG[key]) > 0) {
+                        rate = Number(SITE_CONFIG[key]);
+                    }
+                } else {
+                    // Mid Season / Standard Base
+                    const key = `${prefix}_${dayType}`;
+                    if (SITE_CONFIG[key] !== undefined && Number(SITE_CONFIG[key]) > 0) {
+                        rate = Number(SITE_CONFIG[key]);
+                    }
+                }
+            }
+
+            // If not found in SITE_CONFIG, fallback to base rate * season multiplier
+            if (rate === null) {
+                let baseRate = isWeekend ? room.baseWeekend : room.baseWeekday;
+                if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
+                    const baseKey = `${prefix}_${dayType}`;
+                    if (SITE_CONFIG[baseKey] !== undefined && Number(SITE_CONFIG[baseKey]) > 0) {
+                        baseRate = Number(SITE_CONFIG[baseKey]);
+                    }
+                }
+                rate = baseRate * season.multiplier;
+            }
+
+            // Apply next-year markup if the booking date is in a future year vs today (2027+)
             if (date.getFullYear() > TODAY.getFullYear()) {
-                rate = rate * 1.10;
+                const markupPct = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
+                    ? Number(SITE_CONFIG.nextYearMarkupPct)
+                    : 10;
+                rate = rate * (1 + markupPct / 100);
             }
 
             return Math.round(rate);

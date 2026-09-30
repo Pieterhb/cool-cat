@@ -1456,7 +1456,7 @@
                 <div class="tab-section" id="tabRates">
                     <div class="adm-card">
                         <div class="adm-card-header">
-                            <h3 class="adm-card-title">🏷️ Base Rates &amp; Next-Year Future Markup</h3>
+                            <h3 class="adm-card-title">🏷️ Rates, Seasons &amp; Pricing Manager</h3>
                             <button class="btn-adm-primary" onclick="saveRatesConfig()">💾 Save Pricing Changes</button>
                         </div>
 
@@ -1472,45 +1472,208 @@
                             </div>
                         </div>
 
-                        <!-- 4-Room Base Rates Table -->
-                        <h4 style="color: var(--adm-primary-dark); margin-bottom: 0.8rem;">Room Base Rates (Standard Non-Peak)</h4>
-                        <div class="adm-table-wrapper">
-                            <table class="adm-table">
-                                <thead>
-                                    <tr>
-                                        <th>Room Name</th>
-                                        <th>Sleeps</th>
-                                        <th>Weekday Rate (Mon–Thu)</th>
-                                        <th>Weekend Rate (Fri–Sun)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>👑 King Arthur Room</strong></td>
-                                        <td>2 Adults</td>
-                                        <td><input type="number" id="rate_king_wd" class="adm-input" value="950" style="width: 120px;"></td>
-                                        <td><input type="number" id="rate_king_we" class="adm-input" value="1200" style="width: 120px;"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>🌊 Santori Room</strong></td>
-                                        <td>2 Adults</td>
-                                        <td><input type="number" id="rate_santori_wd" class="adm-input" value="850" style="width: 120px;"></td>
-                                        <td><input type="number" id="rate_santori_we" class="adm-input" value="1100" style="width: 120px;"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>🏛️ Mykonos Room</strong></td>
-                                        <td>2 Adults</td>
-                                        <td><input type="number" id="rate_mykonos_wd" class="adm-input" value="850" style="width: 120px;"></td>
-                                        <td><input type="number" id="rate_mykonos_we" class="adm-input" value="1100" style="width: 120px;"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
-                                        <td>2 Adults</td>
-                                        <td><input type="number" id="rate_deluxe_wd" class="adm-input" value="1350" style="width: 120px;"></td>
-                                        <td><input type="number" id="rate_deluxe_we" class="adm-input" value="1750" style="width: 120px;"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- 1. Mid Season (Standard Base Rates) -->
+                        <div style="margin-bottom: 2rem; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #92400E; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🟡 Mid Season (Sep–Nov, Feb–Apr)</span>
+                                        <span style="font-size: 0.72rem; background: #FEF3C7; color: #B45309; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">STANDARD BASE</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #78350F;">Pleasant coastal weather &amp; standard base non-peak rates.</span>
+                                </div>
+                            </div>
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room Name</th>
+                                            <th>Sleeps</th>
+                                            <th>Weekday Rate (Mon–Thu)</th>
+                                            <th>Weekend Rate (Fri–Sun)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_king_wd" class="adm-input" value="950" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_king_we" class="adm-input" value="1200" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_santori_wd" class="adm-input" value="850" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_santori_we" class="adm-input" value="1100" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🏛️ Mykonos Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_mykonos_wd" class="adm-input" value="850" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_mykonos_we" class="adm-input" value="1100" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_deluxe_wd" class="adm-input" value="1350" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_deluxe_we" class="adm-input" value="1750" style="width: 110px;"></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. Low Season Rates -->
+                        <div style="margin-bottom: 2rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #166534; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🟢 Low Season (May-Aug)</span>
+                                        <span style="font-size: 0.72rem; background: #DCFCE7; color: #15803D; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">BEST VALUE</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #14532D;">Best value winter rates.</span>
+                                </div>
+                            </div>
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room Name</th>
+                                            <th>Sleeps</th>
+                                            <th>Weekday Rate (Mon–Thu)</th>
+                                            <th>Weekend Rate (Fri–Sun)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_king_wd" class="adm-input" value="808" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_king_we" class="adm-input" value="1020" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_santori_wd" class="adm-input" value="723" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_santori_we" class="adm-input" value="935" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🏛️ Mykonos Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_mykonos_wd" class="adm-input" value="723" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_mykonos_we" class="adm-input" value="935" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_deluxe_wd" class="adm-input" value="1148" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_low_deluxe_we" class="adm-input" value="1488" style="width: 110px;"></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. Peak Season Rates -->
+                        <div style="margin-bottom: 2rem; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #991B1B; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🔴 Peak Season (Dec 1–15 &amp; Easter)</span>
+                                        <span style="font-size: 0.72rem; background: #FEE2E2; color: #B91C1C; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">HOLIDAY PEAK</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #7F1D1D;">School holiday &amp; Easter holiday demand periods.</span>
+                                </div>
+                            </div>
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room Name</th>
+                                            <th>Sleeps</th>
+                                            <th>Weekday Rate (Mon–Thu)</th>
+                                            <th>Weekend Rate (Fri–Sun)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_king_wd" class="adm-input" value="1283" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_king_we" class="adm-input" value="1620" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_santori_wd" class="adm-input" value="1148" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_santori_we" class="adm-input" value="1485" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🏛️ Mykonos Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_mykonos_wd" class="adm-input" value="1148" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_mykonos_we" class="adm-input" value="1485" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_deluxe_wd" class="adm-input" value="1823" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_peak_deluxe_we" class="adm-input" value="2363" style="width: 110px;"></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. Festive High Peak Rates -->
+                        <div style="margin-bottom: 1rem; background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #C2410C; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🔥 Festive High Peak (Dec 16–Jan 10)</span>
+                                        <span style="font-size: 0.72rem; background: #FFEDD5; color: #EA580C; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">STRICT 3-NIGHT MIN</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #9A3412;">Peak summer holiday demand period.</span>
+                                </div>
+                            </div>
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room Name</th>
+                                            <th>Sleeps</th>
+                                            <th>Weekday Rate (Mon–Thu)</th>
+                                            <th>Weekend Rate (Fri–Sun)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_king_wd" class="adm-input" value="1710" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_king_we" class="adm-input" value="2160" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_santori_wd" class="adm-input" value="1530" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_santori_we" class="adm-input" value="1980" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🏛️ Mykonos Room</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_mykonos_wd" class="adm-input" value="1530" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_mykonos_we" class="adm-input" value="1980" style="width: 110px;"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
+                                            <td>2 Adults</td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_deluxe_wd" class="adm-input" value="2430" style="width: 110px;"></div></td>
+                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color:#64748B;font-weight:700;">R</span><input type="number" id="rate_festive_deluxe_we" class="adm-input" value="3150" style="width: 110px;"></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2132,7 +2295,12 @@
                     const el = document.getElementById('nextYearMarkupInput');
                     if (el) el.value = config.nextYearMarkupPct;
                 }
-                const fields = ['king_wd','king_we','santori_wd','santori_we','mykonos_wd','mykonos_we','deluxe_wd','deluxe_we'];
+                const fields = [
+                    'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
+                    'low_king_wd', 'low_king_we', 'low_santori_wd', 'low_santori_we', 'low_mykonos_wd', 'low_mykonos_we', 'low_deluxe_wd', 'low_deluxe_we',
+                    'peak_king_wd', 'peak_king_we', 'peak_santori_wd', 'peak_santori_we', 'peak_mykonos_wd', 'peak_mykonos_we', 'peak_deluxe_wd', 'peak_deluxe_we',
+                    'festive_king_wd', 'festive_king_we', 'festive_santori_wd', 'festive_santori_we', 'festive_mykonos_wd', 'festive_mykonos_we', 'festive_deluxe_wd', 'festive_deluxe_we'
+                ];
                 fields.forEach(key => {
                     if (config[key] !== undefined) {
                         const el = document.getElementById('rate_' + key);
@@ -2633,10 +2801,26 @@
                 const saved = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
                 return {
                     nextYearMarkupPct: saved.nextYearMarkupPct !== undefined ? Number(saved.nextYearMarkupPct) : 10,
+                    // Mid Season (Base)
                     'king-arthur': { wd: Number(saved.king_wd) || 950, we: Number(saved.king_we) || 1200 },
                     'santori': { wd: Number(saved.santori_wd) || 850, we: Number(saved.santori_we) || 1100 },
                     'mykonos': { wd: Number(saved.mykonos_wd) || 850, we: Number(saved.mykonos_we) || 1100 },
-                    'deluxe-suite': { wd: Number(saved.deluxe_wd) || 1350, we: Number(saved.deluxe_we) || 1750 }
+                    'deluxe-suite': { wd: Number(saved.deluxe_wd) || 1350, we: Number(saved.deluxe_we) || 1750 },
+                    // Low Season
+                    'low_king-arthur': { wd: Number(saved.low_king_wd) || 808, we: Number(saved.low_king_we) || 1020 },
+                    'low_santori': { wd: Number(saved.low_santori_wd) || 723, we: Number(saved.low_santori_we) || 935 },
+                    'low_mykonos': { wd: Number(saved.low_mykonos_wd) || 723, we: Number(saved.low_mykonos_we) || 935 },
+                    'low_deluxe-suite': { wd: Number(saved.low_deluxe_wd) || 1148, we: Number(saved.low_deluxe_we) || 1488 },
+                    // Peak Season
+                    'peak_king-arthur': { wd: Number(saved.peak_king_wd) || 1283, we: Number(saved.peak_king_we) || 1620 },
+                    'peak_santori': { wd: Number(saved.peak_santori_wd) || 1148, we: Number(saved.peak_santori_we) || 1485 },
+                    'peak_mykonos': { wd: Number(saved.peak_mykonos_wd) || 1148, we: Number(saved.peak_mykonos_we) || 1485 },
+                    'peak_deluxe-suite': { wd: Number(saved.peak_deluxe_wd) || 1823, we: Number(saved.peak_deluxe_we) || 2363 },
+                    // Festive Season
+                    'festive_king-arthur': { wd: Number(saved.festive_king_wd) || 1710, we: Number(saved.festive_king_we) || 2160 },
+                    'festive_santori': { wd: Number(saved.festive_santori_wd) || 1530, we: Number(saved.festive_santori_we) || 1980 },
+                    'festive_mykonos': { wd: Number(saved.festive_mykonos_wd) || 1530, we: Number(saved.festive_mykonos_we) || 1980 },
+                    'festive_deluxe-suite': { wd: Number(saved.festive_deluxe_wd) || 2430, we: Number(saved.festive_deluxe_we) || 3150 }
                 };
             } catch (e) {
                 return {
@@ -2652,13 +2836,13 @@
             const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0);
             const season = getAdminSeasonInfo(date);
             const today = new Date();
+            const seasonPrefix = (season.tier === 'mid') ? '' : `${season.tier}_`;
 
             if (roomId === 'all') {
                 const individualRooms = ['king-arthur', 'santori', 'mykonos'];
                 const sum = individualRooms.reduce((acc, rId) => {
-                    const rRates = ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId];
-                    const base = isWeekend ? rRates.we : rRates.wd;
-                    let rRate = base * season.multiplier;
+                    const rRates = ratesCfg[`${seasonPrefix}${rId}`] || ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId];
+                    let rRate = isWeekend ? rRates.we : rRates.wd;
                     if (date.getFullYear() > today.getFullYear()) {
                         rRate = rRate * (1 + ratesCfg.nextYearMarkupPct / 100);
                     }
@@ -2666,9 +2850,8 @@
                 }, 0);
                 return sum;
             } else {
-                const rRates = ratesCfg[roomId] || ADMIN_DEFAULT_RATES[roomId] || { wd: 950, we: 1200 };
-                const base = isWeekend ? rRates.we : rRates.wd;
-                let rate = base * season.multiplier;
+                const rRates = ratesCfg[`${seasonPrefix}${roomId}`] || ratesCfg[roomId] || ADMIN_DEFAULT_RATES[roomId] || { wd: 950, we: 1200 };
+                let rate = isWeekend ? rRates.we : rRates.wd;
                 if (date.getFullYear() > today.getFullYear()) {
                     rate = rate * (1 + ratesCfg.nextYearMarkupPct / 100);
                 }
@@ -4076,6 +4259,7 @@ We look forward to hosting you at Cool-Cat!`;
             const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
             const rates = {
                 nextYearMarkupPct: markup,
+                // Mid Season (Base)
                 king_wd:    Number(document.getElementById('rate_king_wd').value)    || 950,
                 king_we:    Number(document.getElementById('rate_king_we').value)    || 1200,
                 santori_wd: Number(document.getElementById('rate_santori_wd').value) || 850,
@@ -4084,6 +4268,36 @@ We look forward to hosting you at Cool-Cat!`;
                 mykonos_we: Number(document.getElementById('rate_mykonos_we').value) || 1100,
                 deluxe_wd:  Number(document.getElementById('rate_deluxe_wd').value)  || 1350,
                 deluxe_we:  Number(document.getElementById('rate_deluxe_we').value)  || 1750,
+
+                // Low Season
+                low_king_wd:    Number(document.getElementById('rate_low_king_wd').value)    || 808,
+                low_king_we:    Number(document.getElementById('rate_low_king_we').value)    || 1020,
+                low_santori_wd: Number(document.getElementById('rate_low_santori_wd').value) || 723,
+                low_santori_we: Number(document.getElementById('rate_low_santori_we').value) || 935,
+                low_mykonos_wd: Number(document.getElementById('rate_low_mykonos_wd').value) || 723,
+                low_mykonos_we: Number(document.getElementById('rate_low_mykonos_we').value) || 935,
+                low_deluxe_wd:  Number(document.getElementById('rate_low_deluxe_wd').value)  || 1148,
+                low_deluxe_we:  Number(document.getElementById('rate_low_deluxe_we').value)  || 1488,
+
+                // Peak Season
+                peak_king_wd:    Number(document.getElementById('rate_peak_king_wd').value)    || 1283,
+                peak_king_we:    Number(document.getElementById('rate_peak_king_we').value)    || 1620,
+                peak_santori_wd: Number(document.getElementById('rate_peak_santori_wd').value) || 1148,
+                peak_santori_we: Number(document.getElementById('rate_peak_santori_we').value) || 1485,
+                peak_mykonos_wd: Number(document.getElementById('rate_peak_mykonos_wd').value) || 1148,
+                peak_mykonos_we: Number(document.getElementById('rate_peak_mykonos_we').value) || 1485,
+                peak_deluxe_wd:  Number(document.getElementById('rate_deluxe_wd').value)  || 1823,
+                peak_deluxe_we:  Number(document.getElementById('rate_deluxe_we').value)  || 2363,
+
+                // Festive Season
+                festive_king_wd:    Number(document.getElementById('rate_festive_king_wd').value)    || 1710,
+                festive_king_we:    Number(document.getElementById('rate_festive_king_we').value)    || 2160,
+                festive_santori_wd: Number(document.getElementById('rate_festive_santori_wd').value) || 1530,
+                festive_santori_we: Number(document.getElementById('rate_festive_santori_we').value) || 1980,
+                festive_mykonos_wd: Number(document.getElementById('rate_festive_mykonos_wd').value) || 1530,
+                festive_mykonos_we: Number(document.getElementById('rate_festive_mykonos_we').value) || 1980,
+                festive_deluxe_wd:  Number(document.getElementById('rate_festive_deluxe_wd').value)  || 2430,
+                festive_deluxe_we:  Number(document.getElementById('rate_festive_deluxe_we').value)  || 3150
             };
 
             // Local cache update
@@ -4103,19 +4317,20 @@ We look forward to hosting you at Cool-Cat!`;
                         btn.innerHTML = originalBtnText;
                     }
                     renderAdminCalendar();
-                    alert(`✅ Room rates and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
+                    alert(`✅ All seasonal room rates and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
                     return;
                 } else {
                     const errData = await res.json().catch(() => ({}));
                     throw new Error(errData.error || `Server responded with status ${res.status}`);
                 }
             } catch (err) {
-                console.error("Cloud save error:", err);
+                console.error("Save rates failed:", err);
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = originalBtnText;
                 }
-                alert(`❌ Cloud save error: ${err.message}\nPlease check your network connection and try again.`);
+                alert(`⚠️ Note: Saved to this browser, but cloud sync returned: ${err.message}`);
+                renderAdminCalendar();
             }
         }
 
