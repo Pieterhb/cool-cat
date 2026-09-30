@@ -22,8 +22,8 @@ git push origin main
 
 echo.
 echo Step 4: Deploying via Wrangler to cool-cat.co.za ...
-echo (using project: cool-cat-site which is linked to cool-cat.co.za)
-call npx wrangler pages deploy . --project-name cool-cat-site --commit-dirty=true
+echo (using project: cool-cat-site PRODUCTION branch linked to cool-cat.co.za)
+call npx wrangler pages deploy . --project-name cool-cat-site --branch production --commit-dirty=true
 
 echo.
 echo ===================================================
