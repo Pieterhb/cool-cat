@@ -1372,11 +1372,11 @@
                         <!-- Selected Room Details Bar -->
                         <div class="selected-room-info" id="roomInfoBanner">
                             <div class="room-meta">
-                                <strong id="bannerRoomName">All 4 Rooms (Entire Property)</strong>
-                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                <strong id="bannerRoomName">All Rooms (3 Suites)</strong>
+                                <span id="bannerRoomSpecs">Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)</span>
                             </div>
                             <div class="room-rate-tag" id="bannerRoomRate">
-                                Weekday R4,000 | Weekend R5,150
+                                Weekday R2,800 | Weekend R3,650
                             </div>
                         </div>
 
@@ -1908,6 +1908,9 @@
             }
         ];
 
+        // The 3 rooms included in "All Rooms" booking (Deluxe Suite is excluded)
+        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
+
         // Live bookings store (populated dynamically from Cloudflare KV / backend)
         let MOCK_BOOKINGS = [];
 
@@ -1991,7 +1994,7 @@
                     tier: 'low',
                     badgeClass: 'badge-low',
                     multiplier: 0.85,
-                    minStay: 1,
+                    minStay: 2,
                     desc: 'Winter value rate'
                 };
             }
@@ -2001,7 +2004,7 @@
                 tier: 'mid',
                 badgeClass: 'badge-mid',
                 multiplier: 1.00,
-                minStay: 1,
+                minStay: 2,
                 desc: 'Pleasant coastal weather rate'
             };
         }
@@ -2084,8 +2087,8 @@
             let bookedCount = 0;
             const availableRooms = [];
 
-            ROOMS.forEach(room => {
-                const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
+            ALL_ROOMS_SUBSET.forEach(rId => {
+                const bookedInDB = isRoomBookedOnDate(rId, dateStr);
                 // Only count "all" cart stays for display blocking — individual-room carts don't block All Rooms view
                 const bookedInAllCart = selectedStays.some(s => {
                     if (s.roomId !== 'all') return false;
@@ -2095,21 +2098,46 @@
                 if (bookedInDB || bookedInAllCart) {
                     bookedCount++;
                 } else {
-                    availableRooms.push(room);
+                    availableRooms.push(rId);
                 }
             });
 
             return {
-                totalRooms: ROOMS.length,
+                totalRooms: ALL_ROOMS_SUBSET.length,
                 bookedCount: bookedCount,
-                availableCount: ROOMS.length - bookedCount,
+                availableCount: ALL_ROOMS_SUBSET.length - bookedCount,
                 availableRooms: availableRooms
             };
         }
 
         // Full check including individual-room cart stays — used for blocking when BOOKING All Rooms
+        function getAllRoomsAvailability(dateStr) {
+            let bookedCount = 0;
+            const availableRooms = [];
+
+            ALL_ROOMS_SUBSET.forEach(rId => {
+                const bookedInDB = isRoomBookedOnDate(rId, dateStr);
+                const bookedInCart = selectedStays.some(s => {
+                    if (s.roomId !== rId && s.roomId !== 'all') return false;
+                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                });
+                if (bookedInDB || bookedInCart) {
+                    bookedCount++;
+                } else {
+                    availableRooms.push(rId);
+                }
+            });
+
+            return {
+                totalRooms: ALL_ROOMS_SUBSET.length,
+                bookedCount: bookedCount,
+                availableCount: ALL_ROOMS_SUBSET.length - bookedCount,
+                availableRooms: availableRooms
+            };
+        }
+
         function getDateAvailabilityForAllRoomsBooking(dateStr) {
-            return getDateAvailability(dateStr); // includes all cart stays
+            return getAllRoomsAvailability(dateStr);
         }
 
 
@@ -2201,32 +2229,33 @@
                 let availPillHtml = '';
 
                 if (selectedRoomId === 'all') {
-                    const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
+                    const subsetRooms = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id));
+                    const allRate = subsetRooms.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
                     priceText = `R${allRate.toLocaleString()}`;
 
-                    // How many individual-room cart stays occupy this date?
-                    const indivCartCount = ROOMS.filter(r =>
-                        selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                    // How many individual-room cart stays (from ALL_ROOMS_SUBSET) occupy this date?
+                    const indivCartCount = ALL_ROOMS_SUBSET.filter(rId =>
+                        selectedStays.some(s => s.roomId === rId && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                     ).length;
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ Booked in Cart</span>`;
-                    } else if (avail.availableCount === 4 && indivCartCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                    } else if (avail.availableCount === 3 && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
                     } else if (avail.availableCount === 0) {
-                        // All 4 rooms fully booked in DB — fully sold out for All Rooms
+                        // All 3 rooms fully booked in DB — fully sold out for All Rooms
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
                         isBooked = true;
-                    } else if (avail.availableCount < 4) {
+                    } else if (avail.availableCount < 3) {
                         // Some rooms blocked by DB booking — can't book All Rooms
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
                         // Individual rooms are in cart on this date — show info pill
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${4 - indivCartCount} Free</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${3 - indivCartCount} Free</span>`;
                         isBooked = true; // Block "All Rooms" booking on these dates
                     } else {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
                     }
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
@@ -2270,14 +2299,14 @@
                 } else if (isBooked) {
                     if (selectedRoomId === 'all') {
                         // Calculate full booking check (including individual carts) for tooltip detail
-                        const fullAvail = getDateAvailability(dateStr);
-                        const indivCartBlocking = ROOMS.filter(r =>
-                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        const fullAvail = getAllRoomsAvailability(dateStr);
+                        const indivCartBlocking = ALL_ROOMS_SUBSET.filter(rId =>
+                            selectedStays.some(s => s.roomId === rId && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
-                        if (indivCartBlocking > 0 && avail.availableCount === 4) {
+                        if (indivCartBlocking > 0 && avail.availableCount === 3) {
                             tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book All Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free — can't book All Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 3 rooms free — can't book All Rooms on this date</span>`;
                         } else {
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 All rooms fully booked — no availability</span>`;
                         }
@@ -2317,14 +2346,14 @@
                     } else {
                         dayCell.onclick = () => {
                             if (selectedRoomId === 'all') {
-                                const fullAvail = getDateAvailability(formatDateKey(dateObj));
-                                const indivCartBlocking = ROOMS.filter(r =>
-                                    selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
+                                const fullAvail = getAllRoomsAvailability(formatDateKey(dateObj));
+                                const indivCartBlocking = ALL_ROOMS_SUBSET.filter(rId =>
+                                    selectedStays.some(s => s.roomId === rId && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
                                 ).length;
-                                if (indivCartBlocking > 0 && fullAvail.availableCount === 4) {
+                                if (indivCartBlocking > 0 && fullAvail.availableCount === 3) {
                                     showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book All Rooms on other dates.`);
                                 } else if (fullAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. All Rooms requires all 4 to be available. Book rooms individually instead.`);
+                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 3 rooms are free on this date. All Rooms requires all 3 to be available. Book rooms individually instead.`);
                                 } else {
                                     showToast("🚫 All rooms fully booked on this date. Please select different dates.");
                                 }
@@ -2356,15 +2385,15 @@
             if (!pendingCheckIn || pendingCheckIn.roomId !== selectedRoomId) {
                 // Validate availability
                 if (selectedRoomId === 'all') {
-                    const avail = getDateAvailability(dateStr);
-                    if (avail.availableCount < 4) {
-                        const indivCount = ROOMS.filter(r =>
-                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                    const avail = getAllRoomsAvailability(dateStr);
+                    if (avail.availableCount < 3) {
+                        const indivCount = ALL_ROOMS_SUBSET.filter(rId =>
+                            selectedStays.some(s => s.roomId === rId && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCount > 0) {
                             showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book All Rooms.`);
                         } else {
-                            showToast("All 4 rooms must be available on this date to book the entire property.");
+                            showToast("All 3 rooms must be available on this date to book the entire property.");
                         }
                         return;
                     }
@@ -2381,7 +2410,7 @@
                 }
 
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                const roomDisplayName = (selectedRoomId === 'all') ? 'All Rooms (3 Suites)' : roomObj.name;
                 pendingCheckIn = { roomId: selectedRoomId, date: new Date(dateObj) };
                 showToast(`📍 ${roomDisplayName}: Check-in set for ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
@@ -2394,7 +2423,7 @@
                 // Clicked earlier or same date: update check-in
                 pendingCheckIn.date = new Date(dateObj);
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : roomObj.name;
+                const roomDisplayName = (selectedRoomId === 'all') ? 'All Rooms (3 Suites)' : roomObj.name;
                 showToast(`📍 ${roomDisplayName}: Check-in updated to ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
                 updateSummarySidebar();
@@ -2405,6 +2434,10 @@
             const checkInDate = pendingCheckIn.date;
             const checkOutDate = dateObj;
             const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+
+            // Enforce minimum 2-night stay silently (calendar just does nothing for 1 night)
+            if (nights < 2) { return; }
+
             const season = getSeasonInfo(checkInDate);
 
             if (season.minStay && nights < season.minStay) {
@@ -2418,7 +2451,7 @@
             while (d < checkOutDate) {
                 const dKey = formatDateKey(d);
                 if (selectedRoomId === 'all') {
-                    if (getDateAvailability(dKey).availableCount < 4) {
+                    if (getAllRoomsAvailability(dKey).availableCount < 3) {
                         hasConflict = true;
                         break;
                     }
@@ -2446,10 +2479,11 @@
             const nightlyRates = [];
             const isAll = (selectedRoomId === 'all');
             const roomObj = ROOMS.find(r => r.id === selectedRoomId);
+            const subsetRooms = isAll ? ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id)) : null;
 
             while (d < checkOutDate) {
-                const nightlyRate = isAll 
-                    ? ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
+                const nightlyRate = isAll
+                    ? subsetRooms.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
                     : calculateNightPrice(roomObj, d);
                 subtotal += nightlyRate;
                 const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
@@ -2461,13 +2495,13 @@
                 d.setDate(d.getDate() + 1);
             }
 
-            const stayMaxGuests = (selectedRoomId === 'all') ? 8 : 2;
+            const stayMaxGuests = (selectedRoomId === 'all') ? 6 : 2;
             const stayGuestCount = (selectedGuestCount && selectedGuestCount >= 1 && selectedGuestCount <= stayMaxGuests) ? selectedGuestCount : stayMaxGuests;
 
             const newStay = {
                 id: 'stay_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
                 roomId: selectedRoomId,
-                roomName: isAll ? 'All 4 Rooms (Entire Property)' : roomObj.name,
+                roomName: isAll ? 'All Rooms (3 Suites: King Arthur, Santori, Mykonos)' : roomObj.name,
                 roomIcon: isAll ? '🏨' : roomObj.icon,
                 checkIn: new Date(checkInDate),
                 checkOut: new Date(checkOutDate),
@@ -2534,7 +2568,7 @@
             // 1. Pending check-in alert
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const rName = (selectedRoomId === 'all') ? 'All 4 Rooms' : (roomObj ? roomObj.name : 'Room');
+                const rName = (selectedRoomId === 'all') ? 'All Rooms (3 Suites)' : (roomObj ? roomObj.name : 'Room');
                 pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
                 pendingBox.style.display = 'flex';
             } else {
@@ -2701,16 +2735,16 @@
         }
 
         function getActiveTabMaxGuests() {
-            return (selectedRoomId === 'all') ? 8 : 2;
+            return (selectedRoomId === 'all') ? 6 : 2;
         }
 
         function getCartTotalMaxGuests() {
             if (selectedStays && selectedStays.length > 0) {
                 let max = 0;
                 selectedStays.forEach(s => {
-                    max += (s.roomId === 'all') ? 8 : 2;
+                    max += (s.roomId === 'all') ? 6 : 2;
                 });
-                return Math.min(8, Math.max(1, max));
+                return Math.min(10, Math.max(1, max));
             }
             return getActiveTabMaxGuests();
         }
@@ -3343,9 +3377,9 @@
             const bannerRate = document.getElementById('bannerRoomRate');
 
             if (roomId === 'all') {
-                if (bannerName) bannerName.textContent = 'All 4 Rooms (Entire Property)';
-                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
-                if (bannerRate) bannerRate.textContent = 'Weekday R4,000 | Weekend R5,150';
+                if (bannerName) bannerName.textContent = 'All Rooms (3 Suites)';
+                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)';
+                if (bannerRate) bannerRate.textContent = 'Weekday R2,800 | Weekend R3,650';
             } else {
                 const r = ROOMS.find(item => item.id === roomId);
                 if (r) {

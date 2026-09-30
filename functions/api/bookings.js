@@ -139,7 +139,7 @@ export async function onRequestPost(context) {
         }
 
         const roomNames = {
-            'all': 'All 4 Rooms (Entire Property)',
+            'all': 'All Rooms (3 Suites)',
             'king-arthur': 'King Arthur Room',
             'santori': 'Santori Room',
             'mykonos': 'Mykonos Room',
@@ -208,10 +208,10 @@ export async function onRequestPost(context) {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
             
-            // If booking all rooms, store parent booking + 4 separate blocks so calendar locks all 4 rooms
+            // If booking all rooms, store parent booking + 3 separate blocks so calendar locks all 3 rooms
             if (roomId === 'all') {
                 existing.push(newBooking);
-                const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+                const individualRooms = ['king-arthur', 'santori', 'mykonos'];
                 individualRooms.forEach(r => {
                     existing.push({
                         id: `${bookingRef}_${r}`,

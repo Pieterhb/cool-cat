@@ -1248,7 +1248,7 @@
                         <div class="adm-room-tabs-wrapper">
                             <div class="adm-room-tabs" id="admRoomTabs">
                                 <button type="button" class="adm-room-tab active" data-room="all" onclick="setAdminCalRoom('all')">
-                                    🏨 All 4 Rooms (Entire Property)
+                                    🏨 All Rooms (3 Suites)
                                 </button>
                                 <button type="button" class="adm-room-tab" data-room="king-arthur" onclick="setAdminCalRoom('king-arthur')">
                                     👑 King Arthur Room
@@ -1820,7 +1820,7 @@
                         <div class="adm-form-group" style="margin-bottom: 0.8rem;">
                             <label>Select Room</label>
                             <select id="manRoomSelect" class="adm-input" required onchange="onModalRoomChange()">
-                                <option value="all">🏨 All 4 Rooms (Entire Property)</option>
+                                <option value="all">🏨 All Rooms (3 Suites: King Arthur, Santori, Mykonos)</option>
                                 <option value="king-arthur">👑 King Arthur Room</option>
                                 <option value="santori">🌊 Santori Room</option>
                                 <option value="mykonos">🏛️ Mykonos Room</option>
@@ -2160,7 +2160,7 @@
                     if (parentIds.has(baseId)) return false;
                     if (seenLegacyBases.has(baseId)) return false;
                     seenLegacyBases.add(baseId);
-                    b.roomName = 'All 4 Rooms (Entire Property)';
+                    b.roomName = 'All Rooms (3 Suites)';
                 }
                 return true;
             }).map(b => {
@@ -2492,7 +2492,7 @@
         // =========================================================
 
         const ADMIN_ROOM_NAMES = {
-            'all': 'All 4 Rooms (Entire Property)',
+            'all': 'All Rooms (3 Suites)',
             'king-arthur': 'King Arthur Room',
             'santori': 'Santori Room',
             'mykonos': 'Mykonos Room',
@@ -2654,7 +2654,7 @@
             const today = new Date();
 
             if (roomId === 'all') {
-                const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+                const individualRooms = ['king-arthur', 'santori', 'mykonos'];
                 const sum = individualRooms.reduce((acc, rId) => {
                     const rRates = ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId];
                     const base = isWeekend ? rRates.we : rRates.wd;
@@ -2695,7 +2695,7 @@
         }
 
         function getAdminDateAvailability(dateStr) {
-            const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            const individualRooms = ['king-arthur', 'santori', 'mykonos'];
             const bookedRooms = [];
             const availableRooms = [];
 
@@ -2881,8 +2881,8 @@
 
                 if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    if (avail.availableCount === 4) {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-open">4 Open</span>`;
+                    if (avail.availableCount === 3) {
+                        pillHtml = `<span class="adm-cal-avail-pill pill-open">3 Open</span>`;
                     } else if (avail.availableCount === 0) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-booked">Sold Out</span>`;
                         isBooked = true;
@@ -2937,7 +2937,7 @@
                 if (isBooked || isBlocked) {
                     if (adminCalRoomId === 'all') {
                         const avail = getAdminDateAvailability(dateStr);
-                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 4 rooms</span><br>`;
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 3 rooms</span><br>`;
                         avail.bookedRooms.forEach(br => {
                             tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
                         });
@@ -2973,7 +2973,7 @@
 
             // Update footer occupancy stats
             if (footerEl) {
-                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 4 : 1;
+                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 3 : 1;
                 const totalPossibleNights = daysInMonth * totalRoomsMultiplier;
                 let actualBookedNights = 0;
 
@@ -3011,7 +3011,7 @@
                     alert(`📋 Reservation Details:\n\nGuest/Reason: ${bookingDetails.guestName}\nRoom: ${bookingDetails.roomName || bookingDetails.roomId}\nStay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1} Nights)\nPhone: ${bookingDetails.guestPhone || '-'}\nTotal: R${Number(bookingDetails.totalAmount || 0).toLocaleString()} (Paid: R${Number(bookingDetails.amountPaid || 0).toLocaleString()})\nStatus: ${bookingDetails.status}\nReference: #${bookingDetails.id}`);
                 } else if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 4 rooms occupied:\n`;
+                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 3 rooms occupied:\n`;
                     avail.bookedRooms.forEach(br => {
                         msg += `• ${ADMIN_ROOM_NAMES[br.roomId]}: ${br.booking.guestName} (#${br.booking.id})\n`;
                     });
@@ -3157,13 +3157,13 @@
                         isBooked = true;
                         dayCell.classList.add('booked');
                         dayCell.title = `Sold Out - All rooms booked`;
-                    } else if (avail.availableCount < 4) {
+                    } else if (avail.availableCount < 3) {
                         isBlocked = true;
                         dayCell.classList.add('blocked');
-                        dayCell.title = `${avail.availableCount} of 4 rooms available`;
+                        dayCell.title = `${avail.availableCount} of 3 rooms available`;
                     } else {
                         dayCell.classList.add('avail');
-                        dayCell.title = `All 4 rooms open`;
+                        dayCell.title = `All 3 rooms open`;
                     }
                 } else {
                     const b = getBookingOnDateForRoom(roomId, dateStr);

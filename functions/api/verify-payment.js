@@ -176,9 +176,9 @@ export async function onRequestPost(context) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
 
             // Determine roomName and primary room for consolidated display
-            const isAllRooms = staysList.length >= 4 || staysList.some(s => s.roomId === 'all');
+            const isAllRooms = staysList.length >= 3 || staysList.some(s => s.roomId === 'all');
             const displayRoomName = isAllRooms
-                ? 'All 4 Rooms (Entire Property)'
+                ? 'All Rooms (3 Suites)'
                 : staysList.length === 1
                     ? staysList[0].roomName
                     : `${staysList.length} Rooms`;
@@ -215,7 +215,7 @@ export async function onRequestPost(context) {
             // 3b. Push individual per-room calendar block records so each room date is blocked
             staysList.forEach(s => {
                 const stayRooms = s.roomId === 'all'
-                    ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
+                    ? ['king-arthur', 'santori', 'mykonos']
                     : [s.roomId];
                 stayRooms.forEach(rid => {
                     existing.push({
