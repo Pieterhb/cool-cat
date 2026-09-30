@@ -2193,14 +2193,18 @@
             const season = getSeasonInfo(date);
             const dayType = isWeekend ? 'we' : 'wd';
 
-            // Room prefix mapping for settings
+            // Room prefix mapping for settings (handles room object or string ID)
+            const rObj = (typeof room === 'string') ? (ROOMS.find(r => r.id === room) || { id: room }) : (room || {});
+            const rId = rObj.id || (typeof room === 'string' ? room : '');
             const prefixMap = {
                 'king-arthur': 'king',
+                'king': 'king',
                 'santori': 'santori',
                 'mykonos': 'mykonos',
-                'deluxe-suite': 'deluxe'
+                'deluxe-suite': 'deluxe',
+                'deluxe': 'deluxe'
             };
-            const prefix = prefixMap[room.id] || room.id;
+            const prefix = prefixMap[rId] || rId;
 
             // Date string formatted YYYY-MM-DD for special promo range checks
             const y = date.getFullYear();
@@ -2211,8 +2215,8 @@
             // Check if an ACTIVE SPECIAL override applies for this date & room
             if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
                 const isSpecialActive = (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
-                const spStart = SITE_CONFIG[`special_${prefix}_start`];
-                const spEnd = SITE_CONFIG[`special_${prefix}_end`];
+                const spStart = String(SITE_CONFIG[`special_${prefix}_start`] || '').trim().replace(/\//g, '-');
+                const spEnd = String(SITE_CONFIG[`special_${prefix}_end`] || '').trim().replace(/\//g, '-');
                 const spRate = Number(SITE_CONFIG[`special_${prefix}_rate`]);
 
                 if (isSpecialActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {

@@ -2512,14 +2512,18 @@
             const season = getSeasonInfo(date);
             const dayType = isWeekend ? 'we' : 'wd';
 
-            // Room prefix mapping for settings
+            // Room prefix mapping for settings (handles room object or string ID)
+            const rObj = (typeof room === 'string') ? (ROOMS.find(r => r.id === room) || { id: room }) : (room || {});
+            const rId = rObj.id || (typeof room === 'string' ? room : '');
             const prefixMap = {
                 'king-arthur': 'king',
+                'king': 'king',
                 'santori': 'santori',
                 'mykonos': 'mykonos',
-                'deluxe-suite': 'deluxe'
+                'deluxe-suite': 'deluxe',
+                'deluxe': 'deluxe'
             };
-            const prefix = prefixMap[room.id] || room.id;
+            const prefix = prefixMap[rId] || rId;
 
             // Date string formatted YYYY-MM-DD for special promo range checks
             const y = date.getFullYear();
