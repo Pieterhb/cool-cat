@@ -2075,6 +2075,24 @@
             };
             const prefix = prefixMap[room.id] || room.id;
 
+            // Date string formatted YYYY-MM-DD for special promo range checks
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+
+            // Check if an ACTIVE SPECIAL override applies for this date & room
+            if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
+                const isSpecialActive = (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
+                const spStart = SITE_CONFIG[`special_${prefix}_start`];
+                const spEnd = SITE_CONFIG[`special_${prefix}_end`];
+                const spRate = Number(SITE_CONFIG[`special_${prefix}_rate`]);
+
+                if (isSpecialActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
+                    return spRate;
+                }
+            }
+
             // Check if a direct custom Rand tariff is saved in SITE_CONFIG for this season & room
             let rate = null;
             if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {

@@ -55,7 +55,28 @@ const DEFAULT_CONFIG = {
     festive_mykonos_wd: 1530,
     festive_mykonos_we: 1980,
     festive_deluxe_wd:  2430,
-    festive_deluxe_we:  3150
+    festive_deluxe_we:  3150,
+
+    // Active Specials Overrides
+    special_king_active: false,
+    special_king_start: '',
+    special_king_end: '',
+    special_king_rate: 650,
+
+    special_santori_active: false,
+    special_santori_start: '',
+    special_santori_end: '',
+    special_santori_rate: 599,
+
+    special_mykonos_active: false,
+    special_mykonos_start: '',
+    special_mykonos_end: '',
+    special_mykonos_rate: 599,
+
+    special_deluxe_active: false,
+    special_deluxe_start: '',
+    special_deluxe_end: '',
+    special_deluxe_rate: 990
 };
 
 export async function onRequestGet(context) {
@@ -82,19 +103,39 @@ export async function onRequestPost(context) {
     try {
         const payload = await request.json();
 
-        // Validate — only allow known numeric fields
-        const allowed = [
+        // Validate fields
+        const allowedNumeric = [
             'nextYearMarkupPct',
             'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
             'low_king_wd', 'low_king_we', 'low_santori_wd', 'low_santori_we', 'low_mykonos_wd', 'low_mykonos_we', 'low_deluxe_wd', 'low_deluxe_we',
             'peak_king_wd', 'peak_king_we', 'peak_santori_wd', 'peak_santori_we', 'peak_mykonos_wd', 'peak_mykonos_we', 'peak_deluxe_wd', 'peak_deluxe_we',
-            'festive_king_wd', 'festive_king_we', 'festive_santori_wd', 'festive_santori_we', 'festive_mykonos_wd', 'festive_mykonos_we', 'festive_deluxe_wd', 'festive_deluxe_we'
+            'festive_king_wd', 'festive_king_we', 'festive_santori_wd', 'festive_santori_we', 'festive_mykonos_wd', 'festive_mykonos_we', 'festive_deluxe_wd', 'festive_deluxe_we',
+            'special_king_rate', 'special_santori_rate', 'special_mykonos_rate', 'special_deluxe_rate'
+        ];
+
+        const allowedBoolean = [
+            'special_king_active', 'special_santori_active', 'special_mykonos_active', 'special_deluxe_active'
+        ];
+
+        const allowedString = [
+            'special_king_start', 'special_king_end', 'special_santori_start', 'special_santori_end',
+            'special_mykonos_start', 'special_mykonos_end', 'special_deluxe_start', 'special_deluxe_end'
         ];
 
         const update = {};
-        allowed.forEach(key => {
+        allowedNumeric.forEach(key => {
             if (payload[key] !== undefined) {
                 update[key] = Number(payload[key]);
+            }
+        });
+        allowedBoolean.forEach(key => {
+            if (payload[key] !== undefined) {
+                update[key] = Boolean(payload[key]);
+            }
+        });
+        allowedString.forEach(key => {
+            if (payload[key] !== undefined) {
+                update[key] = String(payload[key]).trim();
             }
         });
 

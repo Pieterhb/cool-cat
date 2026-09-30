@@ -2443,9 +2443,27 @@
             };
             const prefix = prefixMap[room.id] || room.id;
 
+            // Date string formatted YYYY-MM-DD for special promo range checks
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+
+            // Check if an ACTIVE SPECIAL override applies for this date & room
+            if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
+                const isSpecialActive = (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
+                const spStart = SITE_CONFIG[`special_${prefix}_start`];
+                const spEnd = SITE_CONFIG[`special_${prefix}_end`];
+                const spRate = Number(SITE_CONFIG[`special_${prefix}_rate`]);
+
+                if (isSpecialActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
+                    return spRate;
+                }
+            }
+
             // Check if a direct custom Rand tariff is saved in SITE_CONFIG for this season & room
             let rate = null;
-            if (SITE_CONFIG) {
+            if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
                 if (season.tier === 'low') {
                     const key = `low_${prefix}_${dayType}`;
                     if (SITE_CONFIG[key] !== undefined && Number(SITE_CONFIG[key]) > 0) {
@@ -2473,7 +2491,7 @@
             // If not found in SITE_CONFIG, fallback to base rate * season multiplier
             if (rate === null) {
                 let baseRate = isWeekend ? room.baseWeekend : room.baseWeekday;
-                if (SITE_CONFIG) {
+                if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
                     const baseKey = `${prefix}_${dayType}`;
                     if (SITE_CONFIG[baseKey] !== undefined && Number(SITE_CONFIG[baseKey]) > 0) {
                         baseRate = Number(SITE_CONFIG[baseKey]);
@@ -2484,7 +2502,7 @@
 
             // Apply next-year markup if the booking date is in a future year vs today (2027+)
             if (date.getFullYear() > TODAY.getFullYear()) {
-                const markupPct = (SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
+                const markupPct = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
                     ? Number(SITE_CONFIG.nextYearMarkupPct)
                     : 10;
                 rate = rate * (1 + markupPct / 100);
