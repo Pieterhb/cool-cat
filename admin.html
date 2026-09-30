@@ -2321,7 +2321,7 @@
                     rRow.innerHTML = `
                         <td><strong>#${b.id}</strong></td>
                         <td>${b.guestName}</td>
-                        <td>${b.roomName || b.roomId}<br>${breakfastTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}</td>
                         <td>${b.checkIn} &bull; ${b.nights || 1}N</td>
                         <td>R${Number(b.totalAmount || 0).toLocaleString()}</td>
                         <td style="color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'}; font-weight: ${Number(b.amountPaid || 0) > 0 ? '700' : 'normal'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
@@ -2363,7 +2363,7 @@
                         <td><strong>#${b.id}</strong></td>
                         <td>${b.guestName}</td>
                         <td><a href="tel:${b.guestPhone}" style="color: var(--adm-primary); font-weight: 600;">${b.guestPhone || '-'}</a></td>
-                        <td>${b.roomName || b.roomId}<br>${breakfastTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}</td>
                         <td>${b.checkIn}</td>
                         <td>${b.checkOut}</td>
                         <td>${b.nights || 1}</td>
@@ -2403,7 +2403,7 @@
                     <td><code>PAY_${b.id}</code></td>
                     <td>${b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || '2026-08-23')}</td>
                     <td>${b.guestName} (${b.guestEmail || 'direct@cool-cat.co.za'})</td>
-                    <td>${b.roomName || b.roomId}</td>
+                    <td>${shortRoomName(b.roomName || b.roomId)}</td>
                     <td><span style="font-weight: 600;">${methodLabel}</span></td>
                     <td style="font-weight: 700; color: ${isPaid ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                     <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
@@ -2476,7 +2476,7 @@
                     <td><strong>${b.guestName}</strong></td>
                     <td>${b.guestEmail || '-'}</td>
                     <td>${b.guestPhone || '-'}</td>
-                    <td>${b.roomName || b.roomId}</td>
+                    <td>${shortRoomName(b.roomName || b.roomId)}</td>
                     <td style="font-weight: 700; color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                     <td>
                         <a href="https://wa.me/${(b.guestPhone||'').replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa">Chat WhatsApp</a>
@@ -2497,6 +2497,12 @@
             'mykonos': 'Mykonos Room',
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
+
+        // Short display name for tables: strips " (Entire Property)" and trailing " Room"
+        function shortRoomName(name) {
+            if (!name) return name;
+            return name.replace(' (Entire Property)', '').replace(/ Room$/, '');
+        }
 
         const ADMIN_ROOM_ICONS = {
             'all': '🏨',
