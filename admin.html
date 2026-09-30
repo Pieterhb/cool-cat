@@ -3006,6 +3006,21 @@
         }
 
         function handleAdminCalDayClick(dateStr, isBooked, isBlocked, bookingDetails) {
+            const clickedDate = new Date(dateStr + 'T00:00:00');
+
+            // If admin has an active pending check-in and clicked a date after it, check if this is a valid check-out date
+            if (adminCalPendingCheckIn && clickedDate > adminCalPendingCheckIn) {
+                const checkInStr = formatDateStr(adminCalPendingCheckIn);
+                const checkOutStr = dateStr;
+                const conflict = checkBookingConflicts(adminCalRoomId, checkInStr, checkOutStr);
+                if (!conflict.hasConflict) {
+                    adminCalPendingCheckIn = null;
+                    renderAdminCalendar();
+                    openManualBookingModal(adminCalRoomId, checkInStr, checkOutStr);
+                    return;
+                }
+            }
+
             if (isBooked || isBlocked) {
                 if (bookingDetails) {
                     alert(`📋 Reservation Details:\n\nGuest/Reason: ${bookingDetails.guestName}\nRoom: ${bookingDetails.roomName || bookingDetails.roomId}\nStay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1} Nights)\nPhone: ${bookingDetails.guestPhone || '-'}\nTotal: R${Number(bookingDetails.totalAmount || 0).toLocaleString()} (Paid: R${Number(bookingDetails.amountPaid || 0).toLocaleString()})\nStatus: ${bookingDetails.status}\nReference: #${bookingDetails.id}`);
@@ -3019,8 +3034,6 @@
                 }
                 return;
             }
-
-            const clickedDate = new Date(dateStr + 'T00:00:00');
 
             if (!adminCalPendingCheckIn) {
                 adminCalPendingCheckIn = clickedDate;

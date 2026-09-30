@@ -528,6 +528,57 @@
 
         .cal-day.in-range .cal-day-num { color: var(--sapphire-blue-dark); }
 
+        /* Dynamic Checkout Mode Styles */
+        .cal-day.valid-turnover-checkout {
+            background: linear-gradient(135deg, #FEF3C7 0%, #EFF6FF 100%) !important;
+            border: 2px dashed #2563EB !important;
+            cursor: pointer !important;
+            opacity: 1 !important;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+        }
+        .cal-day.valid-turnover-checkout .cal-day-num {
+            color: #1D4ED8 !important;
+            font-weight: 800;
+        }
+        .cal-day.valid-open-checkout {
+            border-color: #93C5FD;
+            cursor: pointer;
+        }
+        .cal-day.checkout-min-stay {
+            opacity: 0.65;
+            cursor: default;
+        }
+        .cal-day.cal-day-in-hover-range {
+            background: rgba(15, 82, 186, 0.12) !important;
+            border-color: #93C5FD !important;
+        }
+        .cal-day.cal-day-hover-target {
+            border: 2px solid var(--sapphire-blue) !important;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 16px rgba(15, 82, 186, 0.3) !important;
+            z-index: 6;
+        }
+        .cal-avail-pill.pill-turnover-checkout {
+            background: #2563EB !important;
+            color: #FFFFFF !important;
+            font-weight: 800;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+            animation: pulseCheckoutPill 2s infinite ease-in-out;
+        }
+        @keyframes pulseCheckoutPill {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .cal-avail-pill.avail-checkout-open {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        .cal-avail-pill.pill-min-stay {
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 0.6rem;
+        }
+
         /* Desktop Hover Tooltip */
         .cal-tooltip {
             position: absolute;
@@ -2149,11 +2200,94 @@
         }
 
         // ==========================================
-        // 5. CALENDAR RENDERING
+        // 5. DYNAMIC CHECKOUT ENGINE & CALENDAR RENDERING
         // ==========================================
+
+        function getCheckoutStatusForDate(targetDate) {
+            if (!pendingCheckIn || pendingCheckIn.roomId !== selectedRoomId) {
+                return null;
+            }
+            const checkInDate = pendingCheckIn.date;
+            if (targetDate <= checkInDate) {
+                return null;
+            }
+
+            const nights = Math.round((targetDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+
+            let d = new Date(checkInDate);
+            let allNightsOpen = true;
+            let firstBlockedDate = null;
+
+            while (d < targetDate) {
+                const dStr = formatDateKey(d);
+                let isOpen = false;
+                if (selectedRoomId === 'all') {
+                    isOpen = (getAllRoomsAvailability(dStr).availableCount === 3);
+                } else {
+                    isOpen = (!isRoomBookedOnDate(selectedRoomId, dStr) && !isDateInSelectedStays(selectedRoomId, dStr));
+                }
+                if (!isOpen) {
+                    allNightsOpen = false;
+                    if (!firstBlockedDate) firstBlockedDate = new Date(d);
+                    break;
+                }
+                d.setDate(d.getDate() + 1);
+            }
+
+            return {
+                nights: nights,
+                allNightsOpen: allNightsOpen,
+                firstBlockedDate: firstBlockedDate,
+                isValidCheckout: allNightsOpen && nights >= 2,
+                isMinStayViolated: allNightsOpen && nights < 2,
+                isBlockedBeyondRange: !allNightsOpen
+            };
+        }
+
+        function handleDayHover(hoverDate) {
+            if (!pendingCheckIn || pendingCheckIn.roomId !== selectedRoomId) return;
+            const checkInDate = pendingCheckIn.date;
+            if (hoverDate <= checkInDate) {
+                clearHoverRange();
+                return;
+            }
+
+            const status = getCheckoutStatusForDate(hoverDate);
+            if (!status || !status.allNightsOpen) {
+                clearHoverRange();
+                return;
+            }
+
+            const cells = document.querySelectorAll('#calendarDaysGrid .cal-day[data-date]');
+            cells.forEach(cell => {
+                const cellDate = new Date(cell.dataset.date + 'T00:00:00');
+                if (cellDate > checkInDate && cellDate < hoverDate) {
+                    cell.classList.add('cal-day-in-hover-range');
+                } else {
+                    cell.classList.remove('cal-day-in-hover-range');
+                }
+
+                if (cellDate.getTime() === hoverDate.getTime() && status.isValidCheckout) {
+                    cell.classList.add('cal-day-hover-target');
+                } else {
+                    cell.classList.remove('cal-day-hover-target');
+                }
+            });
+        }
+
+        function clearHoverRange() {
+            const inRangeCells = document.querySelectorAll('.cal-day-in-hover-range, .cal-day-hover-target');
+            inRangeCells.forEach(cell => {
+                cell.classList.remove('cal-day-in-hover-range', 'cal-day-hover-target');
+            });
+        }
+
         function renderCalendar() {
             const grid = document.getElementById('calendarDaysGrid');
             grid.innerHTML = '';
+            grid.onmouseleave = () => {
+                clearHoverRange();
+            };
 
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth();
@@ -2217,12 +2351,17 @@
 
                 const dayCell = document.createElement('div');
                 dayCell.className = 'cal-day';
+                dayCell.dataset.date = dateStr;
                 if (isCurrentDay) dayCell.classList.add('today');
                 if (isPast) dayCell.classList.add('disabled');
 
                 // Check if this date is part of an already selected stay in cart for this room
                 const stayForDate = findStayByDateAndRoom(selectedRoomId, dateStr);
-                const isPendingStart = (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId && dateObj.getTime() === pendingCheckIn.date.getTime());
+                const isPendingCheckInActive = (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId);
+                const isPendingStart = (isPendingCheckInActive && dateObj.getTime() === pendingCheckIn.date.getTime());
+                const checkoutStatus = (isPendingCheckInActive && dateObj > pendingCheckIn.date)
+                    ? getCheckoutStatusForDate(dateObj)
+                    : null;
 
                 let isBooked = false;
                 let priceText = '';
@@ -2239,30 +2378,26 @@
                     ).length;
 
                     if (stayForDate) {
-                        availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ Booked in Cart</span>`;
+                        availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
                     } else if (avail.availableCount === 3 && indivCartCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
                     } else if (avail.availableCount === 0) {
-                        // All 3 rooms fully booked in DB — fully sold out for All Rooms
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
                         isBooked = true;
                     } else if (avail.availableCount < 3) {
-                        // Some rooms blocked by DB booking — can't book All Rooms
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        // Individual rooms are in cart on this date — show info pill
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${3 - indivCartCount} Free</span>`;
-                        isBooked = true; // Block "All Rooms" booking on these dates
+                        isBooked = true;
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
                     }
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
-                    // Check for conflicting cart stays — but exclude the stay already shown blue on this date
                     const isBookedOtherStay = selectedStays.some(s => {
-                        if (s === stayForDate) return false; // don't count own stay as a conflict
+                        if (s === stayForDate) return false;
                         if (s.roomId !== selectedRoomId && s.roomId !== 'all') return false;
                         return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                     });
@@ -2282,23 +2417,45 @@
                     }
                 }
 
-                if (stayForDate) {
-                    dayCell.classList.add('selected-stay');
-                } else if (isPendingStart) {
-                    dayCell.classList.add('selected-pending');
-                } else if (isBooked && !isPast) {
-                    dayCell.classList.add('booked-out');
-                }
-
+                // Dynamic Checkout Mode visual adaptations
                 const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
                 let tooltipText = `${weekdayName}, ${day} ${monthNames[month]} ${year} &bull; ${season.name}`;
+
                 if (stayForDate) {
+                    dayCell.classList.add('selected-stay');
                     tooltipText += `<br><span style="color: #67E8F9; font-weight:700;">★ Selected in Cart (${stayForDate.nights}N stay) &bull; Click to Remove</span>`;
                 } else if (isPendingStart) {
-                    tooltipText += `<br><span style="color: #FDBA74; font-weight:700;">📍 Check-In selected &bull; Click Check-Out date</span>`;
-                } else if (isBooked) {
+                    dayCell.classList.add('selected-pending');
+                    availPillHtml = `<span class="cal-avail-pill" style="background:#EA580C;color:#fff;">📍 Check-In</span>`;
+                    tooltipText += `<br><span style="color: #FDBA74; font-weight:700;">📍 Check-In Selected &bull; Now click your Check-Out date</span>`;
+                } else if (checkoutStatus) {
+                    // Active Check-Out Selection Mode
+                    if (checkoutStatus.isMinStayViolated) {
+                        // 1 night stay (min 2 nights required)
+                        dayCell.classList.add('checkout-min-stay');
+                        if (isBooked) dayCell.classList.add('booked-out');
+                        availPillHtml = `<span class="cal-avail-pill pill-min-stay">Min 2 Nights</span>`;
+                        tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ 1 Night stay (Minimum is 2 nights)</span><br><span style="color:#CBD5E1;">Click next day or further down the calendar to check out.</span>`;
+                    } else if (checkoutStatus.isValidCheckout) {
+                        if (isBooked) {
+                            // Turnover day: morning checkout before next arrival
+                            dayCell.classList.add('valid-turnover-checkout');
+                            availPillHtml = `<span class="cal-avail-pill pill-turnover-checkout">✓ Check-out (${checkoutStatus.nights}N)</span>`;
+                            tooltipText += `<br><span style="color: #67E8F9; font-weight:700;">✓ Valid Check-out Date (${checkoutStatus.nights} Nights Stay)</span><br>Depart by 10:00 AM before next guest arrives.<br>Stay: ${formatFriendlyDate(pendingCheckIn.date)} ➔ ${formatFriendlyDate(dateObj)}<br><strong style="color:#FDE047;">Click to lock in this ${checkoutStatus.nights}-night stay!</strong>`;
+                        } else {
+                            // Regular open checkout date
+                            dayCell.classList.add('valid-open-checkout');
+                            availPillHtml = `<span class="cal-avail-pill avail-checkout-open">${checkoutStatus.nights} Nights</span>`;
+                            tooltipText += `<br><span style="color: #67E8F9; font-weight:700;">✓ Check-out Date (${checkoutStatus.nights} Nights Stay)</span><br>Stay: ${formatFriendlyDate(pendingCheckIn.date)} ➔ ${formatFriendlyDate(dateObj)}<br>Click to check out on this date!`;
+                        }
+                    } else if (checkoutStatus.isBlockedBeyondRange) {
+                        dayCell.classList.add('booked-out', 'blocked-beyond-range');
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Blocked</span>`;
+                        tooltipText += `<br><span style="color: #FCA5A5; font-weight:700;">🚫 Unavailable for Check-out</span><br>Room is occupied from ${formatFriendlyDate(checkoutStatus.firstBlockedDate)}.<br>Latest check-out date for this stay is <strong>${formatFriendlyDate(checkoutStatus.firstBlockedDate)}</strong>.`;
+                    }
+                } else if (isBooked && !isPast) {
+                    dayCell.classList.add('booked-out');
                     if (selectedRoomId === 'all') {
-                        // Calculate full booking check (including individual carts) for tooltip detail
                         const fullAvail = getAllRoomsAvailability(dateStr);
                         const indivCartBlocking = ALL_ROOMS_SUBSET.filter(rId =>
                             selectedStays.some(s => s.roomId === rId && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
@@ -2328,21 +2485,32 @@
                         <span class="cal-day-num">${day}</span>
                         ${!isPast ? availPillHtml : ''}
                     </div>
-                    <div class="cal-price-tag">${!isPast && (!isBooked || stayForDate) ? priceText : ''}</div>
+                    <div class="cal-price-tag">${!isPast && (!isBooked || stayForDate || (checkoutStatus && checkoutStatus.isValidCheckout)) ? priceText : ''}</div>
                     ${!isPast ? tooltipHtml : ''}
                 `;
 
                 if (!isPast) {
+                    dayCell.onmouseenter = () => {
+                        if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
+                            handleDayHover(dateObj);
+                        }
+                    };
+
                     if (stayForDate) {
                         // Click to remove this stay
                         dayCell.onclick = () => handleDateClick(dateObj);
+                    } else if (checkoutStatus) {
+                        if (checkoutStatus.isMinStayViolated) {
+                            dayCell.onclick = () => handleDateClick(dateObj); // silently returns
+                        } else if (checkoutStatus.isValidCheckout) {
+                            dayCell.onclick = () => handleDateClick(dateObj); // completes booking!
+                        } else if (checkoutStatus.isBlockedBeyondRange) {
+                            dayCell.onclick = () => {
+                                showToast(`⚠️ The room is occupied starting ${formatFriendlyDate(checkoutStatus.firstBlockedDate)}. The latest check-out date for this stay is ${formatFriendlyDate(checkoutStatus.firstBlockedDate)}.`);
+                            };
+                        }
                     } else if (!isBooked || isPendingStart) {
                         dayCell.onclick = () => handleDateClick(dateObj);
-                    } else if (isBooked && pendingCheckIn && pendingCheckIn.roomId === selectedRoomId && dateObj > pendingCheckIn.date) {
-                        // Booked date after pending check-in: allow clicking as CHECK-OUT
-                        // (guest departs that morning, next guest arrives that afternoon — same-day turnover is fine)
-                        dayCell.onclick = () => handleDateClick(dateObj);
-                        dayCell.title = "Click to check out on this date (you depart, next guest arrives same day)";
                     } else {
                         dayCell.onclick = () => {
                             if (selectedRoomId === 'all') {
@@ -3392,6 +3560,7 @@
             // If user had an incomplete check-in selection on another room, clear the pending state
             if (pendingCheckIn && pendingCheckIn.roomId !== roomId) {
                 pendingCheckIn = null;
+                clearHoverRange();
             }
 
             // For ANY room tab chosen/activated, always default to max guests for that room
