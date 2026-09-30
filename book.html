@@ -3508,13 +3508,26 @@
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
+            function getRoomPrefixForStays(stays) {
+                if (!stays || stays.length === 0) return 'ALL-';
+                if (stays.length > 1) return 'ALL-';
+                const r = String(stays[0].roomId || '').toLowerCase();
+                if (r === 'all' || r.includes('all')) return 'ALL-';
+                if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+                if (r.includes('santor') || r.includes('san')) return 'SAN-';
+                if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+                if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+                return 'CC-';
+            }
+            const generatedBookingRef = getRoomPrefixForStays(selectedStays) + Math.floor((Math.random() * 89999) + 10000);
+
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
                     key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
-                    ref: 'CC-' + Math.floor((Math.random() * 899999) + 100000),
+                    ref: generatedBookingRef,
                     metadata: {
                         custom_fields: [
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
@@ -3533,8 +3546,7 @@
 
                 handler.openIframe();
             } else {
-                const simRef = 'CC-' + Math.floor((Math.random() * 899999) + 100000);
-                completeBooking(simRef, fullName, email, phone, arrivalTime, specialRequests);
+                completeBooking(generatedBookingRef, fullName, email, phone, arrivalTime, specialRequests);
             }
         }
 

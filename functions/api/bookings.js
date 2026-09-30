@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
 
         // Combine default with stored and sanitize any legacy manual test records in KV
         const allBookings = [...defaultBookings, ...storedBookings].map(b => {
-            const isManual = b.isManual || (b.id && b.id.startsWith('MAN-'));
+            const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL)-/i.test(b.id));
             const isExplicitlyPaid = b.isPaidEft === true || b.isRecordedPayment === true || (b.paystackRef && b.paystackRef.startsWith('PAY_'));
             if (isManual && !isExplicitlyPaid) {
                 if (b.status === 'cancelled') {
@@ -88,7 +88,18 @@ export async function onRequestPost(context) {
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
-        const bookingRef = id || ref || ('MAN-' + Math.floor(Math.random() * 89999 + 10000));
+        function getRoomPrefix(rId) {
+            if (!rId) return 'CC-';
+            const r = String(rId).toLowerCase();
+            if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+            if (r.includes('santor') || r.includes('san')) return 'SAN-';
+            if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+            if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+            return 'CC-';
+        }
+
+        const bookingRef = id || ref || (`${getRoomPrefix(roomId)}${Math.floor(Math.random() * 89999 + 10000)}`);
         const numTotal = Number(totalAmount || 0);
         const numPaid = Number(amountPaid !== undefined ? amountPaid : (depositPaid !== undefined ? depositPaid : 0));
         const numBalance = Number(balanceDue !== undefined ? balanceDue : (numTotal - numPaid));
