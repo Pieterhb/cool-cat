@@ -1669,7 +1669,7 @@
                     <h2 style="font-size: 2rem; color: var(--sapphire-blue-dark); margin-bottom: 0.2rem;">Booking Confirmed!</h2>
                     <p style="font-size: 1rem; color: #64748B;">Thank you, <span id="confGuestName">Piet</span>! Your stay at Cool-Cat is officially secured.</p>
                     
-                    <div class="success-ref">Booking Ref: <span id="confBookingRef">CC-89420</span></div>
+                    <div class="success-ref">Booking Ref: <span id="confBookingRef">#SAN-10001</span></div>
 
                     <!-- Itemized Confirmation Receipt -->
                     <div class="booking-receipt-box">
@@ -3090,13 +3090,55 @@
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
+            function getRoomPrefixForStays(stays) {
+                if (!stays || stays.length === 0) return 'ALL-';
+                if (stays.length > 1) return 'ALL-';
+                const r = String(stays[0].roomId || '').toLowerCase();
+                if (r === 'all' || r.includes('all')) return 'ALL-';
+                if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+                if (r.includes('santor') || r.includes('san')) return 'SAN-';
+                if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+                if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+                return 'CC-';
+            }
+
+            function formatRefId(id, roomId) {
+                if (!id) return '';
+                let clean = String(id).trim();
+                if (clean.startsWith('#')) clean = clean.substring(1);
+                if (/^(ALL|KIN|SAN|MYK|DEL)-\d+$/i.test(clean)) return clean.toUpperCase();
+                const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
+                const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
+                const prefix = getRoomPrefixForStays([{ roomId: inferredRoom }]);
+                clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                const numMatch = clean.match(/\d+/);
+                if (numMatch) return `${prefix}${numMatch[0]}`;
+                return clean;
+            }
+
+            function getNextRefNumber(stays) {
+                let maxSeq = 10000;
+                (MOCK_BOOKINGS || []).forEach(b => {
+                    const idStr = String(b.id || b.parentBookingId || '');
+                    const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                    if (match) {
+                        const num = parseInt(match[1], 10);
+                        if (num >= 10001 && num > maxSeq) maxSeq = num;
+                    }
+                });
+                const nextSeq = maxSeq + 1;
+                return `${getRoomPrefixForStays(stays)}${nextSeq}`;
+            }
+
+            const generatedBookingRef = getNextRefNumber(selectedStays);
+
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
                     key: 'pk_test_d3a3f019b78e470876543210abcdef1234567890',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
-                    ref: 'CC-' + Math.floor((Math.random() * 899999) + 100000),
+                    ref: generatedBookingRef,
                     metadata: {
                         custom_fields: [
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
@@ -3115,12 +3157,12 @@
 
                 handler.openIframe();
             } else {
-                const simRef = 'CC-' + Math.floor((Math.random() * 899999) + 100000);
-                completeBooking(simRef, fullName, email, phone, arrivalTime, specialRequests);
+                completeBooking(generatedBookingRef, fullName, email, phone, arrivalTime, specialRequests);
             }
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+            const cleanRef = formatRefId(refNumber, selectedStays[0]?.roomId);
             // Compile per-stay totals from per-stay breakfast data
             const totalBreakfastCost = selectedStays.reduce((sum, s) => {
                 return sum + (s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0);
@@ -3128,7 +3170,7 @@
             const totalGuestCount = selectedStays.reduce((max, s) => Math.max(max, s.guestCount), 0);
 
             const bookingPayload = {
-                reference: refNumber,
+                reference: cleanRef,
                 guestName: name,
                 guestEmail: email,
                 guestPhone: '+27' + phone,
@@ -3162,6 +3204,8 @@
                 if (stay.roomId === 'all') {
                     ROOMS.forEach(r => {
                         MOCK_BOOKINGS.push({
+                            id: cleanRef + '_' + r.id,
+                            parentBookingId: cleanRef,
                             roomId: r.id,
                             checkIn: stay.checkInStr,
                             checkOut: stay.checkOutStr
@@ -3169,6 +3213,7 @@
                     });
                 } else {
                     MOCK_BOOKINGS.push({
+                        id: cleanRef,
                         roomId: stay.roomId,
                         checkIn: stay.checkInStr,
                         checkOut: stay.checkOutStr
@@ -3178,7 +3223,7 @@
 
             // Populate Step 4 Confirmation Screen
             document.getElementById('confGuestName').textContent = name;
-            document.getElementById('confBookingRef').textContent = refNumber;
+            document.getElementById('confBookingRef').textContent = cleanRef;
             document.getElementById('confNights').textContent = `${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} across ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''}`;
             document.getElementById('confTotalStay').textContent = `R${calculatedGrandTotal.toLocaleString()}`;
             

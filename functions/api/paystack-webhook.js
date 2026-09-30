@@ -76,6 +76,20 @@ export async function onRequestPost(context) {
                     });
                 }
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
+
+                const numMatch = String(ref).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(ref).match(/(\d{5})/);
+                if (numMatch) {
+                    const seqVal = parseInt(numMatch[1], 10);
+                    if (seqVal >= 10001) {
+                        try {
+                            const currentStored = await env.COOLCAT_KV.get('booking_seq');
+                            const cur = currentStored ? parseInt(currentStored, 10) : 10000;
+                            if (seqVal > cur) {
+                                await env.COOLCAT_KV.put('booking_seq', String(seqVal));
+                            }
+                        } catch (e) {}
+                    }
+                }
             }
         }
 

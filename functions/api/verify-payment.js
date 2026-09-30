@@ -59,8 +59,66 @@ export async function onRequestPost(context) {
             });
         }
 
-        // 2. Format Confirmed Booking Record & Stays
-        const bookingRef = reference || ('CC-' + Math.floor(Math.random() * 899999 + 100000));
+        function getRoomPrefixForStays(stays) {
+            if (!stays || stays.length === 0) return 'ALL-';
+            if (stays.length > 1) return 'ALL-';
+            const r = String(stays[0].roomId || '').toLowerCase();
+            if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+            if (r.includes('santor') || r.includes('san')) return 'SAN-';
+            if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+            if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+            return 'CC-';
+        }
+
+        function getHighestSeqFromBookings(bookingsList) {
+            let max = 10000;
+            if (Array.isArray(bookingsList)) {
+                bookingsList.forEach(b => {
+                    const idStr = String(b.id || b.parentBookingId || '');
+                    const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                    if (m) {
+                        const n = parseInt(m[1], 10);
+                        if (n >= 10001 && n > max) max = n;
+                    }
+                });
+            }
+            return max;
+        }
+
+        async function getNextSequenceNumber(env, bookingsList) {
+            let currentSeq = 10000;
+            if (env && env.COOLCAT_KV) {
+                try {
+                    const stored = await env.COOLCAT_KV.get('booking_seq');
+                    if (stored) {
+                        const parsed = parseInt(stored, 10);
+                        if (parsed >= 10000) currentSeq = parsed;
+                    }
+                } catch (e) {}
+            }
+            const highestFromList = getHighestSeqFromBookings(bookingsList);
+            const nextSeq = Math.max(currentSeq, highestFromList) + 1;
+            return nextSeq;
+        }
+
+        async function updateSequenceNumber(env, seqNum) {
+            if (env && env.COOLCAT_KV && seqNum >= 10001) {
+                try {
+                    const currentStored = await env.COOLCAT_KV.get('booking_seq');
+                    const cur = currentStored ? parseInt(currentStored, 10) : 10000;
+                    if (seqNum > cur) {
+                        await env.COOLCAT_KV.put('booking_seq', String(seqNum));
+                    }
+                } catch (e) {}
+            }
+        }
+
+        let existingForSeq = [];
+        if (env && env.COOLCAT_KV) {
+            existingForSeq = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+        }
+
         const staysList = (payload.stays && Array.isArray(payload.stays) && payload.stays.length > 0) ? payload.stays : [{
             roomId: roomId || 'king-arthur',
             roomName: roomName || 'King Arthur Room',
@@ -71,6 +129,22 @@ export async function onRequestPost(context) {
             nights: nights || 1,
             subtotal: totalAmount || 0
         }];
+
+        // 2. Format Confirmed Booking Record & Stays
+        let bookingRef = reference;
+        if (!bookingRef) {
+            const nextSeq = await getNextSequenceNumber(env, existingForSeq);
+            bookingRef = `${getRoomPrefixForStays(staysList)}${nextSeq}`;
+            await updateSequenceNumber(env, nextSeq);
+        } else {
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            if (m) {
+                const seqVal = parseInt(m[1], 10);
+                if (seqVal >= 10001) {
+                    await updateSequenceNumber(env, seqVal);
+                }
+            }
+        }
 
         const confirmedBooking = {
             id: bookingRef,
@@ -195,6 +269,7 @@ export async function onRequestPost(context) {
 // Helper to generate and send emails via Resend or Cloudflare Mail API
 async function dispatchBookingEmails(booking, env) {
     const resendApiKey = (env && env.RESEND_API_KEY) ? env.RESEND_API_KEY : null;
+    const cleanRef = (booking.id || '').replace(/^#/, '');
 
     const staysRowsHtml = (booking.stays && Array.isArray(booking.stays)) ? booking.stays.map(s => `
         <div style="padding: 8px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px;">
@@ -219,7 +294,7 @@ async function dispatchBookingEmails(booking, env) {
           <p>Thank you for choosing Cool-Cat! Your reservation is officially secured.</p>
           
           <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0 0 10px; font-weight: bold; color: #0a3a85; font-size: 16px;">Booking Reference: #${booking.id}</p>
+            <p style="margin: 0 0 10px; font-weight: bold; color: #0a3a85; font-size: 16px;">Booking Reference: #${cleanRef}</p>
             <div style="margin-bottom: 12px;">
                 <strong>Reserved Stays:</strong>
                 ${staysRowsHtml}
@@ -255,7 +330,7 @@ async function dispatchBookingEmails(booking, env) {
     <head><meta charset="utf-8"></head>
     <body style="font-family: Arial, sans-serif; background-color: #f4f7f9; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 25px; border: 1px solid #e2e8f0;">
-        <h2 style="color: #0a3a85; margin-top: 0;">🔔 New Booking Received: #${booking.id}</h2>
+        <h2 style="color: #0a3a85; margin-top: 0;">🔔 New Booking Received: #${cleanRef}</h2>
         <p>A new guest has completed their booking and payment via Paystack:</p>
         <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0;">
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Guest Name:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.guestName}</td></tr>
@@ -287,7 +362,7 @@ async function dispatchBookingEmails(booking, env) {
                 body: JSON.stringify({
                     from: 'Cool-Cat <bookings@cool-cat.co.za>',
                     to: [booking.guestEmail],
-                    subject: `Booking Confirmed #${booking.id} - Cool-Cat Strand`,
+                    subject: `Booking Confirmed #${cleanRef} - Cool-Cat Strand`,
                     html: guestHtml
                 })
             });
@@ -302,7 +377,7 @@ async function dispatchBookingEmails(booking, env) {
                 body: JSON.stringify({
                     from: 'Cool-Cat System <bookings@cool-cat.co.za>',
                     to: ['bookings@cool-cat.co.za', 'corrie@cool-cat.co.za'],
-                    subject: `🔔 New Booking #${booking.id}: ${booking.guestName} (${booking.roomName})`,
+                    subject: `🔔 New Booking #${cleanRef}: ${booking.guestName} (${booking.roomName})`,
                     html: ownerHtml
                 })
             });

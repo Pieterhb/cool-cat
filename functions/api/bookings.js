@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
 
         // Combine default with stored and sanitize any legacy manual test records in KV
         const allBookings = [...defaultBookings, ...storedBookings].map(b => {
-            const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL)-/i.test(b.id));
+            const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL|CC)-/i.test(b.id));
             const isExplicitlyPaid = b.isPaidEft === true || b.isRecordedPayment === true || (b.paystackRef && b.paystackRef.startsWith('PAY_'));
             if (isManual && !isExplicitlyPaid) {
                 if (b.status === 'cancelled') {
@@ -42,9 +42,12 @@ export async function onRequestGet(context) {
             return b;
         });
 
+        const nextSequence = await getNextSequenceNumber(env, allBookings);
+
         return new Response(JSON.stringify({
             success: true,
-            bookings: allBookings
+            bookings: allBookings,
+            nextSequence: nextSequence
         }), {
             headers: {
                 'Content-Type': 'application/json',
@@ -55,7 +58,8 @@ export async function onRequestGet(context) {
         return new Response(JSON.stringify({
             success: false,
             error: err.message,
-            bookings: defaultBookings
+            bookings: defaultBookings,
+            nextSequence: 10001
         }), {
             status: 200,
             headers: {
@@ -63,6 +67,60 @@ export async function onRequestGet(context) {
                 'Access-Control-Allow-Origin': '*'
             }
         });
+    }
+}
+
+function getRoomPrefix(rId) {
+    if (!rId) return 'CC-';
+    const r = String(rId).toLowerCase();
+    if (r === 'all' || r.includes('all')) return 'ALL-';
+    if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+    if (r.includes('santor') || r.includes('san')) return 'SAN-';
+    if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+    if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+    return 'CC-';
+}
+
+function getHighestSeqFromBookings(bookingsList) {
+    let max = 10000;
+    if (Array.isArray(bookingsList)) {
+        bookingsList.forEach(b => {
+            const idStr = String(b.id || b.parentBookingId || '');
+            const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+            if (m) {
+                const n = parseInt(m[1], 10);
+                if (n >= 10001 && n > max) max = n;
+            }
+        });
+    }
+    return max;
+}
+
+async function getNextSequenceNumber(env, bookingsList) {
+    let currentSeq = 10000;
+    if (env && env.COOLCAT_KV) {
+        try {
+            const stored = await env.COOLCAT_KV.get('booking_seq');
+            if (stored) {
+                const parsed = parseInt(stored, 10);
+                if (parsed >= 10000) currentSeq = parsed;
+            }
+        } catch (e) {}
+    }
+    const highestFromList = getHighestSeqFromBookings(bookingsList);
+    const nextSeq = Math.max(currentSeq, highestFromList) + 1;
+    return nextSeq;
+}
+
+async function updateSequenceNumber(env, seqNum) {
+    if (env && env.COOLCAT_KV && seqNum >= 10001) {
+        try {
+            const currentStored = await env.COOLCAT_KV.get('booking_seq');
+            const cur = currentStored ? parseInt(currentStored, 10) : 10000;
+            if (seqNum > cur) {
+                await env.COOLCAT_KV.put('booking_seq', String(seqNum));
+            }
+        } catch (e) {}
     }
 }
 
@@ -88,18 +146,25 @@ export async function onRequestPost(context) {
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
-        function getRoomPrefix(rId) {
-            if (!rId) return 'CC-';
-            const r = String(rId).toLowerCase();
-            if (r === 'all' || r.includes('all')) return 'ALL-';
-            if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
-            if (r.includes('santor') || r.includes('san')) return 'SAN-';
-            if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
-            if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
-            return 'CC-';
+        let existing = [];
+        if (env && env.COOLCAT_KV) {
+            existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
         }
 
-        const bookingRef = id || ref || (`${getRoomPrefix(roomId)}${Math.floor(Math.random() * 89999 + 10000)}`);
+        let bookingRef = id || ref;
+        if (!bookingRef) {
+            const nextSeq = await getNextSequenceNumber(env, existing);
+            bookingRef = `${getRoomPrefix(roomId)}${nextSeq}`;
+            await updateSequenceNumber(env, nextSeq);
+        } else {
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            if (m) {
+                const seqVal = parseInt(m[1], 10);
+                if (seqVal >= 10001) {
+                    await updateSequenceNumber(env, seqVal);
+                }
+            }
+        }
         const numTotal = Number(totalAmount || 0);
         const numPaid = Number(amountPaid !== undefined ? amountPaid : (depositPaid !== undefined ? depositPaid : 0));
         const numBalance = Number(balanceDue !== undefined ? balanceDue : (numTotal - numPaid));

@@ -2537,10 +2537,25 @@
             return clean;
         }
 
-        function generateRefId(roomId) {
+        function getNextRefNumber(roomId) {
+            let maxSeq = 10000;
+            (ADMIN_BOOKINGS || []).forEach(b => {
+                const idStr = String(b.id || b.parentBookingId || '');
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                if (match) {
+                    const num = parseInt(match[1], 10);
+                    if (num >= 10001 && num > maxSeq) {
+                        maxSeq = num;
+                    }
+                }
+            });
+            const nextSeq = maxSeq + 1;
             const prefix = getRoomPrefix(roomId);
-            const num = Math.floor(Math.random() * 89999 + 10000);
-            return `${prefix}${num}`;
+            return `${prefix}${nextSeq}`;
+        }
+
+        function generateRefId(roomId) {
+            return getNextRefNumber(roomId);
         }
 
         const ADMIN_ROOM_ICONS = {
@@ -3431,9 +3446,10 @@
             const b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId || bk.parentBookingId === bookingId);
             if (!b) return;
             currentPayBooking = b;
+            const cleanRef = formatRefId(b.id, b.roomId);
 
             document.getElementById('payBookingId').value = b.id;
-            document.getElementById('payModalSubtitle').textContent = `Update payment status for #${b.id}`;
+            document.getElementById('payModalSubtitle').textContent = `Update payment status for #${cleanRef}`;
             document.getElementById('payModalGuestName').textContent = b.guestName || 'Guest';
             document.getElementById('payModalRoomStay').textContent = `${b.roomName || b.roomId} (${b.checkIn} ➔ ${b.checkOut})`;
             
@@ -3555,7 +3571,7 @@
             renderGuestsTable();
             renderAdminCalendar();
             closePaymentModal();
-            alert(`✅ Payment status for #${bookingId} updated successfully to ${status === 'fully_paid' ? '100% PAID' : (status === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
+            alert(`✅ Payment status for #${formatRefId(bookingId)} updated successfully to ${status === 'fully_paid' ? '100% PAID' : (status === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
         }
 
         function updateLocalBookingPayment(id, payload) {
@@ -3577,7 +3593,7 @@
         }
 
         async function cancelBooking(id) {
-            if (!confirm(`Are you sure you want to cancel booking #${id}?\n\nThis will instantly free the dates on the availability calendar so new guests can book, while keeping the cancelled reservation on record with a 'CANCELLED' status.`)) {
+            if (!confirm(`Are you sure you want to cancel booking #${formatRefId(id)}?\n\nThis will instantly free the dates on the availability calendar so new guests can book, while keeping the cancelled reservation on record with a 'CANCELLED' status.`)) {
                 return;
             }
 
@@ -3606,7 +3622,7 @@
             renderFinancesTable();
             renderGuestsTable();
             renderAdminCalendar();
-            alert(`✅ Booking #${id} has been soft-cancelled.\nThe room dates are now OPEN and available on the calendar!`);
+            alert(`✅ Booking #${formatRefId(id)} has been soft-cancelled.\nThe room dates are now OPEN and available on the calendar!`);
         }
 
         async function restoreBooking(id) {
@@ -3617,11 +3633,11 @@
             const conflictResult = checkBookingConflicts(b.roomId, b.checkIn, b.checkOut, b.id);
             if (conflictResult.hasConflict) {
                 const c = conflictResult.conflicts[0];
-                alert(`⚠️ Cannot restore booking #${id}: The dates (${b.checkIn} to ${b.checkOut}) are already booked by #${c.booking.id} (${c.booking.guestName}). Please free the dates first.`);
+                alert(`⚠️ Cannot restore booking #${formatRefId(id)}: The dates (${b.checkIn} to ${b.checkOut}) are already booked by #${formatRefId(c.booking.id, c.booking.roomId)} (${c.booking.guestName}). Please free the dates first.`);
                 return;
             }
 
-            if (!confirm(`Restore booking #${id} (${b.guestName} - ${b.roomName || b.roomId}) back to active status?\n\nThis will lock these dates on the live calendar again.`)) {
+            if (!confirm(`Restore booking #${formatRefId(id)} (${b.guestName} - ${b.roomName || b.roomId}) back to active status?\n\nThis will lock these dates on the live calendar again.`)) {
                 return;
             }
 
@@ -3664,11 +3680,11 @@
             renderFinancesTable();
             renderGuestsTable();
             renderAdminCalendar();
-            alert(`✅ Booking #${id} restored successfully to ${restoredStatus === 'fully_paid' ? '100% PAID' : (restoredStatus === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
+            alert(`✅ Booking #${formatRefId(id)} restored successfully to ${restoredStatus === 'fully_paid' ? '100% PAID' : (restoredStatus === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
         }
 
         async function wipeBookingPermanently(id) {
-            if (!confirm(`⚠️ PERMANENT WIPE:\n\nAre you sure you want to permanently delete booking #${id} from the database?\n\nThis action cannot be undone.`)) {
+            if (!confirm(`⚠️ PERMANENT WIPE:\n\nAre you sure you want to permanently delete booking #${formatRefId(id)} from the database?\n\nThis action cannot be undone.`)) {
                 return;
             }
 
@@ -3692,7 +3708,7 @@
             renderFinancesTable();
             renderGuestsTable();
             renderAdminCalendar();
-            alert(`🗑️ Booking #${id} permanently wiped from the database.`);
+            alert(`🗑️ Booking #${formatRefId(id)} permanently wiped from the database.`);
         }
 
         function updateLocalBookingStatus(id, status, balanceDue = 0) {
@@ -3723,16 +3739,18 @@
             const guestName = b.guestName || 'Valued Guest';
             const roomName = b.roomName || ADMIN_ROOM_NAMES[b.roomId] || b.roomId;
             const guestPhone = b.guestPhone || '';
+            const cleanRef = formatRefId(b.id, b.roomId);
 
             document.getElementById('shareBookingId').value = b.id;
             document.getElementById('shareGuestPhone').value = guestPhone;
             document.getElementById('shareGuestName').textContent = guestName;
             document.getElementById('shareRoomStay').textContent = `${roomName} (${b.checkIn} ➔ ${b.checkOut} • ${b.nights || 1}N)`;
             document.getElementById('shareAmountSummary').textContent = `Total: R${total.toLocaleString()} (50% Deposit: R${deposit.toLocaleString()})`;
+            document.getElementById('shareModalSubtitle').textContent = `Quote for #${cleanRef} (${guestName})`;
 
             // Generate direct booking & quick pay link
             const origin = window.location.origin || 'https://cool-cat.co.za';
-            const payUrl = `${origin}/book.html?payRef=${encodeURIComponent(b.id)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
+            const payUrl = `${origin}/book.html?payRef=${encodeURIComponent(cleanRef)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
 
             const msgText = 
 `*Cool-Cat Guesthouse - Accommodation Quote & Payment Details*
@@ -3747,7 +3765,7 @@ Thank you for your enquiry to stay at Cool-Cat in Strand, Western Cape! Here are
 🌙 *Duration:* ${b.nights || 1} Night(s)
 💰 *Total Amount:* R${total.toLocaleString()}
 🔒 *50% Deposit to Secure:* R${deposit.toLocaleString()}
-📌 *Booking Reference:* #${b.id}
+📌 *Booking Reference:* #${cleanRef}
 
 ----------------------------------------
 💳 *OPTION 1: Instant Card / Apple Pay / EFT (Online Paystack)*
@@ -3760,7 +3778,7 @@ ${payUrl}
 *Account Name:* P H Botes
 *Account Number:* 1485601132
 *Branch Code:* 470010
-*Reference:* ${b.id} ${guestName}
+*Reference:* ${cleanRef} ${guestName}
 *(Please WhatsApp Proof of Payment to 063 712 4491 once done)*
 
 ----------------------------------------
@@ -3844,7 +3862,7 @@ We look forward to hosting you at Cool-Cat!`;
             ];
             ADMIN_BOOKINGS.forEach(b => {
                 rows.push([
-                    b.id,
+                    formatRefId(b.id, b.roomId),
                     b.guestName,
                     b.guestEmail || '',
                     b.guestPhone || '',
@@ -3870,7 +3888,7 @@ We look forward to hosting you at Cool-Cat!`;
                 const isPaid = Number(b.amountPaid || 0) > 0;
                 const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
                 rows.push([
-                    'PAY_' + b.id,
+                    'PAY_' + formatRefId(b.id, b.roomId),
                     b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || ''),
                     b.guestName,
                     b.guestEmail || 'direct@cool-cat.co.za',

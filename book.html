@@ -2055,7 +2055,7 @@
             <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">💳</div>
             <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.35rem;">Secure Reservation Payment</h2>
             <p style="font-size: 0.85rem; color: #64748B; text-align: center; margin-bottom: 1.2rem;">
-                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#MAN-XXXXX</strong>
+                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#SAN-10001</strong>
             </p>
 
             <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
@@ -2112,7 +2112,7 @@
                     Account Name: <strong>P H Botes</strong><br>
                     Account Number: <strong>1485601132</strong><br>
                     Branch Code: <strong>470010</strong><br>
-                    Reference: <strong id="qpEftRefText">MAN-XXXXX</strong><br>
+                    Reference: <strong id="qpEftRefText">SAN-10001</strong><br>
                     <a href="#" id="qpEftWaBtn" target="_blank" class="btn-sm btn-wa" style="display:inline-block; margin-top:0.6rem; text-decoration:none;">📲 Send Proof of Payment on WhatsApp</a>
                 </div>
             </div>
@@ -3508,10 +3508,9 @@
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
-            function getRoomPrefixForStays(stays) {
-                if (!stays || stays.length === 0) return 'ALL-';
-                if (stays.length > 1) return 'ALL-';
-                const r = String(stays[0].roomId || '').toLowerCase();
+            function getRoomPrefix(rId) {
+                if (!rId) return 'CC-';
+                const r = String(rId).toLowerCase();
                 if (r === 'all' || r.includes('all')) return 'ALL-';
                 if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
                 if (r.includes('santor') || r.includes('san')) return 'SAN-';
@@ -3519,7 +3518,53 @@
                 if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
                 return 'CC-';
             }
-            const generatedBookingRef = getRoomPrefixForStays(selectedStays) + Math.floor((Math.random() * 89999) + 10000);
+
+            function getRoomPrefixForStays(stays) {
+                if (!stays || stays.length === 0) return 'ALL-';
+                if (stays.length > 1) return 'ALL-';
+                const r = String(stays[0].roomId || '').toLowerCase();
+                return getRoomPrefix(r);
+            }
+
+            function formatRefId(id, roomId) {
+                if (!id) return '';
+                let clean = String(id).trim();
+                if (clean.startsWith('#')) clean = clean.substring(1);
+
+                if (/^(ALL|KIN|SAN|MYK|DEL)-\d+$/i.test(clean)) {
+                    return clean.toUpperCase();
+                }
+
+                const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
+                const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
+                const prefix = getRoomPrefix(inferredRoom);
+
+                clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                const numMatch = clean.match(/\d+/);
+                if (numMatch) {
+                    return `${prefix}${numMatch[0]}`;
+                }
+                return clean;
+            }
+
+            function getNextRefNumber(staysOrRoom) {
+                let maxSeq = 10000;
+                (MOCK_BOOKINGS || []).forEach(b => {
+                    const idStr = String(b.id || b.parentBookingId || '');
+                    const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                    if (match) {
+                        const num = parseInt(match[1], 10);
+                        if (num >= 10001 && num > maxSeq) {
+                            maxSeq = num;
+                        }
+                    }
+                });
+                const nextSeq = maxSeq + 1;
+                const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
+                return `${prefix}${nextSeq}`;
+            }
+
+            const generatedBookingRef = getNextRefNumber(selectedStays);
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
@@ -3551,6 +3596,8 @@
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+            const cleanRef = formatRefId(refNumber, selectedStays[0]?.roomId);
+
             // Compile per-stay totals from per-stay breakfast data
             const totalBreakfastCost = selectedStays.reduce((sum, s) => {
                 return sum + (s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0);
@@ -3558,7 +3605,7 @@
             const totalGuestCount = selectedStays.reduce((max, s) => Math.max(max, s.guestCount), 0);
 
             const bookingPayload = {
-                reference: refNumber,
+                reference: cleanRef,
                 guestName: name,
                 guestEmail: email,
                 guestPhone: '+27' + phone,
@@ -3592,6 +3639,8 @@
                 if (stay.roomId === 'all') {
                     ROOMS.forEach(r => {
                         MOCK_BOOKINGS.push({
+                            id: cleanRef + '_' + r.id,
+                            parentBookingId: cleanRef,
                             roomId: r.id,
                             checkIn: stay.checkInStr,
                             checkOut: stay.checkOutStr
@@ -3599,6 +3648,7 @@
                     });
                 } else {
                     MOCK_BOOKINGS.push({
+                        id: cleanRef,
                         roomId: stay.roomId,
                         checkIn: stay.checkInStr,
                         checkOut: stay.checkOutStr
@@ -3608,7 +3658,7 @@
 
             // Populate Step 4 Confirmation Screen
             document.getElementById('confGuestName').textContent = name;
-            document.getElementById('confBookingRef').textContent = refNumber;
+            document.getElementById('confBookingRef').textContent = cleanRef;
             document.getElementById('confNights').textContent = `${totalNightsCount} Night${totalNightsCount > 1 ? 's' : ''} across ${selectedStays.length} Stay${selectedStays.length > 1 ? 's' : ''}`;
             document.getElementById('confTotalStay').textContent = `R${calculatedGrandTotal.toLocaleString()}`;
             
@@ -3648,13 +3698,13 @@
             // Wire dynamic WhatsApp button
             const waBtn = document.getElementById('confWhatsAppBtn');
             if (waBtn) {
-                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${refNumber}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
+                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${cleanRef}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
                 waBtn.href = `https://wa.me/27637124491?text=${waText}`;
             }
 
             // Store current booking in window memory for ICS export
             window._lastConfirmedBooking = {
-                id: refNumber,
+                id: cleanRef,
                 guestName: name,
                 stays: selectedStays
             };
@@ -3969,8 +4019,10 @@
                 'deluxe-suite': 'Cool-Cat Deluxe Suite'
             };
 
+            const cleanPayRef = formatRefId(payRef, room);
+
             activeQuotePay = {
-                ref: payRef,
+                ref: cleanPayRef,
                 room: room,
                 roomName: roomNames[room] || room,
                 checkIn: cIn,
@@ -3983,7 +4035,7 @@
             };
 
             const refEl = document.getElementById('qpBookingRef');
-            if (refEl) refEl.textContent = `#${payRef}`;
+            if (refEl) refEl.textContent = `#${cleanPayRef}`;
             const nameEl = document.getElementById('qpGuestName');
             if (nameEl) nameEl.textContent = name;
             const roomEl = document.getElementById('qpRoomName');
@@ -3997,9 +4049,9 @@
             const fullEl = document.getElementById('qpFullAmount');
             if (fullEl) fullEl.textContent = `R${total.toLocaleString()}`;
             const eftRef = document.getElementById('qpEftRefText');
-            if (eftRef) eftRef.textContent = `${payRef} ${name}`;
+            if (eftRef) eftRef.textContent = `${cleanPayRef} ${name}`;
 
-            const waMsg = `Hi Michele, I have made an EFT payment for Cool-Cat booking ref ${payRef} (${name}). Here is my proof of payment:`;
+            const waMsg = `Hi Michele, I have made an EFT payment for Cool-Cat booking ref #${cleanPayRef} (${name}). Here is my proof of payment:`;
             const waBtn = document.getElementById('qpEftWaBtn');
             if (waBtn) waBtn.href = `https://wa.me/27637124491?text=${encodeURIComponent(waMsg)}`;
 
