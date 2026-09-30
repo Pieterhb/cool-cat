@@ -2281,13 +2281,14 @@
         // All Rooms tab includes King Arthur, Santori, Mykonos (excluding Deluxe Suite)
         const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
 
-        // Global Site Settings from Cloudflare KV (Markup %, Base Rates)
+        // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
         let SITE_CONFIG = {
             nextYearMarkupPct: 10
         };
 
         function applyConfigToRooms(cfg) {
-            if (!cfg) return;
+            if (!cfg || typeof cfg !== 'object') return;
+            SITE_CONFIG = { ...SITE_CONFIG, ...cfg };
             if (cfg.nextYearMarkupPct !== undefined) {
                 SITE_CONFIG.nextYearMarkupPct = Number(cfg.nextYearMarkupPct);
             }
@@ -2300,8 +2301,8 @@
             ROOMS.forEach(room => {
                 const saved = rateMap[room.id];
                 if (saved) {
-                    if (saved.wd !== undefined && saved.wd > 0) room.baseWeekday = Number(saved.wd);
-                    if (saved.we !== undefined && saved.we > 0) room.baseWeekend  = Number(saved.we);
+                    if (saved.wd !== undefined && Number(saved.wd) > 0) room.baseWeekday = Number(saved.wd);
+                    if (saved.we !== undefined && Number(saved.we) > 0) room.baseWeekend  = Number(saved.we);
                 }
             });
         }
@@ -2452,8 +2453,8 @@
             // Check if an ACTIVE SPECIAL override applies for this date & room
             if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
                 const isSpecialActive = (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
-                const spStart = SITE_CONFIG[`special_${prefix}_start`];
-                const spEnd = SITE_CONFIG[`special_${prefix}_end`];
+                const spStart = String(SITE_CONFIG[`special_${prefix}_start`] || '').trim().replace(/\//g, '-');
+                const spEnd = String(SITE_CONFIG[`special_${prefix}_end`] || '').trim().replace(/\//g, '-');
                 const spRate = Number(SITE_CONFIG[`special_${prefix}_rate`]);
 
                 if (isSpecialActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
@@ -2505,7 +2506,9 @@
                 const markupPct = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
                     ? Number(SITE_CONFIG.nextYearMarkupPct)
                     : 10;
-                rate = rate * (1 + markupPct / 100);
+                if (markupPct > 0) {
+                    rate = rate * (1 + markupPct / 100);
+                }
             }
 
             return Math.round(rate);

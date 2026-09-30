@@ -130,12 +130,12 @@ export async function onRequestPost(context) {
         });
         allowedBoolean.forEach(key => {
             if (payload[key] !== undefined) {
-                update[key] = Boolean(payload[key]);
+                update[key] = (payload[key] === true || payload[key] === 'true');
             }
         });
         allowedString.forEach(key => {
             if (payload[key] !== undefined) {
-                update[key] = String(payload[key]).trim();
+                update[key] = String(payload[key]).trim().replace(/\//g, '-');
             }
         });
 

@@ -1962,6 +1962,38 @@
         // The 3 rooms included in "All Rooms" booking (Deluxe Suite is excluded)
         const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
 
+        // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
+        let SITE_CONFIG = {
+            nextYearMarkupPct: 10
+        };
+
+        function applyConfigToRooms(cfg) {
+            if (!cfg || typeof cfg !== 'object') return;
+            SITE_CONFIG = { ...SITE_CONFIG, ...cfg };
+            if (cfg.nextYearMarkupPct !== undefined) {
+                SITE_CONFIG.nextYearMarkupPct = Number(cfg.nextYearMarkupPct);
+            }
+            const rateMap = {
+                'king-arthur': { wd: cfg.king_wd,    we: cfg.king_we    },
+                'santori':     { wd: cfg.santori_wd, we: cfg.santori_we },
+                'mykonos':     { wd: cfg.mykonos_wd, we: cfg.mykonos_we },
+                'deluxe-suite':{ wd: cfg.deluxe_wd,  we: cfg.deluxe_we  }
+            };
+            ROOMS.forEach(room => {
+                const saved = rateMap[room.id];
+                if (saved) {
+                    if (saved.wd !== undefined && Number(saved.wd) > 0) room.baseWeekday = Number(saved.wd);
+                    if (saved.we !== undefined && Number(saved.we) > 0) room.baseWeekend  = Number(saved.we);
+                }
+            });
+        }
+
+        // Apply any cached rate overrides from localStorage immediately
+        try {
+            const cachedCfg = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
+            applyConfigToRooms(cachedCfg);
+        } catch(e) { /* ignore */ }
+
         // Live bookings store (populated dynamically from Cloudflare KV / backend)
         let MOCK_BOOKINGS = [];
 
@@ -1993,7 +2025,7 @@
         let activeReferralCode = '';
 
         // ==========================================
-        // 3. BACKEND SYNC: FETCH LIVE BOOKINGS
+        // 3. BACKEND SYNC: FETCH LIVE BOOKINGS & SETTINGS
         // ==========================================
         async function loadLiveBookings() {
             try {
@@ -2007,6 +2039,24 @@
                 }
             } catch (e) {
                 console.log("Using initial seeded bookings:", e);
+            }
+        }
+
+        async function loadSiteSettings() {
+            try {
+                const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.success && data.config) {
+                        applyConfigToRooms(data.config);
+                        localStorage.setItem('coolcat_rates_config', JSON.stringify(data.config));
+                        renderCalendar();
+                        updateSummarySidebar();
+                        updateBannerRoomInfo();
+                    }
+                }
+            } catch (e) {
+                console.log("Using cached site settings:", e);
             }
         }
 
@@ -3592,6 +3642,27 @@
             }
         };
 
+        function updateBannerRoomInfo() {
+            const bannerName = document.getElementById('bannerRoomName');
+            const bannerSpecs = document.getElementById('bannerRoomSpecs');
+            const bannerRate = document.getElementById('bannerRoomRate');
+
+            if (selectedRoomId === 'all') {
+                if (bannerName) bannerName.textContent = 'All Rooms (3 Suites)';
+                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)';
+                const allWd = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id)).reduce((s, r) => s + (r.baseWeekday || 0), 0);
+                const allWe = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id)).reduce((s, r) => s + (r.baseWeekend || 0), 0);
+                if (bannerRate) bannerRate.textContent = `Weekday R${allWd.toLocaleString()} | Weekend R${allWe.toLocaleString()}`;
+            } else {
+                const r = ROOMS.find(item => item.id === selectedRoomId);
+                if (r) {
+                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
+                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
+                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday.toLocaleString()} | Weekend R${r.baseWeekend.toLocaleString()}`;
+                }
+            }
+        }
+
         function switchRoom(roomId) {
             selectedRoomId = roomId;
             const tabs = document.querySelectorAll('.room-tab-btn');
@@ -3608,22 +3679,7 @@
                 tabs[roomMap[roomId]].classList.add('active');
             }
 
-            const bannerName = document.getElementById('bannerRoomName');
-            const bannerSpecs = document.getElementById('bannerRoomSpecs');
-            const bannerRate = document.getElementById('bannerRoomRate');
-
-            if (roomId === 'all') {
-                if (bannerName) bannerName.textContent = 'All Rooms (3 Suites)';
-                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)';
-                if (bannerRate) bannerRate.textContent = 'Weekday R2,800 | Weekend R3,650';
-            } else {
-                const r = ROOMS.find(item => item.id === roomId);
-                if (r) {
-                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
-                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
-                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday} | Weekend R${r.baseWeekend}`;
-                }
-            }
+            updateBannerRoomInfo();
 
             // If user had an incomplete check-in selection on another room, clear the pending state
             if (pendingCheckIn && pendingCheckIn.roomId !== roomId) {
@@ -3696,7 +3752,9 @@
             populateMonthDropdown();
             renderCalendar();
             updateSummarySidebar();
+            updateBannerRoomInfo();
             loadLiveBookings();
+            loadSiteSettings();
 
             // Auto-detect referral link from URL
             const urlParams = new URLSearchParams(window.location.search);
