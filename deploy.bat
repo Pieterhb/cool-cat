@@ -1,6 +1,6 @@
 @echo off
 echo ===================================================
-echo   Cool-Cat Backup + Deploy
+echo   Cool-Cat Backup + Deploy to cool-cat.co.za
 echo ===================================================
 echo.
 
@@ -17,17 +17,18 @@ echo Step 2: Committing to Git...
 git commit -m "%MSG%"
 
 echo.
-echo Step 3: Pushing to GitHub --^> triggers Cloudflare deploy to cool-cat.co.za ...
+echo Step 3: Pushing to GitHub (backup)...
 git push origin main
 
 echo.
-echo Step 4: Also deploying directly via Wrangler (preview URL)...
-call npx wrangler pages deploy . --project-name cool-cat --commit-dirty=true
+echo Step 4: Deploying via Wrangler to cool-cat.co.za ...
+echo (using project: cool-cat-site which is linked to cool-cat.co.za)
+call npx wrangler pages deploy . --project-name cool-cat-site --commit-dirty=true
 
 echo.
 echo ===================================================
 echo   DONE!
-echo   - GitHub pushed   -^> cool-cat.co.za (via Cloudflare Pages auto-deploy)
-echo   - Wrangler deploy -^> preview .pages.dev URL
+echo   - GitHub: backed up to Pieterhb/cool-cat
+echo   - Live site: cool-cat.co.za (via cool-cat-site project)
 echo ===================================================
 pause

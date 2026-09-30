@@ -1,4 +1,6 @@
 name = "cool-cat-site"
+# NOTE: cool-cat-site is the Cloudflare Pages project linked to cool-cat.co.za
+# Always deploy with: npx wrangler pages deploy . --project-name cool-cat-site
 compatibility_date = "2026-08-23"
 pages_build_output_dir = "."
 
