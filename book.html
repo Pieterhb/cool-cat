@@ -262,25 +262,101 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 0.8rem;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .selected-room-info.is-special {
+            background: linear-gradient(135deg, #FFFDF0 0%, #FEF3C7 100%);
+            border-left-color: #F59E0B;
+        }
+
+        .selected-room-info.is-low {
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border-left-color: #16A34A;
+        }
+
+        .selected-room-info.is-mid {
+            background: linear-gradient(135deg, #FEFCE8 0%, #FEF9C3 100%);
+            border-left-color: #CA8A04;
+        }
+
+        .selected-room-info.is-peak {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border-left-color: #EA580C;
+        }
+
+        .selected-room-info.is-festive {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border-left-color: #DC2626;
+        }
+
+        .banner-status-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .banner-status-badge.badge-special {
+            background: #DC2626;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+        }
+
+        .banner-status-badge.badge-low {
+            background: #166534;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(22, 101, 52, 0.25);
+        }
+
+        .banner-status-badge.badge-mid {
+            background: #B45309;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+        }
+
+        .banner-status-badge.badge-peak {
+            background: #C2410C;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(194, 65, 12, 0.25);
+        }
+
+        .banner-status-badge.badge-festive {
+            background: #991B1B;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(153, 27, 27, 0.35);
+        }
+
+        .selected-room-info.is-special .room-rate-tag {
+            background: #DC2626;
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
         }
 
         .selected-room-info .room-meta {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             font-size: 0.88rem;
             color: #334155;
+            flex-wrap: wrap;
         }
 
         .selected-room-info .room-rate-tag {
             font-family: var(--font-heading);
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--sapphire-blue-dark);
             background: white;
-            padding: 0.3rem 0.8rem;
+            padding: 0.35rem 0.85rem;
             border-radius: 20px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
 
         /* Calendar Controls (Header) */
@@ -1603,11 +1679,12 @@
                         <!-- Selected Room Details Bar -->
                         <div class="selected-room-info" id="roomInfoBanner">
                             <div class="room-meta">
+                                <span class="banner-status-badge badge-mid" id="bannerStatusBadge">🟡 MID SEASON</span>
                                 <strong id="bannerRoomName">All Rooms (3 Suites)</strong>
                                 <span id="bannerRoomSpecs">Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)</span>
                             </div>
                             <div class="room-rate-tag" id="bannerRoomRate">
-                                Weekday R2,650 | Weekend R3,400
+                                From R2,650 to R3,400 / night
                             </div>
                         </div>
 
@@ -2992,6 +3069,9 @@
 
                 grid.appendChild(dayCell);
             }
+
+            // Sync dynamic month-aware room info banner
+            updateBannerRoomInfo();
         }
 
         // ==========================================
@@ -4115,22 +4195,152 @@
         };
 
         function updateBannerRoomInfo() {
+            const bannerContainer = document.getElementById('roomInfoBanner');
+            const bannerBadge = document.getElementById('bannerStatusBadge');
             const bannerName = document.getElementById('bannerRoomName');
             const bannerSpecs = document.getElementById('bannerRoomSpecs');
             const bannerRate = document.getElementById('bannerRoomRate');
 
+            if (!bannerName || !bannerSpecs || !bannerRate) return;
+
+            // Room Title & Specs
             if (selectedRoomId === 'all') {
-                if (bannerName) bannerName.textContent = 'All Rooms (3 Suites)';
-                if (bannerSpecs) bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)';
-                const allWd = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id)).reduce((s, r) => s + (r.baseWeekday || 0), 0);
-                const allWe = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id)).reduce((s, r) => s + (r.baseWeekend || 0), 0);
-                if (bannerRate) bannerRate.textContent = `Weekday R${allWd.toLocaleString()} | Weekend R${allWe.toLocaleString()}`;
+                bannerName.textContent = 'All Rooms (3 Suites)';
+                bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos)';
             } else {
                 const r = ROOMS.find(item => item.id === selectedRoomId);
                 if (r) {
-                    if (bannerName) bannerName.textContent = `${r.icon} ${r.name}`;
-                    if (bannerSpecs) bannerSpecs.textContent = r.specs;
-                    if (bannerRate) bannerRate.textContent = `Weekday R${r.baseWeekday.toLocaleString()} | Weekend R${r.baseWeekend.toLocaleString()}`;
+                    bannerName.textContent = `${r.icon} ${r.name}`;
+                    bannerSpecs.textContent = r.specs;
+                }
+            }
+
+            // Calculate current viewed month range & detect specials
+            const viewDate = (typeof currentViewDate !== 'undefined' && currentViewDate) ? currentViewDate : new Date();
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let minPrice = Infinity;
+            let maxPrice = -Infinity;
+            let hasActiveSpecial = false;
+            const specialRates = [];
+            const seasonCounts = { low: 0, mid: 0, peak: 0, festive: 0 };
+
+            function formatR(val) {
+                return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(year, month, d);
+                const dateStr = formatDateKey(dateObj);
+                const season = getSeasonInfo(dateObj);
+                if (season && season.tier) {
+                    seasonCounts[season.tier] = (seasonCounts[season.tier] || 0) + 1;
+                }
+
+                let dayRate = 0;
+                if (selectedRoomId === 'all') {
+                    const allRoomsList = ROOMS.filter(r => ALL_ROOMS_SUBSET.includes(r.id));
+                    let dayHasSpecial = false;
+                    allRoomsList.forEach(r => {
+                        const prefix = (r.id === 'deluxe-suite') ? 'deluxe' : (r.id === 'king-arthur') ? 'king' : r.id;
+                        const isSpActive = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) &&
+                            (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
+                        const spStart = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_start`]) || '').trim().replace(/\//g, '-');
+                        const spEnd = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_end`]) || '').trim().replace(/\//g, '-');
+                        const spRate = Number(SITE_CONFIG && SITE_CONFIG[`special_${prefix}_rate`]);
+
+                        if (isSpActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
+                            dayHasSpecial = true;
+                        }
+                    });
+                    dayRate = allRoomsList.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
+                    if (dayHasSpecial) {
+                        hasActiveSpecial = true;
+                        specialRates.push(dayRate);
+                    }
+                } else {
+                    const r = ROOMS.find(item => item.id === selectedRoomId);
+                    if (r) {
+                        const prefix = (r.id === 'deluxe-suite') ? 'deluxe' : (r.id === 'king-arthur') ? 'king' : r.id;
+                        const isSpActive = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) &&
+                            (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
+                        const spStart = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_start`]) || '').trim().replace(/\//g, '-');
+                        const spEnd = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_end`]) || '').trim().replace(/\//g, '-');
+                        const spRate = Number(SITE_CONFIG && SITE_CONFIG[`special_${prefix}_rate`]);
+
+                        if (isSpActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
+                            hasActiveSpecial = true;
+                            specialRates.push(spRate);
+                        }
+                        dayRate = calculateNightPrice(r, dateObj);
+                    }
+                }
+
+                if (dayRate > 0) {
+                    if (dayRate < minPrice) minPrice = dayRate;
+                    if (dayRate > maxPrice) maxPrice = dayRate;
+                }
+            }
+
+            let dominantTier = 'mid';
+            let maxCount = -1;
+            ['low', 'mid', 'peak', 'festive'].forEach(tier => {
+                if (seasonCounts[tier] > maxCount) {
+                    maxCount = seasonCounts[tier];
+                    dominantTier = tier;
+                }
+            });
+
+            const seasonLabels = {
+                low: 'Low Season',
+                mid: 'Mid Season',
+                peak: 'Peak Season',
+                festive: 'Festive Season'
+            };
+            const seasonEmojis = {
+                low: '🟢',
+                mid: '🟡',
+                peak: '🟠',
+                festive: '🔴'
+            };
+
+            if (bannerContainer) {
+                bannerContainer.classList.remove('is-special', 'is-low', 'is-mid', 'is-peak', 'is-festive');
+            }
+
+            if (hasActiveSpecial) {
+                if (bannerContainer) bannerContainer.classList.add('is-special');
+                if (bannerBadge) {
+                    bannerBadge.className = 'banner-status-badge badge-special';
+                    bannerBadge.textContent = '🔥 SPECIAL PROMOTION';
+                    bannerBadge.style.display = 'inline-flex';
+                }
+                if (specialRates.length > 0) {
+                    const minSp = Math.min(...specialRates);
+                    const maxSp = Math.max(...specialRates);
+                    if (minSp === maxSp) {
+                        bannerRate.textContent = `Special Rate: R${formatR(minSp)} / night`;
+                    } else {
+                        bannerRate.textContent = `Special from R${formatR(minSp)} / night`;
+                    }
+                } else {
+                    bannerRate.textContent = `Special Promotion Active`;
+                }
+            } else {
+                if (bannerContainer) bannerContainer.classList.add(`is-${dominantTier}`);
+                if (bannerBadge) {
+                    bannerBadge.className = `banner-status-badge badge-${dominantTier}`;
+                    bannerBadge.textContent = `${seasonEmojis[dominantTier]} ${seasonLabels[dominantTier].toUpperCase()}`;
+                    bannerBadge.style.display = 'inline-flex';
+                }
+                if (minPrice === maxPrice && minPrice !== Infinity) {
+                    bannerRate.textContent = `R${formatR(minPrice)} / night`;
+                } else if (minPrice !== Infinity && maxPrice !== -Infinity) {
+                    bannerRate.textContent = `From R${formatR(minPrice)} to R${formatR(maxPrice)} / night`;
+                } else {
+                    bannerRate.textContent = '';
                 }
             }
         }
