@@ -411,6 +411,29 @@
             color: #FFFFFF !important;
         }
 
+        #recentBookingsSearchInput {
+            background: #CCFBF1 !important;
+            border: 1.5px solid #0F172A !important;
+            color: #0F172A !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+        }
+
+        #recentBookingsSearchInput:focus {
+            background: #E6FFFA !important;
+            border-color: #0F172A !important;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25) !important;
+            outline: none !important;
+        }
+
+        #recentBookingsSearchInput::placeholder {
+            color: #0F172A !important;
+            opacity: 0.85 !important;
+            font-weight: 700 !important;
+        }
+
         .btn-reset-red {
             background: #EF4444 !important;
             color: #FFFFFF !important;
@@ -1343,10 +1366,13 @@
 
                     <!-- Recent Bookings Table -->
                     <div class="adm-card">
-                        <div class="adm-card-header">
-                            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                                <h3 class="adm-card-title" style="margin: 0;">📋 Recent Live Bookings</h3>
+                        <div class="adm-card-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem;">
+                            <div style="display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; flex: 1;">
+                                <h3 class="adm-card-title" style="margin: 0; white-space: nowrap;">📋 Recent Live Bookings</h3>
                                 <input type="text" id="recentBookingsSearchInput" class="adm-input" placeholder="🔍 Search recent bookings..." oninput="filterRecentBookingsTable(this.value)" style="width: 250px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                                <span style="font-size: 0.82rem; color: #475569; font-weight: 500;">
+                                    Showing latest 30 bookings (newest first) &bull; <a href="javascript:void(0)" onclick="switchAdminTab('bookings')" style="color: var(--adm-primary); font-weight: 700; text-decoration: underline;">View Master Bookings &rarr;</a>
+                                </span>
                             </div>
                             <button class="btn-export-turquoise" onclick="exportBookingsToXLSX()">
                                 📥 Export to Excel (.xlsx)
@@ -2698,34 +2724,43 @@
             let pendingTotal = 0;
             const displayList = getDisplayBookings();
 
-            displayList.forEach((b, idx) => {
-                const isDeposit = (b.balanceDue > 0);
-                if (isDeposit && b.status !== 'cancelled') pendingTotal += Number(b.balanceDue || 0);
+            // Sort with latest bookings always on top (newest creation date or check-in or reference ID)
+            const sortedByNewest = [...displayList].sort((a, b) => {
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+                if (timeB !== timeA) return timeB - timeA;
+                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                return numB - numA;
+            });
 
-                let statusClass = 'status-unpaid';
-                let statusLabel = 'NOT PAID';
+            // 1. Populate Recent Live Bookings Table: always shows latest 30 live bookings with latest on top
+            if (recentTbody) {
+                const recentSlice = sortedByNewest.slice(0, 30);
+                recentSlice.forEach(b => {
+                    const isDeposit = (b.balanceDue > 0);
+                    let statusClass = 'status-unpaid';
+                    let statusLabel = 'NOT PAID';
 
-                if (b.status === 'cancelled') {
-                    statusClass = 'status-cancelled';
-                    statusLabel = 'Cancelled';
-                } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
-                    statusClass = 'status-unpaid';
-                    statusLabel = 'NOT PAID';
-                } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
-                    statusClass = 'status-deposit';
-                    statusLabel = 'Deposit Paid';
-                } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
-                    statusClass = 'status-confirmed';
-                    statusLabel = '100% Paid';
-                } else if (b.status === 'blocked') {
-                    statusClass = 'status-unpaid';
-                    statusLabel = 'NOT PAID';
-                }
+                    if (b.status === 'cancelled') {
+                        statusClass = 'status-cancelled';
+                        statusLabel = 'Cancelled';
+                    } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
+                        statusClass = 'status-unpaid';
+                        statusLabel = 'NOT PAID';
+                    } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-deposit';
+                        statusLabel = 'Deposit Paid';
+                    } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-confirmed';
+                        statusLabel = '100% Paid';
+                    } else if (b.status === 'blocked') {
+                        statusClass = 'status-unpaid';
+                        statusLabel = 'NOT PAID';
+                    }
 
-                const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
+                    const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
 
-                // Recent Row
-                if (recentTbody && idx < 10) {
                     const rRow = document.createElement('tr');
                     rRow.innerHTML = `
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
@@ -2749,10 +2784,37 @@
                         </td>
                     `;
                     recentTbody.appendChild(rRow);
-                }
+                });
+            }
 
-                // Master Row
-                if (masterTbody) {
+            // 2. Populate Master Bookings Table (all bookings)
+            if (masterTbody) {
+                sortedByNewest.forEach(b => {
+                    const isDeposit = (b.balanceDue > 0);
+                    if (isDeposit && b.status !== 'cancelled') pendingTotal += Number(b.balanceDue || 0);
+
+                    let statusClass = 'status-unpaid';
+                    let statusLabel = 'NOT PAID';
+
+                    if (b.status === 'cancelled') {
+                        statusClass = 'status-cancelled';
+                        statusLabel = 'Cancelled';
+                    } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
+                        statusClass = 'status-unpaid';
+                        statusLabel = 'NOT PAID';
+                    } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-deposit';
+                        statusLabel = 'Deposit Paid';
+                    } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-confirmed';
+                        statusLabel = '100% Paid';
+                    } else if (b.status === 'blocked') {
+                        statusClass = 'status-unpaid';
+                        statusLabel = 'NOT PAID';
+                    }
+
+                    const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
+
                     const isCancelled = (b.status === 'cancelled');
                     const mRow = document.createElement('tr');
                     if (isCancelled) mRow.style.opacity = '0.75';
@@ -2790,8 +2852,8 @@
                         </td>
                     `;
                     masterTbody.appendChild(mRow);
-                }
-            });
+                });
+            }
 
             const elPending = document.getElementById('kpiPendingBalances');
             if (elPending) elPending.textContent = `R${pendingTotal.toLocaleString()}`;
