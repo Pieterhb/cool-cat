@@ -2421,7 +2421,7 @@
                 const res = await fetch('/api/bookings');
                 if (res.ok) {
                     const data = await res.json();
-                    if (data && data.bookings && Array.isArray(data.bookings) && data.bookings.length > 0) {
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
                         ADMIN_BOOKINGS = data.bookings;
                     }
                 }
