@@ -1344,7 +1344,10 @@
                     <!-- Recent Bookings Table -->
                     <div class="adm-card">
                         <div class="adm-card-header">
-                            <h3 class="adm-card-title">📋 Recent Live Bookings</h3>
+                            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                                <h3 class="adm-card-title" style="margin: 0;">📋 Recent Live Bookings</h3>
+                                <input type="text" id="recentBookingsSearchInput" class="adm-input" placeholder="🔍 Search recent bookings..." oninput="filterRecentBookingsTable(this.value)" style="width: 250px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                            </div>
                             <button class="btn-export-turquoise" onclick="exportBookingsToXLSX()">
                                 📥 Export to Excel (.xlsx)
                             </button>
@@ -1464,11 +1467,14 @@
                                 📥 Export Full Financials for Tax (.xlsx)
                             </button>
                         </div>
-                        <p style="font-size: 0.88rem; color: #64748B; margin-top: 0;">
-                            Live record of all incoming card, Capitec Pay, SnapScan, and Instant EFT transactions via Paystack.
-                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 0; margin-bottom: 1rem;">
+                            <p style="font-size: 0.88rem; color: #64748B; margin: 0;">
+                                Live record of all incoming card, Capitec Pay, SnapScan, and Instant EFT transactions via Paystack.
+                            </p>
+                            <input type="text" id="financesSearchInput" class="adm-input" placeholder="🔍 Search transactions, guests, amounts..." oninput="filterFinancesTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                        </div>
 
-                        <div class="adm-table-wrapper" style="margin-top: 1.5rem;">
+                        <div class="adm-table-wrapper">
                             <table class="adm-table">
                                 <thead>
                                     <tr>
@@ -1839,11 +1845,14 @@
                                 📥 Export Guest Email List (.xlsx)
                             </button>
                         </div>
-                        <p style="font-size: 0.88rem; color: #64748B; margin-top: 0.3rem;">
-                            Directory of all past and upcoming visitors with one-click WhatsApp links.
-                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 0.3rem; margin-bottom: 1rem;">
+                            <p style="font-size: 0.88rem; color: #64748B; margin: 0;">
+                                Directory of all past and upcoming visitors with one-click WhatsApp links.
+                            </p>
+                            <input type="text" id="guestSearchInput" class="adm-input" placeholder="🔍 Search guests by name, email, phone..." oninput="filterGuestsTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                        </div>
 
-                        <div class="adm-table-wrapper" style="margin-top: 1.5rem;">
+                        <div class="adm-table-wrapper">
                             <table class="adm-table">
                                 <thead>
                                     <tr>
@@ -2740,6 +2749,11 @@
 
             const elPending = document.getElementById('kpiPendingBalances');
             if (elPending) elPending.textContent = `R${pendingTotal.toLocaleString()}`;
+
+            const recentSearch = document.getElementById('recentBookingsSearchInput');
+            if (recentSearch && recentSearch.value) {
+                filterRecentBookingsTable(recentSearch.value);
+            }
         }
 
         function renderFinancesTable() {
@@ -2767,6 +2781,11 @@
                 `;
                 tbody.appendChild(row);
             });
+
+            const finSearch = document.getElementById('financesSearchInput');
+            if (finSearch && finSearch.value) {
+                filterFinancesTable(finSearch.value);
+            }
         }
 
         // Guest CRM Sorting State
@@ -2841,6 +2860,11 @@
                 `;
                 tbody.appendChild(row);
             });
+
+            const guestSearch = document.getElementById('guestSearchInput');
+            if (guestSearch && guestSearch.value) {
+                filterGuestsTable(guestSearch.value);
+            }
         }
 
         // =========================================================
@@ -4577,10 +4601,34 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function filterBookingsTable(val) {
-            const q = val.toLowerCase();
+            const q = (val || '').toLowerCase().trim();
             const rows = document.querySelectorAll('#masterBookingsTbody tr');
             rows.forEach(r => {
-                r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+                r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
+            });
+        }
+
+        function filterRecentBookingsTable(val) {
+            const q = (val || '').toLowerCase().trim();
+            const rows = document.querySelectorAll('#recentBookingsTbody tr');
+            rows.forEach(r => {
+                r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
+            });
+        }
+
+        function filterFinancesTable(val) {
+            const q = (val || '').toLowerCase().trim();
+            const rows = document.querySelectorAll('#financesTbody tr');
+            rows.forEach(r => {
+                r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
+            });
+        }
+
+        function filterGuestsTable(val) {
+            const q = (val || '').toLowerCase().trim();
+            const rows = document.querySelectorAll('#guestsTbody tr');
+            rows.forEach(r => {
+                r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
             });
         }
     </script>
