@@ -2760,12 +2760,13 @@
                     }
 
                     const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
+                    const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
 
                     const rRow = document.createElement('tr');
                     rRow.innerHTML = `
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
                         <td>${b.guestName}</td>
-                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}${staysTag}</td>
                         <td>
                             <span style="font-weight: 600; color: #1E293B; white-space: nowrap;">${b.checkIn}${b.checkOut ? ` &rarr; ${b.checkOut}` : ''}</span>
                             <span style="display: inline-block; font-size: 0.75rem; color: #64748B; background: #F1F5F9; padding: 1px 5px; border-radius: 4px; margin-left: 3px; font-weight: 600;">${b.nights || 1}N</span>
@@ -2814,6 +2815,7 @@
                     }
 
                     const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
+                    const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
 
                     const isCancelled = (b.status === 'cancelled');
                     const mRow = document.createElement('tr');
@@ -2837,7 +2839,7 @@
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
                         <td>${b.guestName}</td>
                         <td><a href="tel:${b.guestPhone}" style="color: var(--adm-primary); font-weight: 600;">${b.guestPhone || '-'}</a></td>
-                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}${staysTag}</td>
                         <td>${b.checkIn}</td>
                         <td>${b.checkOut}</td>
                         <td>${b.nights || 1}</td>
@@ -3216,22 +3218,28 @@
         }
 
         function isBookingBlockingRoomOnDate(b, roomId, dateStr) {
-            // Never count cancelled bookings
-            if (b.status === 'cancelled') return false;
+            if (!b || b.status === 'cancelled') return false;
 
-            // Multi-stay parent records span from first check-in to last check-out across DIFFERENT rooms/dates.
-            // They should NOT block individual room dates — only the isCalendarBlock sub-records should.
-            // Guard 1: explicit totalStays count
-            if (b.isParentBooking && b.totalStays && b.totalStays > 1) return false;
-            // Guard 2: has stays array with multiple entries
-            if (b.isParentBooking && b.stays && b.stays.length > 1) return false;
-            // Guard 3: roomId explicitly set to 'multiple'
-            if (b.roomId === 'multiple') return false;
-            // Guard 4: any isParentBooking with roomId='all' is skipped for individual rooms —
-            // the isCalendarBlock children carry the per-room per-date data
-            if (b.isParentBooking && b.roomId === 'all' && roomId !== 'all') return false;
+            // 1. If this booking has an explicit stays array, inspect the actual stay dates!
+            if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
+                return b.stays.some(s => {
+                    const cIn = s.checkInStr || s.checkIn;
+                    const cOut = s.checkOutStr || s.checkOut;
+                    if (dateStr < cIn || dateStr >= cOut) return false;
+                    // For All Rooms tab: any stay on this date counts toward property occupancy
+                    if (roomId === 'all') return true;
+                    // For an individual room: match if stay is for this room OR if stay is for 'all' (entire property)
+                    return (s.roomId === roomId || s.roomId === 'all');
+                });
+            }
 
-            // For individual room queries, skip blocks that belong to a different specific room
+            // 2. If this is a parent booking with multiple stays or 'multiple' room, but has no stays array,
+            // skip the aggregate parent date range so it doesn't block dates for rooms that weren't booked.
+            if (b.isParentBooking && (b.totalStays > 1 || b.roomId === 'multiple')) {
+                return false;
+            }
+
+            // 3. For calendar blocks or single-stay bookings:
             if (roomId !== 'all') {
                 if (b.roomId !== roomId && b.roomId !== 'all') return false;
             }

@@ -53,54 +53,132 @@ export async function onRequestPost(context) {
             const phone = metadata.phone || '';
             const checkIn = metadata.check_in || '';
             const checkOut = metadata.check_out || '';
-            const roomId = metadata.room_id || 'all';
-            const roomName = metadata.room_name || metadata.room || 'All Rooms (3 Suites)';
-            const totalAmount = Number(metadata.total_amount || amountInZar);
-            const balanceDue = Number(metadata.balance_due !== undefined ? metadata.balance_due : Math.max(0, totalAmount - amountInZar));
-            const status = balanceDue > 0 ? 'deposit_paid' : 'fully_paid';
+            let staysList = [];
+            if (metadata.stays_json) {
+                try {
+                    staysList = typeof metadata.stays_json === 'string' ? JSON.parse(metadata.stays_json) : metadata.stays_json;
+                } catch(e) {}
+            }
+
+            const isAllRooms = (roomId === 'all') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'all'));
+            const parentRoomId = isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : (roomId || 'multiple'));
+            const defaultDisplayRoomName = isAllRooms
+                ? 'All 4 Rooms (Entire Property)'
+                : (staysList.length === 1 ? (staysList[0].roomName || 'Single Room') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'All 4 Rooms (Entire Property)'));
+            const finalRoomName = metadata.room_name && !metadata.room_name.includes('3 Suites') ? metadata.room_name : defaultDisplayRoomName;
 
             console.log(`Paystack Webhook Success: Ref ${cleanBookingRef} (tx: ${rawRef}) | R${amountInZar} | Customer: ${customerEmail}`);
 
             // Save confirmed booking to KV if available
             if (env && env.COOLCAT_KV) {
                 let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+                const parentRecord = {
+                    id: cleanBookingRef,
+                    parentBookingId: null,
+                    isParentBooking: true,
+                    roomId: parentRoomId,
+                    roomName: finalRoomName,
+                    checkIn: checkIn,
+                    checkOut: checkOut,
+                    guestName: guestName,
+                    guestEmail: customerEmail,
+                    guestPhone: phone,
+                    totalAmount: totalAmount,
+                    amountPaid: amountInZar,
+                    balanceDue: balanceDue,
+                    paymentMethod: 'card',
+                    paystackRef: rawRef,
+                    isRecordedPayment: true,
+                    isPaidPaystack: true,
+                    stays: (staysList && staysList.length > 0) ? staysList : undefined,
+                    totalStays: (staysList && staysList.length > 0) ? staysList.length : 1,
+                    status: status,
+                    createdAt: new Date().toISOString()
+                };
+
                 const foundIndex = existing.findIndex(b => b.id === cleanBookingRef || b.id === rawRef || b.paystackRef === rawRef);
                 if (foundIndex >= 0) {
-                    existing[foundIndex].id = cleanBookingRef;
-                    existing[foundIndex].status = status;
-                    existing[foundIndex].amountPaid = amountInZar;
-                    existing[foundIndex].balanceDue = balanceDue;
-                    existing[foundIndex].paymentMethod = 'card';
-                    existing[foundIndex].paystackRef = rawRef;
-                    existing[foundIndex].isRecordedPayment = true;
-                    existing[foundIndex].isPaidPaystack = true;
-                    if (guestName && guestName !== 'Guest') existing[foundIndex].guestName = guestName;
-                    if (checkIn) existing[foundIndex].checkIn = checkIn;
-                    if (checkOut) existing[foundIndex].checkOut = checkOut;
-                    if (roomName) existing[foundIndex].roomName = roomName;
+                    existing[foundIndex] = {
+                        ...existing[foundIndex],
+                        ...parentRecord,
+                        createdAt: existing[foundIndex].createdAt || parentRecord.createdAt
+                    };
                 } else {
+                    existing.push(parentRecord);
+                }
+
+                // Remove existing calendar blocks for this booking ref
+                existing = existing.filter(b => b.parentBookingId !== cleanBookingRef && b.parentBookingId !== rawRef);
+
+                // Generate fresh calendar block records
+                if (staysList && Array.isArray(staysList) && staysList.length > 0) {
+                    staysList.forEach(s => {
+                        const stayRooms = s.roomId === 'all'
+                            ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
+                            : [s.roomId];
+                        stayRooms.forEach(rid => {
+                            existing.push({
+                                id: `${cleanBookingRef}_${rid}_${s.checkInStr || s.checkIn}`,
+                                parentBookingId: cleanBookingRef,
+                                isCalendarBlock: true,
+                                roomId: rid,
+                                roomName: s.roomName || rid,
+                                checkIn: s.checkInStr || s.checkIn,
+                                checkOut: s.checkOutStr || s.checkOut,
+                                nights: s.nights || 1,
+                                guestName: guestName,
+                                guestEmail: customerEmail,
+                                guestPhone: phone,
+                                totalAmount: 0,
+                                amountPaid: 0,
+                                balanceDue: 0,
+                                status: status,
+                                createdAt: new Date().toISOString()
+                            });
+                        });
+                    });
+                } else if (isAllRooms) {
+                    // Single All Rooms booking without explicit stays array: block all 4 rooms
+                    ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'].forEach(rid => {
+                        existing.push({
+                            id: `${cleanBookingRef}_${rid}_${checkIn}`,
+                            parentBookingId: cleanBookingRef,
+                            isCalendarBlock: true,
+                            roomId: rid,
+                            roomName: finalRoomName,
+                            checkIn: checkIn,
+                            checkOut: checkOut,
+                            guestName: guestName,
+                            guestEmail: customerEmail,
+                            guestPhone: phone,
+                            totalAmount: 0,
+                            amountPaid: 0,
+                            balanceDue: 0,
+                            status: status,
+                            createdAt: new Date().toISOString()
+                        });
+                    });
+                } else if (parentRoomId && parentRoomId !== 'multiple') {
+                    // Single room booking: ensure calendar block exists
                     existing.push({
-                        id: cleanBookingRef,
-                        parentBookingId: null,
-                        isParentBooking: true,
-                        roomId: roomId,
-                        roomName: roomName,
+                        id: `${cleanBookingRef}_${parentRoomId}_${checkIn}`,
+                        parentBookingId: cleanBookingRef,
+                        isCalendarBlock: true,
+                        roomId: parentRoomId,
+                        roomName: finalRoomName,
                         checkIn: checkIn,
                         checkOut: checkOut,
                         guestName: guestName,
                         guestEmail: customerEmail,
                         guestPhone: phone,
-                        totalAmount: totalAmount,
-                        amountPaid: amountInZar,
-                        balanceDue: balanceDue,
-                        paymentMethod: 'card',
-                        paystackRef: rawRef,
-                        isRecordedPayment: true,
-                        isPaidPaystack: true,
+                        totalAmount: 0,
+                        amountPaid: 0,
+                        balanceDue: 0,
                         status: status,
                         createdAt: new Date().toISOString()
                     });
                 }
+
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
 
                 const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);

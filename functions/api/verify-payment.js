@@ -237,7 +237,7 @@ export async function onRequestPost(context) {
                     : [s.roomId];
                 stayRooms.forEach(rid => {
                     existing.push({
-                        id: bookingRef + '_' + rid,
+                        id: `${bookingRef}_${rid}_${s.checkInStr || s.checkIn}`,
                         parentBookingId: bookingRef,
                         isCalendarBlock: true,
                         roomId: rid,

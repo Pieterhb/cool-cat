@@ -3884,7 +3884,27 @@
             // Unique transaction ref for Paystack ledger so Paystack never throws 'Duplicate reference'
             const paystackUniqueTxRef = `${generatedBookingRef}_${Date.now()}`;
             const cleanPhone = phone.replace(/^(\+27|0)/, '');
-            const isAll = selectedStays.length >= 3 || selectedStays.some(s => s.roomId === 'all');
+            const isSingleStay = selectedStays.length === 1;
+            const isAllRooms = selectedStays.some(s => s.roomId === 'all');
+            const primaryRoomId = isAllRooms ? 'all' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
+            const primaryRoomName = isAllRooms
+                ? 'All 4 Rooms (Entire Property)'
+                : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
+
+            const staysJson = JSON.stringify(selectedStays.map(s => ({
+                roomId: s.roomId,
+                roomName: s.roomName,
+                roomIcon: s.roomIcon,
+                checkIn: s.checkInStr || s.checkIn,
+                checkOut: s.checkOutStr || s.checkOut,
+                checkInStr: s.checkInStr || s.checkIn,
+                checkOutStr: s.checkOutStr || s.checkOut,
+                nights: s.nights,
+                guestCount: s.guestCount,
+                subtotal: s.subtotal,
+                includeBreakfast: !!s.includeBreakfast,
+                breakfastCount: s.breakfastCount || 0
+            })));
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
@@ -3898,13 +3918,14 @@
                         guest_name: fullName,
                         email: email,
                         phone: "+27" + cleanPhone,
-                        room_id: isAll ? 'all' : (selectedStays[0]?.roomId || 'king-arthur'),
-                        room_name: isAll ? 'All Rooms (3 Suites)' : (selectedStays[0]?.roomName || 'King Arthur Room'),
+                        room_id: primaryRoomId,
+                        room_name: primaryRoomName,
                         check_in: selectedStays[0]?.checkInStr || '',
                         check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
                         total_amount: calculatedGrandTotal,
                         amount_paid: calculatedDepositDue,
                         balance_due: calculatedBalanceDue,
+                        stays_json: staysJson,
                         custom_fields: [
                             { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
@@ -3914,7 +3935,7 @@
                         ]
                     },
                     callback: function(response) {
-                        completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests);
+                        completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
                     },
                     onClose: function() {
                         showToast("Payment window closed.");
@@ -3923,11 +3944,11 @@
 
                 handler.openIframe();
             } else {
-                completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests);
+                completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
             }
         }
 
-        async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests) {
+        async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests, txRef = '') {
             const cleanRef = formatRefId(refNumber, selectedStays[0]?.roomId);
 
             // Compile per-stay totals from per-stay breakfast data
@@ -3936,11 +3957,21 @@
             }, 0);
             const totalGuestCount = selectedStays.reduce((max, s) => Math.max(max, s.guestCount), 0);
 
+            const isSingleStay = selectedStays.length === 1;
+            const isAllRooms = selectedStays.some(s => s.roomId === 'all');
+            const primaryRoomId = isAllRooms ? 'all' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
+            const primaryRoomName = isAllRooms
+                ? 'All 4 Rooms (Entire Property)'
+                : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
+
             const bookingPayload = {
                 reference: cleanRef,
+                paystackRef: txRef || cleanRef,
                 guestName: name,
                 guestEmail: email,
                 guestPhone: '+27' + phone,
+                roomId: primaryRoomId,
+                roomName: primaryRoomName,
                 stays: selectedStays,
                 totalStays: selectedStays.length,
                 totalNights: totalNightsCount,
