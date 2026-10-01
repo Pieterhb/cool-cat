@@ -1,4 +1,12 @@
-# HTML / Page Routes: Short revalidation so changes publish immediately
+# HTML / Page Routes: Ensure book and admin routes always fetch fresh
+/book
+  Cache-Control: no-cache, no-store, must-revalidate
+/book.html
+  Cache-Control: no-cache, no-store, must-revalidate
+/admin
+  Cache-Control: no-cache, no-store, must-revalidate
+/admin.html
+  Cache-Control: no-cache, no-store, must-revalidate
 /*
   Cache-Control: public, max-age=0, must-revalidate
 
