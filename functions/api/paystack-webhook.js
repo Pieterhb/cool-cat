@@ -56,11 +56,16 @@ export async function onRequestPost(context) {
                 let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
                 const foundIndex = existing.findIndex(b => b.id === ref);
                 if (foundIndex >= 0) {
-                    existing[foundIndex].status = 'confirmed';
+                    existing[foundIndex].status = Number(existing[foundIndex].balanceDue || 0) > 0 ? 'deposit_paid' : 'fully_paid';
                     existing[foundIndex].amountPaid = amountInZar;
+                    existing[foundIndex].paymentMethod = 'card';
+                    existing[foundIndex].isRecordedPayment = true;
+                    existing[foundIndex].isPaidPaystack = true;
                 } else {
                     existing.push({
                         id: ref,
+                        parentBookingId: null,
+                        isParentBooking: true,
                         roomId: metadata.room_id || 'king-arthur',
                         roomName: metadata.room || 'King Arthur Room',
                         checkIn: metadata.check_in || '',
@@ -71,7 +76,11 @@ export async function onRequestPost(context) {
                         totalAmount: amountInZar,
                         amountPaid: amountInZar,
                         balanceDue: 0,
-                        status: 'confirmed',
+                        paymentMethod: 'card',
+                        paystackRef: ref,
+                        isRecordedPayment: true,
+                        isPaidPaystack: true,
+                        status: 'fully_paid',
                         createdAt: new Date().toISOString()
                     });
                 }

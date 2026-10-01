@@ -26,9 +26,9 @@ export async function onRequestGet(context) {
             }
             return true;
         }).map(b => {
-            const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL|CC)-/i.test(b.id));
-            const isExplicitlyPaid = b.isPaidEft === true || b.isRecordedPayment === true || (b.paystackRef && b.paystackRef.startsWith('PAY_'));
-            if (isManual && !isExplicitlyPaid) {
+            // Only sanitize legacy manual draft records with explicit 'MAN-' prefix that have zero payment recorded
+            const isUnpaidManual = b.isManual === true && b.id && b.id.startsWith('MAN-') && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
+            if (isUnpaidManual) {
                 if (b.status === 'cancelled') {
                     return {
                         ...b,

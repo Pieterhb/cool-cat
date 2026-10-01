@@ -3998,13 +3998,20 @@
 
             // Call Cloudflare API to verify, save to DB and trigger emails
             try {
-                fetch('/api/verify-payment', {
+                const res = await fetch('/api/verify-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(bookingPayload)
-                }).catch(err => console.log("Backend sync notice:", err));
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log("Payment verified & booking saved to cloud:", data);
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    console.warn("Backend verification notice:", errData.error || res.statusText);
+                }
             } catch (err) {
-                console.log("Local sync:", err);
+                console.log("Local sync notice:", err);
             }
 
             // Update local state so calendar permanently marks rooms as booked

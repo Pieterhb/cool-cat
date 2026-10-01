@@ -2573,10 +2573,9 @@
 
                 return true;
             }).map(b => {
-                // Sanitize legacy manual bookings that had amountPaid erroneously equal to total without payment
-                const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL)-/i.test(b.id));
-                const hasRealPayment = b.isPaidEft === true || b.isRecordedPayment === true || b.paystackRef || b.paymentMethod === 'eft' || b.paymentMethod === 'card';
-                if (isManual && !hasRealPayment && b.status !== 'deposit_paid' && b.status !== 'fully_paid' && b.status !== 'cancelled') {
+                // Only sanitize legacy manual draft records with explicit 'MAN-' prefix that have zero payment recorded
+                const isUnpaidManual = b.isManual === true && b.id && b.id.startsWith('MAN-') && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
+                if (isUnpaidManual && b.status !== 'deposit_paid' && b.status !== 'fully_paid' && b.status !== 'cancelled') {
                     return {
                         ...b,
                         amountPaid: 0,
