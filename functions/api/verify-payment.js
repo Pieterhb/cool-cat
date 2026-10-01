@@ -180,12 +180,13 @@ export async function onRequestPost(context) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
 
             // Determine roomName and primary room for consolidated display
-            const isAllRooms = staysList.some(s => s.roomId === 'all') || (staysList.length === 4 && new Set(staysList.map(s => s.roomId)).size === 4);
+            // isAllRooms only when someone booked the 'All Rooms' option (not 4 individual rooms on separate dates)
+            const isAllRooms = staysList.some(s => s.roomId === 'all');
             const displayRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
                 : staysList.length === 1
                     ? staysList[0].roomName
-                    : `${staysList.length} Rooms`;
+                    : `${staysList.length} Reserved Stays`;
 
             const parentRecord = {
                 id: bookingRef,

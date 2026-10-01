@@ -1311,7 +1311,7 @@
                         <div class="adm-room-tabs-wrapper">
                             <div class="adm-room-tabs" id="admRoomTabs">
                                 <button type="button" class="adm-room-tab active" data-room="all" onclick="setAdminCalRoom('all')">
-                                    🏨 All Rooms (3 Suites)
+                                    🏨 All Rooms (4 Rooms)
                                 </button>
                                 <button type="button" class="adm-room-tab" data-room="king-arthur" onclick="setAdminCalRoom('king-arthur')">
                                     👑 King Arthur Room
@@ -2180,7 +2180,7 @@
                         <div class="adm-form-group" style="margin-bottom: 0.8rem;">
                             <label>Select Room</label>
                             <select id="manRoomSelect" class="adm-input" required onchange="onModalRoomChange()">
-                                <option value="all">🏨 All Rooms (3 Suites: King Arthur, Santori, Mykonos)</option>
+                                <option value="all">🏨 All Rooms (4 Rooms: King Arthur, Santori, Mykonos, Deluxe Suite)</option>
                                 <option value="king-arthur">👑 King Arthur Room</option>
                                 <option value="santori">🌊 Santori Room</option>
                                 <option value="mykonos">🏛️ Mykonos Room</option>
@@ -2584,7 +2584,7 @@
                     if (parentIds.has(baseId)) return false;
                     if (seenLegacyBases.has(baseId)) return false;
                     seenLegacyBases.add(baseId);
-                    b.roomName = 'All Rooms (3 Suites)';
+                    b.roomName = 'All Rooms (4 Rooms)';
                 }
 
                 // 3. De-duplicate identical numeric references if a duplicate ghost exists without proper guest name
@@ -2980,7 +2980,7 @@
         // =========================================================
 
         const ADMIN_ROOM_NAMES = {
-            'all': 'All Rooms (3 Suites)',
+            'all': 'All Rooms (4 Rooms)',
             'king-arthur': 'King Arthur Room',
             'santori': 'Santori Room',
             'mykonos': 'Mykonos Room',
@@ -3215,15 +3215,26 @@
             return `${y}-${m}-${d}`;
         }
 
-        function getBookingOnDateForRoom(roomId, dateStr) {
-            return ADMIN_BOOKINGS.find(b => {
-                if (b.status === 'cancelled') return false;
-                if (roomId === 'all') {
-                    return (dateStr >= b.checkIn && dateStr < b.checkOut);
-                }
+        function isBookingBlockingRoomOnDate(b, roomId, dateStr) {
+            // Never count cancelled bookings
+            if (b.status === 'cancelled') return false;
+
+            // Multi-stay parent records span from first check-in to last check-out across DIFFERENT rooms/dates.
+            // They should NOT block individual room dates — only the isCalendarBlock sub-records should.
+            if (b.isParentBooking && b.totalStays && b.totalStays > 1) return false;
+            if (b.isParentBooking && b.stays && b.stays.length > 1) return false;
+            if (b.roomId === 'multiple') return false;
+
+            // For individual room queries, skip blocks that belong to a different specific room
+            if (roomId !== 'all') {
                 if (b.roomId !== roomId && b.roomId !== 'all') return false;
-                return (dateStr >= b.checkIn && dateStr < b.checkOut);
-            });
+            }
+
+            return (dateStr >= b.checkIn && dateStr < b.checkOut);
+        }
+
+        function getBookingOnDateForRoom(roomId, dateStr) {
+            return ADMIN_BOOKINGS.find(b => isBookingBlockingRoomOnDate(b, roomId, dateStr));
         }
 
         function getAdminDateAvailability(dateStr) {
@@ -3232,11 +3243,7 @@
             const availableRooms = [];
 
             individualRooms.forEach(rId => {
-                const b = ADMIN_BOOKINGS.find(bk => {
-                    if (bk.status === 'cancelled') return false;
-                    if (bk.roomId !== rId && bk.roomId !== 'all') return false;
-                    return (dateStr >= bk.checkIn && dateStr < bk.checkOut);
-                });
+                const b = ADMIN_BOOKINGS.find(bk => isBookingBlockingRoomOnDate(bk, rId, dateStr));
                 if (b) {
                     bookedRooms.push({ roomId: rId, booking: b });
                 } else {
@@ -3276,10 +3283,8 @@
                     }
                 } else {
                     const b = ADMIN_BOOKINGS.find(bk => {
-                        if (bk.status === 'cancelled') return false;
                         if (excludeBookingId && (bk.id === excludeBookingId || bk.parentBookingId === excludeBookingId)) return false;
-                        if (bk.roomId !== roomId && bk.roomId !== 'all') return false;
-                        return (dStr >= bk.checkIn && dStr < bk.checkOut);
+                        return isBookingBlockingRoomOnDate(bk, roomId, dStr);
                     });
                     if (b) {
                         if (!conflicts.some(c => c.booking.id === b.id && c.dateStr === dStr)) {
