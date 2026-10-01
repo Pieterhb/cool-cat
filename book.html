@@ -2430,6 +2430,9 @@
                     const data = await res.json();
                     if (data && data.bookings && Array.isArray(data.bookings)) {
                         MOCK_BOOKINGS = data.bookings;
+                        if (data.nextSequence) {
+                            window._serverNextSeq = data.nextSequence;
+                        }
                         renderCalendar();
                     }
                 }
@@ -3903,8 +3906,10 @@
                 if (!id) return '';
                 let clean = String(id).trim();
                 if (clean.startsWith('#')) clean = clean.substring(1);
+                // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
+                clean = clean.replace(/_\d{5,}$/, '');
 
-                if (/^(ALL|KIN|SAN|MYK|DEL)-\d+$/i.test(clean)) {
+                if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC)-\d+$/i.test(clean)) {
                     return clean.toUpperCase();
                 }
 
@@ -3932,12 +3937,19 @@
                         }
                     }
                 });
+                if (window._serverNextSeq && window._serverNextSeq > maxSeq) {
+                    maxSeq = window._serverNextSeq - 1;
+                }
                 const nextSeq = maxSeq + 1;
                 const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
                 return `${prefix}${nextSeq}`;
             }
 
             const generatedBookingRef = getNextRefNumber(selectedStays);
+            // Unique transaction ref for Paystack ledger so Paystack never throws 'Duplicate reference'
+            const paystackUniqueTxRef = `${generatedBookingRef}_${Date.now()}`;
+            const cleanPhone = phone.replace(/^(\+27|0)/, '');
+            const isAll = selectedStays.length >= 3 || selectedStays.some(s => s.roomId === 'all');
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
@@ -3945,17 +3957,29 @@
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
-                    ref: generatedBookingRef,
+                    ref: paystackUniqueTxRef,
                     metadata: {
+                        booking_ref: generatedBookingRef,
+                        guest_name: fullName,
+                        email: email,
+                        phone: "+27" + cleanPhone,
+                        room_id: isAll ? 'all' : (selectedStays[0]?.roomId || 'king-arthur'),
+                        room_name: isAll ? 'All Rooms (3 Suites)' : (selectedStays[0]?.roomName || 'King Arthur Room'),
+                        check_in: selectedStays[0]?.checkInStr || '',
+                        check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
+                        total_amount: calculatedGrandTotal,
+                        amount_paid: calculatedDepositDue,
+                        balance_due: calculatedBalanceDue,
                         custom_fields: [
+                            { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
-                            { display_name: "Phone Number", variable_name: "phone", value: "+27" + phone },
+                            { display_name: "Phone Number", variable_name: "phone", value: "+27" + cleanPhone },
                             { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
                             { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
                         ]
                     },
                     callback: function(response) {
-                        completeBooking(response.reference, fullName, email, phone, arrivalTime, specialRequests);
+                        completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests);
                     },
                     onClose: function() {
                         showToast("Payment window closed.");
@@ -3964,7 +3988,7 @@
 
                 handler.openIframe();
             } else {
-                completeBooking(generatedBookingRef, fullName, email, phone, arrivalTime, specialRequests);
+                completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests);
             }
         }
 

@@ -123,7 +123,10 @@ export async function onRequestPost(context) {
         }];
 
         // 2. Format Confirmed Booking Record & Stays
-        let bookingRef = reference;
+        let rawRef = reference ? String(reference).trim() : '';
+        if (rawRef.startsWith('#')) rawRef = rawRef.substring(1);
+        let bookingRef = rawRef.replace(/_\d{5,}$/, '');
+
         if (!bookingRef) {
             const nextSeq = await getNextSequenceNumber(env, existingForSeq);
             bookingRef = `${getRoomPrefixForStays(staysList)}${nextSeq}`;
@@ -165,7 +168,7 @@ export async function onRequestPost(context) {
             amountPaid: numPaid,
             balanceDue: numBal,
             paymentMethod: 'card',
-            paystackRef: reference || (paystackData ? paystackData.reference : bookingRef),
+            paystackRef: rawRef || (paystackData ? paystackData.reference : bookingRef),
             isRecordedPayment: true,
             isPaidPaystack: true,
             status: bookingStatus,
@@ -184,9 +187,7 @@ export async function onRequestPost(context) {
                     ? staysList[0].roomName
                     : `${staysList.length} Rooms`;
 
-            // 3a. Push a consolidated PARENT booking record with full financial data
-            //     This is what admin Master Bookings, Financials & Guest CRM read
-            existing.push({
+            const parentRecord = {
                 id: bookingRef,
                 parentBookingId: null,
                 isParentBooking: true,
@@ -205,7 +206,7 @@ export async function onRequestPost(context) {
                 amountPaid: numPaid,
                 balanceDue: numBal,
                 paymentMethod: 'card',
-                paystackRef: reference || (paystackData ? paystackData.reference : bookingRef),
+                paystackRef: rawRef || (paystackData ? paystackData.reference : bookingRef),
                 isRecordedPayment: true,
                 isPaidPaystack: true,
                 stays: staysList,
@@ -215,7 +216,18 @@ export async function onRequestPost(context) {
                 specialRequests: specialRequests || '',
                 status: bookingStatus,
                 createdAt: new Date().toISOString()
-            });
+            };
+
+            // Check if parent record already exists (e.g. from webhook)
+            const parentIdx = existing.findIndex(b => b.id === bookingRef || b.id === rawRef || (b.isParentBooking && b.id === bookingRef));
+            if (parentIdx >= 0) {
+                existing[parentIdx] = parentRecord;
+            } else {
+                existing.push(parentRecord);
+            }
+
+            // Remove any old calendar blocks for this booking before re-inserting clean ones
+            existing = existing.filter(b => b.parentBookingId !== bookingRef && b.parentBookingId !== rawRef);
 
             // 3b. Push individual per-room calendar block records so each room date is blocked
             staysList.forEach(s => {
@@ -228,18 +240,18 @@ export async function onRequestPost(context) {
                         parentBookingId: bookingRef,
                         isCalendarBlock: true,
                         roomId: rid,
-                        roomName: s.roomName,
+                        roomName: s.roomName || rid,
                         checkIn: s.checkInStr || s.checkIn,
                         checkOut: s.checkOutStr || s.checkOut,
-                        nights: s.nights,
-                        guestName,
-                        guestEmail,
-                        guestPhone,
+                        nights: s.nights || 1,
+                        guestName: guestName || 'Valued Guest',
+                        guestEmail: guestEmail || '',
+                        guestPhone: guestPhone || '',
                         totalAmount: 0,
                         amountPaid: 0,
                         balanceDue: 0,
                         referralCode: payload.referralCode || '',
-                        status: Number(balanceDue || 0) > 0 ? 'deposit_paid' : 'fully_paid',
+                        status: bookingStatus,
                         createdAt: new Date().toISOString()
                     });
                 });

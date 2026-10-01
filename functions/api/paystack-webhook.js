@@ -44,49 +44,66 @@ export async function onRequestPost(context) {
 
         if (event && event.event === 'charge.success') {
             const data = event.data;
-            const ref = data.reference;
-            const amountInZar = data.amount / 100;
-            const customerEmail = data.customer ? data.customer.email : '';
+            const rawRef = data.reference || '';
             const metadata = data.metadata || {};
+            const cleanBookingRef = metadata.booking_ref || String(rawRef).replace(/_\d{5,}$/, '').trim();
+            const amountInZar = Number(data.amount) / 100;
+            const customerEmail = data.customer ? data.customer.email : '';
+            const guestName = metadata.guest_name || 'Guest';
+            const phone = metadata.phone || '';
+            const checkIn = metadata.check_in || '';
+            const checkOut = metadata.check_out || '';
+            const roomId = metadata.room_id || 'all';
+            const roomName = metadata.room_name || metadata.room || 'All Rooms (3 Suites)';
+            const totalAmount = Number(metadata.total_amount || amountInZar);
+            const balanceDue = Number(metadata.balance_due !== undefined ? metadata.balance_due : Math.max(0, totalAmount - amountInZar));
+            const status = balanceDue > 0 ? 'deposit_paid' : 'fully_paid';
 
-            console.log(`Paystack Webhook Success: Ref ${ref} | R${amountInZar} | Customer: ${customerEmail}`);
+            console.log(`Paystack Webhook Success: Ref ${cleanBookingRef} (tx: ${rawRef}) | R${amountInZar} | Customer: ${customerEmail}`);
 
             // Save confirmed booking to KV if available
             if (env && env.COOLCAT_KV) {
                 let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-                const foundIndex = existing.findIndex(b => b.id === ref);
+                const foundIndex = existing.findIndex(b => b.id === cleanBookingRef || b.id === rawRef || b.paystackRef === rawRef);
                 if (foundIndex >= 0) {
-                    existing[foundIndex].status = Number(existing[foundIndex].balanceDue || 0) > 0 ? 'deposit_paid' : 'fully_paid';
+                    existing[foundIndex].id = cleanBookingRef;
+                    existing[foundIndex].status = status;
                     existing[foundIndex].amountPaid = amountInZar;
+                    existing[foundIndex].balanceDue = balanceDue;
                     existing[foundIndex].paymentMethod = 'card';
+                    existing[foundIndex].paystackRef = rawRef;
                     existing[foundIndex].isRecordedPayment = true;
                     existing[foundIndex].isPaidPaystack = true;
+                    if (guestName && guestName !== 'Guest') existing[foundIndex].guestName = guestName;
+                    if (checkIn) existing[foundIndex].checkIn = checkIn;
+                    if (checkOut) existing[foundIndex].checkOut = checkOut;
+                    if (roomName) existing[foundIndex].roomName = roomName;
                 } else {
                     existing.push({
-                        id: ref,
+                        id: cleanBookingRef,
                         parentBookingId: null,
                         isParentBooking: true,
-                        roomId: metadata.room_id || 'king-arthur',
-                        roomName: metadata.room || 'King Arthur Room',
-                        checkIn: metadata.check_in || '',
-                        checkOut: metadata.check_out || '',
-                        guestName: metadata.guest_name || 'Guest',
+                        roomId: roomId,
+                        roomName: roomName,
+                        checkIn: checkIn,
+                        checkOut: checkOut,
+                        guestName: guestName,
                         guestEmail: customerEmail,
-                        guestPhone: metadata.phone || '',
-                        totalAmount: amountInZar,
+                        guestPhone: phone,
+                        totalAmount: totalAmount,
                         amountPaid: amountInZar,
-                        balanceDue: 0,
+                        balanceDue: balanceDue,
                         paymentMethod: 'card',
-                        paystackRef: ref,
+                        paystackRef: rawRef,
                         isRecordedPayment: true,
                         isPaidPaystack: true,
-                        status: 'fully_paid',
+                        status: status,
                         createdAt: new Date().toISOString()
                     });
                 }
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
 
-                const numMatch = String(ref).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(ref).match(/(\d{5})/);
+                const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
                 if (numMatch) {
                     const seqVal = parseInt(numMatch[1], 10);
                     if (seqVal >= 10001) {
