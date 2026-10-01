@@ -1383,7 +1383,47 @@
 
         .modal-rules-close:hover { background: #E2E8F0; color: #1E293B; }
 
-        /* Toast notification */
+        
+        /* In-Calendar Notification Banner */
+        .calendar-toast-banner {
+            background: #0F172A;
+            color: #FFFFFF;
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            margin: 0.5rem 0 0.85rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+            border-left: 4px solid #38BDF8;
+            animation: fadeInSlide 0.25s ease-out;
+        }
+
+        .calendar-toast-close {
+            background: transparent;
+            border: none;
+            color: #94A3B8;
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 0 0 0.5rem;
+            font-weight: 700;
+            transition: color 0.15s ease;
+        }
+
+        .calendar-toast-close:hover {
+            color: #FFFFFF;
+        }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+/* Toast notification */
         .cal-toast {
             position: fixed;
             bottom: 24px;
@@ -1700,6 +1740,12 @@
                                 <select class="cal-jump-select" id="monthJumpSelect" onchange="jumpToMonth(this.value)"></select>
                                 <button class="cal-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)" title="Next Month">▶</button>
                             </div>
+                        </div>
+
+                        <!-- In-Calendar Toast Notification Banner -->
+                        <div class="calendar-toast-banner" id="calToastBanner" style="display:none;">
+                            <span id="calToastBannerText" style="flex:1;"></span>
+                            <button type="button" class="calendar-toast-close" onclick="document.getElementById('calToastBanner').style.display='none';" title="Dismiss" aria-label="Dismiss notification">&times;</button>
                         </div>
 
                         <!-- Weekday Headers -->
@@ -2813,12 +2859,27 @@
 
                     isBooked = (isBookedInDB || isBookedOtherStay);
 
+                    // How many other rooms are in cart on this date?
+                    const otherStaysOnDate = selectedStays.filter(s =>
+                        s.roomId !== selectedRoomId && s.roomId !== 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                    );
+                    const totalOccupiedOnDate = ROOMS.filter(r =>
+                        isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all') && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
+                    ).length;
+                    const freeRoomsLeft = 4 - totalOccupiedOnDate;
+
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else if (isBooked) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Booked</span>`;
+                    } else if (otherStaysOnDate.length > 0) {
+                        // This room is OPEN, but other rooms are in cart on this date!
+                        // Show "3 Free", "2 Free", "1 Free" so user sees what is in cart!
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${freeRoomsLeft} Free</span>`;
+                        const rate = calculateNightPrice(currentRoom, dateObj);
+                        priceText = `R${rate.toLocaleString()}`;
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
@@ -2862,6 +2923,9 @@
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
                         }
                     }
+                } else if (selectedRoomId !== 'all' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
+                    const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
+                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of 4 Free)`;
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
                 }
@@ -4300,15 +4364,31 @@
             return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
+        let calToastTimer = null;
+        let calToastBottomTimer = null;
         function showToast(msg) {
-            const toast = document.getElementById('calToast');
-            const toastMsg = document.getElementById('toastMessage');
-            if (toast && toastMsg) {
-                toastMsg.textContent = msg;
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3500);
+            const banner = document.getElementById('calToastBanner');
+            const bannerText = document.getElementById('calToastBannerText');
+            const step1 = document.getElementById('step1');
+
+            if (banner && bannerText && (!step1 || step1.style.display !== 'none')) {
+                bannerText.innerHTML = msg;
+                banner.style.display = 'flex';
+                if (calToastTimer) clearTimeout(calToastTimer);
+                calToastTimer = setTimeout(() => {
+                    if (banner) banner.style.display = 'none';
+                }, 4500);
+            } else {
+                const toast = document.getElementById('calToast');
+                const toastMsg = document.getElementById('toastMessage');
+                if (toast && toastMsg) {
+                    toastMsg.innerHTML = msg;
+                    toast.classList.add('show');
+                    if (calToastBottomTimer) clearTimeout(calToastBottomTimer);
+                    calToastBottomTimer = setTimeout(() => {
+                        if (toast) toast.classList.remove('show');
+                    }, 4500);
+                }
             }
         }
 
