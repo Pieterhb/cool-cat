@@ -2401,8 +2401,9 @@
             }
         ];
 
-        // All Rooms tab includes King Arthur, Santori, Mykonos (excluding Deluxe Suite)
-        
+        // All 4 room IDs - used when expanding an "all" stay into individual room bookings
+        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+
         // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
         let SITE_CONFIG = {
             nextYearMarkupPct: 10
@@ -2646,6 +2647,22 @@
         function isRoomBookedOnDate(roomId, dateStr) {
             return MOCK_BOOKINGS.some(b => {
                 if (b.status === 'cancelled') return false;
+
+                // Check stays array inside booking record (if present)
+                if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
+                    return b.stays.some(s => {
+                        if (s.roomId !== roomId && s.roomId !== 'all') return false;
+                        const cIn = s.checkInStr || s.checkIn;
+                        const cOut = s.checkOutStr || s.checkOut;
+                        return (dateStr >= cIn && dateStr < cOut);
+                    });
+                }
+
+                // If multi-stay parent record without matching stays array, ignore aggregate outer dates
+                if (b.isParentBooking && b.totalStays && b.totalStays > 1) {
+                    return false;
+                }
+
                 if (b.roomId !== roomId && b.roomId !== 'all') return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -2876,8 +2893,12 @@
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Booked</span>`;
                     } else if (otherStaysOnDate.length > 0) {
                         // This room is OPEN, but other rooms are in cart on this date!
-                        // Show "3 Free", "2 Free", "1 Free" so user sees what is in cart!
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${freeRoomsLeft} Free</span>`;
+                        const rate = calculateNightPrice(currentRoom, dateObj);
+                        priceText = `R${rate.toLocaleString()}`;
+                    } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
+                        // This room is OPEN, and other rooms are booked in DB!
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${freeRoomsLeft} Left</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else {
@@ -2926,6 +2947,8 @@
                 } else if (selectedRoomId !== 'all' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
                     const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
                     tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of 4 Free)`;
+                } else if (selectedRoomId !== 'all' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
+                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of 4 Rooms Free)`;
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
                 }
@@ -3955,8 +3978,9 @@
                 if (stay.roomId === 'all') {
                     ALL_ROOMS_SUBSET.forEach(rId => {
                         MOCK_BOOKINGS.push({
-                            id: cleanRef + '_' + rId,
+                            id: cleanRef + '_' + rId + '_' + stay.checkInStr,
                             parentBookingId: cleanRef,
+                            isCalendarBlock: true,
                             roomId: rId,
                             checkIn: stay.checkInStr,
                             checkOut: stay.checkOutStr
@@ -3964,7 +3988,9 @@
                     });
                 } else {
                     MOCK_BOOKINGS.push({
-                        id: cleanRef,
+                        id: cleanRef + '_' + stay.roomId + '_' + stay.checkInStr,
+                        parentBookingId: cleanRef,
+                        isCalendarBlock: true,
                         roomId: stay.roomId,
                         checkIn: stay.checkInStr,
                         checkOut: stay.checkOutStr

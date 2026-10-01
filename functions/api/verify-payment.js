@@ -180,9 +180,9 @@ export async function onRequestPost(context) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
 
             // Determine roomName and primary room for consolidated display
-            const isAllRooms = staysList.length >= 3 || staysList.some(s => s.roomId === 'all');
+            const isAllRooms = staysList.some(s => s.roomId === 'all') || (staysList.length === 4 && new Set(staysList.map(s => s.roomId)).size === 4);
             const displayRoomName = isAllRooms
-                ? 'All Rooms (3 Suites)'
+                ? 'All 4 Rooms (Entire Property)'
                 : staysList.length === 1
                     ? staysList[0].roomName
                     : `${staysList.length} Rooms`;
@@ -191,7 +191,7 @@ export async function onRequestPost(context) {
                 id: bookingRef,
                 parentBookingId: null,
                 isParentBooking: true,
-                roomId: isAllRooms ? 'all' : staysList[0].roomId,
+                roomId: isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : 'multiple'),
                 roomName: displayRoomName,
                 checkIn: staysList[0].checkInStr || staysList[0].checkIn,
                 checkOut: staysList[staysList.length - 1].checkOutStr || staysList[staysList.length - 1].checkOut,
@@ -232,7 +232,7 @@ export async function onRequestPost(context) {
             // 3b. Push individual per-room calendar block records so each room date is blocked
             staysList.forEach(s => {
                 const stayRooms = s.roomId === 'all'
-                    ? ['king-arthur', 'santori', 'mykonos']
+                    ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
                     : [s.roomId];
                 stayRooms.forEach(rid => {
                     existing.push({

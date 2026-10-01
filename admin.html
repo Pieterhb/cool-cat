@@ -3201,7 +3201,7 @@
             }
 
             if (roomId === 'all') {
-                const individualRooms = ['king-arthur', 'santori', 'mykonos'];
+                const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
                 return individualRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
             } else {
                 return getSingleRoomNightPrice(roomId);
@@ -3227,7 +3227,7 @@
         }
 
         function getAdminDateAvailability(dateStr) {
-            const individualRooms = ['king-arthur', 'santori', 'mykonos'];
+            const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
             const bookedRooms = [];
             const availableRooms = [];
 
