@@ -1361,7 +1361,7 @@
                                         <th>Room</th>
                                         <th>Stay Dates</th>
                                         <th>Total (ZAR)</th>
-                                        <th>Paid via Paystack</th>
+                                        <th>Amount Paid</th>
                                         <th>Balance Due</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -1955,6 +1955,24 @@
                                 ℹ️ <em>Airbnb &amp; Booking.com channel managers will be connected next year.</em>
                             </p>
                         </div>
+
+                        <!-- Database & Test Bookings Management -->
+                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--adm-border);">
+                            <h4 style="color: var(--adm-primary-dark); margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🧹</span> Database &amp; Test Data Maintenance
+                            </h4>
+                            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1rem;">
+                                Clean up test bookings or purge orphaned records before going live with real guests.
+                            </p>
+                            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                                <button type="button" class="btn-sm" style="background: #EEF2FF; color: #4338CA; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #C7D2FE;" onclick="purgeGhostBookings()">
+                                    🧹 Purge Corrupted / Orphan Ghost Records
+                                </button>
+                                <button type="button" class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #FECACA;" onclick="resetAllTestBookings()">
+                                    🗑️ Reset All Test Bookings (Clean Database)
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2513,12 +2531,27 @@
                 ADMIN_BOOKINGS.filter(b => b.isParentBooking || (!b.parentBookingId && !b.isCalendarBlock)).map(b => b.id)
             );
             const seenLegacyBases = new Set();
+            const seenNumericKeys = new Set();
 
-            return ADMIN_BOOKINGS.filter(b => {
+            // Sort so complete records (with real guest names and dates) are processed before generic ghost records
+            const sortedList = [...ADMIN_BOOKINGS].sort((a, b) => {
+                const aName = (a.guestName || '').trim().toLowerCase();
+                const bName = (b.guestName || '').trim().toLowerCase();
+                const aValid = (a.checkIn && aName && aName !== 'guest') ? 1 : 0;
+                const bValid = (b.checkIn && bName && bName !== 'guest') ? 1 : 0;
+                return bValid - aValid;
+            });
+
+            return sortedList.filter(b => {
                 if (b.isCalendarBlock) return false;
                 if (b.parentBookingId && parentIds.has(b.parentBookingId)) return false;
 
-                // Handle legacy multi-room records like MAN-44982_king-arthur if saved without parent record
+                // 1. Exclude records missing valid check-in date
+                if (!b.checkIn || typeof b.checkIn !== 'string' || b.checkIn.trim() === '' || b.checkIn === 'undefined' || b.checkIn === 'null') {
+                    return false;
+                }
+
+                // 2. Handle legacy multi-room records like MAN-44982_king-arthur if saved without parent record
                 const match = (b.id || '').match(/^((?:MAN|CC|ALL|KIN|SAN|MYK|DEL)-\d+)_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
                 if (match) {
                     const baseId = match[1];
@@ -2527,6 +2560,17 @@
                     seenLegacyBases.add(baseId);
                     b.roomName = 'All Rooms (3 Suites)';
                 }
+
+                // 3. De-duplicate identical numeric references if a duplicate ghost exists without proper guest name
+                const numMatch = (b.id || '').match(/\d{5,6}/);
+                if (numMatch) {
+                    const numKey = numMatch[0];
+                    if (seenNumericKeys.has(numKey)) {
+                        return false;
+                    }
+                    seenNumericKeys.add(numKey);
+                }
+
                 return true;
             }).map(b => {
                 // Sanitize legacy manual bookings that had amountPaid erroneously equal to total without payment
@@ -2688,7 +2732,10 @@
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
                         <td>${b.guestName}</td>
                         <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}</td>
-                        <td>${b.checkIn} &bull; ${b.nights || 1}N</td>
+                        <td>
+                            <span style="font-weight: 600; color: #1E293B; white-space: nowrap;">${b.checkIn}${b.checkOut ? ` &rarr; ${b.checkOut}` : ''}</span>
+                            <span style="display: inline-block; font-size: 0.75rem; color: #64748B; background: #F1F5F9; padding: 1px 5px; border-radius: 4px; margin-left: 3px; font-weight: 600;">${b.nights || 1}N</span>
+                        </td>
                         <td>R${Number(b.totalAmount || 0).toLocaleString()}</td>
                         <td style="color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'}; font-weight: ${Number(b.amountPaid || 0) > 0 ? '700' : 'normal'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                         <td style="color: ${isDeposit ? '#991B1B' : '#64748B'}; font-weight: ${isDeposit ? '700' : 'normal'};">
@@ -4630,6 +4677,72 @@ We look forward to hosting you at Cool-Cat!`;
             rows.forEach(r => {
                 r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
             });
+        }
+
+        // =========================================================
+        // DATABASE MAINTENANCE TOOLS (System & Paystack Settings Tab)
+        // =========================================================
+
+        async function purgeGhostBookings() {
+            if (!confirm('🧹 Purge Corrupted / Orphan Ghost Records?\n\nThis will scan the database and permanently remove any booking records that are missing a valid check-in date (these are corrupt or orphaned test fragments that appear as "Ghost" rows).\n\nReal bookings with valid dates will NOT be affected.\n\nProceed?')) {
+                return;
+            }
+            try {
+                const res = await fetch('/api/bookings?action=purge_ghosts', { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ ${data.message}\n\n${data.purgedCount > 0 ? `${data.purgedCount} ghost record(s) were permanently removed.` : 'Database was already clean — no orphaned records found.'}`);
+                    // Reload bookings from server and re-render
+                    const bookingsRes = await fetch('/api/bookings');
+                    if (bookingsRes.ok) {
+                        const bookingsData = await bookingsRes.json();
+                        if (bookingsData && bookingsData.bookings) {
+                            ADMIN_BOOKINGS = bookingsData.bookings;
+                        }
+                    }
+                    calculateKpis();
+                    renderBookingsTables();
+                    renderFinancesTable();
+                    renderGuestsTable();
+                    renderAdminCalendar();
+                } else {
+                    alert(`⚠️ Purge failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (err) {
+                alert(`⚠️ Could not connect to the database: ${err.message}`);
+            }
+        }
+
+        async function resetAllTestBookings() {
+            if (!confirm('🗑️ RESET ALL BOOKINGS?\n\n⚠️ WARNING: This will permanently delete EVERY booking in the database — including all test bookings — and reset the reference number counter back to zero.\n\nThis action CANNOT be undone.\n\nOnly use this when you are ready to start with a completely clean database before going live.\n\nAre you absolutely sure?')) {
+                return;
+            }
+            // Second confirmation for safety
+            if (!confirm('⛔ FINAL CONFIRMATION\n\nYou are about to wipe ALL bookings from the live database.\n\nType "DELETE" in the next prompt to confirm.')) {
+                return;
+            }
+            const typed = prompt('Type DELETE to confirm complete reset:');
+            if ((typed || '').trim().toUpperCase() !== 'DELETE') {
+                alert('Reset cancelled — confirmation text did not match.');
+                return;
+            }
+            try {
+                const res = await fetch('/api/bookings?action=reset_all', { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    ADMIN_BOOKINGS = [];
+                    calculateKpis();
+                    renderBookingsTables();
+                    renderFinancesTable();
+                    renderGuestsTable();
+                    renderAdminCalendar();
+                    alert('✅ Database reset complete. All test bookings have been permanently wiped.\n\nThe system is now clean and ready for real guest bookings!');
+                } else {
+                    alert(`⚠️ Reset failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (err) {
+                alert(`⚠️ Could not connect to the database: ${err.message}`);
+            }
         }
     </script>
 </body>

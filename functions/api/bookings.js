@@ -19,7 +19,13 @@ export async function onRequestGet(context) {
         }
 
         // Combine default with stored and sanitize any legacy manual test records in KV
-        const allBookings = [...defaultBookings, ...storedBookings].map(b => {
+        const allBookings = [...defaultBookings, ...storedBookings].filter(b => {
+            // Filter out corrupted/ghost records with missing check-in dates
+            if (!b.checkIn || typeof b.checkIn !== 'string' || b.checkIn.trim() === '' || b.checkIn === 'undefined' || b.checkIn === 'null') {
+                return false;
+            }
+            return true;
+        }).map(b => {
             const isManual = b.isManual || (b.id && /^(MAN|ALL|KIN|SAN|MYK|DEL|CC)-/i.test(b.id));
             const isExplicitlyPaid = b.isPaidEft === true || b.isRecordedPayment === true || (b.paystackRef && b.paystackRef.startsWith('PAY_'));
             if (isManual && !isExplicitlyPaid) {
@@ -259,6 +265,55 @@ export async function onRequestPost(context) {
 export async function onRequestDelete(context) {
     const { request, env } = context;
     const url = new URL(request.url);
+    const action = url.searchParams.get('action');
+
+    // Action: Reset all bookings to empty list
+    if (action === 'reset_all') {
+        try {
+            if (env && env.COOLCAT_KV) {
+                await env.COOLCAT_KV.put('bookings_list', JSON.stringify([]));
+                await env.COOLCAT_KV.put('booking_seq', '10000');
+            }
+            return new Response(JSON.stringify({ success: true, message: "All bookings permanently reset. Database is now clean." }), {
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        } catch (err) {
+            return new Response(JSON.stringify({ success: false, error: err.message }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    }
+
+    // Action: Purge corrupted ghost records (missing check-in dates or orphaned test fragments)
+    if (action === 'purge_ghosts') {
+        try {
+            if (env && env.COOLCAT_KV) {
+                let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+                const beforeCount = existing.length;
+                existing = existing.filter(b => {
+                    if (!b.checkIn || typeof b.checkIn !== 'string' || b.checkIn.trim() === '' || b.checkIn === 'undefined' || b.checkIn === 'null') {
+                        return false;
+                    }
+                    return true;
+                });
+                const purgedCount = beforeCount - existing.length;
+                await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
+                return new Response(JSON.stringify({ success: true, purgedCount, message: `Purged ${purgedCount} ghost record(s).` }), {
+                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                });
+            }
+            return new Response(JSON.stringify({ success: true, purgedCount: 0, message: "No records to purge." }), {
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        } catch (err) {
+            return new Response(JSON.stringify({ success: false, error: err.message }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    }
+
     let id = url.searchParams.get('id');
     const isHardDelete = (url.searchParams.get('hard') === 'true');
 
@@ -270,7 +325,7 @@ export async function onRequestDelete(context) {
     }
 
     if (!id) {
-        return new Response(JSON.stringify({ success: false, error: "Booking ID is required" }), {
+        return new Response(JSON.stringify({ success: false, error: "Booking ID or action is required" }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
         });
