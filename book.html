@@ -2635,10 +2635,9 @@
                     // All Rooms tab only highlights its OWN 'all' stays as blue
                     return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                 }
-                // Individual room: show blue for this room's stays OR any 'All Rooms' stay
-                if (s.roomId === 'all') {
-                    return ALL_ROOMS_SUBSET.includes(roomId) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
-                }
+                // Individual room: ONLY match this room's own stays.
+                // All Rooms stays must NOT show as blue IN CART on individual room calendars.
+                // They are handled by isBookedOtherStay and show as pink Booked instead.
                 if (s.roomId !== roomId) return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
@@ -2940,8 +2939,13 @@
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
                     const isBookedOtherStay = selectedStays.some(s => {
                         if (s === stayForDate) return false;
-                        if (s.roomId !== selectedRoomId && s.roomId !== 'all') return false;
-                        return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                        // Match this room's own stays
+                        if (s.roomId === selectedRoomId) return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                        // All Rooms stays only block rooms in ALL_ROOMS_SUBSET (not Deluxe Suite)
+                        if (s.roomId === 'all') {
+                            return ALL_ROOMS_SUBSET.includes(selectedRoomId) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                        }
+                        return false;
                     });
 
                     isBooked = (isBookedInDB || isBookedOtherStay);
@@ -3028,7 +3032,15 @@
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked — no availability</span>`;
                         }
                     } else {
-                        tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
+                        // Check if blocked by an All Rooms cart stay (more helpful message)
+                        const allRoomsCartBlock = selectedStays.find(s =>
+                            s.roomId === 'all' && dateStr >= s.checkInStr && dateStr < s.checkOutStr
+                        );
+                        if (allRoomsCartBlock) {
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Blocked — 'All Rooms' is in your cart on this date</span>`;
+                        } else {
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no availability on this date</span>`;
+                        }
                     }
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
@@ -4786,3 +4798,4 @@
 
 </body>
 </html>
+
