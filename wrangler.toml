@@ -1,6 +1,6 @@
 name = "cool-cat-site"
 # NOTE: cool-cat-site is the Cloudflare Pages project linked to cool-cat.co.za
-# Always deploy with: npx wrangler pages deploy . --project-name cool-cat-site
+# Always deploy to live production with: npx wrangler pages deploy . --project-name cool-cat-site --branch production
 compatibility_date = "2026-08-23"
 pages_build_output_dir = "."
 
