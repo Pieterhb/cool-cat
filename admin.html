@@ -3221,9 +3221,15 @@
 
             // Multi-stay parent records span from first check-in to last check-out across DIFFERENT rooms/dates.
             // They should NOT block individual room dates — only the isCalendarBlock sub-records should.
+            // Guard 1: explicit totalStays count
             if (b.isParentBooking && b.totalStays && b.totalStays > 1) return false;
+            // Guard 2: has stays array with multiple entries
             if (b.isParentBooking && b.stays && b.stays.length > 1) return false;
+            // Guard 3: roomId explicitly set to 'multiple'
             if (b.roomId === 'multiple') return false;
+            // Guard 4: any isParentBooking with roomId='all' is skipped for individual rooms —
+            // the isCalendarBlock children carry the per-room per-date data
+            if (b.isParentBooking && b.roomId === 'all' && roomId !== 'all') return false;
 
             // For individual room queries, skip blocks that belong to a different specific room
             if (roomId !== 'all') {
@@ -3418,8 +3424,8 @@
 
                 if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    if (avail.availableCount === 3) {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-open">3 Open</span>`;
+                    if (avail.availableCount === 4) {
+                        pillHtml = `<span class="adm-cal-avail-pill pill-open">4 Open</span>`;
                     } else if (avail.availableCount === 0) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-booked">Sold Out</span>`;
                         isBooked = true;
@@ -3474,7 +3480,7 @@
                 if (isBooked || isBlocked) {
                     if (adminCalRoomId === 'all') {
                         const avail = getAdminDateAvailability(dateStr);
-                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 3 rooms</span><br>`;
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 4 rooms</span><br>`;
                         avail.bookedRooms.forEach(br => {
                             tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
                         });
@@ -3510,7 +3516,7 @@
 
             // Update footer occupancy stats
             if (footerEl) {
-                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 3 : 1;
+                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 4 : 1;
                 const totalPossibleNights = daysInMonth * totalRoomsMultiplier;
                 let actualBookedNights = 0;
 
@@ -3563,7 +3569,7 @@
                     alert(`📋 Reservation Details:\n\nGuest/Reason: ${bookingDetails.guestName}\nRoom: ${bookingDetails.roomName || bookingDetails.roomId}\nStay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1} Nights)\nPhone: ${bookingDetails.guestPhone || '-'}\nTotal: R${Number(bookingDetails.totalAmount || 0).toLocaleString()} (Paid: R${Number(bookingDetails.amountPaid || 0).toLocaleString()})\nStatus: ${bookingDetails.status}\nReference: #${bookingDetails.id}`);
                 } else if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 3 rooms occupied:\n`;
+                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 4 rooms occupied:\n`;
                     avail.bookedRooms.forEach(br => {
                         msg += `• ${ADMIN_ROOM_NAMES[br.roomId]}: ${br.booking.guestName} (#${br.booking.id})\n`;
                     });
@@ -3710,10 +3716,10 @@
                     } else if (avail.availableCount < 3) {
                         isBlocked = true;
                         dayCell.classList.add('blocked');
-                        dayCell.title = `${avail.availableCount} of 3 rooms available`;
+                        dayCell.title = `${avail.availableCount} of 4 rooms available`;
                     } else {
                         dayCell.classList.add('avail');
-                        dayCell.title = `All 3 rooms open`;
+                        dayCell.title = `All 4 rooms open`;
                     }
                 } else {
                     const b = getBookingOnDateForRoom(roomId, dateStr);
