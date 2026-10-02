@@ -480,6 +480,72 @@
             font-weight: 700 !important;
         }
 
+        /* ── Shared search input style (teal) ── */
+        .adm-search-input {
+            background: #CCFBF1 !important;
+            border: 1.5px solid #0F172A !important;
+            color: #0F172A !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+        }
+        .adm-search-input:focus {
+            background: #E6FFFA !important;
+            border-color: #0F172A !important;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25) !important;
+            outline: none !important;
+        }
+        .adm-search-input::placeholder {
+            color: #0F172A !important;
+            opacity: 0.85 !important;
+            font-weight: 700 !important;
+        }
+
+        /* ── Maintenance buttons ── */
+        .btn-maintenance-indigo {
+            background: #EEF2FF !important;
+            color: #4338CA !important;
+            border: 1px solid #C7D2FE !important;
+            padding: 0.5rem 1rem !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+        .btn-maintenance-indigo:hover {
+            transform: translateY(-2px) !important;
+            background: #E0E7FF !important;
+            box-shadow: 0 4px 10px rgba(67, 56, 202, 0.25) !important;
+        }
+        .btn-maintenance-red {
+            background: #FEE2E2 !important;
+            color: #991B1B !important;
+            border: 1px solid #FECACA !important;
+            padding: 0.5rem 1rem !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+        .btn-maintenance-red:hover {
+            transform: translateY(-2px) !important;
+            background: #FECACA !important;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.25) !important;
+        }
+        /* Locked / disabled state for maintenance buttons */
+        .btn-maintenance-locked {
+            background: #F1F5F9 !important;
+            color: #94A3B8 !important;
+            border: 1px solid #CBD5E1 !important;
+            padding: 0.5rem 1rem !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
         .btn-reset-red {
             background: #EF4444 !important;
             color: #FFFFFF !important;
@@ -795,20 +861,22 @@
             text-align: center;
         }
         .adm-cal-nav-btn {
-            background: white;
-            border: 1px solid #CBD5E1;
+            background: #EFF6FF;
+            border: 1.5px solid #BFDBFE;
             padding: 0.35rem 0.8rem;
             border-radius: 6px;
             font-weight: 700;
             font-size: 0.82rem;
-            color: #334155;
+            color: #1E40AF;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
         }
         .adm-cal-nav-btn:hover:not(:disabled) {
             background: #0F52BA;
             color: white;
             border-color: #0F52BA;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(15, 82, 186, 0.3);
         }
         .adm-cal-nav-btn:disabled {
             opacity: 0.4;
@@ -1397,8 +1465,8 @@
                                 <button type="button" class="adm-cal-nav-btn" id="admCalPrevBtn" onclick="changeAdminCalMonth(-1)">◀ Prev</button>
                                 <h4 class="adm-cal-month-title" id="admCalMonthTitle">September 2026</h4>
                                 <button type="button" class="adm-cal-nav-btn" id="admCalNextBtn" onclick="changeAdminCalMonth(1)">Next ▶</button>
-                                <button type="button" class="btn-sm" style="background:#F1F5F9; color:#334155; margin-left: 0.3rem;" onclick="jumpAdminCalToday()">Today</button>
-                                <select id="admCalMonthJump" class="adm-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem; margin-left: 0.3rem;" onchange="jumpAdminCalSelect(this.value)">
+                                <button type="button" class="adm-cal-nav-btn" onclick="jumpAdminCalToday()" style="margin-left: 0.3rem;">Today</button>
+                                <select id="admCalMonthJump" class="adm-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem; margin-left: 0.3rem; background: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1E40AF; font-weight: 700; border-radius: 6px; cursor: pointer;" onchange="jumpAdminCalSelect(this.value)">
                                     <!-- Populated dynamically -->
                                 </select>
                             </div>
@@ -1474,7 +1542,7 @@
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">📅 Master Reservations Table</h3>
                             <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
-                                <input type="text" id="masterBookingsSearchInput" class="adm-input" placeholder="🔍 Search by guest name or phone..." oninput="filterBookingsTable(this.value)" style="width: 240px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                                <input type="text" id="masterBookingsSearchInput" class="adm-input adm-search-input" placeholder="🔍 Search by guest name or phone..." oninput="filterBookingsTable(this.value)" style="width: 240px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
                                 <button class="btn-export-turquoise" onclick="exportBookingsToXLSX()">
                                     📥 Export Master Bookings (.xlsx)
                                 </button>
@@ -1581,7 +1649,7 @@
                             <p style="font-size: 0.88rem; color: #64748B; margin: 0;">
                                 Live record of all incoming card, Capitec Pay, SnapScan, and Instant EFT transactions via Paystack.
                             </p>
-                            <input type="text" id="financesSearchInput" class="adm-input" placeholder="🔍 Search transactions, guests, amounts..." oninput="filterFinancesTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                            <input type="text" id="financesSearchInput" class="adm-input adm-search-input" placeholder="🔍 Search transactions, guests, amounts..." oninput="filterFinancesTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
                         </div>
 
                         <div class="adm-table-wrapper">
@@ -2031,7 +2099,7 @@
                             <p style="font-size: 0.88rem; color: #64748B; margin: 0;">
                                 Directory of all past and upcoming visitors with one-click WhatsApp links.
                             </p>
-                            <input type="text" id="guestSearchInput" class="adm-input" placeholder="🔍 Search guests by name, email, phone..." oninput="filterGuestsTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                            <input type="text" id="guestSearchInput" class="adm-input adm-search-input" placeholder="🔍 Search guests by name, email, phone..." oninput="filterGuestsTable(this.value)" style="width: 300px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
                         </div>
 
                         <div class="adm-table-wrapper">
@@ -2148,10 +2216,10 @@
                                 Clean up test bookings or purge orphaned records before going live with real guests.
                             </p>
                             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                                <button type="button" id="btnPurgeGhosts" class="btn-sm" style="background: #EEF2FF; color: #4338CA; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #C7D2FE;" onclick="purgeGhostBookings()">
+                                <button type="button" id="btnPurgeGhosts" class="btn-maintenance-indigo" onclick="purgeGhostBookings()">
                                     🧹 Purge Corrupted / Orphan Ghost Records
                                 </button>
-                                <button type="button" id="btnResetAllBookings" class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #FECACA;" onclick="resetAllTestBookings()">
+                                <button type="button" id="btnResetAllBookings" class="btn-maintenance-red" onclick="resetAllTestBookings()">
                                     🗑️ Reset All Test Bookings (Clean Database)
                                 </button>
                             </div>
@@ -5665,32 +5733,24 @@ We look forward to hosting you at Cool-Cat!`;
 
             if (btnPurge) {
                 if (isLive) {
-                    btnPurge.style.background = '#F1F5F9';
-                    btnPurge.style.color = '#94A3B8';
-                    btnPurge.style.borderColor = '#CBD5E1';
-                    btnPurge.style.cursor = 'not-allowed';
+                    btnPurge.className = 'btn-maintenance-locked';
+                    btnPurge.disabled = true;
                     btnPurge.innerHTML = '🔒 Purge Ghost Records (Locked in Live Mode)';
                 } else {
-                    btnPurge.style.background = '#EEF2FF';
-                    btnPurge.style.color = '#4338CA';
-                    btnPurge.style.borderColor = '#C7D2FE';
-                    btnPurge.style.cursor = 'pointer';
+                    btnPurge.className = 'btn-maintenance-indigo';
+                    btnPurge.disabled = false;
                     btnPurge.innerHTML = '🧹 Purge Corrupted / Orphan Ghost Records';
                 }
             }
 
             if (btnReset) {
                 if (isLive) {
-                    btnReset.style.background = '#F1F5F9';
-                    btnReset.style.color = '#94A3B8';
-                    btnReset.style.borderColor = '#CBD5E1';
-                    btnReset.style.cursor = 'not-allowed';
+                    btnReset.className = 'btn-maintenance-locked';
+                    btnReset.disabled = true;
                     btnReset.innerHTML = '🔒 Reset All Bookings (Locked in Live Mode)';
                 } else {
-                    btnReset.style.background = '#FEE2E2';
-                    btnReset.style.color = '#991B1B';
-                    btnReset.style.borderColor = '#FECACA';
-                    btnReset.style.cursor = 'pointer';
+                    btnReset.className = 'btn-maintenance-red';
+                    btnReset.disabled = false;
                     btnReset.innerHTML = '🗑️ Reset All Test Bookings (Clean Database)';
                 }
             }
