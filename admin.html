@@ -1522,7 +1522,15 @@
                             <table class="adm-table">
                                 <thead>
                                     <tr>
-                                        <th>Transaction ID</th>
+                                        <th style="white-space: nowrap;">
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Transaction ID</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="tx" data-dir="asc" onclick="sortFinances('tx', 'asc')" title="Sort Oldest to Newest">▲</span>
+                                                    <span class="sort-arrow" data-col="tx" data-dir="desc" onclick="sortFinances('tx', 'desc')" title="Sort Newest to Oldest">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Date</th>
                                         <th>Customer</th>
                                         <th>Room</th>
@@ -2889,13 +2897,49 @@
             }
         }
 
+        // Financials Sorting State (default: newest transaction on top)
+        let financeSortColumn = 'tx';
+        let financeSortDirection = 'desc';
+
+        function sortFinances(column, direction) {
+            financeSortColumn = column;
+            financeSortDirection = direction;
+            renderFinancesTable();
+        }
+
         function renderFinancesTable() {
             const tbody = document.getElementById('financesTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
             const displayList = getDisplayBookings();
-            displayList.forEach(b => {
+            let listToRender = [...displayList];
+
+            listToRender.sort((a, b) => {
+                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+
+                if (financeSortDirection === 'asc') {
+                    // Oldest to newest
+                    if (numA !== numB && numA > 0 && numB > 0) return numA - numB;
+                    return timeA - timeB;
+                } else {
+                    // Newest to oldest (default)
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
+                }
+            });
+
+            // Highlight active sort arrow for finances
+            document.querySelectorAll('#tabFinances .sort-arrow').forEach(el => el.classList.remove('active'));
+            if (financeSortColumn) {
+                const activeArrow = document.querySelector(`#tabFinances .sort-arrow[data-col="${financeSortColumn}"][data-dir="${financeSortDirection}"]`);
+                if (activeArrow) activeArrow.classList.add('active');
+            }
+
+            listToRender.forEach(b => {
                 const isPaid = Number(b.amountPaid || 0) > 0;
                 const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
                 const methodLabel = isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending';
@@ -2921,7 +2965,7 @@
             }
         }
 
-        // Guest CRM Sorting State
+        // Guest CRM Sorting State (default: newest guest / booking on top)
         let guestSortColumn = null;
         let guestSortDirection = 'asc';
 
@@ -2970,12 +3014,22 @@
                     const valB = guestSortColumn === 'name' ? (b.guestName || '') : (b.guestEmail || '');
                     return compareAlphaNumeric(valA, valB, isAsc);
                 });
+            } else {
+                // Default: Newest bookings / guests at the top
+                listToRender.sort((a, b) => {
+                    const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                    const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
+                });
             }
 
-            // Highlight active sort arrow
-            document.querySelectorAll('.sort-arrow').forEach(el => el.classList.remove('active'));
+            // Highlight active sort arrow for guests
+            document.querySelectorAll('#tabGuests .sort-arrow').forEach(el => el.classList.remove('active'));
             if (guestSortColumn) {
-                const activeArrow = document.querySelector(`.sort-arrow[data-col="${guestSortColumn}"][data-dir="${guestSortDirection}"]`);
+                const activeArrow = document.querySelector(`#tabGuests .sort-arrow[data-col="${guestSortColumn}"][data-dir="${guestSortDirection}"]`);
                 if (activeArrow) activeArrow.classList.add('active');
             }
 
@@ -4542,10 +4596,26 @@ We look forward to hosting you at Cool-Cat!`;
 
         function exportFinancialsToXLSX() {
             const displayList = getDisplayBookings();
+            let listToExport = [...displayList];
+            listToExport.sort((a, b) => {
+                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+
+                if (financeSortDirection === 'asc') {
+                    if (numA !== numB && numA > 0 && numB > 0) return numA - numB;
+                    return timeA - timeB;
+                } else {
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
+                }
+            });
+
             const rows = [
                 ["Transaction ID", "Date", "Guest Name", "Guest Email", "Room", "Gateway Method", "Amount ZAR", "Gateway Status"]
             ];
-            displayList.forEach(b => {
+            listToExport.forEach(b => {
                 const isPaid = Number(b.amountPaid || 0) > 0;
                 const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
                 rows.push([
@@ -4572,6 +4642,16 @@ We look forward to hosting you at Cool-Cat!`;
                     const valA = guestSortColumn === 'name' ? (a.guestName || '') : (a.guestEmail || '');
                     const valB = guestSortColumn === 'name' ? (b.guestName || '') : (b.guestEmail || '');
                     return compareAlphaNumeric(valA, valB, isAsc);
+                });
+            } else {
+                // Default: Newest bookings / guests at the top
+                listToExport.sort((a, b) => {
+                    const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                    const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
                 });
             }
 
