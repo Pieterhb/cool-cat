@@ -411,6 +411,52 @@
             color: #FFFFFF !important;
         }
 
+        .btn-payout-purple {
+            background: #7C3AED !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.82rem !important;
+            padding: 0.45rem 1.05rem !important;
+            border-radius: 8px !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.45rem !important;
+            box-shadow: 0 3px 8px rgba(124, 58, 237, 0.25) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .btn-payout-purple:hover {
+            transform: translateY(-2px) !important;
+            background: #6D28D9 !important;
+            box-shadow: 0 6px 14px rgba(124, 58, 237, 0.35) !important;
+            color: #FFFFFF !important;
+        }
+
+        .btn-card-payout-purple {
+            background: #7C3AED !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            padding: 3px 8px !important;
+            font-size: 0.72rem !important;
+            border-radius: 6px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
+            box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        .btn-card-payout-purple:hover {
+            transform: translateY(-2px) !important;
+            background: #6D28D9 !important;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.35) !important;
+            color: #FFFFFF !important;
+        }
+
         #recentBookingsSearchInput {
             background: #CCFBF1 !important;
             border: 1.5px solid #0F172A !important;
@@ -1266,7 +1312,7 @@
                         <div class="kpi-card" style="border-left: 4px solid #7C3AED; background: #FAF5FF;">
                             <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
                                 <span class="kpi-label" style="color: #6B21A8; margin: 0; font-size: 0.76rem;">🤝 Marketer 15% Due</span>
-                                <button type="button" class="btn-sm" style="background: #7C3AED; color: white; border: none; padding: 3px 8px; font-size: 0.72rem; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.15s ease;" onmouseover="this.style.background='#6D28D9'" onmouseout="this.style.background='#7C3AED'" onclick="openMarketerPayoutModal()" title="Record EFT payout to marketer">➕ Record Payout</button>
+                                <button type="button" class="btn-card-payout-purple" onclick="openMarketerPayoutModal()" title="Record EFT payout to marketer">➕ Record Payout</button>
                             </div>
                             <span class="kpi-value" id="kpiMarketerDue" style="color: #7C3AED;">R0</span>
                             <span class="kpi-sub" id="kpiMarketerSub">Owed from cash collections</span>
@@ -1581,7 +1627,7 @@
                                 <button type="button" class="btn-export-turquoise" onclick="exportMarketerStatementToXLSX()">
                                     📥 Export Marketer Statement (.xlsx)
                                 </button>
-                                <button type="button" class="btn-adm-primary" style="background: #7C3AED;" onclick="openMarketerPayoutModal()">
+                                <button type="button" class="btn-payout-purple" onclick="openMarketerPayoutModal()">
                                     ➕ Record EFT Payout
                                 </button>
                             </div>
