@@ -1264,11 +1264,11 @@
 
                         <!-- Card 10: Marketer 15% Due (Offline Cash) -->
                         <div class="kpi-card" style="border-left: 4px solid #7C3AED; background: #FAF5FF;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.3rem;">
-                                <span class="kpi-label" style="color: #6B21A8; margin: 0;">🤝 Marketer 15% Due</span>
-                                <button type="button" class="btn-sm" style="background: #7C3AED; color: white; border: none; padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 700; cursor: pointer; white-space: nowrap;" onclick="openMarketerPayoutModal()" title="Record EFT payout to marketer">Record Payout</button>
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+                                <span class="kpi-label" style="color: #6B21A8; margin: 0; font-size: 0.76rem;">🤝 Marketer 15% Due</span>
+                                <button type="button" class="btn-sm" style="background: #7C3AED; color: white; border: none; padding: 3px 8px; font-size: 0.72rem; border-radius: 6px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.15s ease;" onmouseover="this.style.background='#6D28D9'" onmouseout="this.style.background='#7C3AED'" onclick="openMarketerPayoutModal()" title="Record EFT payout to marketer">➕ Record Payout</button>
                             </div>
-                            <span class="kpi-value" id="kpiMarketerDue" style="color: #7C3AED; margin-top: 0.3rem;">R0</span>
+                            <span class="kpi-value" id="kpiMarketerDue" style="color: #7C3AED;">R0</span>
                             <span class="kpi-sub" id="kpiMarketerSub">Owed from cash collections</span>
                         </div>
                     </div>
@@ -2475,6 +2475,8 @@
                 </div>
             </div>
         </div>
+    </div>
+
     <!-- ========================================================= -->
     <!-- MARKETER PAYOUT: RECORD EFT COMMISSION SETTLEMENT MODAL    -->
     <!-- ========================================================= -->
@@ -2494,6 +2496,9 @@
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
                         <span style="color: #475569;">Unsettled Cash Bookings:</span>
                         <strong id="mktModalBookingsCount" style="color: #1E293B;">0 Bookings</strong>
+                    </div>
+                    <div id="mktModalBookingsList" style="max-height: 100px; overflow-y: auto; background: white; border: 1px solid #E9D5FF; border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.78rem; color: #475569; margin: 0.4rem 0 0.6rem;">
+                        <!-- List of bookings -->
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
                         <span style="color: #475569;">Total Gross Cash Collected:</span>
@@ -5122,6 +5127,20 @@ We look forward to hosting you at Cool-Cat!`;
 
             const countEl = document.getElementById('mktModalBookingsCount');
             if (countEl) countEl.textContent = `${unsettled.length} Booking${unsettled.length === 1 ? '' : 's'}`;
+
+            const listEl = document.getElementById('mktModalBookingsList');
+            if (listEl) {
+                if (unsettled.length === 0) {
+                    listEl.innerHTML = '<span style="color:#94A3B8; font-style:italic;">No unsettled cash bookings at this moment.</span>';
+                } else {
+                    listEl.innerHTML = unsettled.map(u => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px dashed #EDE9FE;">
+                            <span><strong>${u.cleanRef}</strong> &bull; ${u.guestName} (${shortRoomName(u.roomName)})</span>
+                            <span style="font-weight: 700; color: #7C3AED;">R${u.commission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                    `).join('');
+                }
+            }
 
             const cashEl = document.getElementById('mktModalCashTotal');
             if (cashEl) cashEl.textContent = `R${totalCash.toLocaleString()}`;
