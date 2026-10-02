@@ -2068,6 +2068,9 @@
                                     Track referred bookings and pay 10% commission via EFT strictly after the guest finishes their stay.
                                 </p>
                             </div>
+                            <button class="btn-export-turquoise" onclick="exportReferralsToXLSX()">
+                                📥 Export Referral Ledger (.xlsx)
+                            </button>
                         </div>
 
                         <div class="adm-table-wrapper">
@@ -4696,6 +4699,30 @@ We look forward to hosting you at Cool-Cat!`;
                 }
             });
             downloadXLSX(rows, "cool-cat-guests-crm.xlsx", "Guests CRM");
+        }
+
+        function exportReferralsToXLSX() {
+            const rows = [
+                ["Ref Code", "Partner Name", "Partner Email", "Partner Phone", "Referred Guest", "Stay Dates", "Booking Total (ZAR)", "10% Commission (ZAR)", "Payout Status"]
+            ];
+            ADMIN_REFERRALS.forEach(r => {
+                let statusLabel = 'Stay in Progress';
+                if (r.status === 'ready_payout') statusLabel = 'Ready for Payout';
+                else if (r.status === 'paid_eft') statusLabel = 'Paid via EFT';
+
+                rows.push([
+                    r.code || '',
+                    r.partnerName || '',
+                    r.partnerEmail || '',
+                    r.partnerPhone || '',
+                    r.guestName || '',
+                    r.stayDates || '',
+                    Number(r.bookingTotal || 0),
+                    Number(r.commission || 0),
+                    statusLabel
+                ]);
+            });
+            downloadXLSX(rows, "cool-cat-referrals-ledger.xlsx", "Referrals");
         }
 
         function downloadXLSX(rows, fileName, sheetName) {
