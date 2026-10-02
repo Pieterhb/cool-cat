@@ -1447,6 +1447,24 @@
                 <!-- TAB 3: DAILY OPERATIONS & HOUSEKEEPING                    -->
                 <!-- ========================================================= -->
                 <div class="tab-section" id="tabOperations">
+
+                    <!-- ===== GUEST ATTENTION ALERTS (Owner/Host Only) ===== -->
+                    <div class="adm-card" style="border: 2px solid #F59E0B; background: #FFFBEB; margin-bottom: 1.5rem;">
+                        <div class="adm-card-header" style="background: #FEF3C7; border-bottom: 1px solid #FDE68A; border-radius: 10px 10px 0 0;">
+                            <h3 class="adm-card-title" style="color: #92400E;">
+                                🔔 Guest Attention Alerts
+                                <span style="font-size: 0.72rem; background: #F59E0B; color: white; padding: 0.15rem 0.6rem; border-radius: 999px; font-weight: 700; margin-left: 0.5rem; vertical-align: middle;">OWNER / HOST ONLY</span>
+                            </h3>
+                            <button class="btn-sm" style="background: #F59E0B; color: white; border: none; border-radius: 6px; padding: 0.4rem 0.9rem; font-weight: 700; cursor: pointer;" onclick="renderGuestAlerts()">🔄 Refresh</button>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #78350F; margin: 0.6rem 1rem 0; padding-bottom: 0.4rem;">
+                            Private view for owner/host. All guests staying or arriving today — with their special requests, arrival times and room details. Not sent to cleaning staff.
+                        </p>
+                        <div id="guestAlertsPanel" style="padding: 1rem;">
+                            <p style="color: #92400E; font-size: 0.87rem;">Loading alerts…</p>
+                        </div>
+                    </div>
+
                     <div class="adm-card">
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">🧹 Daily Housekeeping Operations</h3>
@@ -2431,6 +2449,11 @@
             if (map[tabName]) {
                 items[map[tabName].tabIdx].classList.add('active');
                 document.getElementById(map[tabName].el).classList.add('active-tab');
+            }
+
+            // Auto-render guest alerts whenever the housekeeping tab is opened
+            if (tabName === 'operations') {
+                setTimeout(renderGuestAlerts, 50);
             }
 
             // Close mobile sidebar if open
@@ -4379,6 +4402,80 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         // 5. 1-Click WhatsApp Cleaner Schedule
+        function renderGuestAlerts() {
+            const panel = document.getElementById('guestAlertsPanel');
+            if (!panel) return;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayLabel = new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Use display bookings so we only see parent/consolidated records
+            const display = getDisplayBookings().filter(b => b.status !== 'cancelled');
+
+            const arriving  = display.filter(b => b.checkIn  === todayStr);
+            const staying   = display.filter(b => b.checkIn  <  todayStr && b.checkOut > todayStr);
+            const checkingOut = display.filter(b => b.checkOut === todayStr && b.checkIn < todayStr);
+
+            function roomLabel(b) {
+                return b.roomName || b.roomId || 'Unknown Room';
+            }
+
+            function requestBadge(req) {
+                if (!req || !req.trim()) return '<span style="color:#94A3B8; font-size:0.82rem;">No special requests</span>';
+                return `<span style="display:inline-block; background:#FEF3C7; border:1px solid #F59E0B; color:#92400E; border-radius:6px; padding:0.3rem 0.7rem; font-size:0.85rem; font-weight:600;">⚠️ ${escHtml(req)}</span>`;
+            }
+
+            function escHtml(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+
+            function guestCard(b, badge) {
+                const hasReq = b.specialRequests && b.specialRequests.trim();
+                const cardBg  = hasReq ? '#FFFBEB' : '#F8FAFC';
+                const cardBdr = hasReq ? '1.5px solid #F59E0B' : '1px solid #E2E8F0';
+                const ref = typeof formatRefId === 'function' ? formatRefId(b.id, b.roomId) : b.id;
+                return `
+                <div style="background:${cardBg}; border:${cardBdr}; border-radius:10px; padding:0.85rem 1rem; margin-bottom:0.6rem; display:flex; flex-wrap:wrap; gap:0.6rem; align-items:flex-start;">
+                    <div style="flex:1; min-width:180px;">
+                        <div style="font-weight:700; color:#1E293B; font-size:0.95rem;">${escHtml(b.guestName || 'Guest')}</div>
+                        <div style="font-size:0.8rem; color:#475569; margin-top:0.2rem;">
+                            🛏️ ${escHtml(roomLabel(b))} &nbsp;·&nbsp; 📋 ${escHtml(ref)}
+                        </div>
+                        <div style="font-size:0.8rem; color:#475569;">
+                            ${badge}
+                        </div>
+                        ${b.guestPhone ? `<div style="font-size:0.8rem; color:#0284C7; margin-top:0.2rem;">📞 ${escHtml(b.guestPhone)}</div>` : ''}
+                    </div>
+                    <div style="text-align:right; min-width:140px; font-size:0.82rem; color:#475569;">
+                        <div>Check-in: <strong>${b.checkIn}</strong></div>
+                        <div>Check-out: <strong>${b.checkOut}</strong></div>
+                        <div style="margin-top:0.2rem;">${b.arrivalTime ? `🕐 Arrives: <strong>${escHtml(b.arrivalTime)}</strong>` : ''}</div>
+                        <div style="margin-top:0.25rem;">${requestBadge(b.specialRequests)}</div>
+                    </div>
+                </div>`;
+            }
+
+            function section(title, icon, color, bgColor, items, badgeFn) {
+                if (items.length === 0) {
+                    return `<div style="margin-bottom:1.2rem;">
+                        <div style="font-weight:700; color:${color}; font-size:0.92rem; margin-bottom:0.5rem;">${icon} ${title}</div>
+                        <div style="color:#94A3B8; font-size:0.85rem; font-style:italic; padding:0.5rem 0.8rem; background:${bgColor}; border-radius:8px;">None today.</div>
+                    </div>`;
+                }
+                return `<div style="margin-bottom:1.4rem;">
+                    <div style="font-weight:700; color:${color}; font-size:0.92rem; margin-bottom:0.55rem;">${icon} ${title} <span style="font-size:0.78rem; background:${bgColor}; color:${color}; border-radius:999px; padding:0.1rem 0.55rem; font-weight:700;">${items.length}</span></div>
+                    ${items.map(b => guestCard(b, badgeFn(b))).join('')}
+                </div>`;
+            }
+
+            panel.innerHTML = `
+                <div style="font-size:0.78rem; color:#78350F; font-weight:600; margin-bottom:1rem; text-transform:uppercase; letter-spacing:0.05em;">📅 ${todayLabel}</div>
+                ${section('Arriving Today', '🟢', '#065F46', '#D1FAE5', arriving, b => `Arrival window: <strong>${b.arrivalTime || '14:00 – 16:00'}</strong>`)}
+                ${section('Currently Staying (In-House)', '🔵', '#1E40AF', '#DBEAFE', staying, b => `Night ${Math.max(1, Math.round((new Date(todayStr) - new Date(b.checkIn)) / 86400000))} of ${b.nights || '?'}`)}
+                ${section('Checking Out Today', '🟡', '#92400E', '#FEF3C7', checkingOut, b => `Checkout by 10:00`)}
+            `;
+        }
+
         function sendCleanerWhatsApp() {
             const todayStr = new Date().toISOString().split('T')[0];
             const roomKeys = [
