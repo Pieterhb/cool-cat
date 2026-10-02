@@ -60,14 +60,25 @@ export async function onRequestPost(context) {
                 } catch(e) {}
             }
 
-            const isAllRooms = (roomId === 'all') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'all'));
-            const parentRoomId = isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : (roomId || 'multiple'));
+            // Derive room info from metadata (roomId was previously undefined - fixed)
+            const metaRoomId = metadata.room_id || (staysList.length === 1 ? staysList[0].roomId : 'multiple');
+            const isAllRooms = (metaRoomId === 'all') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'all'));
+            const parentRoomId = isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : (metaRoomId || 'multiple'));
             const defaultDisplayRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
                 : (staysList.length === 1 ? (staysList[0].roomName || 'Single Room') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'All 4 Rooms (Entire Property)'));
             const finalRoomName = metadata.room_name && !metadata.room_name.includes('3 Suites') ? metadata.room_name : defaultDisplayRoomName;
+            // Derive amounts and status from payment data (totalAmount/balanceDue/status were undefined - fixed)
+            const totalAmountMeta = Number(metadata.total_amount || 0);
+            const amountPaidMeta = amountInZar;
+            const balanceDueMeta = Math.max(0, totalAmountMeta - amountPaidMeta);
+            const bookingStatus = balanceDueMeta > 0 ? 'deposit_paid' : (amountPaidMeta > 0 ? 'fully_paid' : 'not_paid');
 
             console.log(`Paystack Webhook Success: Ref ${cleanBookingRef} (tx: ${rawRef}) | R${amountInZar} | Customer: ${customerEmail}`);
+
+            const calculatedNights = (staysList && staysList.length > 0)
+                ? staysList.reduce((sum, s) => sum + (Number(s.nights) || 0), 0)
+                : Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)) || 1);
 
             // Save confirmed booking to KV if available
             if (env && env.COOLCAT_KV) {
@@ -80,19 +91,20 @@ export async function onRequestPost(context) {
                     roomName: finalRoomName,
                     checkIn: checkIn,
                     checkOut: checkOut,
+                    nights: calculatedNights,
                     guestName: guestName,
                     guestEmail: customerEmail,
                     guestPhone: phone,
-                    totalAmount: totalAmount,
-                    amountPaid: amountInZar,
-                    balanceDue: balanceDue,
+                    totalAmount: totalAmountMeta,
+                    amountPaid: amountPaidMeta,
+                    balanceDue: balanceDueMeta,
                     paymentMethod: 'card',
                     paystackRef: rawRef,
                     isRecordedPayment: true,
                     isPaidPaystack: true,
                     stays: (staysList && staysList.length > 0) ? staysList : undefined,
                     totalStays: (staysList && staysList.length > 0) ? staysList.length : 1,
-                    status: status,
+                    status: bookingStatus,
                     createdAt: new Date().toISOString()
                 };
 
@@ -132,7 +144,7 @@ export async function onRequestPost(context) {
                                 totalAmount: 0,
                                 amountPaid: 0,
                                 balanceDue: 0,
-                                status: status,
+                                status: bookingStatus,
                                 createdAt: new Date().toISOString()
                             });
                         });
@@ -154,7 +166,7 @@ export async function onRequestPost(context) {
                             totalAmount: 0,
                             amountPaid: 0,
                             balanceDue: 0,
-                            status: status,
+                            status: bookingStatus,
                             createdAt: new Date().toISOString()
                         });
                     });
@@ -174,7 +186,7 @@ export async function onRequestPost(context) {
                         totalAmount: 0,
                         amountPaid: 0,
                         balanceDue: 0,
-                        status: status,
+                        status: bookingStatus,
                         createdAt: new Date().toISOString()
                     });
                 }
@@ -209,3 +221,14 @@ export async function onRequestPost(context) {
         });
     }
 }
+
+export async function onRequestOptions() {
+    return new Response(null, {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, x-paystack-signature'
+        }
+    });
+}
+

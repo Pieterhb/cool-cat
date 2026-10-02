@@ -716,8 +716,14 @@
 
         .legend-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 0.75rem;
+        }
+
+        @media (max-width: 480px) {
+            .legend-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .legend-item {
@@ -3794,7 +3800,71 @@
         }
 
         // ==========================================
-        // 9. PAYSTACK CHECKOUT & SERVER VERIFICATION
+        // 9. BOOKING REFERENCE & ROOM HELPER FUNCTIONS
+        // ==========================================
+        function getRoomPrefix(rId) {
+            if (!rId) return 'CC-';
+            const r = String(rId).toLowerCase();
+            if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
+            if (r.includes('santor') || r.includes('san')) return 'SAN-';
+            if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+            if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
+            return 'CC-';
+        }
+
+        function getRoomPrefixForStays(stays) {
+            if (!stays || stays.length === 0) return 'ALL-';
+            if (stays.length > 1) return 'ALL-';
+            const r = String(stays[0].roomId || '').toLowerCase();
+            return getRoomPrefix(r);
+        }
+
+        function formatRefId(id, roomId) {
+            if (!id) return '';
+            let clean = String(id).trim();
+            if (clean.startsWith('#')) clean = clean.substring(1);
+            // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
+            clean = clean.replace(/_\d{5,}$/, '');
+
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC)-\d+$/i.test(clean)) {
+                return clean.toUpperCase();
+            }
+
+            const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
+            const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
+            const prefix = getRoomPrefix(inferredRoom);
+
+            clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+            const numMatch = clean.match(/\d+/);
+            if (numMatch) {
+                return `${prefix}${numMatch[0]}`;
+            }
+            return clean;
+        }
+
+        function getNextRefNumber(staysOrRoom) {
+            let maxSeq = 10000;
+            (MOCK_BOOKINGS || []).forEach(b => {
+                const idStr = String(b.id || b.parentBookingId || '');
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                if (match) {
+                    const num = parseInt(match[1], 10);
+                    if (num >= 10001 && num > maxSeq) {
+                        maxSeq = num;
+                    }
+                }
+            });
+            if (window._serverNextSeq && window._serverNextSeq > maxSeq) {
+                maxSeq = window._serverNextSeq - 1;
+            }
+            const nextSeq = maxSeq + 1;
+            const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
+            return `${prefix}${nextSeq}`;
+        }
+
+        // ==========================================
+        // PAYSTACK CHECKOUT & SERVER VERIFICATION
         // ==========================================
         function handleProceedToPayment(e) {
             e.preventDefault();
@@ -3818,67 +3888,6 @@
 
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
-
-            function getRoomPrefix(rId) {
-                if (!rId) return 'CC-';
-                const r = String(rId).toLowerCase();
-                if (r === 'all' || r.includes('all')) return 'ALL-';
-                if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
-                if (r.includes('santor') || r.includes('san')) return 'SAN-';
-                if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
-                if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
-                return 'CC-';
-            }
-
-            function getRoomPrefixForStays(stays) {
-                if (!stays || stays.length === 0) return 'ALL-';
-                if (stays.length > 1) return 'ALL-';
-                const r = String(stays[0].roomId || '').toLowerCase();
-                return getRoomPrefix(r);
-            }
-
-            function formatRefId(id, roomId) {
-                if (!id) return '';
-                let clean = String(id).trim();
-                if (clean.startsWith('#')) clean = clean.substring(1);
-                // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
-                clean = clean.replace(/_\d{5,}$/, '');
-
-                if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC)-\d+$/i.test(clean)) {
-                    return clean.toUpperCase();
-                }
-
-                const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
-                const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
-                const prefix = getRoomPrefix(inferredRoom);
-
-                clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
-                const numMatch = clean.match(/\d+/);
-                if (numMatch) {
-                    return `${prefix}${numMatch[0]}`;
-                }
-                return clean;
-            }
-
-            function getNextRefNumber(staysOrRoom) {
-                let maxSeq = 10000;
-                (MOCK_BOOKINGS || []).forEach(b => {
-                    const idStr = String(b.id || b.parentBookingId || '');
-                    const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
-                    if (match) {
-                        const num = parseInt(match[1], 10);
-                        if (num >= 10001 && num > maxSeq) {
-                            maxSeq = num;
-                        }
-                    }
-                });
-                if (window._serverNextSeq && window._serverNextSeq > maxSeq) {
-                    maxSeq = window._serverNextSeq - 1;
-                }
-                const nextSeq = maxSeq + 1;
-                const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
-                return `${prefix}${nextSeq}`;
-            }
 
             const generatedBookingRef = getNextRefNumber(selectedStays);
             // Unique transaction ref for Paystack ledger so Paystack never throws 'Duplicate reference'
@@ -3942,6 +3951,28 @@
                     }
                 });
 
+                // Save pending booking to sessionStorage in case Paystack redirects (mobile/3DS)
+                try {
+                    sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
+                        bookingRef: generatedBookingRef,
+                        fullName: fullName,
+                        email: email,
+                        phone: cleanPhone,
+                        arrivalTime: arrivalTime,
+                        specialRequests: specialRequests,
+                        paystackTxRef: paystackUniqueTxRef,
+                        stays: selectedStays,
+                        grandTotal: calculatedGrandTotal,
+                        depositDue: calculatedDepositDue,
+                        balanceDue: calculatedBalanceDue,
+                        guestCount: selectedGuestCount,
+                        nights: totalNightsCount,
+                        referralCode: activeReferralCode || ''
+                    }));
+                } catch (e) {
+                    console.warn("Could not save pending booking to sessionStorage:", e);
+                }
+
                 handler.openIframe();
             } else {
                 completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
@@ -3996,6 +4027,8 @@
                 if (res.ok) {
                     const data = await res.json();
                     console.log("Payment verified & booking saved to cloud:", data);
+                    // Refresh all live bookings from backend to guarantee fresh state
+                    await loadLiveBookings();
                 } else {
                     const errData = await res.json().catch(() => ({}));
                     console.warn("Backend verification notice:", errData.error || res.statusText);
@@ -4081,6 +4114,9 @@
                 guestName: name,
                 stays: selectedStays
             };
+
+            // Clear pending booking from sessionStorage - booking is confirmed
+            try { sessionStorage.removeItem('coolcat_pending_booking'); } catch(e) {}
 
             // Switch to Step 4 view
             const s1 = document.getElementById('step1View');
@@ -4487,6 +4523,46 @@
             const ref = urlParams.get('ref') || urlParams.get('promo');
             if (ref) {
                 applyReferralCodeDirect(ref.toUpperCase());
+            }
+
+            // --- Paystack Redirect Recovery ---
+            // When Paystack redirects back to book.html (mobile / 3DS redirect),
+            // the page reloads and the popup callback never fires.
+            // We detect this via ?trxref= or ?reference= in the URL and recover
+            // the pending booking data stored in sessionStorage.
+            const paystackReturnRef = urlParams.get('trxref') || urlParams.get('reference');
+            if (paystackReturnRef && paystackReturnRef.length > 4) {
+                const rawPending = sessionStorage.getItem('coolcat_pending_booking');
+                if (rawPending) {
+                    try {
+                        const pending = JSON.parse(rawPending);
+                        if (Array.isArray(pending.stays) && pending.stays.length > 0) {
+                            selectedStays = pending.stays;
+                        }
+                        calculatedGrandTotal  = Number(pending.grandTotal  || 0);
+                        calculatedDepositDue  = Number(pending.depositDue  || 0);
+                        calculatedBalanceDue  = Number(pending.balanceDue  || 0);
+                        totalNightsCount      = Number(pending.nights      || 0);
+                        activeReferralCode    = pending.referralCode || '';
+                        
+                        // Clean Paystack query params from URL so refresh doesn't duplicate
+                        history.replaceState({}, document.title, window.location.pathname);
+
+                        // Complete the booking and save to backend
+                        completeBooking(
+                            pending.bookingRef,
+                            pending.fullName,
+                            pending.email,
+                            pending.phone,
+                            pending.arrivalTime,
+                            pending.specialRequests,
+                            paystackReturnRef
+                        );
+                    } catch (e) {
+                        console.warn('Paystack redirect recovery error:', e);
+                        sessionStorage.removeItem('coolcat_pending_booking');
+                    }
+                }
             }
 
             // Auto-detect Direct Quote / Manual Payment Link (?payRef=MAN-...)
