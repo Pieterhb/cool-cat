@@ -1410,8 +1410,11 @@
                     <div class="adm-card">
                         <div class="adm-card-header">
                             <h3 class="adm-card-title">📅 Master Reservations Table</h3>
-                            <div style="display: flex; gap: 0.6rem;">
-                                <input type="text" class="adm-input" placeholder="🔍 Search by guest name or phone..." oninput="filterBookingsTable(this.value)" style="width: 260px;">
+                            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="masterBookingsSearchInput" class="adm-input" placeholder="🔍 Search by guest name or phone..." oninput="filterBookingsTable(this.value)" style="width: 240px; max-width: 100%; padding: 0.45rem 0.85rem; font-size: 0.85rem;">
+                                <button class="btn-export-turquoise" onclick="exportBookingsToXLSX()">
+                                    📥 Export Master Bookings (.xlsx)
+                                </button>
                                 <button class="btn-adm-primary" onclick="openManualBookingModal()">➕ Block Dates</button>
                             </div>
                         </div>
@@ -4572,15 +4575,34 @@ We look forward to hosting you at Cool-Cat!`;
 
         // 6. XLSX Exports (proper Excel format — each field in its own cell/column)
         function exportBookingsToXLSX() {
+            const displayList = getDisplayBookings();
+            const sortedByNewest = [...displayList].sort((a, b) => {
+                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+                if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                return timeB - timeA;
+            });
+
             const rows = [
-                ["Reference", "Guest Name", "Email", "Phone", "Room", "Check-In", "Check-Out", "Nights", "Total ZAR", "Paid ZAR", "Balance ZAR", "Status"]
+                ["Ref #", "Guest Name", "Contact / Phone", "Email", "Room", "Check-In", "Check-Out", "Nights", "Total (ZAR)", "Amount Paid (ZAR)", "Balance Due (ZAR)", "Status", "Special Requests / Notes"]
             ];
-            ADMIN_BOOKINGS.forEach(b => {
+            sortedByNewest.forEach(b => {
+                let statusLabel = 'Not Paid';
+                if (b.status === 'cancelled') {
+                    statusLabel = 'Cancelled';
+                } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                    statusLabel = '100% Paid';
+                } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
+                    statusLabel = 'Deposit Paid';
+                }
+
                 rows.push([
-                    formatRefId(b.id, b.roomId),
+                    '#' + formatRefId(b.id, b.roomId),
                     b.guestName,
-                    b.guestEmail || '',
                     b.guestPhone || '',
+                    b.guestEmail || '',
                     b.roomName || b.roomId,
                     b.checkIn,
                     b.checkOut,
@@ -4588,10 +4610,11 @@ We look forward to hosting you at Cool-Cat!`;
                     Number(b.totalAmount || 0),
                     Number(b.amountPaid || 0),
                     Number(b.balanceDue || 0),
-                    b.status
+                    statusLabel,
+                    b.specialRequests || ''
                 ]);
             });
-            downloadXLSX(rows, "cool-cat-bookings-export.xlsx", "Bookings");
+            downloadXLSX(rows, "cool-cat-master-bookings.xlsx", "Master Bookings");
         }
 
         function exportFinancialsToXLSX() {
