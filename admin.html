@@ -1957,14 +1957,14 @@
                         <div class="adm-form-grid">
                             <div class="adm-form-group">
                                 <label>Paystack Mode</label>
-                                <select id="paystackModeSelect" class="adm-input">
+                                <select id="paystackModeSelect" class="adm-input" onchange="updateMaintenanceButtonsUI()">
                                     <option value="test" selected>🧪 Test Mode (Sandbox / No Real Money)</option>
                                     <option value="live">🟢 Live Production Mode (Real Card Processing)</option>
                                 </select>
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Public Key (pk_test_... or pk_live_...)</label>
-                                <input type="text" id="paystackPublicKey" class="adm-input" value="pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407">
+                                <input type="text" id="paystackPublicKey" class="adm-input" value="pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407" oninput="updateMaintenanceButtonsUI()">
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Secret Key (sk_test_... or sk_live_...)</label>
@@ -2016,14 +2016,15 @@
                             <h4 style="color: var(--adm-primary-dark); margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                                 <span>🧹</span> Database &amp; Test Data Maintenance
                             </h4>
+                            <div id="dbMaintenanceLiveBanner"></div>
                             <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1rem;">
                                 Clean up test bookings or purge orphaned records before going live with real guests.
                             </p>
                             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                                <button type="button" class="btn-sm" style="background: #EEF2FF; color: #4338CA; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #C7D2FE;" onclick="purgeGhostBookings()">
+                                <button type="button" id="btnPurgeGhosts" class="btn-sm" style="background: #EEF2FF; color: #4338CA; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #C7D2FE;" onclick="purgeGhostBookings()">
                                     🧹 Purge Corrupted / Orphan Ghost Records
                                 </button>
-                                <button type="button" class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #FECACA;" onclick="resetAllTestBookings()">
+                                <button type="button" id="btnResetAllBookings" class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 0.5rem 1rem; font-weight: 600; border: 1px solid #FECACA;" onclick="resetAllTestBookings()">
                                     🗑️ Reset All Test Bookings (Clean Database)
                                 </button>
                             </div>
@@ -2501,6 +2502,7 @@
             populateAdminCalMonthJump();
             renderAdminCalendar();
             loadSavedRatesIntoAdmin();
+            loadSavedSystemSettings();
         }
 
         function toggleSpecial(roomKey) {
@@ -4950,8 +4952,131 @@ We look forward to hosting you at Cool-Cat!`;
             }
         }
 
+        function isLiveProductionMode() {
+            const modeSel = document.getElementById('paystackModeSelect');
+            if (modeSel && modeSel.value === 'live') return true;
+            const pubKey = document.getElementById('paystackPublicKey');
+            if (pubKey && pubKey.value.trim().startsWith('pk_live_')) return true;
+            const savedMode = localStorage.getItem('coolcat_paystack_mode');
+            if (savedMode === 'live') return true;
+            return false;
+        }
+
+        function updateMaintenanceButtonsUI() {
+            const isLive = isLiveProductionMode();
+            const banner = document.getElementById('dbMaintenanceLiveBanner');
+            const btnPurge = document.getElementById('btnPurgeGhosts');
+            const btnReset = document.getElementById('btnResetAllBookings');
+
+            if (banner) {
+                if (isLive) {
+                    banner.innerHTML = `
+                        <div style="background: #FEF3C7; border: 1.5px solid #F59E0B; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 1.3rem;">🔒</span>
+                            <div style="font-size: 0.85rem; color: #92400E; font-weight: 600; line-height: 1.4;">
+                                <strong>Live Production Protection Active:</strong> Database reset &amp; purge buttons are locked to safeguard live customer bookings and accounting records.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    banner.innerHTML = `
+                        <div style="background: #EFF6FF; border: 1.5px solid #93C5FD; border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.65rem;">
+                            <span style="font-size: 1.1rem;">🧪</span>
+                            <div style="font-size: 0.82rem; color: #1E40AF; font-weight: 500;">
+                                <strong>Testing Mode Active:</strong> You can clean up test bookings or purge test records before switching to Live mode.
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (btnPurge) {
+                if (isLive) {
+                    btnPurge.style.background = '#F1F5F9';
+                    btnPurge.style.color = '#94A3B8';
+                    btnPurge.style.borderColor = '#CBD5E1';
+                    btnPurge.style.cursor = 'not-allowed';
+                    btnPurge.innerHTML = '🔒 Purge Ghost Records (Locked in Live Mode)';
+                } else {
+                    btnPurge.style.background = '#EEF2FF';
+                    btnPurge.style.color = '#4338CA';
+                    btnPurge.style.borderColor = '#C7D2FE';
+                    btnPurge.style.cursor = 'pointer';
+                    btnPurge.innerHTML = '🧹 Purge Corrupted / Orphan Ghost Records';
+                }
+            }
+
+            if (btnReset) {
+                if (isLive) {
+                    btnReset.style.background = '#F1F5F9';
+                    btnReset.style.color = '#94A3B8';
+                    btnReset.style.borderColor = '#CBD5E1';
+                    btnReset.style.cursor = 'not-allowed';
+                    btnReset.innerHTML = '🔒 Reset All Bookings (Locked in Live Mode)';
+                } else {
+                    btnReset.style.background = '#FEE2E2';
+                    btnReset.style.color = '#991B1B';
+                    btnReset.style.borderColor = '#FECACA';
+                    btnReset.style.cursor = 'pointer';
+                    btnReset.innerHTML = '🗑️ Reset All Test Bookings (Clean Database)';
+                }
+            }
+        }
+
         function saveSystemSettings() {
+            const mode = document.getElementById('paystackModeSelect')?.value || 'test';
+            const pubKey = document.getElementById('paystackPublicKey')?.value || '';
+            const secKey = document.getElementById('paystackSecretKey')?.value || '';
+            const wifiNet = document.getElementById('wifiNetwork')?.value || '';
+            const wifiPass = document.getElementById('wifiPassword')?.value || '';
+            const checkIn = document.getElementById('checkInTime')?.value || '14:00';
+            const checkOut = document.getElementById('checkOutTime')?.value || '10:00';
+
+            const systemConfig = {
+                paystack_mode: mode,
+                paystack_public_key: pubKey,
+                paystack_secret_key: secKey,
+                wifi_network: wifiNet,
+                wifi_password: wifiPass,
+                checkin_time: checkIn,
+                checkout_time: checkOut
+            };
+
+            localStorage.setItem('coolcat_system_settings', JSON.stringify(systemConfig));
+            localStorage.setItem('coolcat_paystack_mode', mode);
+            updateMaintenanceButtonsUI();
             alert("✅ System, Paystack API keys, and Wi-Fi credentials saved successfully!");
+        }
+
+        function loadSavedSystemSettings() {
+            try {
+                const saved = localStorage.getItem('coolcat_system_settings');
+                if (saved) {
+                    const cfg = JSON.parse(saved);
+                    if (cfg.paystack_mode && document.getElementById('paystackModeSelect')) {
+                        document.getElementById('paystackModeSelect').value = cfg.paystack_mode;
+                    }
+                    if (cfg.paystack_public_key && document.getElementById('paystackPublicKey')) {
+                        document.getElementById('paystackPublicKey').value = cfg.paystack_public_key;
+                    }
+                    if (cfg.paystack_secret_key && document.getElementById('paystackSecretKey')) {
+                        document.getElementById('paystackSecretKey').value = cfg.paystack_secret_key;
+                    }
+                    if (cfg.wifi_network && document.getElementById('wifiNetwork')) {
+                        document.getElementById('wifiNetwork').value = cfg.wifi_network;
+                    }
+                    if (cfg.wifi_password && document.getElementById('wifiPassword')) {
+                        document.getElementById('wifiPassword').value = cfg.wifi_password;
+                    }
+                    if (cfg.checkin_time && document.getElementById('checkInTime')) {
+                        document.getElementById('checkInTime').value = cfg.checkin_time;
+                    }
+                    if (cfg.checkout_time && document.getElementById('checkOutTime')) {
+                        document.getElementById('checkOutTime').value = cfg.checkout_time;
+                    }
+                }
+            } catch (e) {}
+            updateMaintenanceButtonsUI();
         }
 
         function filterBookingsTable(val) {
@@ -4991,6 +5116,11 @@ We look forward to hosting you at Cool-Cat!`;
         // =========================================================
 
         async function purgeGhostBookings() {
+            if (isLiveProductionMode()) {
+                alert("🔒 ACTION LOCKED IN LIVE MODE\n\nThis button only works in Testing Mode.\n\nYour website is currently configured in Live Production Mode. To safeguard real customer reservations and accounting records from accidental deletion, database maintenance functions are locked.\n\nOnly a developer can modify or clear live records via code.");
+                return;
+            }
+
             if (!confirm('🧹 Purge Corrupted / Orphan Ghost Records?\n\nThis will scan the database and permanently remove any booking records that are missing a valid check-in date (these are corrupt or orphaned test fragments that appear as "Ghost" rows).\n\nReal bookings with valid dates will NOT be affected.\n\nProceed?')) {
                 return;
             }
@@ -5021,6 +5151,11 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         async function resetAllTestBookings() {
+            if (isLiveProductionMode()) {
+                alert("🔒 ACTION LOCKED IN LIVE MODE\n\nThis button only works in Testing Mode.\n\n'Reset All Bookings' is strictly disabled while your website is in Live Production Mode to prevent the owner or staff from accidentally wiping the live customer database.\n\nOnly a developer can modify or clear live records via code.");
+                return;
+            }
+
             if (!confirm('🗑️ RESET ALL BOOKINGS?\n\n⚠️ WARNING: This will permanently delete EVERY booking in the database — including all test bookings — and reset the reference number counter back to zero.\n\nThis action CANNOT be undone.\n\nOnly use this when you are ready to start with a completely clean database before going live.\n\nAre you absolutely sure?')) {
                 return;
             }
