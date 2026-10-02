@@ -123,6 +123,9 @@ export async function onRequestPost(context) {
         ];
 
         const update = {};
+        if (Array.isArray(payload.marketer_payouts)) {
+            update.marketer_payouts = payload.marketer_payouts;
+        }
         allowedNumeric.forEach(key => {
             if (payload[key] !== undefined) {
                 update[key] = Number(payload[key]);

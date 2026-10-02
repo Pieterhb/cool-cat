@@ -1254,6 +1254,23 @@
                             <span class="kpi-value" id="kpiPendingBalances" style="color: var(--adm-accent);">R0</span>
                             <span class="kpi-sub">Due upon arrival (50% deposits)</span>
                         </div>
+
+                        <!-- Card 9: Direct Cash & EFT Collected -->
+                        <div class="kpi-card" style="border-left: 4px solid #0284C7;">
+                            <span class="kpi-label">💵 Direct Cash &amp; EFT</span>
+                            <span class="kpi-value" id="kpiCashCollected" style="color: #0284C7;">R0</span>
+                            <span class="kpi-sub">Gross non-Paystack collections</span>
+                        </div>
+
+                        <!-- Card 10: Marketer 15% Due (Offline Cash) -->
+                        <div class="kpi-card" style="border-left: 4px solid #7C3AED; background: #FAF5FF;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.3rem;">
+                                <span class="kpi-label" style="color: #6B21A8; margin: 0;">🤝 Marketer 15% Due</span>
+                                <button type="button" class="btn-sm" style="background: #7C3AED; color: white; border: none; padding: 2px 7px; font-size: 0.72rem; border-radius: 4px; font-weight: 700; cursor: pointer; white-space: nowrap;" onclick="openMarketerPayoutModal()" title="Record EFT payout to marketer">Record Payout</button>
+                            </div>
+                            <span class="kpi-value" id="kpiMarketerDue" style="color: #7C3AED; margin-top: 0.3rem;">R0</span>
+                            <span class="kpi-sub" id="kpiMarketerSub">Owed from cash collections</span>
+                        </div>
                     </div>
 
                     <!-- Today's Operations Snapshot -->
@@ -1543,6 +1560,70 @@
                                     </tr>
                                 </thead>
                                 <tbody id="financesTbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Marketer Revenue Split & Payouts Ledger -->
+                    <div class="adm-card" style="margin-top: 1.5rem; border: 1.5px solid #DDD6FE;">
+                        <div class="adm-card-header" style="background: #F5F3FF; border-bottom: 1px solid #DDD6FE; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+                            <div>
+                                <h3 class="adm-card-title" style="color: #6B21A8; margin: 0;">
+                                    🤝 Marketer 15% Revenue Split &amp; Payouts Ledger
+                                </h3>
+                                <p style="font-size: 0.82rem; color: #7C3AED; margin: 0.2rem 0 0;">
+                                    Tracks 15% commission owed on all cash/EFT balances collected directly by the Owner.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                                <button type="button" class="btn-export-turquoise" onclick="exportMarketerStatementToXLSX()">
+                                    📥 Export Marketer Statement (.xlsx)
+                                </button>
+                                <button type="button" class="btn-adm-primary" style="background: #7C3AED;" onclick="openMarketerPayoutModal()">
+                                    ➕ Record EFT Payout
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Marketer Mini KPI Summary -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; padding: 1rem; background: #FAF5FF; border-bottom: 1px solid #EDE9FE;">
+                            <div style="background: white; border: 1px solid #E9D5FF; border-radius: 8px; padding: 0.75rem;">
+                                <div style="font-size: 0.75rem; color: #6B21A8; font-weight: 700; text-transform: uppercase;">Direct Cash/EFT Collected</div>
+                                <div style="font-size: 1.15rem; font-weight: 800; color: #0284C7; margin-top: 0.2rem;" id="mktLedgerCashCollected">R0</div>
+                                <div style="font-size: 0.72rem; color: #64748B;">Gross offline revenue</div>
+                            </div>
+                            <div style="background: white; border: 1.5px solid #C084FC; border-radius: 8px; padding: 0.75rem;">
+                                <div style="font-size: 0.75rem; color: #6B21A8; font-weight: 700; text-transform: uppercase;">15% Commission Due Now</div>
+                                <div style="font-size: 1.15rem; font-weight: 800; color: #7C3AED; margin-top: 0.2rem;" id="mktLedgerCommissionDue">R0</div>
+                                <div style="font-size: 0.72rem; color: #7C3AED;">Unsettled cash commission</div>
+                            </div>
+                            <div style="background: white; border: 1px solid #E9D5FF; border-radius: 8px; padding: 0.75rem;">
+                                <div style="font-size: 0.75rem; color: #6B21A8; font-weight: 700; text-transform: uppercase;">Total Settled via EFT</div>
+                                <div style="font-size: 1.15rem; font-weight: 800; color: #166534; margin-top: 0.2rem;" id="mktLedgerTotalSettled">R0</div>
+                                <div style="font-size: 0.72rem; color: #166534;">Lifetime paid to marketer</div>
+                            </div>
+                        </div>
+
+                        <!-- Payout Batches Table -->
+                        <div class="adm-table-wrapper" style="padding: 1rem;">
+                            <div style="font-size: 0.88rem; font-weight: 700; color: #475569; margin-bottom: 0.6rem;">
+                                📜 Recorded EFT Payout Batches
+                            </div>
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Batch ID</th>
+                                        <th>Payout Date</th>
+                                        <th>Commission Paid (ZAR)</th>
+                                        <th>Bank Reference / Proof</th>
+                                        <th>Included Bookings</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="marketerBatchesTbody">
                                     <!-- Populated dynamically -->
                                 </tbody>
                             </table>
@@ -2394,15 +2475,71 @@
                 </div>
             </div>
         </div>
-    </div>
-
-
     <!-- ========================================================= -->
+    <!-- MARKETER PAYOUT: RECORD EFT COMMISSION SETTLEMENT MODAL    -->
+    <!-- ========================================================= -->
+    <div class="adm-modal-overlay" id="marketerPayoutModal" style="display:none;" onclick="if(event.target===this) closeMarketerPayoutModal()">
+        <div class="adm-modal-card" style="max-width: 540px;">
+            <div class="adm-modal-header" style="background: #F5F3FF; border-bottom: 1px solid #DDD6FE; border-radius: 12px 12px 0 0;">
+                <div>
+                    <h3 class="adm-modal-title" style="font-size: 1.15rem; color: #6B21A8;">🤝 Record Marketer Commission Payout</h3>
+                    <span class="adm-modal-subtitle" style="color: #7C3AED;">Lock settled cash bookings &amp; record bank EFT reference</span>
+                </div>
+                <button class="adm-modal-close" onclick="closeMarketerPayoutModal()">&times;</button>
+            </div>
+
+            <form id="marketerPayoutForm" onsubmit="handleSaveMarketerPayout(event)" style="padding: 1.25rem;">
+                <!-- Summary of Unsettled Cash Collections -->
+                <div style="background: #FAF5FF; border: 1.5px solid #C084FC; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                        <span style="color: #475569;">Unsettled Cash Bookings:</span>
+                        <strong id="mktModalBookingsCount" style="color: #1E293B;">0 Bookings</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                        <span style="color: #475569;">Total Gross Cash Collected:</span>
+                        <strong id="mktModalCashTotal" style="color: #0284C7;">R0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 0.3rem; border-top: 1px dashed #DDD6FE;">
+                        <span style="color: #6B21A8; font-weight: 700;">15% Marketer Commission Due:</span>
+                        <strong id="mktModalCommissionDue" style="color: #7C3AED; font-size: 1.1rem;">R0.00</strong>
+                    </div>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.9rem;">
+                    <label style="font-weight: 700; color: #334155; font-size: 0.85rem;">Payout Date *</label>
+                    <input type="date" id="mktPayoutDate" class="adm-input" required>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.9rem;">
+                    <label style="font-weight: 700; color: #334155; font-size: 0.85rem;">Commission Amount to Settle (ZAR) *</label>
+                    <input type="number" step="0.01" id="mktPayoutAmount" class="adm-input" required style="font-weight: 700; color: #7C3AED;">
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 0.9rem;">
+                    <label style="font-weight: 700; color: #334155; font-size: 0.85rem;">Bank Payment Reference / Transaction ID *</label>
+                    <input type="text" id="mktPayoutBankRef" class="adm-input" placeholder="e.g. FT2610029381 or CC-MKT-OCT" required style="font-family: monospace;">
+                    <span style="font-size: 0.75rem; color: #64748B;">Enter your bank's EFT reference so the marketer can match it on their bank statement.</span>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 1.2rem;">
+                    <label style="font-weight: 700; color: #334155; font-size: 0.85rem;">Notes / Bank Account (Optional)</label>
+                    <input type="text" id="mktPayoutNotes" class="adm-input" placeholder="e.g. Paid via Capitec EFT to Marketer Account">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.8rem; align-items: center;">
+                    <button type="button" class="btn-sm" style="background: #F1F5F9; color: #475569;" onclick="closeMarketerPayoutModal()">Cancel</button>
+                    <button type="submit" class="btn-adm-primary" style="background: #7C3AED; font-weight: 700;" id="mktPayoutSubmitBtn">💾 Record &amp; Settle Batch</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- DASHBOARD JAVASCRIPT ENGINE                               -->
     <!-- ========================================================= -->
     <script>
         // Live bookings — loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
+        // Recorded marketer commission payout batches — loaded from Cloudflare KV via /api/settings
+        let ADMIN_MARKETER_PAYOUTS = [];
 
         // Auto-initialize dashboard directly on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -2493,15 +2630,16 @@
                 console.log("Local mode initialized:", e);
             }
 
+            await loadSavedRatesIntoAdmin();
             calculateKpis();
             renderBookingsTables();
             renderOperationsToday();
             renderFinancesTable();
             renderGuestsTable();
             renderReferralsTable();
+            renderMarketerBatchesTable();
             populateAdminCalMonthJump();
             renderAdminCalendar();
-            loadSavedRatesIntoAdmin();
             loadSavedSystemSettings();
         }
 
@@ -2549,6 +2687,16 @@
             }
 
             if (config) {
+                // Load Marketer Payout Batches
+                if (Array.isArray(config.marketer_payouts)) {
+                    ADMIN_MARKETER_PAYOUTS = config.marketer_payouts;
+                    try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+                } else {
+                    try {
+                        ADMIN_MARKETER_PAYOUTS = JSON.parse(localStorage.getItem('coolcat_marketer_payouts') || '[]');
+                    } catch(e) { ADMIN_MARKETER_PAYOUTS = []; }
+                }
+
                 if (config.nextYearMarkupPct !== undefined) {
                     const el = document.getElementById('nextYearMarkupInput');
                     if (el) el.value = config.nextYearMarkupPct;
@@ -2587,6 +2735,10 @@
                         if (rateEl) rateEl.value = config[`special_${rk}_rate`];
                     }
                 });
+            } else {
+                try {
+                    ADMIN_MARKETER_PAYOUTS = JSON.parse(localStorage.getItem('coolcat_marketer_payouts') || '[]');
+                } catch(e) { ADMIN_MARKETER_PAYOUTS = []; }
             }
         }
 
@@ -2672,13 +2824,28 @@
             let rev6Months = 0;
             let revYtd = 0;
             let pendingTotal = 0;
+            let totalCashCollected = 0;
+            let totalMarketerDue = 0;
 
             const msInDay = 24 * 60 * 60 * 1000;
             const displayList = getDisplayBookings();
 
+            // Set of booking IDs already settled in a marketer payout batch
+            const settledBookingIds = new Set();
+            (ADMIN_MARKETER_PAYOUTS || []).forEach(batch => {
+                if (Array.isArray(batch.bookingIds)) {
+                    batch.bookingIds.forEach(id => {
+                        settledBookingIds.add(id);
+                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        if (clean) settledBookingIds.add(clean);
+                    });
+                }
+            });
+
             displayList.forEach(b => {
                 const bPaid = Number(b.amountPaid || 0);
                 const bBal = Number(b.balanceDue || 0);
+                const bTotal = Number(b.totalAmount || 0);
                 const bCreated = new Date(b.createdAt || b.checkIn || today);
                 const diffDays = Math.round((today - bCreated) / msInDay);
 
@@ -2686,7 +2853,7 @@
                     pendingTotal += bBal;
                 }
 
-                if (bPaid > 0) {
+                if (bPaid > 0 && b.status !== 'cancelled') {
                     revYtd += bPaid;
                     if (diffDays <= 0 || (b.createdAt && b.createdAt.startsWith(todayStr))) revToday += bPaid;
                     if (diffDays <= 7) rev7Days += bPaid;
@@ -2694,11 +2861,34 @@
                     if (diffDays <= 30) rev30Days += bPaid;
                     if (diffDays <= 90) rev3Months += bPaid;
                     if (diffDays <= 180) rev6Months += bPaid;
+
+                    // Direct Cash/EFT vs Paystack Gateway Calculation
+                    let paystackPortion = 0;
+                    if (b.isPaidPaystack || b.paystackRef) {
+                        if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
+                            paystackPortion = Number(b.paystackAmount);
+                        } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
+                            paystackPortion = bPaid;
+                        } else {
+                            paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
+                        }
+                    }
+                    const cashPortion = Math.max(0, bPaid - paystackPortion);
+                    totalCashCollected += cashPortion;
+
+                    // If cash was collected and this booking has not been settled in a payout batch
+                    const isSettled = settledBookingIds.has(b.id) || (b.parentBookingId && settledBookingIds.has(b.parentBookingId));
+                    if (cashPortion > 0 && !isSettled) {
+                        const comm = Math.round(cashPortion * 0.15 * 100) / 100;
+                        totalMarketerDue += comm;
+                    }
                 }
             });
 
-            // KPIs show live totals only — no fallback dummy values
+            // Calculate total settled to marketer from all recorded EFT batches
+            const totalMarketerSettled = (ADMIN_MARKETER_PAYOUTS || []).reduce((sum, batch) => sum + Number(batch.amount || 0), 0);
 
+            // KPIs show live totals only — no fallback dummy values
             const elToday = document.getElementById('kpiToday');
             if (elToday) elToday.textContent = `R${revToday.toLocaleString()}`;
             const el7 = document.getElementById('kpi7Days');
@@ -2715,6 +2905,32 @@
             if (elYtd) elYtd.textContent = `R${revYtd.toLocaleString()}`;
             const elPending = document.getElementById('kpiPendingBalances');
             if (elPending) elPending.textContent = `R${pendingTotal.toLocaleString()}`;
+
+            // Card 9 & Card 10 KPIs (tabOverview)
+            const elCash = document.getElementById('kpiCashCollected');
+            if (elCash) elCash.textContent = `R${totalCashCollected.toLocaleString()}`;
+
+            const elDue = document.getElementById('kpiMarketerDue');
+            if (elDue) elDue.textContent = `R${totalMarketerDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const elSub = document.getElementById('kpiMarketerSub');
+            if (elSub) {
+                if (totalMarketerSettled > 0) {
+                    elSub.textContent = `Total settled: R${totalMarketerSettled.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                } else {
+                    elSub.textContent = 'Owed from cash collections';
+                }
+            }
+
+            // Tab 4 (tabFinances) Mini-KPIs
+            const elMktCash = document.getElementById('mktLedgerCashCollected');
+            if (elMktCash) elMktCash.textContent = `R${totalCashCollected.toLocaleString()}`;
+
+            const elMktDue = document.getElementById('mktLedgerCommissionDue');
+            if (elMktDue) elMktDue.textContent = `R${totalMarketerDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const elMktSettled = document.getElementById('mktLedgerTotalSettled');
+            if (elMktSettled) elMktSettled.textContent = `R${totalMarketerSettled.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         function renderOperationsToday() {
@@ -4843,6 +5059,398 @@ We look forward to hosting you at Cool-Cat!`;
                 `⭐ *Leave a Review:* https://g.page/r/CeLXe6MDyWarEBM/review%0A%0A` +
                 `Wishing you safe travels and we hope to welcome you back soon!`;
             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+        }
+
+        // =========================================================
+        // 8. MARKETER 15% REVENUE SPLIT & EFT PAYOUT LEDGER
+        // =========================================================
+
+        function getUnsettledCashBookings() {
+            const displayList = getDisplayBookings().filter(b => b.status !== 'cancelled');
+            const settledBookingIds = new Set();
+            (ADMIN_MARKETER_PAYOUTS || []).forEach(batch => {
+                if (Array.isArray(batch.bookingIds)) {
+                    batch.bookingIds.forEach(id => {
+                        settledBookingIds.add(id);
+                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        if (clean) settledBookingIds.add(clean);
+                    });
+                }
+            });
+
+            const unsettled = [];
+            displayList.forEach(b => {
+                const bPaid = Number(b.amountPaid || 0);
+                const bTotal = Number(b.totalAmount || 0);
+                if (bPaid <= 0) return;
+
+                let paystackPortion = 0;
+                if (b.isPaidPaystack || b.paystackRef) {
+                    if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
+                        paystackPortion = Number(b.paystackAmount);
+                    } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
+                        paystackPortion = bPaid;
+                    } else {
+                        paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
+                    }
+                }
+                const cashPortion = Math.max(0, bPaid - paystackPortion);
+                const isSettled = settledBookingIds.has(b.id) || (b.parentBookingId && settledBookingIds.has(b.parentBookingId));
+
+                if (cashPortion > 0 && !isSettled) {
+                    const commission = Math.round(cashPortion * 0.15 * 100) / 100;
+                    unsettled.push({
+                        id: b.id,
+                        cleanRef: '#' + formatRefId(b.id, b.roomId),
+                        guestName: b.guestName || 'Direct Guest',
+                        roomName: b.roomName || b.roomId,
+                        stayDates: `${b.checkIn} ➔ ${b.checkOut || ''}`,
+                        totalAmount: bTotal,
+                        paystackPortion: paystackPortion,
+                        cashPortion: cashPortion,
+                        commission: commission
+                    });
+                }
+            });
+            return unsettled;
+        }
+
+        function openMarketerPayoutModal() {
+            const unsettled = getUnsettledCashBookings();
+            const totalCash = unsettled.reduce((sum, item) => sum + item.cashPortion, 0);
+            const totalCommission = Math.round(totalCash * 0.15 * 100) / 100;
+
+            const countEl = document.getElementById('mktModalBookingsCount');
+            if (countEl) countEl.textContent = `${unsettled.length} Booking${unsettled.length === 1 ? '' : 's'}`;
+
+            const cashEl = document.getElementById('mktModalCashTotal');
+            if (cashEl) cashEl.textContent = `R${totalCash.toLocaleString()}`;
+
+            const dueEl = document.getElementById('mktModalCommissionDue');
+            if (dueEl) dueEl.textContent = `R${totalCommission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const dateInput = document.getElementById('mktPayoutDate');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+            const amtInput = document.getElementById('mktPayoutAmount');
+            if (amtInput) amtInput.value = totalCommission > 0 ? totalCommission.toFixed(2) : '0.00';
+
+            const bankRefInput = document.getElementById('mktPayoutBankRef');
+            if (bankRefInput) bankRefInput.value = '';
+
+            const notesInput = document.getElementById('mktPayoutNotes');
+            if (notesInput) notesInput.value = '';
+
+            const modal = document.getElementById('marketerPayoutModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeMarketerPayoutModal() {
+            const modal = document.getElementById('marketerPayoutModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function handleSaveMarketerPayout(e) {
+            e.preventDefault();
+            const pDate = document.getElementById('mktPayoutDate').value;
+            const pAmount = Number(document.getElementById('mktPayoutAmount').value) || 0;
+            const pBankRef = (document.getElementById('mktPayoutBankRef').value || '').trim();
+            const pNotes = (document.getElementById('mktPayoutNotes').value || '').trim();
+
+            if (!pDate) {
+                alert("⚠️ Please select the payout date.");
+                return;
+            }
+            if (pAmount <= 0) {
+                if (!confirm("⚠️ Payout amount is R0.00. Are you sure you want to record a zero amount batch?")) {
+                    return;
+                }
+            }
+            if (!pBankRef) {
+                alert("⚠️ Please enter your Bank Payment Reference / Transaction ID.");
+                return;
+            }
+
+            const unsettled = getUnsettledCashBookings();
+            const bookingIds = unsettled.map(u => u.id);
+            const bookingRefs = unsettled.map(u => u.cleanRef);
+
+            // Generate next Batch ID
+            const batchSeq = 1001 + (ADMIN_MARKETER_PAYOUTS || []).length;
+            const batchId = `BATCH-${batchSeq}`;
+
+            const newBatch = {
+                id: batchId,
+                date: pDate,
+                amount: pAmount,
+                bankRef: pBankRef,
+                notes: pNotes,
+                bookingIds: bookingIds,
+                bookingRefs: bookingRefs,
+                bookingCount: bookingIds.length,
+                status: 'pending_confirmation',
+                createdAt: new Date().toISOString()
+            };
+
+            ADMIN_MARKETER_PAYOUTS.unshift(newBatch);
+            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+
+            const submitBtn = document.getElementById('mktPayoutSubmitBtn');
+            const originalText = submitBtn ? submitBtn.innerHTML : '💾 Record & Settle Batch';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ Saving to Cloud...';
+            }
+
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.config && Array.isArray(data.config.marketer_payouts)) {
+                        ADMIN_MARKETER_PAYOUTS = data.config.marketer_payouts;
+                        localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS));
+                    }
+                }
+            } catch (err) {
+                console.error("Cloud KV sync for marketer payout failed:", err);
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+
+            calculateKpis();
+            renderMarketerBatchesTable();
+            closeMarketerPayoutModal();
+
+            alert(`✅ Payout Batch ${batchId} recorded successfully!\n\n• Commission Paid: R${pAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n• Bank Ref: ${pBankRef}\n• Bookings Settled: ${bookingIds.length}\n\n"Marketer 15% Due" has reset to R0.00. New cash collections will accumulate live commission automatically!`);
+        }
+
+        function renderMarketerBatchesTable() {
+            const tbody = document.getElementById('marketerBatchesTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!ADMIN_MARKETER_PAYOUTS || ADMIN_MARKETER_PAYOUTS.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #64748B; padding: 1.5rem; font-size: 0.88rem;">
+                            ✨ No offline commission payout batches recorded yet. When you EFT commission to the marketer, click <strong>"➕ Record EFT Payout"</strong>.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            ADMIN_MARKETER_PAYOUTS.forEach(batch => {
+                const isConfirmed = (batch.status === 'confirmed');
+                const statusPill = isConfirmed
+                    ? `<span class="status-pill status-confirmed">✅ Confirmed Received</span>`
+                    : `<span class="status-pill status-deposit">⏳ Pending Marketer Confirmation</span>`;
+
+                const bookingsText = Array.isArray(batch.bookingRefs) && batch.bookingRefs.length > 0
+                    ? `${batch.bookingRefs.length} Booking${batch.bookingRefs.length === 1 ? '' : 's'} (${batch.bookingRefs.slice(0, 3).join(', ')}${batch.bookingRefs.length > 3 ? '...' : ''})`
+                    : `${batch.bookingCount || 0} Bookings`;
+
+                const bookingsTitle = Array.isArray(batch.bookingRefs) ? batch.bookingRefs.join(', ') : '';
+
+                const actionBtns = `
+                    <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-sm" style="background: ${isConfirmed ? '#F1F5F9' : '#166534'}; color: ${isConfirmed ? '#475569' : '#FFFFFF'}; border: 1px solid ${isConfirmed ? '#CBD5E1' : '#166534'};" onclick="toggleBatchStatus('${batch.id}')" title="${isConfirmed ? 'Mark as Pending' : 'Mark as Confirmed'}">
+                            ${isConfirmed ? 'Mark Pending' : 'Confirm Received ✓'}
+                        </button>
+                        <button type="button" class="btn-sm btn-wa" onclick="sendMarketerBatchWhatsApp('${batch.id}')" title="Send Payout Proof via WhatsApp">
+                            📲 Proof
+                        </button>
+                    </div>
+                `;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong><code style="color: #6B21A8;">${batch.id}</code></strong></td>
+                    <td>${batch.date || ''}</td>
+                    <td style="font-weight: 800; color: #7C3AED;">R${Number(batch.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td><code style="font-family: monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; color: #0F172A;">${batch.bankRef || '-'}</code>${batch.notes ? `<br><span style="font-size:0.75rem; color:#64748B;">${batch.notes}</span>` : ''}</td>
+                    <td><span title="${bookingsTitle}" style="cursor: help; text-decoration: underline dotted;">${bookingsText}</span></td>
+                    <td>${statusPill}</td>
+                    <td>${actionBtns}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function toggleBatchStatus(batchId) {
+            const batch = (ADMIN_MARKETER_PAYOUTS || []).find(b => b.id === batchId);
+            if (!batch) return;
+
+            const isCurrentlyConfirmed = (batch.status === 'confirmed');
+            batch.status = isCurrentlyConfirmed ? 'pending_confirmation' : 'confirmed';
+
+            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+            renderMarketerBatchesTable();
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
+                });
+            } catch(e) {
+                console.error("Save batch status error:", e);
+            }
+        }
+
+        function sendMarketerBatchWhatsApp(batchId) {
+            const batch = (ADMIN_MARKETER_PAYOUTS || []).find(b => b.id === batchId);
+            if (!batch) return;
+
+            const msg = `*Cool-Cat Guesthouse - Marketer 15% Commission Payout Proof*%0A%0A` +
+                `🤝 *Batch ID:* ${encodeURIComponent(batch.id)}%0A` +
+                `📅 *Payout Date:* ${encodeURIComponent(batch.date)}%0A` +
+                `💰 *Commission Paid:* R${Number(batch.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%0A` +
+                `🏦 *Bank Reference:* ${encodeURIComponent(batch.bankRef)}%0A` +
+                `📋 *Included Bookings:* ${encodeURIComponent((batch.bookingRefs || []).join(', '))}%0A%0A` +
+                `The EFT payment has been transferred to your bank account. Please match the reference on your banking app and confirm receipt in the Admin Dashboard.%0A%0A` +
+                `Thank you for your partnership!`;
+            
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function exportMarketerStatementToXLSX() {
+            const displayList = getDisplayBookings().filter(b => b.status !== 'cancelled');
+            
+            // Build map of settled bookings to batches
+            const bookingBatchMap = new Map();
+            (ADMIN_MARKETER_PAYOUTS || []).forEach(batch => {
+                if (Array.isArray(batch.bookingIds)) {
+                    batch.bookingIds.forEach(id => {
+                        bookingBatchMap.set(id, batch);
+                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        if (clean) bookingBatchMap.set(clean, batch);
+                    });
+                }
+            });
+
+            let totalGross = 0;
+            let totalPaystack = 0;
+            let totalCash = 0;
+            let totalCommissionAccrued = 0;
+            let totalCommissionSettled = 0;
+            let totalCommissionDueNow = 0;
+
+            const sheet1Rows = [
+                [
+                    "Ref #", "Guest Name", "Room", "Check-In", "Check-Out", 
+                    "Total Booking (ZAR)", "Paystack Online (ZAR)", "Cash / Direct EFT (ZAR)", 
+                    "15% Marketer Commission (ZAR)", "Settlement Status", "Payout Batch ID", "Bank Payment Ref"
+                ]
+            ];
+
+            displayList.forEach(b => {
+                const bPaid = Number(b.amountPaid || 0);
+                const bTotal = Number(b.totalAmount || 0);
+                if (bPaid <= 0) return;
+
+                let paystackPortion = 0;
+                if (b.isPaidPaystack || b.paystackRef) {
+                    if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
+                        paystackPortion = Number(b.paystackAmount);
+                    } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
+                        paystackPortion = bPaid;
+                    } else {
+                        paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
+                    }
+                }
+                const cashPortion = Math.max(0, bPaid - paystackPortion);
+                const commission = Math.round(cashPortion * 0.15 * 100) / 100;
+
+                const settledBatch = bookingBatchMap.get(b.id) || (b.parentBookingId && bookingBatchMap.get(b.parentBookingId));
+                const statusLabel = settledBatch 
+                    ? (settledBatch.status === 'confirmed' ? 'SETTLED & CONFIRMED' : 'SETTLED (PENDING CONFIRMATION)') 
+                    : (cashPortion > 0 ? 'DUE / UNSETTLED' : 'ONLINE (SPLIT IN PAYSTACK)');
+
+                totalGross += bPaid;
+                totalPaystack += paystackPortion;
+                totalCash += cashPortion;
+                totalCommissionAccrued += commission;
+
+                if (settledBatch) {
+                    totalCommissionSettled += commission;
+                } else if (cashPortion > 0) {
+                    totalCommissionDueNow += commission;
+                }
+
+                sheet1Rows.push([
+                    '#' + formatRefId(b.id, b.roomId),
+                    b.guestName || '',
+                    b.roomName || b.roomId || '',
+                    b.checkIn || '',
+                    b.checkOut || '',
+                    bTotal,
+                    paystackPortion,
+                    cashPortion,
+                    commission,
+                    statusLabel,
+                    settledBatch ? settledBatch.id : '-',
+                    settledBatch ? (settledBatch.bankRef || '-') : '-'
+                ]);
+            });
+
+            // Sheet 2: Payout Batches
+            const sheet2Rows = [
+                ["Batch ID", "Payout Date", "Commission Amount (ZAR)", "Bank Reference", "Included Bookings", "Status", "Notes"]
+            ];
+            (ADMIN_MARKETER_PAYOUTS || []).forEach(batch => {
+                sheet2Rows.push([
+                    batch.id || '',
+                    batch.date || '',
+                    Number(batch.amount || 0),
+                    batch.bankRef || '',
+                    Array.isArray(batch.bookingRefs) ? batch.bookingRefs.join(', ') : `${batch.bookingCount || 0} Bookings`,
+                    batch.status === 'confirmed' ? 'Confirmed Received' : 'Pending Confirmation',
+                    batch.notes || ''
+                ]);
+            });
+
+            // Sheet 3: Summary Statement
+            const sheet3Rows = [
+                ["Metric / Account Line", "Amount (ZAR)", "Description"],
+                ["Total Gross Revenue Collected", totalGross, "Combined Paystack and Direct Cash/EFT collections"],
+                ["Total Paystack Online Split Collections", totalPaystack, "Automated 85% Owner / 15% Marketer split via Paystack gateway"],
+                ["Total Direct Cash & EFT Collections", totalCash, "Collected directly by Owner (offline balances & manual bookings)"],
+                ["Total 15% Marketer Commission Accrued", totalCommissionAccrued, "15% due to Marketer from all direct cash collections"],
+                ["Total Commission Settled via Bank EFT", (ADMIN_MARKETER_PAYOUTS || []).reduce((s, b) => s + Number(b.amount || 0), 0), "Total commission paid out across all recorded EFT batches"],
+                ["Outstanding Commission Due Now", totalCommissionDueNow, "Live balance owed to Marketer for current unsettled cash bookings"]
+            ];
+
+            const wb = XLSX.utils.book_new();
+
+            const ws1 = XLSX.utils.aoa_to_sheet(sheet1Rows);
+            ws1['!cols'] = sheet1Rows[0].map((_, colIdx) => ({
+                wch: Math.max(...sheet1Rows.map(r => String(r[colIdx] ?? '').length)) + 4
+            }));
+            XLSX.utils.book_append_sheet(wb, ws1, "Commission Ledger");
+
+            const ws2 = XLSX.utils.aoa_to_sheet(sheet2Rows);
+            ws2['!cols'] = sheet2Rows[0].map((_, colIdx) => ({
+                wch: Math.max(...sheet2Rows.map(r => String(r[colIdx] ?? '').length)) + 4
+            }));
+            XLSX.utils.book_append_sheet(wb, ws2, "Payout Batches");
+
+            const ws3 = XLSX.utils.aoa_to_sheet(sheet3Rows);
+            ws3['!cols'] = [
+                { wch: 42 },
+                { wch: 18 },
+                { wch: 70 }
+            ];
+            XLSX.utils.book_append_sheet(wb, ws3, "Summary Statement");
+
+            XLSX.writeFile(wb, "cool-cat-marketer-statement.xlsx");
         }
 
         async function saveRatesConfig() {
