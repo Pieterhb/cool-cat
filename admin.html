@@ -4981,22 +4981,30 @@ We look forward to hosting you at Cool-Cat!`;
             const customNotesEl = document.getElementById('housekeepingCustomNotes');
             const customNotes = customNotesEl ? customNotesEl.value.trim() : '';
 
-            let customSection = '';
+            const messageLines = [
+                `*Cool-Cat - Housekeeping Job List (#${todayStr})*`,
+                '',
+                ...lines,
+                '',
+                '*Turnaround Checklist:*',
+                '1. Strip bed linen and sanitize bathroom.',
+                '2. Restock fresh bath towels & bathmat.',
+                '3. Restock complimentary coffee, tea, sugar & milk.',
+                '4. Check inverter lights (solar backup running).'
+            ];
+
             if (customNotes) {
-                customSection = `%0A%0A*📌 Special Instructions / Owner Orders:*%0A` + encodeURIComponent(customNotes);
+                messageLines.push('');
+                messageLines.push('*📌 Special Instructions / Owner Orders:*');
+                messageLines.push(customNotes);
             }
 
-            const text = `*Cool-Cat - Housekeeping Job List (%23${todayStr})*%0A%0A` +
-                lines.map(l => encodeURIComponent(l)).join('%0A') +
-                `%0A%0A*Turnaround Checklist:*%0A` +
-                `1. Strip bed linen and sanitize bathroom.%0A` +
-                `2. Restock fresh bath towels & bathmat.%0A` +
-                `3. Restock complimentary coffee, tea, sugar & milk.%0A` +
-                `4. Check inverter lights (solar backup running).` +
-                customSection +
-                `%0A%0A_Sent via Cool-Cat Operations Autopilot_`;
-            
-            window.open(`https://wa.me/?text=${text}`, '_blank');
+            messageLines.push('');
+            messageLines.push('_Sent via Cool-Cat Operations Autopilot_');
+
+            const fullMessage = messageLines.join('\n');
+            const url = `https://wa.me/?text=${encodeURIComponent(fullMessage)}`;
+            window.open(url, '_blank');
         }
 
         // 6. XLSX Exports (proper Excel format — each field in its own cell/column)
