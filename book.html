@@ -162,16 +162,23 @@
         }
 
         .room-tabs {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 0.5rem;
             background: #F1F5F9;
             padding: 0.5rem;
             border-radius: 14px;
         }
 
+        .room-tabs-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
         .room-tab-btn {
-            padding: 0.65rem 0.5rem;
+            padding: 0.65rem 0.75rem;
             border-radius: 10px;
             border: none;
             background: transparent;
@@ -190,21 +197,10 @@
             position: relative;
         }
 
-        @media (max-width: 900px) {
-            .room-tabs {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
         @media (max-width: 600px) {
-            .room-tabs {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 400px) {
-            .room-tabs {
-                grid-template-columns: 1fr;
+            .room-tab-btn {
+                font-size: 0.82rem;
+                padding: 0.55rem 0.5rem;
             }
         }
 
@@ -1699,26 +1695,39 @@
                                 <span>🛏️ Select Room:</span>
                             </div>
                             <div class="room-tabs" id="roomTabs">
-                                <button class="room-tab-btn active" onclick="switchRoom('all')">
-                                    <span>🏨 All Rooms</span>
-                                    <span class="room-tab-badge" id="badge_all">0</span>
-                                </button>
-                                <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
-                                    <span>👑 King Arthur</span>
-                                    <span class="room-tab-badge" id="badge_king-arthur">0</span>
-                                </button>
-                                <button class="room-tab-btn" onclick="switchRoom('santori')">
-                                    <span>🌊 Santori</span>
-                                    <span class="room-tab-badge" id="badge_santori">0</span>
-                                </button>
-                                <button class="room-tab-btn" onclick="switchRoom('mykonos')">
-                                    <span>🏛️ Mykonos</span>
-                                    <span class="room-tab-badge" id="badge_mykonos">0</span>
-                                </button>
-                                <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
-                                    <span>✨ Deluxe Suite</span>
-                                    <span class="room-tab-badge" id="badge_deluxe-suite">0</span>
-                                </button>
+                                <!-- Row 1: Four Rooms (formerly All Rooms) -->
+                                <div class="room-tabs-row">
+                                    <button class="room-tab-btn active" onclick="switchRoom('all')">
+                                        <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                        <span class="room-tab-badge" id="badge_all">0</span>
+                                    </button>
+                                </div>
+                                <!-- Row 2: Three Rooms — fully active -->
+                                <div class="room-tabs-row">
+                                    <button class="room-tab-btn" onclick="switchRoom('three-rooms')">
+                                        <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
+                                        <span class="room-tab-badge" id="badge_three-rooms">0</span>
+                                    </button>
+                                </div>
+                                <!-- Row 3: Individual room buttons -->
+                                <div class="room-tabs-row">
+                                    <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
+                                        <span>👑 King Arthur</span>
+                                        <span class="room-tab-badge" id="badge_king-arthur">0</span>
+                                    </button>
+                                    <button class="room-tab-btn" onclick="switchRoom('santori')">
+                                        <span>🌊 Santori</span>
+                                        <span class="room-tab-badge" id="badge_santori">0</span>
+                                    </button>
+                                    <button class="room-tab-btn" onclick="switchRoom('mykonos')">
+                                        <span>🏛️ Mykonos</span>
+                                        <span class="room-tab-badge" id="badge_mykonos">0</span>
+                                    </button>
+                                    <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
+                                        <span>✨ Deluxe Suite</span>
+                                        <span class="room-tab-badge" id="badge_deluxe-suite">0</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -2301,7 +2310,7 @@
 
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
-        <span id="toastMessage">Minimum 3 nights required for Festive High Peak.</span>
+        <span id="toastMessage">Minimum 2 nights required for Festive High Peak.</span>
     </div>
 
     <!-- Footer -->
@@ -2409,6 +2418,10 @@
 
         // All 4 room IDs - used when expanding an "all" stay into individual room bookings
         const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+
+        // 3-room subset (excludes Deluxe Suite) - used for "three-rooms" combined booking
+        const THREE_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
+        const THREE_ROOMS = ROOMS.filter(r => THREE_ROOMS_SUBSET.includes(r.id));
 
         // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
         let SITE_CONFIG = {
@@ -2524,8 +2537,8 @@
                     tier: 'festive',
                     badgeClass: 'badge-festive',
                     multiplier: 1.80,
-                    minStay: 3,
-                    desc: 'Peak summer holiday demand (Strict 3-night min)'
+                    minStay: 2,
+                    desc: 'Peak summer holiday demand (Strict 2-night min)'
                 };
             }
 
@@ -2657,7 +2670,11 @@
                 // Check stays array inside booking record (if present)
                 if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
                     return b.stays.some(s => {
-                        if (s.roomId !== roomId && s.roomId !== 'all') return false;
+                        // 'all' blocks every room; 'three-rooms' blocks the 3-room subset
+                        const blocksThisRoom = s.roomId === roomId
+                            || s.roomId === 'all'
+                            || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                        if (!blocksThisRoom) return false;
                         const cIn = s.checkInStr || s.checkIn;
                         const cOut = s.checkOutStr || s.checkOut;
                         return (dateStr >= cIn && dateStr < cOut);
@@ -2669,7 +2686,10 @@
                     return false;
                 }
 
-                if (b.roomId !== roomId && b.roomId !== 'all') return false;
+                const blocksThisRoom = b.roomId === roomId
+                    || b.roomId === 'all'
+                    || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                if (!blocksThisRoom) return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
         }
@@ -2677,11 +2697,18 @@
         function isDateInSelectedStays(roomId, dateStr) {
             return selectedStays.some(s => {
                 if (roomId === 'all') {
-                    // All Rooms tab only cares about its OWN 'all' stays
+                    // Four Rooms tab only cares about its OWN 'all' stays
                     return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                 }
-                // Individual room: match this room's stays OR any 'All Rooms' stay (which occupies all rooms)
-                if (s.roomId !== roomId && s.roomId !== 'all') return false;
+                if (roomId === 'three-rooms') {
+                    // Three Rooms tab only cares about its OWN 'three-rooms' stays
+                    return s.roomId === 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                }
+                // Individual room: match this room's stays OR any 'all'/'three-rooms' stay that covers it
+                const coversRoom = s.roomId === roomId
+                    || s.roomId === 'all'
+                    || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                if (!coversRoom) return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
         }
@@ -2689,11 +2716,15 @@
         function findStayByDateAndRoom(roomId, dateStr) {
             return selectedStays.find(s => {
                 if (roomId === 'all') {
-                    // All Rooms tab only highlights its OWN 'all' stays as blue
+                    // Four Rooms tab only highlights its OWN 'all' stays as blue
                     return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                 }
+                if (roomId === 'three-rooms') {
+                    // Three Rooms tab only highlights its OWN 'three-rooms' stays as blue
+                    return s.roomId === 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                }
                 // Individual room: ONLY match this room's own stays.
-                // All Rooms stays show as pink Booked on individual room calendars.
+                // All/Three-Rooms stays show as pink Booked on individual room calendars.
                 if (s.roomId !== roomId) return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
@@ -2706,7 +2737,11 @@
             ROOMS.forEach(room => {
                 const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
                 const bookedInCart = selectedStays.some(s => {
-                    if (s.roomId !== room.id && s.roomId !== 'all') return false;
+                    // 'all' blocks all rooms; 'three-rooms' blocks only its 3 rooms
+                    const coversRoom = s.roomId === room.id
+                        || s.roomId === 'all'
+                        || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(room.id));
+                    if (!coversRoom) return false;
                     return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                 });
 
@@ -2733,7 +2768,7 @@
 
             ROOMS.forEach(room => {
                 const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
-                // Only count "all" cart stays for display blocking — individual-room carts don't block All Rooms view
+                // Only count "all" cart stays for display blocking
                 const bookedInAllCart = selectedStays.some(s => {
                     if (s.roomId !== 'all') return false;
                     return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
@@ -2750,6 +2785,64 @@
                 totalRooms: ROOMS.length,
                 bookedCount: bookedCount,
                 availableCount: ROOMS.length - bookedCount,
+                availableRooms: availableRooms
+            };
+        }
+
+        // Checks only DB bookings + "Three Rooms" cart stays — used for the "Three Rooms" TAB display
+        function getDateAvailabilityForThreeRoomsDisplay(dateStr) {
+            let bookedCount = 0;
+            const availableRooms = [];
+
+            THREE_ROOMS.forEach(room => {
+                const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
+                // Only count "three-rooms" (and 'all') cart stays for display blocking
+                const bookedInCart = selectedStays.some(s => {
+                    if (s.roomId !== 'three-rooms' && s.roomId !== 'all') return false;
+                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                });
+
+                if (bookedInDB || bookedInCart) {
+                    bookedCount++;
+                } else {
+                    availableRooms.push(room);
+                }
+            });
+
+            return {
+                totalRooms: THREE_ROOMS.length,
+                bookedCount: bookedCount,
+                availableCount: THREE_ROOMS.length - bookedCount,
+                availableRooms: availableRooms
+            };
+        }
+
+        // Full check for THREE ROOMS booking — includes all cart stays
+        function getDateAvailabilityForThreeRoomsBooking(dateStr) {
+            let bookedCount = 0;
+            const availableRooms = [];
+
+            THREE_ROOMS.forEach(room => {
+                const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
+                const bookedInCart = selectedStays.some(s => {
+                    const coversRoom = s.roomId === room.id
+                        || s.roomId === 'all'
+                        || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(room.id));
+                    if (!coversRoom) return false;
+                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                });
+
+                if (bookedInDB || bookedInCart) {
+                    bookedCount++;
+                } else {
+                    availableRooms.push(room);
+                }
+            });
+
+            return {
+                totalRooms: THREE_ROOMS.length,
+                bookedCount: bookedCount,
+                availableCount: THREE_ROOMS.length - bookedCount,
                 availableRooms: availableRooms
             };
         }
@@ -2797,7 +2890,7 @@
             document.getElementById('monthJumpSelect').value = `${year}-${month}`;
 
             // Update badges on room selector tabs
-            const roomIds = ['all', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            const roomIds = ['all', 'three-rooms', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
             roomIds.forEach(rId => {
                 const badge = document.getElementById(`badge_${rId}`);
                 if (badge) {
@@ -2827,9 +2920,14 @@
 
                 const isPast = (dateObj < TODAY);
                 const isCurrentDay = (dateObj.getTime() === TODAY.getTime());
-                const avail = selectedRoomId === 'all'
-                    ? getDateAvailabilityForAllRoomsDisplay(dateStr)
-                    : getDateAvailability(dateStr);
+                let avail;
+                if (selectedRoomId === 'all') {
+                    avail = getDateAvailabilityForAllRoomsDisplay(dateStr);
+                } else if (selectedRoomId === 'three-rooms') {
+                    avail = getDateAvailabilityForThreeRoomsDisplay(dateStr);
+                } else {
+                    avail = getDateAvailability(dateStr);
+                }
                 const season = getSeasonInfo(dateObj);
 
                 const dayCell = document.createElement('div');
@@ -2860,23 +2958,55 @@
                     } else if (avail.availableCount === 4 && indivCartCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     } else if (avail.availableCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Sold Out</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                         isBooked = true;
                     } else if (avail.availableCount < 4) {
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${avail.availableCount} Left</span>`;
+                        const n = avail.availableCount;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${4 - indivCartCount} Free</span>`;
+                        const n = 4 - indivCartCount;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
                         isBooked = true; // Block "All Rooms" booking on these dates
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
                     }
+
+                } else if (selectedRoomId === 'three-rooms') {
+                    const threeRate = THREE_ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
+                    priceText = `R${threeRate.toLocaleString()}`;
+
+                    // How many of the 3 individual rooms have cart stays on this date?
+                    const indivCartCount = THREE_ROOMS.filter(r =>
+                        selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                    ).length;
+
+                    if (stayForDate) {
+                        availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
+                    } else if (avail.availableCount === 3 && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                    } else if (avail.availableCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
+                        isBooked = true;
+                    } else if (avail.availableCount < 3) {
+                        const n = avail.availableCount;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        isBooked = true;
+                    } else if (indivCartCount > 0) {
+                        const n = 3 - indivCartCount;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        isBooked = true;
+                    } else {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                    }
+
                 } else {
                     const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
                     const isBookedOtherStay = selectedStays.some(s => {
                         if (s === stayForDate) return false;
-                        if (s.roomId !== selectedRoomId && s.roomId !== 'all') return false;
+                        if (s.roomId !== selectedRoomId && s.roomId !== 'all'
+                            && !(s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(selectedRoomId))) return false;
                         return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                     });
 
@@ -2884,10 +3014,10 @@
 
                     // How many other rooms are in cart on this date?
                     const otherStaysOnDate = selectedStays.filter(s =>
-                        s.roomId !== selectedRoomId && s.roomId !== 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        s.roomId !== selectedRoomId && s.roomId !== 'all' && s.roomId !== 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                     );
                     const totalOccupiedOnDate = ROOMS.filter(r =>
-                        isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all') && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
+                        isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(r.id))) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
                     ).length;
                     const freeRoomsLeft = 4 - totalOccupiedOnDate;
 
@@ -2896,15 +3026,17 @@
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else if (isBooked) {
-                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Booked</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                     } else if (otherStaysOnDate.length > 0) {
                         // This room is OPEN, but other rooms are in cart on this date!
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${freeRoomsLeft} Free</span>`;
+                        const n = freeRoomsLeft;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
                         // This room is OPEN, and other rooms are booked in DB!
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${freeRoomsLeft} Left</span>`;
+                        const n = freeRoomsLeft;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else {
@@ -2936,24 +3068,36 @@
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCartBlocking > 0 && avail.availableCount === 4) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book All Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book Four Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free — can't book All Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free — can't book Four Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All rooms fully booked — no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 4 rooms fully booked — no availability</span>`;
+                        }
+                    } else if (selectedRoomId === 'three-rooms') {
+                        const threeAvail = getDateAvailabilityForThreeRoomsBooking(dateStr);
+                        const indivCartBlocking = THREE_ROOMS.filter(r =>
+                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        ).length;
+                        if (indivCartBlocking > 0) {
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) in your cart — can't book Three Rooms on this date</span>`;
+                        } else if (threeAvail.availableCount > 0) {
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${threeAvail.availableCount} of 3 rooms free — can't book Three Rooms on this date</span>`;
+                        } else {
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked — no availability</span>`;
                         }
                     } else {
-                        const allRoomsStay = selectedStays.find(s => s.roomId === 'all' && dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                        const allRoomsStay = selectedStays.find(s => (s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(selectedRoomId))) && dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                         if (allRoomsStay) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Blocked — 'All Rooms' is in your cart on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Blocked — '${allRoomsStay.roomId === 'all' ? 'Four Rooms' : 'Three Rooms'}' is in your cart on this date</span>`;
                         } else {
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
                         }
                     }
-                } else if (selectedRoomId !== 'all' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
                     const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
                     tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of 4 Free)`;
-                } else if (selectedRoomId !== 'all' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
                     tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of 4 Rooms Free)`;
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
@@ -2993,11 +3137,23 @@
                                     selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
                                 ).length;
                                 if (indivCartBlocking > 0 && fullAvail.availableCount === 4) {
-                                    showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book All Rooms on other dates.`);
+                                    showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book Four Rooms on other dates.`);
                                 } else if (fullAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. All Rooms requires all 4 to be available. Book rooms individually instead.`);
+                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. Four Rooms requires all 4 to be available. Book rooms individually instead.`);
                                 } else {
-                                    showToast("🚫 All rooms fully booked on this date. Please select different dates.");
+                                    showToast("🚫 All 4 rooms fully booked on this date. Please select different dates.");
+                                }
+                            } else if (selectedRoomId === 'three-rooms') {
+                                const threeAvail = getDateAvailabilityForThreeRoomsBooking(formatDateKey(dateObj));
+                                const indivCartBlocking = THREE_ROOMS.filter(r =>
+                                    selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
+                                ).length;
+                                if (indivCartBlocking > 0) {
+                                    showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first.`);
+                                } else if (threeAvail.availableCount > 0) {
+                                    showToast(`⚠️ Only ${threeAvail.availableCount} of 3 rooms are free on this date. Three Rooms requires all 3 to be available.`);
+                                } else {
+                                    showToast("🚫 All 3 rooms fully booked on this date. Please select different dates.");
                                 }
                             } else {
                                 showToast("🚫 This date is fully booked. Please select an available date.");
@@ -3036,17 +3192,33 @@
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCount > 0) {
-                            showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book All Rooms.`);
+                            showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Four Rooms.`);
                         } else {
                             showToast("All 4 rooms must be available on this date to book the entire property.");
                         }
                         return;
                     }
+                } else if (selectedRoomId === 'three-rooms') {
+                    const avail = getDateAvailabilityForThreeRoomsBooking(dateStr);
+                    if (avail.availableCount < 3) {
+                        const indivCount = THREE_ROOMS.filter(r =>
+                            selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
+                        ).length;
+                        if (indivCount > 0) {
+                            showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Three Rooms.`);
+                        } else {
+                            showToast("All 3 rooms (King Arthur, Santori, Mykonos) must be available on this date to book Three Rooms.");
+                        }
+                        return;
+                    }
                 } else {
                     if (isRoomBookedOnDate(selectedRoomId, dateStr) || isDateInSelectedStays(selectedRoomId, dateStr)) {
-                        const allRoomsStay = selectedStays.find(s => s.roomId === 'all' && dateStr >= s.checkInStr && dateStr < s.checkOutStr);
-                        if (allRoomsStay) {
-                            showToast("⚠️ All Rooms is already in your cart on this date. Remove that stay to book individual rooms.");
+                        const blockingStay = selectedStays.find(s =>
+                            (s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(selectedRoomId)))
+                            && dateStr >= s.checkInStr && dateStr < s.checkOutStr
+                        );
+                        if (blockingStay) {
+                            showToast(`⚠️ '${blockingStay.roomId === 'all' ? 'Four Rooms' : 'Three Rooms'}' is already in your cart on this date. Remove that stay to book individual rooms.`);
                         } else {
                             showToast("This date is already booked or in your cart. Please select another date.");
                         }
@@ -3055,7 +3227,9 @@
                 }
 
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : (roomObj ? roomObj.name : 'Room');
+                const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : (roomObj ? roomObj.name : 'Room');
                 pendingCheckIn = { roomId: selectedRoomId, date: new Date(dateObj) };
                 showToast(`📍 ${roomDisplayName}: Check-in set for ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
@@ -3077,7 +3251,9 @@
                 // Clicked earlier date: update check-in
                 pendingCheckIn.date = new Date(dateObj);
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const roomDisplayName = (selectedRoomId === 'all') ? 'All 4 Rooms' : (roomObj ? roomObj.name : 'Room');
+                const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : (roomObj ? roomObj.name : 'Room');
                 showToast(`📍 ${roomDisplayName}: Check-in moved to ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
                 updateSummarySidebar();
@@ -3102,13 +3278,18 @@
                 return;
             }
 
-            // Verify all nights in the stay range are available (prevent conflicts with DB bookings and cart stays)
+            // Verify all nights in the stay range are available
             let d = new Date(checkInDate);
             let hasConflict = false;
             while (d < checkOutDate) {
                 const dKey = formatDateKey(d);
                 if (selectedRoomId === 'all') {
                     if (getDateAvailability(dKey).availableCount < 4) {
+                        hasConflict = true;
+                        break;
+                    }
+                } else if (selectedRoomId === 'three-rooms') {
+                    if (getDateAvailabilityForThreeRoomsBooking(dKey).availableCount < 3) {
                         hasConflict = true;
                         break;
                     }
@@ -3124,6 +3305,8 @@
             if (hasConflict) {
                 if (selectedRoomId === 'all') {
                     showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart for other rooms.");
+                } else if (selectedRoomId === 'three-rooms') {
+                    showToast("⚠️ Your selected stay spans across dates where one of the 3 rooms is already booked or in your cart.");
                 } else {
                     showToast("⚠️ Your selected stay spans across dates that are already booked or in your cart for this room.");
                 }
@@ -3135,11 +3318,14 @@
             let subtotal = 0;
             const nightlyRates = [];
             const isAll = (selectedRoomId === 'all');
+            const isThree = (selectedRoomId === 'three-rooms');
             const roomObj = ROOMS.find(r => r.id === selectedRoomId);
 
             while (d < checkOutDate) {
-                const nightlyRate = isAll 
+                const nightlyRate = isAll
                     ? ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
+                    : isThree
+                    ? THREE_ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, d), 0)
                     : calculateNightPrice(roomObj, d);
                 subtotal += nightlyRate;
                 const dStr = d.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', weekday: 'short' });
@@ -3151,14 +3337,14 @@
                 d.setDate(d.getDate() + 1);
             }
 
-            const stayMaxGuests = (selectedRoomId === 'all') ? 8 : 2;
+            const stayMaxGuests = isAll ? 8 : isThree ? 6 : 2;
             const stayGuestCount = (selectedGuestCount && selectedGuestCount >= 1 && selectedGuestCount <= stayMaxGuests) ? selectedGuestCount : stayMaxGuests;
 
             const newStay = {
                 id: 'stay_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
                 roomId: selectedRoomId,
-                roomName: isAll ? 'All 4 Rooms (Entire Property)' : roomObj.name,
-                roomIcon: isAll ? '🏨' : roomObj.icon,
+                roomName: isAll ? 'All 4 Rooms (Entire Property)' : isThree ? 'Three Rooms (King Arthur, Santori, Mykonos)' : roomObj.name,
+                roomIcon: isAll ? '🏨' : isThree ? '🏠' : roomObj.icon,
                 checkIn: new Date(checkInDate),
                 checkOut: new Date(checkOutDate),
                 checkInStr: formatDateKey(checkInDate),
@@ -3222,7 +3408,9 @@
             // 1. Pending check-in alert
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
-                const rName = (selectedRoomId === 'all') ? 'All Rooms' : (roomObj ? roomObj.name : 'Room');
+                const rName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA, Santori, Mykonos)'
+                    : (roomObj ? roomObj.name : 'Room');
                 pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
                 pendingBox.style.display = 'flex';
             } else {
@@ -3436,14 +3624,16 @@
         }
 
         function getActiveTabMaxGuests() {
-            return (selectedRoomId === 'all') ? 8 : 2;
+            if (selectedRoomId === 'all') return 8;
+            if (selectedRoomId === 'three-rooms') return 6;
+            return 2;
         }
 
         function getCartTotalMaxGuests() {
             if (selectedStays && selectedStays.length > 0) {
                 let max = 0;
                 selectedStays.forEach(s => {
-                    max += (s.roomId === 'all') ? 8 : 2;
+                    max += (s.roomId === 'all') ? 8 : (s.roomId === 'three-rooms') ? 6 : 2;
                 });
                 return Math.min(10, Math.max(1, max));
             }
@@ -3806,6 +3996,7 @@
             if (!rId) return 'CC-';
             const r = String(rId).toLowerCase();
             if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r === 'three-rooms' || r.includes('three')) return 'TRI-';
             if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
             if (r.includes('santor') || r.includes('san')) return 'SAN-';
             if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
@@ -3895,9 +4086,12 @@
             const cleanPhone = phone.replace(/^(\+27|0)/, '');
             const isSingleStay = selectedStays.length === 1;
             const isAllRooms = selectedStays.some(s => s.roomId === 'all');
-            const primaryRoomId = isAllRooms ? 'all' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
+            const isThreeRooms = selectedStays.some(s => s.roomId === 'three-rooms');
+            const primaryRoomId = isAllRooms ? 'all' : isThreeRooms ? 'three-rooms' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
             const primaryRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
+                : isThreeRooms
+                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const staysJson = JSON.stringify(selectedStays.map(s => ({
@@ -3990,9 +4184,12 @@
 
             const isSingleStay = selectedStays.length === 1;
             const isAllRooms = selectedStays.some(s => s.roomId === 'all');
-            const primaryRoomId = isAllRooms ? 'all' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
+            const isThreeRooms = selectedStays.some(s => s.roomId === 'three-rooms');
+            const primaryRoomId = isAllRooms ? 'all' : isThreeRooms ? 'three-rooms' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
             const primaryRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
+                : isThreeRooms
+                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const bookingPayload = {
@@ -4041,6 +4238,17 @@
             selectedStays.forEach(stay => {
                 if (stay.roomId === 'all') {
                     ALL_ROOMS_SUBSET.forEach(rId => {
+                        MOCK_BOOKINGS.push({
+                            id: cleanRef + '_' + rId + '_' + stay.checkInStr,
+                            parentBookingId: cleanRef,
+                            isCalendarBlock: true,
+                            roomId: rId,
+                            checkIn: stay.checkInStr,
+                            checkOut: stay.checkOutStr
+                        });
+                    });
+                } else if (stay.roomId === 'three-rooms') {
+                    THREE_ROOMS_SUBSET.forEach(rId => {
                         MOCK_BOOKINGS.push({
                             id: cleanRef + '_' + rId + '_' + stay.checkInStr,
                             parentBookingId: cleanRef,
@@ -4247,6 +4455,9 @@
             if (selectedRoomId === 'all') {
                 bannerName.textContent = 'All 4 Rooms (Entire Property)';
                 bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+            } else if (selectedRoomId === 'three-rooms') {
+                bannerName.textContent = '🏠 Three Rooms (King Arthur, Santori, Mykonos)';
+                bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) — Excludes Deluxe Suite';
             } else {
                 const r = ROOMS.find(item => item.id === selectedRoomId);
                 if (r) {
@@ -4295,6 +4506,24 @@
                         }
                     });
                     dayRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
+                    if (dayHasSpecial) {
+                        hasActiveSpecial = true;
+                        specialRates.push(dayRate);
+                    }
+                } else if (selectedRoomId === 'three-rooms') {
+                    let dayHasSpecial = false;
+                    THREE_ROOMS.forEach(r => {
+                        const prefix = (r.id === 'king-arthur') ? 'king' : r.id;
+                        const isSpActive = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) &&
+                            (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
+                        const spStart = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_start`]) || '').trim().replace(/\//g, '-');
+                        const spEnd = String((SITE_CONFIG && SITE_CONFIG[`special_${prefix}_end`]) || '').trim().replace(/\//g, '-');
+                        const spRate = Number(SITE_CONFIG && SITE_CONFIG[`special_${prefix}_rate`]);
+                        if (isSpActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
+                            dayHasSpecial = true;
+                        }
+                    });
+                    dayRate = THREE_ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
                     if (dayHasSpecial) {
                         hasActiveSpecial = true;
                         specialRates.push(dayRate);
@@ -4389,16 +4618,13 @@
             const tabs = document.querySelectorAll('.room-tab-btn');
             tabs.forEach(tab => tab.classList.remove('active'));
 
-            const roomMap = {
-                'all': 0,
-                'king-arthur': 1,
-                'santori': 2,
-                'mykonos': 3,
-                'deluxe-suite': 4
-            };
-            if (tabs[roomMap[roomId]]) {
-                tabs[roomMap[roomId]].classList.add('active');
-            }
+            // Find the correct tab by its onclick attribute value
+            tabs.forEach(tab => {
+                const onclick = tab.getAttribute('onclick');
+                if (onclick && onclick.includes(`'${roomId}'`)) {
+                    tab.classList.add('active');
+                }
+            });
 
             updateBannerRoomInfo();
 
@@ -4409,7 +4635,7 @@
             }
 
             // For ANY room tab chosen/activated, always default to max guests for that room
-            const roomMax = (roomId === 'all') ? 6 : 2;
+            const roomMax = (roomId === 'all') ? 8 : (roomId === 'three-rooms') ? 6 : 2;
             selectedGuestCount = roomMax;
             userManuallyChangedGuestCount = false;
 
@@ -4508,7 +4734,7 @@
             // Room query parameter auto-selection (?room=king-arthur, santori, mykonos, deluxe-suite, all)
             const urlParams = new URLSearchParams(window.location.search);
             const rParam = urlParams.get('room');
-            if (rParam && ['all', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'].includes(rParam.toLowerCase())) {
+            if (rParam && ['all', 'three-rooms', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'].includes(rParam.toLowerCase())) {
                 selectedRoomId = rParam.toLowerCase();
             }
 
@@ -4607,7 +4833,8 @@
             const cOut = urlParams.get('out') || '';
 
             const roomNames = {
-                'all': 'All Rooms (3 Suites: King Arthur, Santori, Mykonos)',
+                'all': 'Four Rooms (King Arthur, Santori, Mykonos, Deluxe Suite)',
+                'three-rooms': 'Three Rooms (King Arthur, Santori, Mykonos)',
                 'king-arthur': 'King Arthur Room',
                 'santori': 'Santori Room',
                 'mykonos': 'Mykonos Room',
