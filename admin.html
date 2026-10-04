@@ -1630,6 +1630,20 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <!-- Additional Staff Instructions & Daily Orders -->
+                        <div style="margin-top: 1.5rem; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                                <label for="housekeepingCustomNotes" style="font-weight: 700; color: var(--adm-primary-dark); font-size: 0.95rem; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                                    📝 Additional Staff Instructions &amp; Daily Orders
+                                </label>
+                                <span style="font-size: 0.76rem; color: #64748B; background: #E2E8F0; padding: 0.15rem 0.55rem; border-radius: 999px; font-weight: 600;">Included in WhatsApp</span>
+                            </div>
+                            <p style="font-size: 0.82rem; color: #64748B; margin-top: 0; margin-bottom: 0.6rem;">
+                                Type any extra tasks or special orders for your cleaning staff below. When you click <strong>WhatsApp Daily Job List</strong>, this text will automatically be included.
+                            </p>
+                            <textarea id="housekeepingCustomNotes" rows="3" placeholder="e.g. Please deep clean the patio, check extra towels for Room 1, or restock laundry supplies..." style="width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1.5px solid #94A3B8; border-radius: 8px; font-family: inherit; font-size: 0.88rem; color: #1E293B; resize: vertical; line-height: 1.5; background: #FFFFFF;"></textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -4884,11 +4898,17 @@ We look forward to hosting you at Cool-Cat!`;
                 { id: 'deluxe-suite', name: 'Room 4 (✨ Deluxe Suite)' }
             ];
 
+            const coversRoom = (b, rId) => {
+                if (b.roomId === rId || b.roomId === 'all') return true;
+                if (b.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(rId)) return true;
+                return false;
+            };
+
             let lines = [];
             roomKeys.forEach(r => {
-                const isCheckout = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkOut === todayStr && b.status !== 'cancelled');
-                const isCheckin = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkIn === todayStr && b.status !== 'cancelled');
-                const isStayover = ADMIN_BOOKINGS.some(b => (b.roomId === r.id || b.roomId === 'all') && b.checkIn < todayStr && b.checkOut > todayStr && b.status !== 'cancelled');
+                const isCheckout = ADMIN_BOOKINGS.some(b => coversRoom(b, r.id) && b.checkOut === todayStr && b.status !== 'cancelled');
+                const isCheckin = ADMIN_BOOKINGS.some(b => coversRoom(b, r.id) && b.checkIn === todayStr && b.status !== 'cancelled');
+                const isStayover = ADMIN_BOOKINGS.some(b => coversRoom(b, r.id) && b.checkIn < todayStr && b.checkOut > todayStr && b.status !== 'cancelled');
 
                 if (isCheckout && isCheckin) {
                     lines.push(`🔴 *${r.name}:* Turnover Clean (Departing 10:00 ➔ Arriving 14:00)`);
@@ -4903,14 +4923,24 @@ We look forward to hosting you at Cool-Cat!`;
                 }
             });
 
+            // Retrieve any custom staff instructions / orders typed by the owner
+            const customNotesEl = document.getElementById('housekeepingCustomNotes');
+            const customNotes = customNotesEl ? customNotesEl.value.trim() : '';
+
+            let customSection = '';
+            if (customNotes) {
+                customSection = `%0A%0A*📌 Special Instructions / Owner Orders:*%0A` + encodeURIComponent(customNotes);
+            }
+
             const text = `*Cool-Cat - Housekeeping Job List (%23${todayStr})*%0A%0A` +
                 lines.map(l => encodeURIComponent(l)).join('%0A') +
                 `%0A%0A*Turnaround Checklist:*%0A` +
                 `1. Strip bed linen and sanitize bathroom.%0A` +
                 `2. Restock fresh bath towels & bathmat.%0A` +
                 `3. Restock complimentary coffee, tea, sugar & milk.%0A` +
-                `4. Check inverter lights (solar backup running).%0A%0A` +
-                `_Sent via Cool-Cat Operations Autopilot_`;
+                `4. Check inverter lights (solar backup running).` +
+                customSection +
+                `%0A%0A_Sent via Cool-Cat Operations Autopilot_`;
             
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }
