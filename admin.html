@@ -3855,12 +3855,14 @@
                     if (avail.availableCount === 4) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-open">4 Open</span>`;
                     } else if (avail.availableCount === 0) {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-booked">Sold Out</span>`;
+                        pillHtml = `<span class="adm-cal-avail-pill pill-booked">Fully Booked</span>`;
                         isBooked = true;
                         monthBookedNights++;
                         dayCell.classList.add('booked-day');
                     } else {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-partial">${avail.availableCount} Left</span>`;
+                        const words = { 1: 'ONE ROOM LEFT', 2: 'TWO ROOMS LEFT', 3: 'THREE ROOMS LEFT' };
+                        const label = words[avail.availableCount] || `${avail.availableCount} ROOMS LEFT`;
+                        pillHtml = `<span class="adm-cal-avail-pill pill-partial">${label}</span>`;
                         isBlocked = true;
                         monthBlockedNights++;
                         dayCell.classList.add('blocked-day');

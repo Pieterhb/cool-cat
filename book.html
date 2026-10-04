@@ -2859,6 +2859,13 @@
             return `${y}-${m}-${d}`;
         }
 
+        function getRoomsLeftLabel(n) {
+            if (n === 3) return 'THREE ROOMS LEFT';
+            if (n === 2) return 'TWO ROOMS LEFT';
+            if (n === 1) return 'ONE ROOM LEFT';
+            return `${n} ROOMS LEFT`;
+        }
+
         // ==========================================
         // 5. CALENDAR RENDERING
         // ==========================================
@@ -2909,7 +2916,7 @@
 
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.className = 'cal-day empty';
+                emptyCell.className = 'cal-day disabled';
                 grid.appendChild(emptyCell);
             }
 
@@ -2962,11 +2969,11 @@
                         isBooked = true;
                     } else if (avail.availableCount < 4) {
                         const n = avail.availableCount;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
                         const n = 4 - indivCartCount;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true; // Block "All Rooms" booking on these dates
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
@@ -2990,11 +2997,11 @@
                         isBooked = true;
                     } else if (avail.availableCount < 3) {
                         const n = avail.availableCount;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
                         const n = 3 - indivCartCount;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
@@ -3030,13 +3037,13 @@
                     } else if (otherStaysOnDate.length > 0) {
                         // This room is OPEN, but other rooms are in cart on this date!
                         const n = freeRoomsLeft;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
                         // This room is OPEN, and other rooms are booked in DB!
                         const n = freeRoomsLeft;
-                        availPillHtml = `<span class="cal-avail-pill avail-limited">${n} ${n === 1 ? 'Room' : 'Rooms'} Left</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else {
