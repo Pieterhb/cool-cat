@@ -173,12 +173,12 @@
         .room-tab-btn {
             padding: 0.65rem 0.5rem;
             border-radius: 10px;
-            border: none;
-            background: transparent;
+            border: 1.5px solid #86EFAC;
+            background: #BBF7D0;
             font-family: var(--font-heading);
             font-size: 0.95rem;
-            font-weight: 600;
-            color: #475569;
+            font-weight: 700;
+            color: #14532D;
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
@@ -188,6 +188,7 @@
             gap: 0.35rem;
             white-space: nowrap;
             position: relative;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.15);
         }
 
         @media (max-width: 900px) {
@@ -222,17 +223,17 @@
             box-shadow: 0 2px 5px rgba(15, 82, 186, 0.3);
         }
 
-
-
         .room-tab-btn:hover {
             color: #064E3B;
-            background: #FFFFFF;
-            transform: translateY(-4px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            background: #86EFAC;
+            border-color: #4ADE80;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
         }
 
         .room-tab-btn.active {
             background: #15803D;
+            border-color: #15803D;
             color: #FFFFFF;
             font-weight: 700;
             box-shadow: 0 4px 14px rgba(21, 128, 61, 0.45);
@@ -240,8 +241,9 @@
 
         .room-tab-btn.active:hover {
             background: #166534;
+            border-color: #166534;
             color: #FFFFFF;
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(22, 101, 52, 0.5);
         }
 
