@@ -1541,7 +1541,15 @@
                             <table class="adm-table" id="recentBookingsTable">
                                 <thead>
                                     <tr>
-                                        <th>Ref</th>
+                                        <th style="white-space: nowrap;">
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Ref</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="ref" data-dir="asc" onclick="sortRecentBookings('ref', 'asc')" title="Sort Oldest to Newest">▲</span>
+                                                    <span class="sort-arrow" data-col="ref" data-dir="desc" onclick="sortRecentBookings('ref', 'desc')" title="Sort Newest to Oldest">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Guest Name</th>
                                         <th>Room</th>
                                         <th>Stay Dates</th>
@@ -1582,7 +1590,15 @@
                             <table class="adm-table">
                                 <thead>
                                     <tr>
-                                        <th>Ref #</th>
+                                        <th style="white-space: nowrap;">
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Ref #</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="ref" data-dir="asc" onclick="sortMasterBookings('ref', 'asc')" title="Sort Oldest to Newest">▲</span>
+                                                    <span class="sort-arrow" data-col="ref" data-dir="desc" onclick="sortMasterBookings('ref', 'desc')" title="Sort Newest to Oldest">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Guest</th>
                                         <th>Contact</th>
                                         <th>Room</th>
@@ -3130,6 +3146,26 @@
             }
         }
 
+        // Master Bookings Sorting State (default: newest booking on top)
+        let masterSortColumn = 'ref';
+        let masterSortDirection = 'desc';
+
+        function sortMasterBookings(column, direction) {
+            masterSortColumn = column;
+            masterSortDirection = direction;
+            renderBookingsTables();
+        }
+
+        // Recent Bookings Sorting State (default: newest booking on top)
+        let recentSortColumn = 'ref';
+        let recentSortDirection = 'desc';
+
+        function sortRecentBookings(column, direction) {
+            recentSortColumn = column;
+            recentSortDirection = direction;
+            renderBookingsTables();
+        }
+
         function renderBookingsTables() {
             const recentTbody = document.getElementById('recentBookingsTbody');
             const masterTbody = document.getElementById('masterBookingsTbody');
@@ -3140,19 +3176,34 @@
             let pendingTotal = 0;
             const displayList = getDisplayBookings();
 
-            // Sort with latest bookings always on top (newest creation date or check-in or reference ID)
-            const sortedByNewest = [...displayList].sort((a, b) => {
-                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
-                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
-                if (timeB !== timeA) return timeB - timeA;
+            // 1. Sort Recent Live Bookings
+            const sortedRecent = [...displayList].sort((a, b) => {
                 const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
                 const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
-                return numB - numA;
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+
+                if (recentSortDirection === 'asc') {
+                    // Oldest to newest
+                    if (numA !== numB && numA > 0 && numB > 0) return numA - numB;
+                    return timeA - timeB;
+                } else {
+                    // Newest to oldest (default)
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
+                }
             });
 
-            // 1. Populate Recent Live Bookings Table: always shows latest 30 live bookings with latest on top
+            // Highlight active sort arrow for Recent Bookings
+            document.querySelectorAll('#recentBookingsTable .sort-arrow').forEach(el => el.classList.remove('active'));
+            if (recentSortColumn) {
+                const activeArrow = document.querySelector(`#recentBookingsTable .sort-arrow[data-col="${recentSortColumn}"][data-dir="${recentSortDirection}"]`);
+                if (activeArrow) activeArrow.classList.add('active');
+            }
+
+            // Populate Recent Live Bookings Table (top 30 based on sort)
             if (recentTbody) {
-                const recentSlice = sortedByNewest.slice(0, 30);
+                const recentSlice = sortedRecent.slice(0, 30);
                 recentSlice.forEach(b => {
                     const isDeposit = (b.balanceDue > 0);
                     let statusClass = 'status-unpaid';
@@ -3204,9 +3255,34 @@
                 });
             }
 
-            // 2. Populate Master Bookings Table (all bookings)
+            // 2. Sort Master Bookings
+            const sortedMaster = [...displayList].sort((a, b) => {
+                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+
+                if (masterSortDirection === 'asc') {
+                    // Oldest to newest
+                    if (numA !== numB && numA > 0 && numB > 0) return numA - numB;
+                    return timeA - timeB;
+                } else {
+                    // Newest to oldest (default)
+                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
+                    return timeB - timeA;
+                }
+            });
+
+            // Highlight active sort arrow for Master Bookings
+            document.querySelectorAll('#tabBookings .sort-arrow').forEach(el => el.classList.remove('active'));
+            if (masterSortColumn) {
+                const activeArrow = document.querySelector(`#tabBookings .sort-arrow[data-col="${masterSortColumn}"][data-dir="${masterSortDirection}"]`);
+                if (activeArrow) activeArrow.classList.add('active');
+            }
+
+            // Populate Master Bookings Table (all bookings)
             if (masterTbody) {
-                sortedByNewest.forEach(b => {
+                sortedMaster.forEach(b => {
                     const isDeposit = (b.balanceDue > 0);
                     if (isDeposit && b.status !== 'cancelled') pendingTotal += Number(b.balanceDue || 0);
 
@@ -3279,6 +3355,11 @@
             const recentSearch = document.getElementById('recentBookingsSearchInput');
             if (recentSearch && recentSearch.value) {
                 filterRecentBookingsTable(recentSearch.value);
+            }
+
+            const masterSearch = document.getElementById('masterBookingsSearchInput');
+            if (masterSearch && masterSearch.value) {
+                filterBookingsTable(masterSearch.value);
             }
         }
 
