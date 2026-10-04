@@ -436,16 +436,46 @@
         .cal-jump-select {
             padding: 0.45rem 0.75rem;
             border-radius: 8px;
-            border: 1px solid #CBD5E1;
+            border: 1.5px solid #F97316;
             font-family: var(--font-heading);
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: #334155;
-            background: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #7C2D12;
+            background: #FED7AA;
             cursor: pointer;
             outline: none;
-            min-width: 115px;
+            min-width: 120px;
             height: 38px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(249, 115, 22, 0.18);
+        }
+
+        .cal-jump-select:hover {
+            background: #FDBA74;
+            border-color: #EA580C;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);
+        }
+
+        .cal-jump-select:focus {
+            background: #FED7AA;
+            border-color: #EA580C;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+        }
+
+        .cal-jump-select option {
+            background: #FFF7ED;
+            color: #7C2D12;
+            font-weight: 600;
+            padding: 8px 12px;
+        }
+
+        .cal-jump-select option:hover,
+        .cal-jump-select option:checked,
+        .cal-jump-select option:focus {
+            background: #FED7AA !important;
+            color: #7C2D12 !important;
+            font-weight: 700;
         }
 
         /* Calendar Grid */
