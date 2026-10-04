@@ -1930,6 +1930,59 @@
                             </div>
                         </div>
 
+                        <!-- 0.5. SPECIAL HOLIDAY PACKAGES (Whole House & 3-Room Package Discounts) -->
+                        <div style="margin-bottom: 2rem; background: #EFF6FF; border: 1.5px solid #93C5FD; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #1E40AF; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🌴 SPECIAL HOLIDAY PACKAGES</span>
+                                        <span style="font-size: 0.72rem; background: #DBEAFE; color: #1D4ED8; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">PACKAGE DISCOUNTS</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #1E3A8A;">Set package percentage discounts (0% to 100%) for multi-room bookings. Discounts automatically reduce checkout rates across all seasons.</span>
+                                </div>
+                            </div>
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Package &amp; Included Rooms</th>
+                                            <th>Discount Percentage (0% – 100%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 800; font-size: 0.95rem; color: #0F172A; display: flex; align-items: center; gap: 0.4rem;">
+                                                    <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                                </div>
+                                                <div style="font-size: 0.8rem; color: #64748B; margin-top: 0.2rem;">Whole Property • Sleeps up to 8 Guests</div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                                    <input type="number" id="pkg_discount_four" class="adm-input" value="0" min="0" max="100" step="1" style="width: 85px; text-align: center; font-weight: 800; font-size: 0.95rem; color: #1E40AF;">
+                                                    <span style="font-weight: 700; color: #1E40AF; font-size: 0.88rem;">% Discount</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 800; font-size: 0.95rem; color: #0F172A; display: flex; align-items: center; gap: 0.4rem;">
+                                                    <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
+                                                </div>
+                                                <div style="font-size: 0.8rem; color: #64748B; margin-top: 0.2rem;">3 Suites (Excludes Deluxe Suite) • Sleeps up to 6 Guests</div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                                    <input type="number" id="pkg_discount_three" class="adm-input" value="0" min="0" max="100" step="1" style="width: 85px; text-align: center; font-weight: 800; font-size: 0.95rem; color: #1E40AF;">
+                                                    <span style="font-weight: 700; color: #1E40AF; font-size: 0.88rem;">% Discount</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <!-- 1. Low Season (May-Aug) -->
                         <div style="margin-bottom: 2rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 1.25rem;">
                             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
@@ -2878,6 +2931,14 @@
                     const el = document.getElementById('nextYearMarkupInput');
                     if (el) el.value = config.nextYearMarkupPct;
                 }
+                if (config.pkg_discount_four !== undefined) {
+                    const el = document.getElementById('pkg_discount_four');
+                    if (el) el.value = config.pkg_discount_four;
+                }
+                if (config.pkg_discount_three !== undefined) {
+                    const el = document.getElementById('pkg_discount_three');
+                    if (el) el.value = config.pkg_discount_three;
+                }
                 const fields = [
                     'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
                     'low_king_wd', 'low_king_we', 'low_santori_wd', 'low_santori_we', 'low_mykonos_wd', 'low_mykonos_we', 'low_deluxe_wd', 'low_deluxe_we',
@@ -3712,11 +3773,15 @@
                             end: saved.special_deluxe_end || '',
                             rate: Number(saved.special_deluxe_rate) || 0
                         }
-                    }
+                    },
+                    pkg_discount_four: Number(saved.pkg_discount_four) || 0,
+                    pkg_discount_three: Number(saved.pkg_discount_three) || 0
                 };
             } catch (e) {
                 return {
                     nextYearMarkupPct: 10,
+                    pkg_discount_four: 0,
+                    pkg_discount_three: 0,
                     ...ADMIN_DEFAULT_RATES,
                     specials: {}
                 };
@@ -5831,7 +5896,11 @@ We look forward to hosting you at Cool-Cat!`;
                 special_deluxe_active: document.getElementById('special_deluxe_active').value === 'true',
                 special_deluxe_start: document.getElementById('special_deluxe_start').value || '',
                 special_deluxe_end: document.getElementById('special_deluxe_end').value || '',
-                special_deluxe_rate: Number(document.getElementById('special_deluxe_rate').value) || 0
+                special_deluxe_rate: Number(document.getElementById('special_deluxe_rate').value) || 0,
+
+                // Special Holiday Packages Discount (0% - 100%)
+                pkg_discount_four: Math.max(0, Math.min(100, Number(document.getElementById('pkg_discount_four')?.value) || 0)),
+                pkg_discount_three: Math.max(0, Math.min(100, Number(document.getElementById('pkg_discount_three')?.value) || 0))
             };
 
             // Local cache update
