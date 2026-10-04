@@ -3709,16 +3709,8 @@
         }
 
         function toggleStayBreakfast(stayId) {
-            const stay = selectedStays.find(s => s.id === stayId);
-            if (!stay) return;
-            const chk = document.getElementById('bfChk_' + stayId);
-            if (!chk) return;
-            stay.includeBreakfast = chk.checked;
-            if (stay.includeBreakfast && (!stay.breakfastCount || stay.breakfastCount < 1)) {
-                stay.breakfastCount = stay.guestCount;
-            }
-            updateStep2Recap();
-            updateSummarySidebar();
+            // Temporarily deactivated: breakfast packages currently not offered
+            return;
         }
 
         function handleStayBreakfastCountChange(stayId) {
@@ -3779,10 +3771,10 @@
                                 🏨 Room Cost: R${s.subtotal.toLocaleString()}
                             </div>
 
-                            <!-- Breakfast toggle for this stay -->
-                            <div style="background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem;">
-                                <label style="display: flex; align-items: flex-start; gap: 0.55rem; cursor: pointer; margin: 0;">
-                                    <input type="checkbox" id="bfChk_${s.id}" ${s.includeBreakfast ? 'checked' : ''} onchange="toggleStayBreakfast('${s.id}')" style="margin-top: 3px; flex-shrink: 0;">
+                            <!-- Breakfast toggle for this stay (Temporarily Deactivated) -->
+                            <div style="background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem; opacity: 0.75;">
+                                <label style="display: flex; align-items: flex-start; gap: 0.55rem; cursor: not-allowed; margin: 0;">
+                                    <input type="checkbox" id="bfChk_${s.id}" disabled style="margin-top: 3px; flex-shrink: 0; cursor: not-allowed;">
                                     <div>
                                         <strong style="font-size: 0.88rem; color: #1E293B;">🍳 Add Daily Breakfast Package</strong><br>
                                         <span style="font-size: 0.78rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night) &mdash; Estimated for ${s.guestCount} guest${s.guestCount > 1 ? 's' : ''}: R${(s.guestCount * s.nights * 120).toLocaleString()} total</span>
