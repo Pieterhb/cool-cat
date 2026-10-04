@@ -570,6 +570,34 @@
             color: #FFFFFF !important;
         }
 
+        .btn-refresh-amber {
+            background: #F59E0B !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.82rem !important;
+            padding: 0.4rem 0.95rem !important;
+            border-radius: 6px !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.35rem !important;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3) !important;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .btn-refresh-amber:hover {
+            transform: translateY(-2px) !important;
+            background: #D97706 !important;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.45) !important;
+            color: #FFFFFF !important;
+        }
+
+        .btn-refresh-amber:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3) !important;
+        }
+
         .sort-arrows {
             display: inline-flex;
             flex-direction: column;
@@ -1589,7 +1617,7 @@
                                 🔔 Guest Attention Alerts
                                 <span style="font-size: 0.72rem; background: #F59E0B; color: white; padding: 0.15rem 0.6rem; border-radius: 999px; font-weight: 700; margin-left: 0.5rem; vertical-align: middle;">OWNER / HOST ONLY</span>
                             </h3>
-                            <button class="btn-sm" style="background: #F59E0B; color: white; border: none; border-radius: 6px; padding: 0.4rem 0.9rem; font-weight: 700; cursor: pointer;" onclick="renderGuestAlerts()">🔄 Refresh</button>
+                            <button id="btnRefreshGuestAlerts" class="btn-refresh-amber" onclick="handleRefreshGuestAlerts(this)" title="Refresh today's alerts">🔄 Refresh</button>
                         </div>
                         <p style="font-size: 0.85rem; color: #78350F; margin: 0.6rem 1rem 0; padding-bottom: 0.4rem;">
                             Private view for owner/host. All guests staying or arriving today — with their special requests, arrival times and room details. Not sent to cleaning staff.
@@ -4814,7 +4842,33 @@ We look forward to hosting you at Cool-Cat!`;
             window.open(url, '_blank');
         }
 
-        // 5. 1-Click WhatsApp Cleaner Schedule
+        // 5. 1-Click WhatsApp Cleaner Schedule & Guest Attention Alerts
+        async function handleRefreshGuestAlerts(btn) {
+            if (btn) {
+                btn.innerHTML = '<span>⏳ Refreshing...</span>';
+                btn.style.pointerEvents = 'none';
+            }
+            try {
+                const res = await fetch('/api/bookings');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.bookings && Array.isArray(data.bookings)) {
+                        ADMIN_BOOKINGS = data.bookings;
+                    }
+                }
+            } catch (e) {
+                console.log("Guest alerts refresh error:", e);
+            }
+            renderGuestAlerts();
+            if (btn) {
+                btn.innerHTML = '<span>✓ Updated!</span>';
+                setTimeout(() => {
+                    btn.innerHTML = '<span>🔄 Refresh</span>';
+                    btn.style.pointerEvents = 'auto';
+                }, 900);
+            }
+        }
+
         function renderGuestAlerts() {
             const panel = document.getElementById('guestAlertsPanel');
             if (!panel) return;
