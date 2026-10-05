@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1753,7 +1753,7 @@
                                         <span class="room-tab-badge" id="badge_all">0</span>
                                     </button>
                                 </div>
-                                <!-- Row 2: Three Rooms — fully active -->
+                                <!-- Row 2: Three Rooms – fully active -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" onclick="switchRoom('three-rooms')">
                                         <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
@@ -2820,7 +2820,7 @@
             };
         }
 
-        // Checks only DB bookings + "All Rooms" cart stays — used for the "All Rooms" TAB display
+        // Checks only DB bookings + "All Rooms" cart stays – used for the "All Rooms" TAB display
         // so that individual-room cart selections don't colour those dates red/pink on the All Rooms tab.
         function getDateAvailabilityForAllRoomsDisplay(dateStr) {
             let bookedCount = 0;
@@ -2849,7 +2849,7 @@
             };
         }
 
-        // Checks only DB bookings + "Three Rooms" cart stays — used for the "Three Rooms" TAB display
+        // Checks only DB bookings + "Three Rooms" cart stays – used for the "Three Rooms" TAB display
         function getDateAvailabilityForThreeRoomsDisplay(dateStr) {
             let bookedCount = 0;
             const availableRooms = [];
@@ -2877,7 +2877,7 @@
             };
         }
 
-        // Full check for THREE ROOMS booking — includes all cart stays
+        // Full check for THREE ROOMS booking – includes all cart stays
         function getDateAvailabilityForThreeRoomsBooking(dateStr) {
             let bookedCount = 0;
             const availableRooms = [];
@@ -2907,7 +2907,7 @@
             };
         }
 
-        // Full check including individual-room cart stays — used for blocking when BOOKING All Rooms
+        // Full check including individual-room cart stays – used for blocking when BOOKING All Rooms
         function getDateAvailabilityForAllRoomsBooking(dateStr) {
             return getDateAvailability(dateStr);
         }
@@ -3135,11 +3135,11 @@
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCartBlocking > 0 && avail.availableCount === 4) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book Four Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart – can't book Four Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free — can't book Four Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free – can't book Four Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 4 rooms fully booked — no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 4 rooms fully booked – no availability</span>`;
                         }
                     } else if (selectedRoomId === 'three-rooms') {
                         const threeAvail = getDateAvailabilityForThreeRoomsBooking(dateStr);
@@ -3147,18 +3147,18 @@
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCartBlocking > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) in your cart — can't book Three Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) in your cart – can't book Three Rooms on this date</span>`;
                         } else if (threeAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${threeAvail.availableCount} of 3 rooms free — can't book Three Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${threeAvail.availableCount} of 3 rooms free – can't book Three Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked — no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked – no availability</span>`;
                         }
                     } else {
                         const allRoomsStay = selectedStays.find(s => (s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(selectedRoomId))) && dateStr >= s.checkInStr && dateStr < s.checkOutStr);
                         if (allRoomsStay) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Blocked — '${allRoomsStay.roomId === 'all' ? 'Four Rooms' : 'Three Rooms'}' is in your cart on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Blocked – '${allRoomsStay.roomId === 'all' ? 'Four Rooms' : 'Three Rooms'}' is in your cart on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked – no rooms available</span>`;
                         }
                     }
                 } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
@@ -3202,7 +3202,7 @@
                         dayCell.onclick = () => handleDateClick(dateObj);
                     } else if (isBooked && pendingCheckIn && pendingCheckIn.roomId === selectedRoomId && dateObj > pendingCheckIn.date) {
                         // Booked date after pending check-in: allow clicking as CHECK-OUT
-                        // (guest departs that morning, next guest arrives that afternoon — same-day turnover is fine)
+                        // (guest departs that morning, next guest arrives that afternoon – same-day turnover is fine)
                         dayCell.onclick = () => handleDateClick(dateObj);
                         dayCell.title = "Click to check out on this date (you depart, next guest arrives same day)";
                     } else {
@@ -3508,7 +3508,7 @@
                 const rName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
                     : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA, Santori, Mykonos)'
                     : (roomObj ? roomObj.name : 'Room');
-                pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
+                pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} – click check-out date`;
                 pendingBox.style.display = 'flex';
             } else {
                 pendingBox.style.display = 'none';
@@ -3750,9 +3750,9 @@
                         <strong>100% Full Payment Due Now: R${grandTotal.toLocaleString()}</strong><br>
                         ${daysUntilCheckIn <= 7
                             ? (selectedStays.length > 1
-                                ? `Earliest booking arrival is within 7 days — full payment is required upfront.${hasLaterStay ? '<br><span style="font-size: 0.76rem; color: #0369A1; display: inline-block; margin-top: 0.25rem;">💡 <em>Tip: Book your later stay(s) separately to qualify for a 50% deposit on those dates.</em></span>' : ''}`
-                                : `Booking is within 7 days of arrival — full payment is required upfront.`)
-                            : `Total stay value is R1,000 or less — full payment is required upfront.`}
+                                ? `Earliest booking arrival is within 7 days – full payment is required upfront.${hasLaterStay ? '<br><span style="font-size: 0.76rem; color: #0369A1; display: inline-block; margin-top: 0.25rem;">💡 <em>Tip: Book your later stay(s) separately to qualify for a 50% deposit on those dates.</em></span>' : ''}`
+                                : `Booking is within 7 days of arrival – full payment is required upfront.`)
+                            : `Total stay value is R1,000 or less – full payment is required upfront.`}
                     `;
                 }
             }
@@ -4418,7 +4418,7 @@
                 document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
             }
 
-            // Render list of reserved stays in receipt — per-stay with breakfast
+            // Render list of reserved stays in receipt – per-stay with breakfast
             const confStaysList = document.getElementById('confStaysList');
             let confHtml = selectedStays.map(s => {
                 const bfCost = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
@@ -4602,9 +4602,9 @@
             } else if (isThree) {
                 bannerName.textContent = '🏠 THREE ROOMS (3 Suites)';
                 if (pkgDiscount > 0) {
-                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) — Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Suite Special: Book 3 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
+                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Suite Special: Book 3 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
                 } else {
-                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) — Excludes Deluxe Suite';
+                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite';
                 }
             } else {
                 const r = ROOMS.find(item => item.id === selectedRoomId);

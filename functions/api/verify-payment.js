@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: /api/verify-payment
+﻿// Cloudflare Pages Function: /api/verify-payment
 // Verifies Paystack transaction, saves booking, and dispatches confirmation emails
 
 export async function onRequestPost(context) {
@@ -318,7 +318,7 @@ async function dispatchBookingEmails(booking, env) {
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <div style="background: linear-gradient(135deg, #0A3A85, #0F52BA); padding: 25px; text-align: center; color: #ffffff;">
           <h1 style="margin: 0; font-size: 24px;">Cool-Cat 🐾</h1>
-          <p style="margin: 5px 0 0; font-size: 15px; opacity: 0.9;">Booking Confirmed — Welcome to Strand!</p>
+          <p style="margin: 5px 0 0; font-size: 15px; opacity: 0.9;">Booking Confirmed – Welcome to Strand!</p>
         </div>
         <div style="padding: 25px;">
           <p style="font-size: 16px;">Dear <strong>${booking.guestName}</strong>,</p>

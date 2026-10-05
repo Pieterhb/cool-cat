@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: /api/settings
+﻿// Cloudflare Pages Function: /api/settings
 // Stores & retrieves global site config (room rates, next-year markup %, etc.) in Cloudflare KV.
 // GET  /api/settings          → returns the current saved config object
 // POST /api/settings          → saves/merges a config object
@@ -13,8 +13,8 @@ const CORS_HEADERS = {
     'Pragma': 'no-cache'
 };
 
-// Default config — used when nothing has been saved yet
-// Default config — used when nothing has been saved yet
+// Default config – used when nothing has been saved yet
+// Default config – used when nothing has been saved yet
 const DEFAULT_CONFIG = {
     nextYearMarkupPct: 10,
     // Mid Season (Standard Base Rates)
@@ -163,7 +163,7 @@ export async function onRequestPost(context) {
             config = { ...config, ...update };
             await env.COOLCAT_KV.put('site_config', JSON.stringify(config));
         } else {
-            // No KV bound (local dev) — just echo back
+            // No KV bound (local dev) – just echo back
             config = { ...config, ...update };
         }
 

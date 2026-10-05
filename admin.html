@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1636,7 +1636,7 @@
                             <button id="btnRefreshGuestAlerts" class="btn-refresh-amber" onclick="handleRefreshGuestAlerts(this)" title="Refresh today's alerts">🔄 Refresh</button>
                         </div>
                         <p style="font-size: 0.85rem; color: #78350F; margin: 0.6rem 1rem 0; padding-bottom: 0.4rem;">
-                            Private view for owner/host. All guests staying or arriving today — with their special requests, arrival times and room details. Not sent to cleaning staff.
+                            Private view for owner/host. All guests staying or arriving today – with their special requests, arrival times and room details. Not sent to cleaning staff.
                         </p>
                         <div id="guestAlertsPanel" style="padding: 1rem;">
                             <p style="color: #92400E; font-size: 0.87rem;">Loading alerts…</p>
@@ -2766,14 +2766,14 @@
     <!-- DASHBOARD JAVASCRIPT ENGINE                               -->
     <!-- ========================================================= -->
     <script>
-        // Live bookings — loaded from Cloudflare KV via /api/bookings on dashboard init
+        // Live bookings – loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
-        // Recorded marketer commission payout batches — loaded from Cloudflare KV via /api/settings
+        // Recorded marketer commission payout batches – loaded from Cloudflare KV via /api/settings
         let ADMIN_MARKETER_PAYOUTS = [];
 
         // Auto-initialize dashboard directly on page load
         document.addEventListener('DOMContentLoaded', () => {
-            // Mark that admin has logged in — public pages read this to show the ADMIN button
+            // Mark that admin has logged in – public pages read this to show the ADMIN button
             try {
                 localStorage.setItem('coolcat_admin_logged_in', 'true');
                 sessionStorage.setItem('coolcat_admin_logged_in', 'true');
@@ -2783,7 +2783,7 @@
             initDashboard();
         });
 
-        // Admin Log Out — clears session flags and redirects
+        // Admin Log Out – clears session flags and redirects
         function adminLogout() {
             try {
                 localStorage.removeItem('coolcat_admin_logged_in');
@@ -3126,7 +3126,7 @@
             // Calculate total settled to marketer from all recorded EFT batches
             const totalMarketerSettled = (ADMIN_MARKETER_PAYOUTS || []).reduce((sum, batch) => sum + Number(batch.amount || 0), 0);
 
-            // KPIs show live totals only — no fallback dummy values
+            // KPIs show live totals only – no fallback dummy values
             const elToday = document.getElementById('kpiToday');
             if (elToday) elToday.textContent = `R${revToday.toLocaleString()}`;
             const el7 = document.getElementById('kpi7Days');
@@ -5153,7 +5153,7 @@ We look forward to hosting you at Cool-Cat!`;
             window.open(url, '_blank');
         }
 
-        // 6. XLSX Exports (proper Excel format — each field in its own cell/column)
+        // 6. XLSX Exports (proper Excel format – each field in its own cell/column)
         function exportBookingsToXLSX() {
             const displayList = getDisplayBookings();
             const sortedByNewest = [...displayList].sort((a, b) => {
@@ -5318,7 +5318,7 @@ We look forward to hosting you at Cool-Cat!`;
 
         // 7. Referral & Affiliate Ledger Handlers
 
-        // Live referrals — loaded from Cloudflare KV via initDashboard
+        // Live referrals – loaded from Cloudflare KV via initDashboard
         let ADMIN_REFERRALS = [];
 
         function renderReferralsTable() {
@@ -6105,7 +6105,7 @@ We look forward to hosting you at Cool-Cat!`;
                 const res = await fetch('/api/bookings?action=purge_ghosts', { method: 'DELETE' });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`✅ ${data.message}\n\n${data.purgedCount > 0 ? `${data.purgedCount} ghost record(s) were permanently removed.` : 'Database was already clean — no orphaned records found.'}`);
+                    alert(`✅ ${data.message}\n\n${data.purgedCount > 0 ? `${data.purgedCount} ghost record(s) were permanently removed.` : 'Database was already clean – no orphaned records found.'}`);
                     // Reload bookings from server and re-render
                     const bookingsRes = await fetch('/api/bookings');
                     if (bookingsRes.ok) {
@@ -6133,7 +6133,7 @@ We look forward to hosting you at Cool-Cat!`;
                 return;
             }
 
-            if (!confirm('🗑️ RESET ALL BOOKINGS?\n\n⚠️ WARNING: This will permanently delete EVERY booking in the database — including all test bookings — and reset the reference number counter back to zero.\n\nThis action CANNOT be undone.\n\nOnly use this when you are ready to start with a completely clean database before going live.\n\nAre you absolutely sure?')) {
+            if (!confirm('🗑️ RESET ALL BOOKINGS?\n\n⚠️ WARNING: This will permanently delete EVERY booking in the database – including all test bookings – and reset the reference number counter back to zero.\n\nThis action CANNOT be undone.\n\nOnly use this when you are ready to start with a completely clean database before going live.\n\nAre you absolutely sure?')) {
                 return;
             }
             // Second confirmation for safety
@@ -6142,7 +6142,7 @@ We look forward to hosting you at Cool-Cat!`;
             }
             const typed = prompt('Type DELETE to confirm complete reset:');
             if ((typed || '').trim().toUpperCase() !== 'DELETE') {
-                alert('Reset cancelled — confirmation text did not match.');
+                alert('Reset cancelled – confirmation text did not match.');
                 return;
             }
             try {

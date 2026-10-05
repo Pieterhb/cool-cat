@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2369,7 +2369,7 @@
             };
         }
 
-        // Checks only DB bookings + "All Rooms" cart stays — used for the "All Rooms" TAB display
+        // Checks only DB bookings + "All Rooms" cart stays – used for the "All Rooms" TAB display
         // so that individual-room cart selections don't colour those dates red/pink on the All Rooms tab.
         function getDateAvailabilityForAllRoomsDisplay(dateStr) {
             let bookedCount = 0;
@@ -2377,7 +2377,7 @@
 
             ALL_ROOMS_SUBSET.forEach(rId => {
                 const bookedInDB = isRoomBookedOnDate(rId, dateStr);
-                // Only count "all" cart stays for display blocking — individual-room carts don't block All Rooms view
+                // Only count "all" cart stays for display blocking – individual-room carts don't block All Rooms view
                 const bookedInAllCart = selectedStays.some(s => {
                     if (s.roomId !== 'all') return false;
                     return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
@@ -2398,7 +2398,7 @@
             };
         }
 
-        // Full check including individual-room cart stays — used for blocking when BOOKING All Rooms
+        // Full check including individual-room cart stays – used for blocking when BOOKING All Rooms
         function getAllRoomsAvailability(dateStr) {
             let bookedCount = 0;
             const availableRooms = [];
@@ -2698,14 +2698,14 @@
                             selectedStays.some(s => s.roomId === rId && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCartBlocking > 0 && avail.availableCount === 3) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart — can't book All Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart – can't book All Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 3 rooms free — can't book All Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 3 rooms free – can't book All Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All rooms fully booked — no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All rooms fully booked – no availability</span>`;
                         }
                     } else {
-                        tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked — no rooms available</span>`;
+                        tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked – no rooms available</span>`;
                     }
                 } else {
                     tooltipText += `<br>${priceText} &bull; Available`;
@@ -2977,7 +2977,7 @@
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const rName = (selectedRoomId === 'all') ? 'All Rooms (3 Suites)' : (roomObj ? roomObj.name : 'Room');
-                pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} — click check-out date`;
+                pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} – click check-out date`;
                 pendingBox.style.display = 'flex';
             } else {
                 pendingBox.style.display = 'none';
@@ -3680,7 +3680,7 @@
                 document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
             }
 
-            // Render list of reserved stays in receipt — per-stay with breakfast
+            // Render list of reserved stays in receipt – per-stay with breakfast
             const confStaysList = document.getElementById('confStaysList');
             let confHtml = selectedStays.map(s => {
                 const bfCost = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
