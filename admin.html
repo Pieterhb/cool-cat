@@ -5920,7 +5920,7 @@ We look forward to hosting you at Cool-Cat!`;
                         btn.innerHTML = originalBtnText;
                     }
                     renderAdminCalendar();
-                    alert(`✅ All seasonal room rates and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
+                    alert(`✅ All seasonal room rates, package discounts (${rates.pkg_discount_four}% 4-Room, ${rates.pkg_discount_three}% 3-Room), and +${markup}% future-year markup saved to Cloudflare cloud!\nAll visitors on any device worldwide will now see the updated prices immediately.`);
                     return;
                 } else {
                     const errData = await res.json().catch(() => ({}));
