@@ -175,8 +175,8 @@
                     <video src="1. King Arthur Room.webm" alt="King Arthur Room" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
                         <h2>King Arthur Room</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 AUGUST &amp; SEPTEMBER SPECIAL</div>
-                        <div class="room-price">Only R650 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-king-arthur">From R650 / night</div>
                         <p style="margin-bottom: 1rem;">🛁 Shared bathroom with only one other guest room (maximum of 2 additional guests). Bathroom is professionally cleaned and sanitized twice daily to ensure the highest standards of hygiene and comfort.</p>
                         <ul class="room-features">
                             <li>🛏️ Spacious luxury King-size bedroom</li>
@@ -198,8 +198,8 @@
                     <video src="2. Santori Double Room.webm" alt="Santori Double Room" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
                         <h2>Santori Double Room</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 AUGUST &amp; SEPTEMBER SPECIAL</div>
-                        <div class="room-price">Only R550 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-santori">From R550 / night</div>
                         <p style="margin-bottom: 1rem;">🛁 Shared bathroom with only one other guest room (maximum of 2 additional guests), professionally cleaned and sanitized twice daily to ensure the highest standards of hygiene and comfort.</p>
                         <ul class="room-features">
                             <li>🛏️ Comfortable and intimate double bedroom</li>
@@ -225,8 +225,8 @@
                     </div>
                     <div class="card-content">
                         <h2>Mykonos Room</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 AUGUST &amp; SEPTEMBER SPECIAL</div>
-                        <div class="room-price">Only R550 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-mykonos">From R550 / night</div>
                         <p style="margin-bottom: 1rem;">🛁 Shared bathroom with only one other guest room (maximum of 2 additional guests), professionally cleaned and sanitized twice daily to ensure the highest standards of hygiene and comfort.</p>
                         <ul class="room-features">
                             <li>🛏️ Comfortable twin / double bedroom</li>
@@ -247,8 +247,8 @@
                     <video src="7. Cool Cat Deluxe Suite.webm" alt="Cool Cat Deluxe Suite" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
                         <h2>Cool Cat Deluxe Suite</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 DECEMBER 2026 &amp; JANUARY 2027 BOOKINGS NOW OPEN!</div>
-                        <div class="room-price">R2 500 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-deluxe">From R850 / night</div>
                         <p style="margin-bottom: 1rem;">(Private Deluxe Suite - For up to 4 Guests)<br>
                         <strong>📅 Minimum Stay: 7 Nights</strong></p>
                         <ul class="room-features">
@@ -274,8 +274,8 @@
                     <video src="8. Holiday Accomodation.webm" alt="THREE ROOMS (King Arthur, Mykonos, Santori)" class="card-img" style="height: 300px; object-fit: cover;" loop muted playsinline></video>
                     <div class="card-content">
                         <h2>THREE ROOMS (King Arthur, Mykonos, Santori)</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 Introductory Summer Holiday SPECIAL for December 2026 and January 2027 NOW OPEN!</div>
-                        <div class="room-price">R2 950 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-three-rooms">From R1 750 / night</div>
                         <p style="margin-bottom: 1rem;">(Three Suites - For up to 6 Guests)<br>
                         <strong>📅 Minimum Stay: 7 Nights</strong></p>
                         <ul class="room-features">
@@ -303,8 +303,8 @@
                     </div>
                     <div class="card-content">
                         <h2>FOUR ROOMS (King Arthur, Mykonos, Santori, Deluxe Suite)</h2>
-                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">💙 Introductory Summer Holiday SPECIAL for December 2026 and January 2027 NOW OPEN!</div>
-                        <div class="room-price">R4 300 / night</div>
+                        <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
+                        <div class="room-price" id="price-four-rooms">From R2 600 / night</div>
                         <p style="margin-bottom: 1rem;">(Entire Property - For up to 8 Guests)<br>
                         <strong>📅 Minimum Stay: 7 Nights</strong></p>
                         <ul class="room-features">
@@ -555,6 +555,115 @@ reviewsModal.style.display = 'none';
                 videos.forEach(video => video.play().catch(e => console.log("Play failed:", e)));
             }
         });
+
+        // ==========================================
+        // DYNAMIC RATES UPDATER (Synchronized with Admin Rates & Specials)
+        // ==========================================
+        function getSmartLowestRate(prefix, lowKey, cfg, todayStr) {
+            var lowRate = Number(cfg[lowKey]);
+            if (isNaN(lowRate) || lowRate <= 0) {
+                if (prefix === 'king') lowRate = 650;
+                else if (prefix === 'santori') lowRate = 550;
+                else if (prefix === 'mykonos') lowRate = 550;
+                else if (prefix === 'deluxe') lowRate = 850;
+            }
+
+            var isSpecialActive = (cfg['special_' + prefix + '_active'] === true || cfg['special_' + prefix + '_active'] === 'true');
+            var spStart = String(cfg['special_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+            var spEnd = String(cfg['special_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+            var spRate = Number(cfg['special_' + prefix + '_rate']);
+
+            var activePromo = false;
+            if (isSpecialActive && spRate > 0) {
+                if (spStart && spEnd) {
+                    if (todayStr >= spStart && todayStr <= spEnd) {
+                        activePromo = true;
+                    }
+                } else {
+                    activePromo = true;
+                }
+            }
+
+            if (activePromo && spRate < lowRate) {
+                return { rate: spRate, isPromo: true };
+            }
+            return { rate: lowRate, isPromo: false };
+        }
+
+        function formatPriceText(amount) {
+            var num = Math.round(Number(amount) || 0);
+            var formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return 'From R' + formatted + ' / night';
+        }
+
+        function applyRatesToAccommodation(cfg) {
+            if (!cfg || typeof cfg !== 'object') return;
+
+            var today = new Date();
+            var y = today.getFullYear();
+            var m = String(today.getMonth() + 1).padStart(2, '0');
+            var d = String(today.getDate()).padStart(2, '0');
+            var todayStr = y + '-' + m + '-' + d;
+
+            var king = getSmartLowestRate('king', 'low_king_wd', cfg, todayStr);
+            var santori = getSmartLowestRate('santori', 'low_santori_wd', cfg, todayStr);
+            var mykonos = getSmartLowestRate('mykonos', 'low_mykonos_wd', cfg, todayStr);
+            var deluxe = getSmartLowestRate('deluxe', 'low_deluxe_wd', cfg, todayStr);
+
+            // Single rooms
+            var elKing = document.getElementById('price-king-arthur');
+            if (elKing) elKing.textContent = formatPriceText(king.rate);
+
+            var elSantori = document.getElementById('price-santori');
+            if (elSantori) elSantori.textContent = formatPriceText(santori.rate);
+
+            var elMykonos = document.getElementById('price-mykonos');
+            if (elMykonos) elMykonos.textContent = formatPriceText(mykonos.rate);
+
+            var elDeluxe = document.getElementById('price-deluxe');
+            if (elDeluxe) elDeluxe.textContent = formatPriceText(deluxe.rate);
+
+            // 3 Rooms Package: King + Santori + Mykonos minus pkg_discount_three %
+            var sumThree = king.rate + santori.rate + mykonos.rate;
+            var discThree = Math.max(0, Math.min(100, Number(cfg.pkg_discount_three) || 0));
+            var finalThree = Math.round(sumThree * (1 - discThree / 100));
+            var elThree = document.getElementById('price-three-rooms');
+            if (elThree) elThree.textContent = formatPriceText(finalThree);
+
+            // 4 Rooms Package: King + Santori + Mykonos + Deluxe minus pkg_discount_four %
+            var sumFour = king.rate + santori.rate + mykonos.rate + deluxe.rate;
+            var discFour = Math.max(0, Math.min(100, Number(cfg.pkg_discount_four) || 0));
+            var finalFour = Math.round(sumFour * (1 - discFour / 100));
+            var elFour = document.getElementById('price-four-rooms');
+            if (elFour) elFour.textContent = formatPriceText(finalFour);
+        }
+
+        // Instant render from local cache if present
+        try {
+            var cachedRates = localStorage.getItem('coolcat_rates_config');
+            if (cachedRates) {
+                applyRatesToAccommodation(JSON.parse(cachedRates));
+            }
+        } catch(e) {}
+
+        // Fetch live rates from backend
+        async function fetchLiveRoomRates() {
+            try {
+                var res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    var data = await res.json();
+                    if (data && data.success && data.config) {
+                        applyRatesToAccommodation(data.config);
+                        try {
+                            localStorage.setItem('coolcat_rates_config', JSON.stringify(data.config));
+                        } catch(e) {}
+                    }
+                }
+            } catch(err) {
+                console.log("Could not load live rates:", err);
+            }
+        }
+        fetchLiveRoomRates();
     </script>
 </body>
 </html>
