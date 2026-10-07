@@ -608,28 +608,100 @@ function toggleMenu() {
 }
 </script>
 
-<!-- Auto-suppress Elfsight deactivation/upgrade popups -->
+<!-- Auto-suppress ALL Elfsight admin/upgrade/deactivation popups -->
 <script>
 (function() {
-    function suppressElfsightPopups() {
-        var textSnippets = ['temporarily deactivated', 'Reactivate Now', 'Only you can see this', 'elfsight.com/reactivate'];
-        document.querySelectorAll('div, a, p, span, section').forEach(function(el) {
-            if (el.textContent && textSnippets.some(function(s) { return el.textContent.indexOf(s) !== -1; })) {
-                var popup = el.closest('div[style*="fixed"], div[style*="position: fixed"], [class*="Widget"], [class*="elfsight-admin"], [class*="Notification"], [class*="Deactivated"], [class*="Alert"]') || el;
-                if (popup && popup.parentNode) {
-                    popup.remove();
+    var BAD_STRINGS = [
+        'temporarily deactivated',
+        'Reactivate Now',
+        'Only you can see this',
+        'elfsight.com/reactivate',
+        'widget is deactivated',
+        'free plan',
+        'upgrade',
+        'monthly limit',
+        'credits',
+        'activate',
+        'subscription'
+    ];
+
+    function isElfsightOverlay(el) {
+        if (!el || el.nodeType !== 1) return false;
+        var style = el.getAttribute('style') || '';
+        var cls = (el.getAttribute('class') || '').toLowerCase();
+        if ((style.indexOf('position: fixed') !== -1 || style.indexOf('position:fixed') !== -1) &&
+            (parseInt(el.style.zIndex) > 9000 || style.indexOf('z-index') !== -1)) {
+            return true;
+        }
+        if (/widget|notification|deactivat|overlay|popup|banner|alert|elfsight/i.test(cls)) {
+            return true;
+        }
+        return false;
+    }
+
+    function containsBadText(el) {
+        try {
+            var text = el.innerText || el.textContent || '';
+            return BAD_STRINGS.some(function(s) {
+                return text.toLowerCase().indexOf(s.toLowerCase()) !== -1;
+            });
+        } catch(e) { return false; }
+    }
+
+    function killEl(el) {
+        try {
+            el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
+            if (el.parentNode) el.parentNode.removeChild(el);
+        } catch(e) {}
+    }
+
+    function sweep() {
+        var bodyKids = document.body ? Array.prototype.slice.call(document.body.children) : [];
+        bodyKids.forEach(function(el) {
+            if (isElfsightOverlay(el) && containsBadText(el)) { killEl(el); return; }
+        });
+        document.querySelectorAll('*').forEach(function(el) {
+            try {
+                var cs = window.getComputedStyle(el);
+                if (cs && cs.position === 'fixed' && parseInt(cs.zIndex) > 9000 && containsBadText(el)) {
+                    killEl(el);
+                }
+            } catch(e) {}
+        });
+        document.querySelectorAll('div, section, aside, article').forEach(function(el) {
+            if (containsBadText(el)) {
+                var cur = el;
+                while (cur && cur !== document.body) {
+                    var cs2;
+                    try { cs2 = window.getComputedStyle(cur); } catch(e2) { break; }
+                    if (cs2 && cs2.position === 'fixed') { killEl(cur); return; }
+                    cur = cur.parentElement;
                 }
             }
         });
     }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', suppressElfsightPopups);
-    } else {
-        suppressElfsightPopups();
+        document.addEventListener('DOMContentLoaded', sweep);
+    } else { sweep(); }
+    window.addEventListener('load', function() {
+        sweep();
+        setTimeout(sweep, 1000);
+        setTimeout(sweep, 3000);
+        setTimeout(sweep, 7000);
+    });
+    var sweepTimer = null;
+    function throttledSweep() {
+        if (sweepTimer) return;
+        sweepTimer = setTimeout(function() { sweepTimer = null; sweep(); }, 200);
     }
     try {
-        var observer = new MutationObserver(suppressElfsightPopups);
-        observer.observe(document.documentElement, { childList: true, subtree: true });
+        var obs = new MutationObserver(function(mutations) {
+            for (var i = 0; i < mutations.length; i++) {
+                if (mutations[i].addedNodes.length) { throttledSweep(); break; }
+            }
+        });
+        obs.observe(document.documentElement, { childList: true, subtree: true });
     } catch(e) {}
 })();
 </script>
