@@ -1748,33 +1748,33 @@
                             <div class="room-tabs" id="roomTabs">
                                 <!-- Row 1: Four Rooms (formerly All Rooms) -->
                                 <div class="room-tabs-row">
-                                    <button class="room-tab-btn active" onclick="switchRoom('all')">
+                                    <button class="room-tab-btn" data-room="all" onclick="switchRoom('all')">
                                         <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
                                         <span class="room-tab-badge" id="badge_all">0</span>
                                     </button>
                                 </div>
                                 <!-- Row 2: Three Rooms – fully active -->
                                 <div class="room-tabs-row">
-                                    <button class="room-tab-btn" onclick="switchRoom('three-rooms')">
+                                    <button class="room-tab-btn" data-room="three-rooms" onclick="switchRoom('three-rooms')">
                                         <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
                                         <span class="room-tab-badge" id="badge_three-rooms">0</span>
                                     </button>
                                 </div>
                                 <!-- Row 3: Individual room buttons -->
                                 <div class="room-tabs-row">
-                                    <button class="room-tab-btn" onclick="switchRoom('king-arthur')">
+                                    <button class="room-tab-btn" data-room="king-arthur" onclick="switchRoom('king-arthur')">
                                         <span>👑 King Arthur</span>
                                         <span class="room-tab-badge" id="badge_king-arthur">0</span>
                                     </button>
-                                    <button class="room-tab-btn" onclick="switchRoom('santori')">
+                                    <button class="room-tab-btn" data-room="santori" onclick="switchRoom('santori')">
                                         <span>🌊 Santori</span>
                                         <span class="room-tab-badge" id="badge_santori">0</span>
                                     </button>
-                                    <button class="room-tab-btn" onclick="switchRoom('mykonos')">
+                                    <button class="room-tab-btn" data-room="mykonos" onclick="switchRoom('mykonos')">
                                         <span>🏛️ Mykonos</span>
                                         <span class="room-tab-badge" id="badge_mykonos">0</span>
                                     </button>
-                                    <button class="room-tab-btn" onclick="switchRoom('deluxe-suite')">
+                                    <button class="room-tab-btn" data-room="deluxe-suite" onclick="switchRoom('deluxe-suite')">
                                         <span>✨ Deluxe Suite</span>
                                         <span class="room-tab-badge" id="badge_deluxe-suite">0</span>
                                     </button>
@@ -4802,12 +4802,11 @@
         function switchRoom(roomId) {
             selectedRoomId = roomId;
             const tabs = document.querySelectorAll('.room-tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
-
-            // Find the correct tab by its onclick attribute value
             tabs.forEach(tab => {
-                const onclick = tab.getAttribute('onclick');
-                if (onclick && onclick.includes(`'${roomId}'`)) {
+                tab.classList.remove('active');
+                const dRoom = tab.getAttribute('data-room');
+                const onclick = tab.getAttribute('onclick') || '';
+                if (dRoom === roomId || (onclick && onclick.includes(`'${roomId}'`))) {
                     tab.classList.add('active');
                 }
             });
@@ -4917,17 +4916,42 @@
                 });
             }
 
-            // Room query parameter auto-selection (?room=king-arthur, santori, mykonos, deluxe-suite, all)
+            // Room query parameter auto-selection (?room=king-arthur, santori, mykonos, deluxe-suite, all, three-rooms)
             const urlParams = new URLSearchParams(window.location.search);
             const rParam = urlParams.get('room');
-            if (rParam && ['all', 'three-rooms', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'].includes(rParam.toLowerCase())) {
-                selectedRoomId = rParam.toLowerCase();
+            let initialRoom = 'all';
+            if (rParam) {
+                const norm = rParam.toLowerCase().trim();
+                const roomMap = {
+                    'king-arthur': 'king-arthur',
+                    'king': 'king-arthur',
+                    'kingarthur': 'king-arthur',
+                    'santori': 'santori',
+                    'mykonos': 'mykonos',
+                    'deluxe-suite': 'deluxe-suite',
+                    'deluxe': 'deluxe-suite',
+                    'deluxesuite': 'deluxe-suite',
+                    'three-rooms': 'three-rooms',
+                    'three': 'three-rooms',
+                    'threerooms': 'three-rooms',
+                    '3-rooms': 'three-rooms',
+                    '3rooms': 'three-rooms',
+                    'all': 'all',
+                    'four-rooms': 'all',
+                    'four': 'all',
+                    'fourrooms': 'all',
+                    '4-rooms': 'all',
+                    '4rooms': 'all',
+                    'entire': 'all',
+                    'entire-property': 'all'
+                };
+                if (roomMap[norm]) {
+                    initialRoom = roomMap[norm];
+                }
             }
 
             populateMonthDropdown();
-            renderCalendar();
-            updateSummarySidebar();
-            updateBannerRoomInfo();
+            switchRoom(initialRoom);
             loadLiveBookings();
             loadSiteSettings();
 
