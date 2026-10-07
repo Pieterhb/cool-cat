@@ -546,6 +546,39 @@ footer {
 }
 .google-btn:hover { background-color: #f8f9fa; }
 
+/* Block and hide all Elfsight deactivation / upgrade / watermark / limit popups and banners */
+[class*="WidgetDeactivated"],
+[class*="widget-deactivated"],
+[class*="WidgetAlert"],
+[class*="e-deactivated"],
+[class*="e-admin-banner"],
+[class*="elfsight-admin"],
+[class*="e-notification"],
+[class*="e-banner"],
+[class*="e-badge"],
+[class*="e-watermark"],
+[class*="e-panel"],
+[class*="Notification__Container"],
+[class*="AdminPanel"],
+[class*="Deactivated"],
+a[href*="elfsight.com/reactivate"],
+a[href*="elfsight.com/widget"],
+a[href*="elfsight.com?utm"],
+div[class*="elfsight"] > div[style*="fixed"],
+div[class*="elfsight-app"] > div[style*="fixed"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -100 !important;
+}
+
 /* Responsive */
 .page-header {
   padding: 11rem 1.5rem 2.4rem;

@@ -18,7 +18,7 @@
     <meta property="og:locale" content="en_ZA">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790581824.css?v=2">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=3">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -131,7 +131,7 @@
             </div>
             
             <nav>
-                <div class="mobile-menu-btn" onclick="toggleMenu()">â˜°</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">&#9776;</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -289,5 +289,31 @@
             }
         }
     </script>
+
+<!-- Auto-suppress Elfsight deactivation/upgrade popups -->
+<script>
+(function() {
+    function suppressElfsightPopups() {
+        var textSnippets = ['temporarily deactivated', 'Reactivate Now', 'Only you can see this', 'elfsight.com/reactivate'];
+        document.querySelectorAll('div, a, p, span, section').forEach(function(el) {
+            if (el.textContent && textSnippets.some(function(s) { return el.textContent.indexOf(s) !== -1; })) {
+                var popup = el.closest('div[style*="fixed"], div[style*="position: fixed"], [class*="Widget"], [class*="elfsight-admin"], [class*="Notification"], [class*="Deactivated"], [class*="Alert"]') || el;
+                if (popup && popup.parentNode) {
+                    popup.remove();
+                }
+            }
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', suppressElfsightPopups);
+    } else {
+        suppressElfsightPopups();
+    }
+    try {
+        var observer = new MutationObserver(suppressElfsightPopups);
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    } catch(e) {}
+})();
+</script>
 </body>
 </html>
