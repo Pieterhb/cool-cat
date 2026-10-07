@@ -547,6 +547,14 @@ footer {
 .google-btn:hover { background-color: #f8f9fa; }
 
 /* Block and hide all Elfsight deactivation / upgrade / watermark / limit popups and banners */
+.eapps-widget-toolbar,
+[class*="eapps-widget-toolbar"],
+[class*="eapps-toolbar"],
+[class*="eapps-widget-toolbar-panel"],
+[class*="eapps-widget-toolbar-panel-only-you"],
+[class*="eapps-widget-toolbar-panel-views"],
+[class*="eapps-widget-toolbar-panel-edit"],
+[class*="eapps-widget-toolbar-panel-share"],
 [class*="WidgetDeactivated"],
 [class*="widget-deactivated"],
 [class*="WidgetAlert"],
@@ -561,6 +569,9 @@ footer {
 [class*="Notification__Container"],
 [class*="AdminPanel"],
 [class*="Deactivated"],
+[class*="deactivated"],
+[class*="eapps-link"],
+a[href*="reactivate"],
 a[href*="elfsight.com/reactivate"],
 a[href*="elfsight.com/widget"],
 a[href*="elfsight.com?utm"],
@@ -576,7 +587,7 @@ div[class*="elfsight-app"] > div[style*="fixed"] {
   position: absolute !important;
   top: -9999px !important;
   left: -9999px !important;
-  z-index: -100 !important;
+  z-index: -99999 !important;
 }
 
 /* Responsive */

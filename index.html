@@ -44,7 +44,7 @@
 
     <!-- Performance: Preload LCP Banner -->
     <link rel="preload" as="image" href="Cool%20Cat%20Banner.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="styles-v1790581824.css?v=3">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=1791380000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -156,7 +156,7 @@
             </div>
             
             <nav>
-                <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" tabindex="0" onclick="toggleMenu()">&#9776;</div>
+                <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" tabindex="0" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/" class="active">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -205,17 +205,17 @@
             <h2 class="section-title text-center">Why Choose Us?</h2>
             <div class="grid-3" style="margin-top: 1.5rem;">
                 <div class="card text-center" style="padding: 2rem;">
-                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">ðŸ–ï¸</div>
+                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">🏖️</div>
                     <h3>Within 250m of the Beach</h3>
                     <p class="text-light">Perfect for swimming, walking, jogging, and watching spectacular sunsets over False Bay.</p>
                 </div>
                 <div class="card text-center" style="padding: 2rem;">
-                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">ðŸ³</div>
+                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">🍳</div>
                     <h3>Delicious Breakfasts</h3>
                     <p class="text-light">Start your day right with our Continental, Sunrise, or Cool-Cat Signature breakfasts.</p>
                 </div>
                 <div class="card text-center" style="padding: 2rem;">
-                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">ðŸ›ï¸</div>
+                    <div class="text-orange" style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">🛏️</div>
                     <h3>Premium Comfort</h3>
                     <p class="text-light">Relax in our carefully appointed rooms or enjoy our shared lounge with Smart TV and games.</p>
                 </div>
@@ -235,10 +235,10 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>ðŸ“± <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
-                        <li>ðŸ’¬ <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>📱 <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
+                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -278,9 +278,9 @@
     
     <div class="modal-header-content">
       <h2>Guest Reviews</h2>
-      <p>Cool-Cat &bull; Strand, South Africa</p>
+      <p>Cool-Cat • Strand, South Africa</p>
       <div class="stars-badge">
-        &#9733;&#9733;&#9733;&#9733;&#9733; <span style="color: #666; font-size: 14px;">(5.0 Rating)</span>
+        ★★★★★ <span style="color: #666; font-size: 14px;">(5.0 Rating)</span>
       </div>
     </div>
 
@@ -298,6 +298,80 @@
       </a>
 
       <div id="elfsightContainer" style="margin-top: 20px;">
+        <script>
+        /* Suppress Elfsight owner deactivation & upgrade notices */
+        (function() {
+            try {
+                var origOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url) {
+                    this._elfsightUrl = url;
+                    return origOpen.apply(this, arguments);
+                };
+                var origSend = XMLHttpRequest.prototype.send;
+                XMLHttpRequest.prototype.send = function() {
+                    if (this._elfsightUrl && String(this._elfsightUrl).indexOf('elfsight') !== -1) {
+                        this.addEventListener('load', function() {
+                            try {
+                                var res = JSON.parse(this.responseText);
+                                if (res && res.data) {
+                                    if (res.data.user) res.data.user.owner = false;
+                                    if (res.user) res.user.owner = false;
+                                    if (res.data.preferences) {
+                                        res.data.preferences.display_deactivation = false;
+                                        res.data.preferences.display_toolbar = false;
+                                    }
+                                    Object.defineProperty(this, 'response', { value: JSON.stringify(res), writable: true });
+                                    Object.defineProperty(this, 'responseText', { value: JSON.stringify(res), writable: true });
+                                }
+                            } catch(e) {}
+                        });
+                    }
+                    return origSend.apply(this, arguments);
+                };
+            } catch(e) {}
+
+            function killPopups() {
+                var bad = document.querySelectorAll('.eapps-widget-toolbar, [class*="eapps-widget-toolbar"], [class*="eapps-toolbar"], [class*="WidgetDeactivated"], [class*="e-admin-banner"], a[href*="reactivate"]');
+                bad.forEach(function(el) { el.remove(); });
+                var phrases = ['temporarily deactivated', 'reactivate now', 'only you can see this'];
+                document.querySelectorAll('body > div, body > section, [class*="eapps"], [class*="elfsight"]').forEach(function(el) {
+                    var txt = (el.innerText || el.textContent || '').toLowerCase();
+                    if (phrases.some(function(p) { return txt.indexOf(p) !== -1; })) { el.remove(); }
+                });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', killPopups);
+            } else {
+                killPopups();
+            }
+            window.addEventListener('load', function() {
+                killPopups();
+                setTimeout(killPopups, 500);
+                setTimeout(killPopups, 1500);
+                setTimeout(killPopups, 3000);
+            });
+            try {
+                var obs = new MutationObserver(function(muts) {
+                    for (var i = 0; i < muts.length; i++) {
+                        var added = muts[i].addedNodes;
+                        for (var j = 0; j < added.length; j++) {
+                            var n = added[j];
+                            if (n.nodeType === 1) {
+                                var cls = n.className || '';
+                                var txt = (n.innerText || n.textContent || '').toLowerCase();
+                                if (typeof cls === 'string' && cls.indexOf('eapps-widget-toolbar') !== -1) {
+                                    n.remove();
+                                } else if (txt.indexOf('temporarily deactivated') !== -1 || txt.indexOf('reactivate now') !== -1) {
+                                    n.remove();
+                                }
+                            }
+                        }
+                    }
+                });
+                obs.observe(document.documentElement, { childList: true, subtree: true });
+            } catch(e) {}
+        })();
+        </script>
         <script src="https://elfsightcdn.com/platform.js" async></script>
         <div class="elfsight-app-f3b57c27-9991-4764-bccb-c23acbff9f10" data-elfsight-app-lazy></div>
       </div>
@@ -377,119 +451,5 @@ reviewsModal.style.display = 'none';
             }
         }
     </script>
-
-<!-- Auto-suppress ALL Elfsight admin/upgrade/deactivation popups -->
-<script>
-(function() {
-    var BAD_STRINGS = [
-        'temporarily deactivated',
-        'Reactivate Now',
-        'Only you can see this',
-        'elfsight.com/reactivate',
-        'widget is deactivated',
-        'free plan',
-        'upgrade',
-        'monthly limit',
-        'credits',
-        'activate',
-        'subscription'
-    ];
-
-    function isElfsightOverlay(el) {
-        if (!el || el.nodeType !== 1) return false;
-        var style = el.getAttribute('style') || '';
-        var cls = (el.getAttribute('class') || '').toLowerCase();
-        // Catch fixed-position overlays injected at document root level
-        if ((style.indexOf('position: fixed') !== -1 || style.indexOf('position:fixed') !== -1) &&
-            (parseInt(el.style.zIndex) > 9000 || style.indexOf('z-index') !== -1)) {
-            return true;
-        }
-        // Catch known Elfsight admin class patterns (obfuscated but often contain these substrings)
-        if (/widget|notification|deactivat|overlay|popup|banner|alert|elfsight/i.test(cls)) {
-            return true;
-        }
-        return false;
-    }
-
-    function containsBadText(el) {
-        try {
-            var text = el.innerText || el.textContent || '';
-            return BAD_STRINGS.some(function(s) {
-                return text.toLowerCase().indexOf(s.toLowerCase()) !== -1;
-            });
-        } catch(e) { return false; }
-    }
-
-    function killEl(el) {
-        try {
-            el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
-            if (el.parentNode) el.parentNode.removeChild(el);
-        } catch(e) {}
-    }
-
-    function sweep() {
-        // 1. Walk all body-level children first (Elfsight injects at document.body directly)
-        var bodyKids = document.body ? Array.prototype.slice.call(document.body.children) : [];
-        bodyKids.forEach(function(el) {
-            if (isElfsightOverlay(el) && containsBadText(el)) {
-                killEl(el); return;
-            }
-        });
-
-        // 2. Walk all fixed-position elements anywhere in DOM
-        document.querySelectorAll('*').forEach(function(el) {
-            try {
-                var cs = window.getComputedStyle(el);
-                if (cs && cs.position === 'fixed' && parseInt(cs.zIndex) > 9000 && containsBadText(el)) {
-                    killEl(el);
-                }
-            } catch(e) {}
-        });
-
-        // 3. Text-content sweep on common wrapper tags
-        document.querySelectorAll('div, section, aside, article').forEach(function(el) {
-            if (containsBadText(el)) {
-                // Walk up to find the highest fixed ancestor
-                var cur = el;
-                while (cur && cur !== document.body) {
-                    var cs2;
-                    try { cs2 = window.getComputedStyle(cur); } catch(e2) { break; }
-                    if (cs2 && cs2.position === 'fixed') { killEl(cur); return; }
-                    cur = cur.parentElement;
-                }
-            }
-        });
-    }
-
-    // Run on load
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', sweep);
-    } else {
-        sweep();
-    }
-    // Run after full page load (Elfsight loads async)
-    window.addEventListener('load', function() {
-        sweep();
-        setTimeout(sweep, 1000);
-        setTimeout(sweep, 3000);
-        setTimeout(sweep, 7000);
-    });
-
-    // Continuous MutationObserver — throttled to avoid thrashing
-    var sweepTimer = null;
-    function throttledSweep() {
-        if (sweepTimer) return;
-        sweepTimer = setTimeout(function() { sweepTimer = null; sweep(); }, 200);
-    }
-    try {
-        var obs = new MutationObserver(function(mutations) {
-            for (var i = 0; i < mutations.length; i++) {
-                if (mutations[i].addedNodes.length) { throttledSweep(); break; }
-            }
-        });
-        obs.observe(document.documentElement, { childList: true, subtree: true });
-    } catch(e) {}
-})();
-</script>
 </body>
 </html>

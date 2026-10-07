@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,7 @@
     <meta property="og:locale" content="en_ZA">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790581824.css?v=3">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=1791380000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -107,7 +107,7 @@
             </div>
             
             <nav>
-                <div class="mobile-menu-btn" onclick="toggleMenu()">&#9776;</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -137,7 +137,7 @@
         <div class="container" style="max-width: 900px;">
 
             <div class="policy-card">
-                <span class="policy-badge">POPIA &amp; GDPR Compliant â€¢ Last Updated: August 2026</span>
+                <span class="policy-badge">POPIA &amp; GDPR Compliant • Last Updated: August 2026</span>
                 
                 <h2 class="policy-section-title" style="margin-top: 0.5rem;">1. Introduction &amp; Scope</h2>
                 <p>
@@ -166,7 +166,7 @@
                 </ul>
 
                 <div class="highlight-box">
-                    <strong>ðŸ›¡ï¸ Zero Data Selling Guarantee:</strong> Cool Cat Holiday Accommodation strictly <strong>never sells, rents, leases, or trades</strong> your personal information to any third-party marketing companies.
+                    <strong>🛡️ Zero Data Selling Guarantee:</strong> Cool Cat Holiday Accommodation strictly <strong>never sells, rents, leases, or trades</strong> your personal information to any third-party marketing companies.
                 </div>
 
                 <h2 class="policy-section-title">4. Payment Processing Security (Paystack PCI-DSS)</h2>
@@ -194,10 +194,10 @@
                 <p>If you have any questions, wish to exercise your POPIA privacy rights, or need assistance regarding this Privacy Policy, please contact our management directly:</p>
                 <div class="highlight-box" style="margin-top: 0.8rem;">
                     <strong>Cool Cat Holiday Accommodation (Pty) Ltd</strong><br>
-                    ðŸ“ Strand, Western Cape, 7140, South Africa<br>
-                    ðŸ¢ Company Reg. No: 2026/626178/07 &bull; CIPC Reg: 9463921745<br>
-                    ðŸ“± Host: Enquiries (<span style="color: var(--sapphire-blue); font-weight: 700;">063 712 4491</span>)<br>
-                    âœ‰ï¸ Email: <a href="mailto:bookings@cool-cat.co.za" style="color: var(--sapphire-blue); font-weight: 700;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a> / <a href="mailto:corrie@cool-cat.co.za" style="color: var(--sapphire-blue); font-weight: 700;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a>
+                    📍 Strand, Western Cape, 7140, South Africa<br>
+                    🏢 Company Reg. No: 2026/626178/07 &bull; CIPC Reg: 9463921745<br>
+                    📱 Host: Enquiries (<span style="color: var(--sapphire-blue); font-weight: 700;">063 712 4491</span>)<br>
+                    ✉️ Email: <a href="mailto:bookings@cool-cat.co.za" style="color: var(--sapphire-blue); font-weight: 700;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a> / <a href="mailto:corrie@cool-cat.co.za" style="color: var(--sapphire-blue); font-weight: 700;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a>
                 </div>
 
             </div>
@@ -216,10 +216,10 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>ðŸ“± <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
-                        <li>ðŸ’¬ <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>📱 <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
+                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -280,103 +280,5 @@
             }
         }
     </script>
-
-<!-- Auto-suppress ALL Elfsight admin/upgrade/deactivation popups -->
-<script>
-(function() {
-    var BAD_STRINGS = [
-        'temporarily deactivated',
-        'Reactivate Now',
-        'Only you can see this',
-        'elfsight.com/reactivate',
-        'widget is deactivated',
-        'free plan',
-        'upgrade',
-        'monthly limit',
-        'credits',
-        'activate',
-        'subscription'
-    ];
-
-    function isElfsightOverlay(el) {
-        if (!el || el.nodeType !== 1) return false;
-        var style = el.getAttribute('style') || '';
-        var cls = (el.getAttribute('class') || '').toLowerCase();
-        if ((style.indexOf('position: fixed') !== -1 || style.indexOf('position:fixed') !== -1) &&
-            (parseInt(el.style.zIndex) > 9000 || style.indexOf('z-index') !== -1)) {
-            return true;
-        }
-        if (/widget|notification|deactivat|overlay|popup|banner|alert|elfsight/i.test(cls)) {
-            return true;
-        }
-        return false;
-    }
-
-    function containsBadText(el) {
-        try {
-            var text = el.innerText || el.textContent || '';
-            return BAD_STRINGS.some(function(s) {
-                return text.toLowerCase().indexOf(s.toLowerCase()) !== -1;
-            });
-        } catch(e) { return false; }
-    }
-
-    function killEl(el) {
-        try {
-            el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
-            if (el.parentNode) el.parentNode.removeChild(el);
-        } catch(e) {}
-    }
-
-    function sweep() {
-        var bodyKids = document.body ? Array.prototype.slice.call(document.body.children) : [];
-        bodyKids.forEach(function(el) {
-            if (isElfsightOverlay(el) && containsBadText(el)) { killEl(el); return; }
-        });
-        document.querySelectorAll('*').forEach(function(el) {
-            try {
-                var cs = window.getComputedStyle(el);
-                if (cs && cs.position === 'fixed' && parseInt(cs.zIndex) > 9000 && containsBadText(el)) {
-                    killEl(el);
-                }
-            } catch(e) {}
-        });
-        document.querySelectorAll('div, section, aside, article').forEach(function(el) {
-            if (containsBadText(el)) {
-                var cur = el;
-                while (cur && cur !== document.body) {
-                    var cs2;
-                    try { cs2 = window.getComputedStyle(cur); } catch(e2) { break; }
-                    if (cs2 && cs2.position === 'fixed') { killEl(cur); return; }
-                    cur = cur.parentElement;
-                }
-            }
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', sweep);
-    } else { sweep(); }
-    window.addEventListener('load', function() {
-        sweep();
-        setTimeout(sweep, 1000);
-        setTimeout(sweep, 3000);
-        setTimeout(sweep, 7000);
-    });
-    var sweepTimer = null;
-    function throttledSweep() {
-        if (sweepTimer) return;
-        sweepTimer = setTimeout(function() { sweepTimer = null; sweep(); }, 200);
-    }
-    try {
-        var obs = new MutationObserver(function(mutations) {
-            for (var i = 0; i < mutations.length; i++) {
-                if (mutations[i].addedNodes.length) { throttledSweep(); break; }
-            }
-        });
-        obs.observe(document.documentElement, { childList: true, subtree: true });
-    } catch(e) {}
-})();
-</script>
 </body>
 </html>

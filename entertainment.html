@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1790581824.css?v=3">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=1791380000">
     <style>
         .ent-hero {
             background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
@@ -308,7 +308,7 @@
             </div>
             
             <nav>
-                <div class="mobile-menu-btn" onclick="toggleMenu()">&#9776;</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -1205,131 +1205,108 @@
       </a>
 
       <div id="elfsightContainer" style="margin-top: 20px;">
-        <script src="https://elfsightcdn.com/platform.js" async>
-        document.addEventListener('DOMContentLoaded', () => {
-            const reviewsBtn = document.getElementById('reviewsBtn');
-            const reviewsModal = document.getElementById('reviewsModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            if (reviewsBtn && reviewsModal && closeModalBtn) {
-                reviewsBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    reviewsModal.style.display = 'flex';
-                });
-                closeModalBtn.addEventListener('click', () => {
-                    reviewsModal.style.display = 'none';
-                });
-                window.addEventListener('click', (event) => {
-                    if (event.target === reviewsModal) {
-                        reviewsModal.style.display = 'none';
+        <script>
+        /* Suppress Elfsight owner deactivation & upgrade notices */
+        (function() {
+            try {
+                var origOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url) {
+                    this._elfsightUrl = url;
+                    return origOpen.apply(this, arguments);
+                };
+                var origSend = XMLHttpRequest.prototype.send;
+                XMLHttpRequest.prototype.send = function() {
+                    if (this._elfsightUrl && String(this._elfsightUrl).indexOf('elfsight') !== -1) {
+                        this.addEventListener('load', function() {
+                            try {
+                                var res = JSON.parse(this.responseText);
+                                if (res && res.data) {
+                                    if (res.data.user) res.data.user.owner = false;
+                                    if (res.user) res.user.owner = false;
+                                    if (res.data.preferences) {
+                                        res.data.preferences.display_deactivation = false;
+                                        res.data.preferences.display_toolbar = false;
+                                    }
+                                    Object.defineProperty(this, 'response', { value: JSON.stringify(res), writable: true });
+                                    Object.defineProperty(this, 'responseText', { value: JSON.stringify(res), writable: true });
+                                }
+                            } catch(e) {}
+                        });
                     }
+                    return origSend.apply(this, arguments);
+                };
+            } catch(e) {}
+
+            function killPopups() {
+                var bad = document.querySelectorAll('.eapps-widget-toolbar, [class*="eapps-widget-toolbar"], [class*="eapps-toolbar"], [class*="WidgetDeactivated"], [class*="e-admin-banner"], a[href*="reactivate"]');
+                bad.forEach(function(el) { el.remove(); });
+                var phrases = ['temporarily deactivated', 'reactivate now', 'only you can see this'];
+                document.querySelectorAll('body > div, body > section, [class*="eapps"], [class*="elfsight"]').forEach(function(el) {
+                    var txt = (el.innerText || el.textContent || '').toLowerCase();
+                    if (phrases.some(function(p) { return txt.indexOf(p) !== -1; })) { el.remove(); }
                 });
             }
-        });
-
-    </script>
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', killPopups);
+            } else {
+                killPopups();
+            }
+            window.addEventListener('load', function() {
+                killPopups();
+                setTimeout(killPopups, 500);
+                setTimeout(killPopups, 1500);
+                setTimeout(killPopups, 3000);
+            });
+            try {
+                var obs = new MutationObserver(function(muts) {
+                    for (var i = 0; i < muts.length; i++) {
+                        var added = muts[i].addedNodes;
+                        for (var j = 0; j < added.length; j++) {
+                            var n = added[j];
+                            if (n.nodeType === 1) {
+                                var cls = n.className || '';
+                                var txt = (n.innerText || n.textContent || '').toLowerCase();
+                                if (typeof cls === 'string' && cls.indexOf('eapps-widget-toolbar') !== -1) {
+                                    n.remove();
+                                } else if (txt.indexOf('temporarily deactivated') !== -1 || txt.indexOf('reactivate now') !== -1) {
+                                    n.remove();
+                                }
+                            }
+                        }
+                    }
+                });
+                obs.observe(document.documentElement, { childList: true, subtree: true });
+            } catch(e) {}
+        })();
+        </script>
+        <script src="https://elfsightcdn.com/platform.js" async></script>
         <div class="elfsight-app-f3b57c27-9991-4764-bccb-c23acbff9f10" data-elfsight-app-lazy></div>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- Auto-suppress ALL Elfsight admin/upgrade/deactivation popups -->
 <script>
-(function() {
-    var BAD_STRINGS = [
-        'temporarily deactivated',
-        'Reactivate Now',
-        'Only you can see this',
-        'elfsight.com/reactivate',
-        'widget is deactivated',
-        'free plan',
-        'upgrade',
-        'monthly limit',
-        'credits',
-        'activate',
-        'subscription'
-    ];
-
-    function isElfsightOverlay(el) {
-        if (!el || el.nodeType !== 1) return false;
-        var style = el.getAttribute('style') || '';
-        var cls = (el.getAttribute('class') || '').toLowerCase();
-        if ((style.indexOf('position: fixed') !== -1 || style.indexOf('position:fixed') !== -1) &&
-            (parseInt(el.style.zIndex) > 9000 || style.indexOf('z-index') !== -1)) {
-            return true;
-        }
-        if (/widget|notification|deactivat|overlay|popup|banner|alert|elfsight/i.test(cls)) {
-            return true;
-        }
-        return false;
-    }
-
-    function containsBadText(el) {
-        try {
-            var text = el.innerText || el.textContent || '';
-            return BAD_STRINGS.some(function(s) {
-                return text.toLowerCase().indexOf(s.toLowerCase()) !== -1;
-            });
-        } catch(e) { return false; }
-    }
-
-    function killEl(el) {
-        try {
-            el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
-            if (el.parentNode) el.parentNode.removeChild(el);
-        } catch(e) {}
-    }
-
-    function sweep() {
-        var bodyKids = document.body ? Array.prototype.slice.call(document.body.children) : [];
-        bodyKids.forEach(function(el) {
-            if (isElfsightOverlay(el) && containsBadText(el)) { killEl(el); return; }
+document.addEventListener('DOMContentLoaded', () => {
+    const reviewsBtn = document.getElementById('reviewsBtn');
+    const reviewsModal = document.getElementById('reviewsModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    if (reviewsBtn && reviewsModal && closeModalBtn) {
+        reviewsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            reviewsModal.style.display = 'flex';
         });
-        document.querySelectorAll('*').forEach(function(el) {
-            try {
-                var cs = window.getComputedStyle(el);
-                if (cs && cs.position === 'fixed' && parseInt(cs.zIndex) > 9000 && containsBadText(el)) {
-                    killEl(el);
-                }
-            } catch(e) {}
+        closeModalBtn.addEventListener('click', () => {
+            reviewsModal.style.display = 'none';
         });
-        document.querySelectorAll('div, section, aside, article').forEach(function(el) {
-            if (containsBadText(el)) {
-                var cur = el;
-                while (cur && cur !== document.body) {
-                    var cs2;
-                    try { cs2 = window.getComputedStyle(cur); } catch(e2) { break; }
-                    if (cs2 && cs2.position === 'fixed') { killEl(cur); return; }
-                    cur = cur.parentElement;
-                }
+        window.addEventListener('click', (event) => {
+            if (event.target === reviewsModal) {
+                reviewsModal.style.display = 'none';
             }
         });
     }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', sweep);
-    } else { sweep(); }
-    window.addEventListener('load', function() {
-        sweep();
-        setTimeout(sweep, 1000);
-        setTimeout(sweep, 3000);
-        setTimeout(sweep, 7000);
-    });
-    var sweepTimer = null;
-    function throttledSweep() {
-        if (sweepTimer) return;
-        sweepTimer = setTimeout(function() { sweepTimer = null; sweep(); }, 200);
-    }
-    try {
-        var obs = new MutationObserver(function(mutations) {
-            for (var i = 0; i < mutations.length; i++) {
-                if (mutations[i].addedNodes.length) { throttledSweep(); break; }
-            }
-        });
-        obs.observe(document.documentElement, { childList: true, subtree: true });
-    } catch(e) {}
-})();
+});
 </script>
+
 </body>
 </html>

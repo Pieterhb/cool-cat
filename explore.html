@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -71,7 +71,7 @@
     }
     </script>
 
-    <link rel="stylesheet" href="styles-v1790581824.css?v=3">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=1791380000">
     <style>
         .page-header {
             background: linear-gradient(rgba(10, 58, 133, 0.65), rgba(15, 82, 186, 0.75)), url('2. Ocean.jpg') center/cover;
@@ -112,7 +112,7 @@
                 <a href="/admin" class="btn-nav-admin" id="adminHeaderBtn" style="display: none;">ADMIN</a>
             </div>
             <nav>
-                <div class="mobile-menu-btn" onclick="toggleMenu()">&#9776;</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -139,21 +139,21 @@
             <!-- Local Page Live Search Bar -->
             <div style="display: flex; justify-content: center; margin: 0.5rem 0 1.8rem 0;">
                 <div style="width: 100%; max-width: 480px; position: relative; display: flex; align-items: center;">
-                    <span style="position: absolute; left: 14px; color: #64748B; font-size: 1rem; pointer-events: none;">ðŸ”</span>
+                    <span style="position: absolute; left: 14px; color: #64748B; font-size: 1rem; pointer-events: none;">🔍</span>
                     <input type="text" id="exploreSearchInput" placeholder="Search 30 destinations, beaches, wine, golf, hiking..." oninput="handleExploreSearch()" style="width: 100%; padding: 0.65rem 2.2rem 0.65rem 2.5rem; border: 1.5px solid #BFDBFE; border-radius: 30px; font-size: 0.95rem; outline: none; transition: all 0.2s ease; background: #DBEAFE; color: var(--sapphire-blue-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.04);" onfocus="this.style.background='white'; this.style.borderColor='var(--sapphire-blue)'; this.style.boxShadow='0 0 0 3px rgba(15, 82, 186, 0.15)';" onblur="this.style.background=this.value ? 'white' : '#DBEAFE'; this.style.borderColor=this.value ? 'var(--sapphire-blue)' : '#BFDBFE'; this.style.boxShadow='none';">
-                    <button type="button" id="clearExploreSearchBtn" onclick="clearExploreSearch()" style="position: absolute; right: 12px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1.1rem; display: none; padding: 0; line-height: 1;">âœ•</button>
+                    <button type="button" id="clearExploreSearchBtn" onclick="clearExploreSearch()" style="position: absolute; right: 12px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1.1rem; display: none; padding: 0; line-height: 1;">✕</button>
                 </div>
             </div>
 
             <!-- Search Results Feedback Banner -->
             <div id="exploreSearchBanner" style="display: none; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 0.7rem 1.2rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; font-size: 0.92rem; color: var(--sapphire-blue-dark);">
                 <span>Showing <strong id="exploreMatchCount">0</strong> of 30 destinations matching "<span id="exploreTermDisplay"></span>"</span>
-                <button onclick="clearExploreSearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">âœ• Clear Search</button>
+                <button onclick="clearExploreSearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">✕ Clear Search</button>
             </div>
 
             <!-- No results container -->
             <div id="noExploreResults" style="display: none; text-align: center; background: white; border: 1px solid #E2E8F0; border-radius: 14px; padding: 2.5rem 1.5rem; margin-bottom: 2rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">ðŸ”</div>
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
                 <h3 style="color: var(--sapphire-blue-dark); margin-bottom: 0.5rem;">No destinations found</h3>
                 <p style="color: #64748B; max-width: 450px; margin: 0 auto 1.2rem;">We couldn't find any of our 30 destinations matching "<span id="noResultsTerm"></span>".</p>
                 <button onclick="clearExploreSearch()" class="btn btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;">View All 30 Destinations</button>
@@ -162,7 +162,7 @@
             
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ–ï¸</span> Beaches & Coastal
+                    <span>🏖️</span> Beaches & Coastal
                 </h2>
                 <div class="grid-3">
                     
@@ -170,42 +170,42 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Melkbaai Beach</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">0.5 km away &bull; 2 minutes (or a short walk)</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/gordons-bay-harbor" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Gordon's Bay Harbor</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">7.5 km away &bull; 12 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/macassar-beach" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Macassar Beach</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">12.0 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/bikini-beach-gordons-bay" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Bikini Beach (Gordon's Bay)</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.0 km away &bull; 14 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/strand-municipal-indoor-pool" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Strand Municipal Indoor Pool</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">1.0 km away &bull; 3 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/harmony-park" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Beaches & Coastal</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Harmony Park Resort</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.0 km away &bull; 7 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -213,7 +213,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ·</span> Wine & Dine
+                    <span>🍷</span> Wine & Dine
                 </h2>
                 <div class="grid-3">
                     
@@ -221,35 +221,35 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Stellenbosch Wine Route</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">20.0 km away &bull; 25 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/waterkloof-wines" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Waterkloof Wines</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/vergelegen-wine-estate" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Vergelegen Wine Estate</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.5 km away &bull; 14 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/lourensford-wine-estate" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Lourensford Wine Estate</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/helderberg-wine-tasting" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Wine & Dine</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Wine Region</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">8.0 km away &bull; 10-15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -257,7 +257,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ¥¾</span> Nature & Hiking
+                    <span>🥾</span> Nature & Hiking
                 </h2>
                 <div class="grid-3">
                     
@@ -265,35 +265,35 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Nature Reserve</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">10.0 km away &bull; 16 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/clarence-drive-scenic-route" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Clarence Drive Scenic Route</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.0 km away &bull; 12 minutes (to start of route)</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/sir-lowrys-pass" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Sir Lowry's Pass</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">12.0 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/kogelberg-nature-reserve" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Kogelberg Nature Reserve</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">28.0 km away &bull; 35 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/steenbras-dam" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Nature & Hiking</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Steenbras Dam & Gorge</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">15.0 km away &bull; 20 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -301,7 +301,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>â›³</span> Golf Courses
+                    <span>⛳</span> Golf Courses
                 </h2>
                 <div class="grid-3">
                     
@@ -309,21 +309,21 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Strand Golf Club</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">2.1 km away &bull; 4 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/erinvale-golf-estate" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Erinvale Golf Estate</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">9.5 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/somerset-west-golf-club" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Golf Courses</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset West Golf Club</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.5 km away &bull; 10 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -331,7 +331,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ„</span> Adventure Sports
+                    <span>🏄</span> Adventure Sports
                 </h2>
                 <div class="grid-3">
                     
@@ -339,14 +339,14 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Adventure Sports</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Blue Rock Adventure Park</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">10.5 km away &bull; 15 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/cape-town-cycle-tour" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Adventure Sports</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cape Town Cycle Tour</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">45.0 km (to start) away &bull; 40 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -354,7 +354,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ¾</span> Family & Wildlife
+                    <span>🐾</span> Family & Wildlife
                 </h2>
                 <div class="grid-3">
                     
@@ -362,21 +362,21 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cheetah Outreach (Somerset West)</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.0 km away &bull; 6 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/monkey-town-primate-centre" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Monkey Town (Family Day & Splash Venue)</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">7.0 km away &bull; 10 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/lwandle-migrant-labour-museum" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Family & Wildlife</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Lwandle Migrant Labour Museum</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.0 km away &bull; 10 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -384,7 +384,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ›ï¸</span> Shopping & Essentials
+                    <span>🛍️</span> Shopping & Essentials
                 </h2>
                 <div class="grid-3">
                     
@@ -392,28 +392,28 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset Mall</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.5 km away &bull; 7 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/cape-town-international-airport" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Cape Town International Airport</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">32.0 km away &bull; 30 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/somerset-west-business-district" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Somerset West Business District</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.5 km away &bull; 10 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/twin-palm-centre-strand" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Shopping & Essentials</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Twin Palm Shopping Centre</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">1.5 km away &bull; 3 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -421,7 +421,7 @@
         
             <div class="explore-cat-section" style="margin-bottom: 2.5rem;">
                 <h2 style="font-size: 1.6rem; color: var(--sapphire-blue-dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #E2E8F0; padding-bottom: 0.5rem;">
-                    <span>ðŸ¥</span> Medical Facilities
+                    <span>🏥</span> Medical Facilities
                 </h2>
                 <div class="grid-3">
                     
@@ -429,14 +429,14 @@
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Medical Facilities</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Busamed Paardevlei Private Hospital</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">4.2 km away &bull; 6 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 <a href="/explore/helderberg-hospital" class="location-card">
                     <span style="font-size: 0.78rem; font-weight: 700; color: var(--orange); text-transform: uppercase;">Medical Facilities</span>
                     <h3 style="margin: 0.4rem 0 0.3rem; font-size: 1.15rem; color: var(--sapphire-blue-dark);">Helderberg Provincial Hospital</h3>
                     <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.6rem;">6.0 km away &bull; 10 minutes</p>
-                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details â†’</p>
+                    <p style="color: var(--sapphire-blue); font-size: 0.9rem; font-weight: 600;">View Accommodation Details →</p>
                 </a>
             
                 </div>
@@ -455,10 +455,10 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>ðŸ“± <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
-                        <li>ðŸ’¬ <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
-                        <li>âœ‰ï¸ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>📱 <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
+                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
+                        <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -592,103 +592,5 @@
             input.focus();
         }
     </script>
-
-<!-- Auto-suppress ALL Elfsight admin/upgrade/deactivation popups -->
-<script>
-(function() {
-    var BAD_STRINGS = [
-        'temporarily deactivated',
-        'Reactivate Now',
-        'Only you can see this',
-        'elfsight.com/reactivate',
-        'widget is deactivated',
-        'free plan',
-        'upgrade',
-        'monthly limit',
-        'credits',
-        'activate',
-        'subscription'
-    ];
-
-    function isElfsightOverlay(el) {
-        if (!el || el.nodeType !== 1) return false;
-        var style = el.getAttribute('style') || '';
-        var cls = (el.getAttribute('class') || '').toLowerCase();
-        if ((style.indexOf('position: fixed') !== -1 || style.indexOf('position:fixed') !== -1) &&
-            (parseInt(el.style.zIndex) > 9000 || style.indexOf('z-index') !== -1)) {
-            return true;
-        }
-        if (/widget|notification|deactivat|overlay|popup|banner|alert|elfsight/i.test(cls)) {
-            return true;
-        }
-        return false;
-    }
-
-    function containsBadText(el) {
-        try {
-            var text = el.innerText || el.textContent || '';
-            return BAD_STRINGS.some(function(s) {
-                return text.toLowerCase().indexOf(s.toLowerCase()) !== -1;
-            });
-        } catch(e) { return false; }
-    }
-
-    function killEl(el) {
-        try {
-            el.style.cssText = 'display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;';
-            if (el.parentNode) el.parentNode.removeChild(el);
-        } catch(e) {}
-    }
-
-    function sweep() {
-        var bodyKids = document.body ? Array.prototype.slice.call(document.body.children) : [];
-        bodyKids.forEach(function(el) {
-            if (isElfsightOverlay(el) && containsBadText(el)) { killEl(el); return; }
-        });
-        document.querySelectorAll('*').forEach(function(el) {
-            try {
-                var cs = window.getComputedStyle(el);
-                if (cs && cs.position === 'fixed' && parseInt(cs.zIndex) > 9000 && containsBadText(el)) {
-                    killEl(el);
-                }
-            } catch(e) {}
-        });
-        document.querySelectorAll('div, section, aside, article').forEach(function(el) {
-            if (containsBadText(el)) {
-                var cur = el;
-                while (cur && cur !== document.body) {
-                    var cs2;
-                    try { cs2 = window.getComputedStyle(cur); } catch(e2) { break; }
-                    if (cs2 && cs2.position === 'fixed') { killEl(cur); return; }
-                    cur = cur.parentElement;
-                }
-            }
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', sweep);
-    } else { sweep(); }
-    window.addEventListener('load', function() {
-        sweep();
-        setTimeout(sweep, 1000);
-        setTimeout(sweep, 3000);
-        setTimeout(sweep, 7000);
-    });
-    var sweepTimer = null;
-    function throttledSweep() {
-        if (sweepTimer) return;
-        sweepTimer = setTimeout(function() { sweepTimer = null; sweep(); }, 200);
-    }
-    try {
-        var obs = new MutationObserver(function(mutations) {
-            for (var i = 0; i < mutations.length; i++) {
-                if (mutations[i].addedNodes.length) { throttledSweep(); break; }
-            }
-        });
-        obs.observe(document.documentElement, { childList: true, subtree: true });
-    } catch(e) {}
-})();
-</script>
 </body>
 </html>
