@@ -584,7 +584,7 @@ footer {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 0;
   }
 
   .logo-wrapper {
@@ -601,7 +601,7 @@ footer {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0;
   }
 
   .btn-nav-admin {
@@ -609,7 +609,8 @@ footer {
     transform: none;
     font-size: 0.72rem;
     padding: 0.22rem 0.65rem;
-    margin: 0;
+    margin-left: 14px;
+    margin-right: 18px;
   }
 
   .btn-nav-admin:hover {
@@ -661,11 +662,11 @@ footer {
   }
   
   .nav-container {
-    gap: 12px;
+    gap: 0;
   }
 
   .logo-header-row {
-    gap: 12px;
+    gap: 0;
   }
 
   .logo-text {
@@ -683,7 +684,8 @@ footer {
   .btn-nav-admin {
     font-size: 0.7rem;
     padding: 0.2rem 0.6rem;
-    margin: 0;
+    margin-left: 14px;
+    margin-right: 18px;
   }
   
   .hero {
@@ -789,11 +791,11 @@ footer {
   }
 
   .nav-container {
-    gap: 10px;
+    gap: 0;
   }
 
   .logo-header-row {
-    gap: 10px;
+    gap: 0;
   }
 
   .logo-text {
@@ -809,7 +811,8 @@ footer {
     font-size: 0.68rem;
     padding: 0.18rem 0.52rem;
     letter-spacing: 0.05em;
-    margin: 0;
+    margin-left: 12px;
+    margin-right: 16px;
   }
 
   .mobile-menu-btn {

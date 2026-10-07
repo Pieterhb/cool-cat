@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://cool-cat.co.za/entertainment">
     <meta property="og:type" content="website">
 
-    <link rel="stylesheet" href="styles-v1790581824.css">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=2">
     <style>
         .ent-hero {
             background: linear-gradient(rgba(10, 58, 133, 0.8), rgba(15, 82, 186, 0.9)), url('1. Dining Breakfast.jpg') center/cover;
@@ -305,7 +305,7 @@
             </a>
             
             <nav>
-                <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">â˜°</div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="/">Home</a></li>
                     <li><a href="/rooms">Accommodation</a></li>
@@ -321,7 +321,7 @@
     <div class="ent-hero">
         <div class="container">
             <span style="background: rgba(255,255,255,0.2); color: #FEF08A; font-weight: 800; font-size: 0.85rem; padding: 0.35rem 0.9rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 0.8rem;">
-                🏖️ Verified Day Trip &amp; Activity Directory (2026)
+                ðŸ–ï¸ Verified Day Trip &amp; Activity Directory (2026)
             </span>
             <h1 style="color: white; font-size: clamp(2rem, 6vw, 3.2rem); margin-bottom: 0.8rem; font-family: var(--font-heading);">
                 Fun &amp; Entertainment Within 50km
@@ -337,22 +337,22 @@
         <div class="container back-nav-container">
             <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
                 <a href="/" class="btn-back-link">
-                    <span>🏠</span> Back to Home Page
+                    <span>ðŸ </span> Back to Home Page
                 </a>
                 <a href="/guide" class="btn-back-link">
-                    <span>📖</span> Back to Guest Guide &amp; Menus
+                    <span>ðŸ“–</span> Back to Guest Guide &amp; Menus
                 </a>
             </div>
 
             <!-- Live Local Search Input (Exactly as marked by user) -->
             <div style="flex: 1; max-width: 380px; min-width: 240px; position: relative; display: flex; align-items: center;">
-                <span style="position: absolute; left: 12px; color: #94A3B8; font-size: 0.95rem; pointer-events: none;">🔍</span>
+                <span style="position: absolute; left: 12px; color: #94A3B8; font-size: 0.95rem; pointer-events: none;">ðŸ”</span>
                 <input type="text" id="activitySearchInput" placeholder="Search activities, wine, golf, kids..." oninput="handleActivitySearch()" style="width: 100%; padding: 0.55rem 2rem 0.55rem 2.2rem; border: 1.5px solid #BFDBFE; border-radius: 25px; font-size: 0.88rem; outline: none; transition: all 0.2s ease; background: #DBEAFE; color: var(--sapphire-blue-dark);" onfocus="this.style.background='white'; this.style.borderColor='var(--sapphire-blue)'; this.style.boxShadow='0 0 0 3px rgba(15, 82, 186, 0.15)';" onblur="this.style.background='#DBEAFE'; this.style.borderColor='#BFDBFE'; this.style.boxShadow='none';">
-                <button type="button" id="clearSearchBtn" onclick="clearActivitySearch()" style="position: absolute; right: 10px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1rem; display: none; padding: 0;">✕</button>
+                <button type="button" id="clearSearchBtn" onclick="clearActivitySearch()" style="position: absolute; right: 10px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 1rem; display: none; padding: 0;">âœ•</button>
             </div>
 
             <a href="/test-calendar" class="btn-sm btn-primary" style="padding: 0.55rem 1.2rem; font-weight: 700; border-radius: 8px; text-decoration: none; white-space: nowrap;">
-                📅 Check Availability &amp; Book ➔
+                ðŸ“… Check Availability &amp; Book âž”
             </a>
         </div>
     </div>
@@ -364,42 +364,42 @@
             <!-- Search Results Feedback Banner -->
             <div id="searchResultsBanner" style="display: none; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 0.7rem 1.2rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--sapphire-blue-dark);">
                 <span>Showing <strong id="searchMatchCount">0</strong> activities matching "<span id="searchTermDisplay"></span>"</span>
-                <button onclick="clearActivitySearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">✕ Clear Search</button>
+                <button onclick="clearActivitySearch()" style="background: none; border: none; color: #EF4444; font-weight: 700; cursor: pointer; text-decoration: underline;">âœ• Clear Search</button>
             </div>
 
-            <!-- Radius Filter Pills — Row 1: Zone 1 & 2 | Row 2: Zone 3 & 4 -->
+            <!-- Radius Filter Pills â€” Row 1: Zone 1 & 2 | Row 2: Zone 3 & 4 -->
             <div class="radius-filter-pills" id="radiusPillsRow">
                 <!-- Row 1 -->
                 <div style="display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%;">
-                    <a href="#zone-5k" class="radius-pill">🏖️ Zone 1: Within 5 km (Strand Local)</a>
-                    <a href="#zone-15k" class="radius-pill">🌊 Zone 2: 5–15 km (Gordon's Bay &amp; Helderberg)</a>
+                    <a href="#zone-5k" class="radius-pill">ðŸ–ï¸ Zone 1: Within 5 km (Strand Local)</a>
+                    <a href="#zone-15k" class="radius-pill">ðŸŒŠ Zone 2: 5â€“15 km (Gordon's Bay &amp; Helderberg)</a>
                 </div>
                 <!-- Row 2 -->
                 <div style="display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%;">
-                    <a href="#zone-30k" class="radius-pill">🍷 Zone 3: 15–30 km (Stellenbosch, Wine &amp; Markets)</a>
-                    <a href="#zone-50k" class="radius-pill">🌲 Zone 4: 30–50 km (Elgin, Grabouw &amp; Betty's Bay)</a>
+                    <a href="#zone-30k" class="radius-pill">ðŸ· Zone 3: 15â€“30 km (Stellenbosch, Wine &amp; Markets)</a>
+                    <a href="#zone-50k" class="radius-pill">ðŸŒ² Zone 4: 30â€“50 km (Elgin, Grabouw &amp; Betty's Bay)</a>
                 </div>
             </div>
 
 
             <!-- ========================================================= -->
-            <!-- ZONE 1: WITHIN 5 KM — STRAND BEACH & LOCAL               -->
+            <!-- ZONE 1: WITHIN 5 KM â€” STRAND BEACH & LOCAL               -->
             <!-- ========================================================= -->
             <div class="section-zone-header" id="zone-5k">
                 <div>
-                    <h3 class="section-zone-title">🏖️ Zone 1: Within 5 km (Strand Local &amp; Beachfront)</h3>
-                    <p class="section-zone-desc">Walk or drive 2 to 5 minutes • Surfing, Watersports, Golf &amp; Recreation</p>
+                    <h3 class="section-zone-title">ðŸ–ï¸ Zone 1: Within 5 km (Strand Local &amp; Beachfront)</h3>
+                    <p class="section-zone-desc">Walk or drive 2 to 5 minutes â€¢ Surfing, Watersports, Golf &amp; Recreation</p>
                 </div>
             </div>
 
             <!-- 1. Strand Beach & Watersports -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🏖️ Strand Beach, Surf School &amp; Watersports</h2>
+                    <h2 class="activity-title">ðŸ–ï¸ Strand Beach, Surf School &amp; Watersports</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 250m to 1 km • 2–5 min</span>
+                        <span class="dist-badge">ðŸ“ 250m to 1 km â€¢ 2â€“5 min</span>
                         <span class="fee-badge">Free Public Beach</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -413,22 +413,22 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🏄 Surfing &amp; Ocean Rentals</h4>
+                        <h4>ðŸ„ Surfing &amp; Ocean Rentals</h4>
                         <ul>
                             <li><strong>Son Surf School:</strong> Professional surfing lessons for beginners &amp; intermediate surfers.</li>
                             <li><strong>Strand Kayak Rentals:</strong> Ocean kayaking &amp; stand-up paddleboards along the promenade (~2 km).</li>
                             <li><strong>Beach Recreation:</strong> Swimming, dolphin spotting, shoreline fishing &amp; sunsets.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:+27832324822" class="contact-pill">📞 Son Surf: +27 83 232 4822</a>
-                            <a href="mailto:school@sonsurf.co.za" class="contact-pill contact-pill-mail">✉️ school@sonsurf.co.za</a>
-                            <a href="https://surfschools.co.za/home/strand/" target="_blank" class="contact-pill">🌐 surfschools.co.za</a>
-                            <a href="tel:0786058236" class="contact-pill">📞 Kayaks: 078 605 8236</a>
-                            <a href="mailto:bookings@strandkayakrentals.co.za" class="contact-pill contact-pill-mail">✉️ bookings@strandkayakrentals.co.za</a>
+                            <a href="tel:+27832324822" class="contact-pill">ðŸ“ž Son Surf: +27 83 232 4822</a>
+                            <a href="mailto:school@sonsurf.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ school@sonsurf.co.za</a>
+                            <a href="https://surfschools.co.za/home/strand/" target="_blank" class="contact-pill">ðŸŒ surfschools.co.za</a>
+                            <a href="tel:0786058236" class="contact-pill">ðŸ“ž Kayaks: 078 605 8236</a>
+                            <a href="mailto:bookings@strandkayakrentals.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ bookings@strandkayakrentals.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>⛳ Golf, Paintball &amp; Recreation</h4>
+                        <h4>â›³ Golf, Paintball &amp; Recreation</h4>
                         <ul>
                             <li><strong>Strand Golf Club (2.1 km):</strong> 18-hole championship coastal links course with driving range &amp; clubhouse.</li>
                             <li><strong>Putt-Putt Mini Golf (1 km):</strong> Classic seaside mini-golf fun for kids and families.</li>
@@ -436,11 +436,11 @@
                             <li><strong>Strand Indoor Pool (250m):</strong> Heated municipal pool.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218536268" class="contact-pill">📞 Golf: 021 853 6268 / 021 854 3309</a>
-                            <a href="mailto:bookings@strandgolfclub.co.za" class="contact-pill contact-pill-mail">✉️ bookings@strandgolfclub.co.za</a>
-                            <a href="https://www.strandgolfclub.co.za/" target="_blank" class="contact-pill">🌐 strandgolfclub.co.za</a>
-                            <a href="tel:0214346805" class="contact-pill">📞 Putt-Putt: 021 434 6805</a>
-                            <a href="tel:0724536999" class="contact-pill">📞 SWAT Paintball: 072 453 6999</a>
+                            <a href="tel:0218536268" class="contact-pill">ðŸ“ž Golf: 021 853 6268 / 021 854 3309</a>
+                            <a href="mailto:bookings@strandgolfclub.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ bookings@strandgolfclub.co.za</a>
+                            <a href="https://www.strandgolfclub.co.za/" target="_blank" class="contact-pill">ðŸŒ strandgolfclub.co.za</a>
+                            <a href="tel:0214346805" class="contact-pill">ðŸ“ž Putt-Putt: 021 434 6805</a>
+                            <a href="tel:0724536999" class="contact-pill">ðŸ“ž SWAT Paintball: 072 453 6999</a>
                         </div>
                     </div>
                 </div>
@@ -448,23 +448,23 @@
 
 
             <!-- ========================================================= -->
-            <!-- ZONE 2: 5–15 KM — GORDON'S BAY & HELDERBERG BASIN         -->
+            <!-- ZONE 2: 5â€“15 KM â€” GORDON'S BAY & HELDERBERG BASIN         -->
             <!-- ========================================================= -->
             <div class="section-zone-header" id="zone-15k">
                 <div>
-                    <h3 class="section-zone-title">🌊 Zone 2: 5–15 km (Gordon's Bay, Helderberg &amp; Adventure)</h3>
-                    <p class="section-zone-desc">10 to 20 minute drive • Cable skiing, Wine tasting, Nature reserves &amp; Harbors</p>
+                    <h3 class="section-zone-title">ðŸŒŠ Zone 2: 5â€“15 km (Gordon's Bay, Helderberg &amp; Adventure)</h3>
+                    <p class="section-zone-desc">10 to 20 minute drive â€¢ Cable skiing, Wine tasting, Nature reserves &amp; Harbors</p>
                 </div>
             </div>
 
             <!-- 2. Blue Rock Adventure Park -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">💦 Blue Rock Adventure Park</h2>
+                    <h2 class="activity-title">ðŸ’¦ Blue Rock Adventure Park</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 8–10.5 km • 12–15 min</span>
+                        <span class="dist-badge">ðŸ“ 8â€“10.5 km â€¢ 12â€“15 min</span>
                         <span class="fee-badge fee-paid">Paid Activity Tariffs</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -478,40 +478,40 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>⚡ Water Sports &amp; Thrills</h4>
+                        <h4>âš¡ Water Sports &amp; Thrills</h4>
                         <ul>
-                            <li>🏄 <strong>Cable Wakeboarding &amp; Waterskiing:</strong> Overhead cable system for beginner to pro.</li>
-                            <li>🪂 <strong>400m Zipline:</strong> High-speed line soaring right across the deep lake.</li>
-                            <li>🧗 <strong>Rock Jumping &amp; Freediving:</strong> Safe cliff jumps into pristine deep water.</li>
-                            <li>🤿 <strong>Scuba Diving &amp; Training:</strong> 60-meter deep quarry dive training site.</li>
-                            <li>🛶 <strong>Canoeing &amp; Stand-Up Paddleboarding (SUP)</strong></li>
+                            <li>ðŸ„ <strong>Cable Wakeboarding &amp; Waterskiing:</strong> Overhead cable system for beginner to pro.</li>
+                            <li>ðŸª‚ <strong>400m Zipline:</strong> High-speed line soaring right across the deep lake.</li>
+                            <li>ðŸ§— <strong>Rock Jumping &amp; Freediving:</strong> Safe cliff jumps into pristine deep water.</li>
+                            <li>ðŸ¤¿ <strong>Scuba Diving &amp; Training:</strong> 60-meter deep quarry dive training site.</li>
+                            <li>ðŸ›¶ <strong>Canoeing &amp; Stand-Up Paddleboarding (SUP)</strong></li>
                         </ul>
                     </div>
                     <div class="feature-box">
-                        <h4>🍕 Leisure &amp; Dining Facilities</h4>
+                        <h4>ðŸ• Leisure &amp; Dining Facilities</h4>
                         <ul>
-                            <li>🎯 <strong>Paintball Arena &amp; Beach Volleyball Court</strong></li>
-                            <li>🍕 <strong>Italian Restaurant &amp; Pizzeria:</strong> Wood-fired pizzas on the shaded deck.</li>
-                            <li>🧺 <strong>Lakeside Sunbathing &amp; Picnic Lawns</strong></li>
+                            <li>ðŸŽ¯ <strong>Paintball Arena &amp; Beach Volleyball Court</strong></li>
+                            <li>ðŸ• <strong>Italian Restaurant &amp; Pizzeria:</strong> Wood-fired pizzas on the shaded deck.</li>
+                            <li>ðŸ§º <strong>Lakeside Sunbathing &amp; Picnic Lawns</strong></li>
                             <li><strong>Booking:</strong> Recommended for cable ski sessions and zipline.</li>
                         </ul>
                     </div>
                 </div>
                 <div class="contact-pill-row">
-                    <a href="tel:0218581330" class="contact-pill">📞 021 858 1330</a>
-                    <a href="mailto:info@bluerock.co.za" class="contact-pill contact-pill-mail">✉️ info@bluerock.co.za</a>
-                    <a href="https://www.bluerock.co.za/" target="_blank" class="contact-pill">🌐 Official Site: bluerock.co.za</a>
+                    <a href="tel:0218581330" class="contact-pill">ðŸ“ž 021 858 1330</a>
+                    <a href="mailto:info@bluerock.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@bluerock.co.za</a>
+                    <a href="https://www.bluerock.co.za/" target="_blank" class="contact-pill">ðŸŒ Official Site: bluerock.co.za</a>
                 </div>
             </div>
 
             <!-- 3. Gordon's Bay Beaches & Harbor Sightseeing -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">⚓ Gordon's Bay Harbor, Bikini Beach &amp; Sunset Cruises</h2>
+                    <h2 class="activity-title">âš“ Gordon's Bay Harbor, Bikini Beach &amp; Sunset Cruises</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 10–12 km • 12–15 min</span>
+                        <span class="dist-badge">ðŸ“ 10â€“12 km â€¢ 12â€“15 min</span>
                         <span class="fee-badge">Free Sightseeing</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -525,7 +525,7 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🏖️ Beaches &amp; Harbor Attractions</h4>
+                        <h4>ðŸ–ï¸ Beaches &amp; Harbor Attractions</h4>
                         <ul>
                             <li><strong>Bikini Beach (Blue Flag):</strong> Sheltered from the wind with crystal clear warm waters.</li>
                             <li><strong>Gordon's Bay Main Beach:</strong> Wide, shallow beach for family strolls and ice cream.</li>
@@ -534,7 +534,7 @@
                         </ul>
                     </div>
                     <div class="feature-box">
-                        <h4>🚤 Ocean Charters &amp; Scenic Trails</h4>
+                        <h4>ðŸš¤ Ocean Charters &amp; Scenic Trails</h4>
                         <ul>
                             <li><strong>Playa Cruises:</strong> Romantic sunset champagne yacht charters, coastal dolphin watching &amp; private celebrations.</li>
                             <li><strong>Clarence Drive (Route 44) (~15 km):</strong> One of the world's greatest scenic coastal drives.</li>
@@ -544,20 +544,20 @@
                     </div>
                 </div>
                 <div class="contact-pill-row">
-                    <a href="tel:0672684959" class="contact-pill">📞 Playa Cruises: 067 268 4959</a>
-                    <a href="mailto:hello@playacruises.co.za" class="contact-pill contact-pill-mail">✉️ hello@playacruises.co.za</a>
-                    <a href="https://playacruises.co.za/" target="_blank" class="contact-pill">🌐 playacruises.co.za</a>
+                    <a href="tel:0672684959" class="contact-pill">ðŸ“ž Playa Cruises: 067 268 4959</a>
+                    <a href="mailto:hello@playacruises.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ hello@playacruises.co.za</a>
+                    <a href="https://playacruises.co.za/" target="_blank" class="contact-pill">ðŸŒ playacruises.co.za</a>
                 </div>
             </div>
 
             <!-- 4. Helderberg Nature Reserve & Farm -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🌿 Helderberg Nature Reserve &amp; Helderberg Farm</h2>
+                    <h2 class="activity-title">ðŸŒ¿ Helderberg Nature Reserve &amp; Helderberg Farm</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 10–12 km • 15 min</span>
+                        <span class="dist-badge">ðŸ“ 10â€“12 km â€¢ 15 min</span>
                         <span class="fee-badge fee-paid">Small Entry Tariff</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -571,29 +571,29 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🥾 Helderberg Nature Reserve (~10 km)</h4>
+                        <h4>ðŸ¥¾ Helderberg Nature Reserve (~10 km)</h4>
                         <ul>
                             <li><strong>Hiking Trails:</strong> Marked routes from easy 1km fynbos walks to the 7-hour West Peak mountain hike.</li>
                             <li><strong>Bird &amp; Wildlife Spotting:</strong> Sugarbirds, bontebok, tortoises, and raptors.</li>
-                            <li><strong>Picnics &amp; Oak Café:</strong> Shaded lawns overlooking the ocean basin.</li>
+                            <li><strong>Picnics &amp; Oak CafÃ©:</strong> Shaded lawns overlooking the ocean basin.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0214449744" class="contact-pill">📞 021 444 9744</a>
-                            <a href="mailto:helderbergnature.reserve@capetown.gov.za" class="contact-pill contact-pill-mail">✉️ helderbergnature.reserve@capetown.gov.za</a>
-                            <a href="https://helderbergnaturereserve.co.za/" target="_blank" class="contact-pill">🌐 helderbergnaturereserve.co.za</a>
+                            <a href="tel:0214449744" class="contact-pill">ðŸ“ž 021 444 9744</a>
+                            <a href="mailto:helderbergnature.reserve@capetown.gov.za" class="contact-pill contact-pill-mail">âœ‰ï¸ helderbergnature.reserve@capetown.gov.za</a>
+                            <a href="https://helderbergnaturereserve.co.za/" target="_blank" class="contact-pill">ðŸŒ helderbergnaturereserve.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🍓 Helderberg Farm (~12 km)</h4>
+                        <h4>ðŸ“ Helderberg Farm (~12 km)</h4>
                         <ul>
                             <li><strong>Strawberry Picking (Seasonal):</strong> Hand-pick sweet strawberries fresh from the fields.</li>
                             <li><strong>Mountain Biking &amp; Trail Running:</strong> Dedicated farm forest flow tracks.</li>
                             <li><strong>Farm Hiking &amp; Tea Garden:</strong> Scenic mountain trails, proteas, and braai spots.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218554308" class="contact-pill">📞 021 855 4308</a>
-                            <a href="mailto:helderbergfarm@mweb.co.za" class="contact-pill contact-pill-mail">✉️ helderbergfarm@mweb.co.za</a>
-                            <a href="https://helderbergplaas.co.za/" target="_blank" class="contact-pill">🌐 helderbergplaas.co.za</a>
+                            <a href="tel:0218554308" class="contact-pill">ðŸ“ž 021 855 4308</a>
+                            <a href="mailto:helderbergfarm@mweb.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ helderbergfarm@mweb.co.za</a>
+                            <a href="https://helderbergplaas.co.za/" target="_blank" class="contact-pill">ðŸŒ helderbergplaas.co.za</a>
                         </div>
                     </div>
                 </div>
@@ -602,11 +602,11 @@
             <!-- 5. Helderberg Wine Estates -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🍷 Helderberg Wine Estates (Vergelegen, Lourensford, Waterkloof, Cavalli)</h2>
+                    <h2 class="activity-title">ðŸ· Helderberg Wine Estates (Vergelegen, Lourensford, Waterkloof, Cavalli)</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 8–14 km • 10–18 min</span>
+                        <span class="dist-badge">ðŸ“ 8â€“14 km â€¢ 10â€“18 min</span>
                         <span class="fee-badge fee-paid">Tasting &amp; Dining</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -620,41 +620,41 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🏛️ Vergelegen &amp; Lourensford Estates</h4>
+                        <h4>ðŸ›ï¸ Vergelegen &amp; Lourensford Estates</h4>
                         <ul>
                             <li><strong>Vergelegen Estate (~13 km):</strong> 300-year-old camphor trees, octagonal garden, historic library &amp; bistro dining.</li>
                             <li><strong>Lourensford Estate (~12 km):</strong> Weekend artisan food &amp; craft market, coffee roastery, Millhouse Kitchen, and chocolate pairing.</li>
                             <li><strong>Morgenster Estate (~12 km):</strong> Award-winning extra virgin olive oil tastings, Italian varietals &amp; paste pairings.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218472100" class="contact-pill">📞 Vergelegen: 021 847 2100 / 2111</a>
-                            <a href="mailto:customerservices@vergelegen.co.za" class="contact-pill contact-pill-mail">✉️ Vergelegen Mail</a>
-                            <a href="https://vergelegen.co.za/" target="_blank" class="contact-pill">🌐 vergelegen.co.za</a>
-                            <a href="tel:0218470030" class="contact-pill">📞 Lourensford: 021 847 0030</a>
-                            <a href="mailto:events@millhousekitchen.co.za" class="contact-pill contact-pill-mail">✉️ Millhouse Events</a>
-                            <a href="tel:0218521738" class="contact-pill">📞 Morgenster: 021 852 1738</a>
-                            <a href="mailto:info@morgenster.co.za" class="contact-pill contact-pill-mail">✉️ Morgenster Mail</a>
+                            <a href="tel:0218472100" class="contact-pill">ðŸ“ž Vergelegen: 021 847 2100 / 2111</a>
+                            <a href="mailto:customerservices@vergelegen.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ Vergelegen Mail</a>
+                            <a href="https://vergelegen.co.za/" target="_blank" class="contact-pill">ðŸŒ vergelegen.co.za</a>
+                            <a href="tel:0218470030" class="contact-pill">ðŸ“ž Lourensford: 021 847 0030</a>
+                            <a href="mailto:events@millhousekitchen.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ Millhouse Events</a>
+                            <a href="tel:0218521738" class="contact-pill">ðŸ“ž Morgenster: 021 852 1738</a>
+                            <a href="mailto:info@morgenster.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ Morgenster Mail</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>✨ Waterkloof, Cavalli &amp; Ken Forrester</h4>
+                        <h4>âœ¨ Waterkloof, Cavalli &amp; Ken Forrester</h4>
                         <ul>
                             <li><strong>Waterkloof Wines (~12 km):</strong> Spectacular architectural glass cube restaurant overlooking False Bay, offering biodynamic organic wines.</li>
                             <li><strong>Cavalli Estate (~12 km):</strong> World-class equestrian indoor arena, contemporary art gallery, fine dining &amp; estate gardens.</li>
                             <li><strong>Ken Forrester Wines (~10 km):</strong> Acclaimed "King of Chenin Blanc".</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218581292" class="contact-pill">📞 Waterkloof: 021 858 1292</a>
-                            <a href="mailto:info@waterklooffwines.co.za" class="contact-pill contact-pill-mail">✉️ info@waterklooffwines.co.za</a>
-                            <a href="https://www.waterkloofwines.co.za/" target="_blank" class="contact-pill">🌐 waterkloofwines.co.za</a>
-                            <a href="tel:0218553218" class="contact-pill">📞 Cavalli: 021 855 3218</a>
-                            <a href="mailto:info@cavalliestate.com" class="contact-pill contact-pill-mail">✉️ Cavalli Info</a>
-                            <a href="mailto:restaurant@cavalliestate.com" class="contact-pill contact-pill-mail">✉️ Cavalli Dining</a>
-                            <a href="mailto:tastingroom@cavalliestate.com" class="contact-pill contact-pill-mail">✉️ Wine Tasting</a>
-                            <a href="mailto:gallery@cavalliestate.com" class="contact-pill contact-pill-mail">✉️ Art Gallery</a>
-                            <a href="mailto:stables@cavalliestate.com" class="contact-pill contact-pill-mail">✉️ Stables &amp; Carriages</a>
-                            <a href="tel:0218552374" class="contact-pill">📞 Ken Forrester: 021 855 2374</a>
-                            <a href="mailto:tasting@kenforrestervines.com" class="contact-pill contact-pill-mail">✉️ Ken Forrester Mail</a>
+                            <a href="tel:0218581292" class="contact-pill">ðŸ“ž Waterkloof: 021 858 1292</a>
+                            <a href="mailto:info@waterklooffwines.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@waterklooffwines.co.za</a>
+                            <a href="https://www.waterkloofwines.co.za/" target="_blank" class="contact-pill">ðŸŒ waterkloofwines.co.za</a>
+                            <a href="tel:0218553218" class="contact-pill">ðŸ“ž Cavalli: 021 855 3218</a>
+                            <a href="mailto:info@cavalliestate.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Cavalli Info</a>
+                            <a href="mailto:restaurant@cavalliestate.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Cavalli Dining</a>
+                            <a href="mailto:tastingroom@cavalliestate.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Wine Tasting</a>
+                            <a href="mailto:gallery@cavalliestate.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Art Gallery</a>
+                            <a href="mailto:stables@cavalliestate.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Stables &amp; Carriages</a>
+                            <a href="tel:0218552374" class="contact-pill">ðŸ“ž Ken Forrester: 021 855 2374</a>
+                            <a href="mailto:tasting@kenforrestervines.com" class="contact-pill contact-pill-mail">âœ‰ï¸ Ken Forrester Mail</a>
                         </div>
                     </div>
                 </div>
@@ -663,11 +663,11 @@
             <!-- 6. Wildlife, Family Day Venue & Culture -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🐆 Cheetah Outreach, Family Splash Park &amp; Lwandle Museum</h2>
+                    <h2 class="activity-title">ðŸ† Cheetah Outreach, Family Splash Park &amp; Lwandle Museum</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 4–7 km • 6–10 min</span>
+                        <span class="dist-badge">ðŸ“ 4â€“7 km â€¢ 6â€“10 min</span>
                         <span class="fee-badge fee-paid">Entry Fees Apply</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -681,35 +681,35 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🐾 Wildlife &amp; Family Parks</h4>
+                        <h4>ðŸ¾ Wildlife &amp; Family Parks</h4>
                         <ul>
-                            <li><strong>Cheetah Outreach (~4 km):</strong> Educational conservation facility with personal encounters with adult cheetahs, cubs, and Anatolian shepherd dogs (Open 10:00–17:00).</li>
+                            <li><strong>Cheetah Outreach (~4 km):</strong> Educational conservation facility with personal encounters with adult cheetahs, cubs, and Anatolian shepherd dogs (Open 10:00â€“17:00).</li>
                             <li><strong>Monkey Town Day &amp; Splash Park (~7 km):</strong> Family day park with waterslides, splash pools, kids playgrounds &amp; restaurant <em>(Note: Primate zoo closed permanently in April 2024; now operating as a family splash/play park)</em>.</li>
                             <li><strong>Journey's End Vineyards (~15 km):</strong> Mountain and vineyard horse riding trails.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0828724007" class="contact-pill">📞 Cheetah: 082 872 4007 / 082 623 9960</a>
-                            <a href="mailto:bookings@cheetah.co.za" class="contact-pill contact-pill-mail">✉️ bookings@cheetah.co.za</a>
-                            <a href="https://cheetah.co.za/" target="_blank" class="contact-pill">🌐 cheetah.co.za</a>
-                            <a href="tel:0662666409" class="contact-pill">📞 Monkey Town: 066 2666 409</a>
-                            <a href="mailto:pro@monkeys.co.za" class="contact-pill contact-pill-mail">✉️ pro@monkeys.co.za</a>
-                            <a href="https://www.monkeys.co.za/" target="_blank" class="contact-pill">🌐 monkeys.co.za</a>
-                            <a href="tel:0212002698" class="contact-pill">📞 Journey's End: 021 200 2698</a>
-                            <a href="mailto:info@journeysend.co.za" class="contact-pill contact-pill-mail">✉️ info@journeysend.co.za</a>
+                            <a href="tel:0828724007" class="contact-pill">ðŸ“ž Cheetah: 082 872 4007 / 082 623 9960</a>
+                            <a href="mailto:bookings@cheetah.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ bookings@cheetah.co.za</a>
+                            <a href="https://cheetah.co.za/" target="_blank" class="contact-pill">ðŸŒ cheetah.co.za</a>
+                            <a href="tel:0662666409" class="contact-pill">ðŸ“ž Monkey Town: 066 2666 409</a>
+                            <a href="mailto:pro@monkeys.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ pro@monkeys.co.za</a>
+                            <a href="https://www.monkeys.co.za/" target="_blank" class="contact-pill">ðŸŒ monkeys.co.za</a>
+                            <a href="tel:0212002698" class="contact-pill">ðŸ“ž Journey's End: 021 200 2698</a>
+                            <a href="mailto:info@journeysend.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@journeysend.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🏛️ Lwandle Migrant Labour Museum</h4>
+                        <h4>ðŸ›ï¸ Lwandle Migrant Labour Museum</h4>
                         <ul>
                             <li><strong>Lwandle Museum (~6 km):</strong> South Africa's premier museum dedicated to documenting the migrant labour hostel system.</li>
                             <li>Educational guided township walking tours and community craft exhibitions.</li>
                             <li>Highly recommended for history, cultural, and international guests.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218456119" class="contact-pill">📞 021 845 6119</a>
-                            <a href="https://wa.me/27696315435" target="_blank" class="contact-pill" style="background:#25D366; color:white;">💬 WhatsApp: 069 631 5435</a>
-                            <a href="mailto:info@lwandlemuseum.co.za" class="contact-pill contact-pill-mail">✉️ info@lwandlemuseum.co.za</a>
-                            <a href="https://lwandlemuseum.co.za/" target="_blank" class="contact-pill">🌐 lwandlemuseum.co.za</a>
+                            <a href="tel:0218456119" class="contact-pill">ðŸ“ž 021 845 6119</a>
+                            <a href="https://wa.me/27696315435" target="_blank" class="contact-pill" style="background:#25D366; color:white;">ðŸ’¬ WhatsApp: 069 631 5435</a>
+                            <a href="mailto:info@lwandlemuseum.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@lwandlemuseum.co.za</a>
+                            <a href="https://lwandlemuseum.co.za/" target="_blank" class="contact-pill">ðŸŒ lwandlemuseum.co.za</a>
                         </div>
                     </div>
                 </div>
@@ -717,23 +717,23 @@
 
 
             <!-- ========================================================= -->
-            <!-- ZONE 3: 15–30 KM — STELLENBOSCH, WINELANDS & MARKETS      -->
+            <!-- ZONE 3: 15â€“30 KM â€” STELLENBOSCH, WINELANDS & MARKETS      -->
             <!-- ========================================================= -->
             <div class="section-zone-header" id="zone-30k">
                 <div>
-                    <h3 class="section-zone-title">🍷 Zone 3: 15–30 km (Stellenbosch, Winelands &amp; Markets)</h3>
-                    <p class="section-zone-desc">20 to 35 minute drive • Cape Dutch heritage, E-Bike tours, Chocolate pairings &amp; Golf</p>
+                    <h3 class="section-zone-title">ðŸ· Zone 3: 15â€“30 km (Stellenbosch, Winelands &amp; Markets)</h3>
+                    <p class="section-zone-desc">20 to 35 minute drive â€¢ Cape Dutch heritage, E-Bike tours, Chocolate pairings &amp; Golf</p>
                 </div>
             </div>
 
             <!-- 7. Stellenbosch Historic Town & Culture -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🏛️ Historic Stellenbosch Town, Museums &amp; Markets</h2>
+                    <h2 class="activity-title">ðŸ›ï¸ Historic Stellenbosch Town, Museums &amp; Markets</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 25–28 km • 30 min</span>
+                        <span class="dist-badge">ðŸ“ 25â€“28 km â€¢ 30 min</span>
                         <span class="fee-badge">Free Town Access / Museum Fees</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -747,21 +747,21 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🎨 Town Sightseeing &amp; Museums</h4>
+                        <h4>ðŸŽ¨ Town Sightseeing &amp; Museums</h4>
                         <ul>
-                            <li><strong>Dorp Street Walking Tour:</strong> Shaded historic street lined with art galleries, cafés &amp; boutiques.</li>
+                            <li><strong>Dorp Street Walking Tour:</strong> Shaded historic street lined with art galleries, cafÃ©s &amp; boutiques.</li>
                             <li><strong>Stellenbosch Village Museum:</strong> Four restored heritage homes spanning four centuries.</li>
                             <li><strong>Stellenbosch University Botanical Garden:</strong> The oldest university botanical garden in South Africa.</li>
                             <li><strong>Jan Marais Nature Reserve:</strong> Tranquil indigenous fynbos park and sculpture garden.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218872937" class="contact-pill">📞 Village Museum: 021 887 2937</a>
-                            <a href="mailto:villagemuseum@stelmus.co.za" class="contact-pill contact-pill-mail">✉️ villagemuseum@stelmus.co.za</a>
-                            <a href="https://stelmus.co.za/" target="_blank" class="contact-pill">🌐 stelmus.co.za</a>
+                            <a href="tel:0218872937" class="contact-pill">ðŸ“ž Village Museum: 021 887 2937</a>
+                            <a href="mailto:villagemuseum@stelmus.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ villagemuseum@stelmus.co.za</a>
+                            <a href="https://stelmus.co.za/" target="_blank" class="contact-pill">ðŸŒ stelmus.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🥐 Artisan Markets &amp; Food Tours</h4>
+                        <h4>ðŸ¥ Artisan Markets &amp; Food Tours</h4>
                         <ul>
                             <li><strong>Route 44 Market (~25 km):</strong> Weekend artisan food stalls, local crafts, craft beer &amp; live music.</li>
                             <li><strong>Foodies on Foot (Bites &amp; Sites):</strong> Guided culinary and historical walking tours through Stellenbosch.</li>
@@ -774,11 +774,11 @@
             <!-- 8. Stellenbosch Iconic Estates & Specialty Pairings -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🍇 Spier, Waterford, Delaire Graff, Tokara &amp; Muratie</h2>
+                    <h2 class="activity-title">ðŸ‡ Spier, Waterford, Delaire Graff, Tokara &amp; Muratie</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 22–31 km • 25–35 min</span>
+                        <span class="dist-badge">ðŸ“ 22â€“31 km â€¢ 25â€“35 min</span>
                         <span class="fee-badge fee-paid">Tastings &amp; Tours</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -792,36 +792,36 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🦅 Spier &amp; Waterford Estates (~22–25 km)</h4>
+                        <h4>ðŸ¦… Spier &amp; Waterford Estates (~22â€“25 km)</h4>
                         <ul>
                             <li><strong>Spier Wine Farm:</strong> Eagle Encounters raptor rehab, Segway tours, organic wine tasting &amp; river picnics.</li>
                             <li><strong>Waterford Estate:</strong> Famous Wine &amp; Chocolate pairing, vintage cellar tours, and wine drive safari.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218091100" class="contact-pill">📞 Spier: 021 809 1100</a>
-                            <a href="mailto:info@spier.co.za" class="contact-pill contact-pill-mail">✉️ info@spier.co.za</a>
-                            <a href="https://www.spier.co.za/" target="_blank" class="contact-pill">🌐 spier.co.za</a>
-                            <a href="tel:0218805300" class="contact-pill">📞 Waterford: 021 880 5300</a>
-                            <a href="mailto:info@waterfordestate.co.za" class="contact-pill contact-pill-mail">✉️ info@waterfordestate.co.za</a>
-                            <a href="https://www.waterfordestate.co.za/" target="_blank" class="contact-pill">🌐 waterfordestate.co.za</a>
+                            <a href="tel:0218091100" class="contact-pill">ðŸ“ž Spier: 021 809 1100</a>
+                            <a href="mailto:info@spier.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@spier.co.za</a>
+                            <a href="https://www.spier.co.za/" target="_blank" class="contact-pill">ðŸŒ spier.co.za</a>
+                            <a href="tel:0218805300" class="contact-pill">ðŸ“ž Waterford: 021 880 5300</a>
+                            <a href="mailto:info@waterfordestate.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@waterfordestate.co.za</a>
+                            <a href="https://www.waterfordestate.co.za/" target="_blank" class="contact-pill">ðŸŒ waterfordestate.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🖼️ Delaire Graff, Tokara &amp; Muratie (~30–31 km)</h4>
+                        <h4>ðŸ–¼ï¸ Delaire Graff, Tokara &amp; Muratie (~30â€“31 km)</h4>
                         <ul>
                             <li><strong>Delaire Graff &amp; Tokara:</strong> Monumental bronze sculptures, Laurence Graff private art, panoramic Helshoogte pass views.</li>
                             <li><strong>Muratie &amp; Dirtopia Trail Centre:</strong> Sunset &amp; Full Moon vineyard hikes, MTB bike rentals &amp; single-tracks.</li>
                             <li><strong>Delheim &amp; Lanzerac Estates:</strong> Historic cellars and wine/food pairings.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218858160" class="contact-pill">📞 Delaire Graff: 021 885 8160</a>
-                            <a href="mailto:info@delaire.co.za" class="contact-pill contact-pill-mail">✉️ info@delaire.co.za</a>
-                            <a href="https://www.delaire.co.za/" target="_blank" class="contact-pill">🌐 delaire.co.za</a>
-                            <a href="tel:0218652330" class="contact-pill">📞 Muratie: 021 865 2330</a>
-                            <a href="mailto:info@muratie.co.za" class="contact-pill contact-pill-mail">✉️ info@muratie.co.za</a>
-                            <a href="https://www.muratie.co.za/" target="_blank" class="contact-pill">🌐 muratie.co.za</a>
-                            <a href="tel:0783433572" class="contact-pill">📞 Dirtopia: 078 343 3572</a>
-                            <a href="http://www.dirtopia.co.za" target="_blank" class="contact-pill">🌐 dirtopia.co.za</a>
+                            <a href="tel:0218858160" class="contact-pill">ðŸ“ž Delaire Graff: 021 885 8160</a>
+                            <a href="mailto:info@delaire.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@delaire.co.za</a>
+                            <a href="https://www.delaire.co.za/" target="_blank" class="contact-pill">ðŸŒ delaire.co.za</a>
+                            <a href="tel:0218652330" class="contact-pill">ðŸ“ž Muratie: 021 865 2330</a>
+                            <a href="mailto:info@muratie.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ info@muratie.co.za</a>
+                            <a href="https://www.muratie.co.za/" target="_blank" class="contact-pill">ðŸŒ muratie.co.za</a>
+                            <a href="tel:0783433572" class="contact-pill">ðŸ“ž Dirtopia: 078 343 3572</a>
+                            <a href="http://www.dirtopia.co.za" target="_blank" class="contact-pill">ðŸŒ dirtopia.co.za</a>
                         </div>
                     </div>
                 </div>
@@ -830,11 +830,11 @@
             <!-- 9. Wineland Tours, Cycling & Golf -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🚴 E-Bikes, Wine Tractors, Jonkershoek &amp; Golf</h2>
+                    <h2 class="activity-title">ðŸš´ E-Bikes, Wine Tractors, Jonkershoek &amp; Golf</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 20–35 km • 25–40 min</span>
+                        <span class="dist-badge">ðŸ“ 20â€“35 km â€¢ 25â€“40 min</span>
                         <span class="fee-badge fee-paid">Tour / Green Fees</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -848,7 +848,7 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🚜 Specialty Wine Tour Options</h4>
+                        <h4>ðŸšœ Specialty Wine Tour Options</h4>
                         <ul>
                             <li><strong>E-Bike Wine Tours:</strong> Guided electric bicycle rides through vineyard tracks.</li>
                             <li><strong>Stellenbosch Wine Tractor:</strong> Open-air tractor trailer hop-on hop-off estate tour.</li>
@@ -856,19 +856,19 @@
                         </ul>
                     </div>
                     <div class="feature-box">
-                        <h4>🏌️ Championship Golf &amp; Jonkershoek (~18–35 km)</h4>
+                        <h4>ðŸŒï¸ Championship Golf &amp; Jonkershoek (~18â€“35 km)</h4>
                         <ul>
                             <li><strong>De Zalze Golf Club (18 km):</strong> Championship parkland course along the Blaauwklippen river.</li>
                             <li><strong>Devonvale Golf &amp; Wine Estate (35 km):</strong> Championship course and lodge.</li>
                             <li><strong>Jonkershoek Nature Reserve (35 km):</strong> Majestic mountain amphitheatre hiking trails, waterfalls &amp; MTB tracks.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0218807300" class="contact-pill">📞 De Zalze Golf: 021 880 7300</a>
-                            <a href="mailto:events@dezalzegolf.com" class="contact-pill contact-pill-mail">✉️ events@dezalzegolf.com</a>
-                            <a href="https://dezalzegolf.com/" target="_blank" class="contact-pill">🌐 dezalzegolf.com</a>
-                            <a href="tel:0218884736" class="contact-pill">📞 Devonvale: 021 888 4736</a>
-                            <a href="https://wa.me/27828810466" target="_blank" class="contact-pill" style="background:#25D366; color:white;">💬 Devonvale WA: 082 881 0466</a>
-                            <a href="mailto:events@devonvale.co.za" class="contact-pill contact-pill-mail">✉️ events@devonvale.co.za</a>
+                            <a href="tel:0218807300" class="contact-pill">ðŸ“ž De Zalze Golf: 021 880 7300</a>
+                            <a href="mailto:events@dezalzegolf.com" class="contact-pill contact-pill-mail">âœ‰ï¸ events@dezalzegolf.com</a>
+                            <a href="https://dezalzegolf.com/" target="_blank" class="contact-pill">ðŸŒ dezalzegolf.com</a>
+                            <a href="tel:0218884736" class="contact-pill">ðŸ“ž Devonvale: 021 888 4736</a>
+                            <a href="https://wa.me/27828810466" target="_blank" class="contact-pill" style="background:#25D366; color:white;">ðŸ’¬ Devonvale WA: 082 881 0466</a>
+                            <a href="mailto:events@devonvale.co.za" class="contact-pill contact-pill-mail">âœ‰ï¸ events@devonvale.co.za</a>
                         </div>
                     </div>
                 </div>
@@ -876,23 +876,23 @@
 
 
             <!-- ========================================================= -->
-            <!-- ZONE 4: 30–50 KM — GRABOUW, ELGIN & BETTY'S BAY           -->
+            <!-- ZONE 4: 30â€“50 KM â€” GRABOUW, ELGIN & BETTY'S BAY           -->
             <!-- ========================================================= -->
             <div class="section-zone-header" id="zone-50k">
                 <div>
-                    <h3 class="section-zone-title">🌲 Zone 4: 30–50 km (Grabouw, Elgin Valley, Betty's Bay &amp; Coast)</h3>
-                    <p class="section-zone-desc">35 to 60 minute drive • Ziplining, Quad buggies, African penguins &amp; Botanical waterfalls</p>
+                    <h3 class="section-zone-title">ðŸŒ² Zone 4: 30â€“50 km (Grabouw, Elgin Valley, Betty's Bay &amp; Coast)</h3>
+                    <p class="section-zone-desc">35 to 60 minute drive â€¢ Ziplining, Quad buggies, African penguins &amp; Botanical waterfalls</p>
                 </div>
             </div>
 
             <!-- 10. Cape Canopy Tour & Waterfall Buggy Adventures -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🪢 Cape Canopy Ziplines &amp; Waterfall Quad Buggies</h2>
+                    <h2 class="activity-title">ðŸª¢ Cape Canopy Ziplines &amp; Waterfall Quad Buggies</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 35–40 km • 40–50 min</span>
+                        <span class="dist-badge">ðŸ“ 35â€“40 km â€¢ 40â€“50 min</span>
                         <span class="fee-badge fee-paid">Guided Adventure</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -906,7 +906,7 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🪂 Cape Canopy Tour (Elgin Valley)</h4>
+                        <h4>ðŸª‚ Cape Canopy Tour (Elgin Valley)</h4>
                         <ul>
                             <li><strong>World-Renowned Zipline:</strong> 13 cliff-side platforms and 320m slides soaring over deep ravines.</li>
                             <li><strong>Suspension Bridge:</strong> Cross high above a natural mountain waterfall.</li>
@@ -914,19 +914,19 @@
                             <li><strong>Alternative:</strong> Houw Hoek Zipline (028 284 9646) in Grabouw.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:0213000501" class="contact-pill">📞 Cape Canopy: 021 300 0501</a>
-                            <a href="tel:0282849646" class="contact-pill">📞 Houw Hoek: 028 284 9646</a>
+                            <a href="tel:0213000501" class="contact-pill">ðŸ“ž Cape Canopy: 021 300 0501</a>
+                            <a href="tel:0282849646" class="contact-pill">ðŸ“ž Houw Hoek: 028 284 9646</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🏎️ Waterfall Buggy &amp; Quad Bike Adventures</h4>
+                        <h4>ðŸŽï¸ Waterfall Buggy &amp; Quad Bike Adventures</h4>
                         <ul>
                             <li><strong>Cape Town Waterfall Buggy Adventures:</strong> Off-road quad biking and mountain buggy trails through pine forests.</li>
                             <li><strong>Waterfall Swim:</strong> Stops at secluded natural mountain rock pools.</li>
-                            <li><strong>Contact:</strong> +27 68 008 3119 (09:00–16:00 daily).</li>
+                            <li><strong>Contact:</strong> +27 68 008 3119 (09:00â€“16:00 daily).</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="tel:+27680083119" class="contact-pill">📞 Waterfall Buggies: +27 68 008 3119</a>
+                            <a href="tel:+27680083119" class="contact-pill">ðŸ“ž Waterfall Buggies: +27 68 008 3119</a>
                         </div>
                     </div>
                 </div>
@@ -935,11 +935,11 @@
             <!-- 11. Elgin Valley Apple Orchards & Farm Stalls -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🍏 Elgin Valley Apple Orchards, Farm Stalls &amp; Cider</h2>
+                    <h2 class="activity-title">ðŸ Elgin Valley Apple Orchards, Farm Stalls &amp; Cider</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 ~38 km • 40–50 min</span>
+                        <span class="dist-badge">ðŸ“ ~38 km â€¢ 40â€“50 min</span>
                         <span class="fee-badge">Free / Farm Dependent</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -952,14 +952,14 @@
                 </div>
 
                 <div class="feature-box">
-                    <h4>✨ Elgin Valley Highlights:</h4>
+                    <h4>âœ¨ Elgin Valley Highlights:</h4>
                     <ul>
                         <li><strong>Peregrine &amp; Orchard Farm Stalls:</strong> Famous venison pies, fresh artisanal breads, local preserves, and craft ciders.</li>
                         <li><strong>Cool-Climate Wine Tasting:</strong> Acclaimed Pinot Noir, Chardonnay, and Sauvignon Blanc estates.</li>
                         <li><strong>Scenic Mountain Drives &amp; Orchard Photography:</strong> Stunning blossom views in spring and harvest in autumn.</li>
                     </ul>
                     <div class="contact-pill-row">
-                        <a href="https://elginvalleytourism.co.za/" target="_blank" class="contact-pill">🌐 Tourism Portal: elginvalleytourism.co.za</a>
+                        <a href="https://elginvalleytourism.co.za/" target="_blank" class="contact-pill">ðŸŒ Tourism Portal: elginvalleytourism.co.za</a>
                     </div>
                 </div>
             </div>
@@ -967,11 +967,11 @@
             <!-- 12. Stony Point Penguin Colony, Harold Porter & Betty's Bay -->
             <div class="activity-card">
                 <div class="activity-header">
-                    <h2 class="activity-title">🐧 Stony Point Penguin Colony &amp; Harold Porter Botanical Garden</h2>
+                    <h2 class="activity-title">ðŸ§ Stony Point Penguin Colony &amp; Harold Porter Botanical Garden</h2>
                     <div class="badge-group">
-                        <span class="dist-badge">📍 ~48 km • 50–60 min</span>
+                        <span class="dist-badge">ðŸ“ ~48 km â€¢ 50â€“60 min</span>
                         <span class="fee-badge fee-paid">CapeNature / SANBI Tariff</span>
-                        <span class="stars-badge">★★★★★</span>
+                        <span class="stars-badge">â˜…â˜…â˜…â˜…â˜…</span>
                     </div>
                 </div>
                 <p style="color: #475569; font-size: 0.95rem; line-height: 1.6;">
@@ -985,25 +985,25 @@
 
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h4>🐧 Stony Point Nature Reserve (African Penguins)</h4>
+                        <h4>ðŸ§ Stony Point Nature Reserve (African Penguins)</h4>
                         <ul>
                             <li>One of only two mainland African Penguin breeding colonies in South Africa.</li>
                             <li>Scenic wooden boardwalk allowing close-up, respectful viewing of nesting penguins, cormorants, and dassies.</li>
                             <li>Significantly less crowded and more natural than Boulders Beach.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="https://www.capenature.co.za/" target="_blank" class="contact-pill">🌐 CapeNature: capenature.co.za</a>
+                            <a href="https://www.capenature.co.za/" target="_blank" class="contact-pill">ðŸŒ CapeNature: capenature.co.za</a>
                         </div>
                     </div>
                     <div class="feature-box">
-                        <h4>🌺 Harold Porter Botanical Garden &amp; Waterfalls</h4>
+                        <h4>ðŸŒº Harold Porter Botanical Garden &amp; Waterfalls</h4>
                         <ul>
                             <li>Renowned botanical garden where coastal fynbos meets sheer mountain cliffs.</li>
                             <li><strong>Disa Kloof Waterfall Walk:</strong> Easy stroll leading to a natural amber rock pool and cascading waterfall.</li>
                             <li><strong>Betty's Bay Main Beach:</strong> Vast, unspoiled wild ocean beach backed by dunes.</li>
                         </ul>
                         <div class="contact-pill-row">
-                            <a href="https://www.sanbi.org/" target="_blank" class="contact-pill">🌐 SANBI: sanbi.org</a>
+                            <a href="https://www.sanbi.org/" target="_blank" class="contact-pill">ðŸŒ SANBI: sanbi.org</a>
                         </div>
                     </div>
                 </div>
@@ -1012,13 +1012,13 @@
             <!-- Bottom Back Navigation Bar -->
             <div style="background: #F1F5F9; border-radius: 12px; padding: 1.5rem; text-align: center; margin-top: 0.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
                 <a href="/" class="btn-back-link" style="font-size: 1rem; padding: 0.7rem 1.4rem;">
-                    <span>🏠</span> Return to Home Page
+                    <span>ðŸ </span> Return to Home Page
                 </a>
                 <a href="/guide" class="btn-back-link" style="font-size: 1rem; padding: 0.7rem 1.4rem;">
-                    <span>📖</span> Return to Guest Guide &amp; Menus
+                    <span>ðŸ“–</span> Return to Guest Guide &amp; Menus
                 </a>
                 <a href="/test-calendar" class="btn btn-primary" style="font-size: 1rem; padding: 0.7rem 1.6rem; color: white;">
-                    <span>📅</span> Book Your Stay at Cool-Cat
+                    <span>ðŸ“…</span> Book Your Stay at Cool-Cat
                 </a>
             </div>
 
@@ -1036,11 +1036,11 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>📱 <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
-                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
-                        <li>📧 <a href="#" onclick="openEmail('bookings@cool-cat.co.za','General Inquiry');return false;">bookings@cool-cat.co.za</a></li>
-                        <li>📧 <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;">corrie@cool-cat.co.za</a></li>
-                        <li>📍 3 De Beers Road, Strand, 7140, Western Cape</li>
+                        <li>ðŸ“± <span class="footer-contact-info">063 712 4491 (Enquiries)</span></li>
+                        <li>ðŸ’¬ <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>ðŸ“§ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','General Inquiry');return false;">bookings@cool-cat.co.za</a></li>
+                        <li>ðŸ“§ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;">corrie@cool-cat.co.za</a></li>
+                        <li>ðŸ“ 3 De Beers Road, Strand, 7140, Western Cape</li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -1061,7 +1061,7 @@
                         <li><a href="/faq">CPA Cancellation Terms</a></li>
                         <li><a href="/faq">House Rules</a></li>
                         <li><span style="font-size: 0.78rem; color: #94A3B8;">CIPC: 2024/123456/07</span></li>
-                        <li><span style="font-size: 0.78rem; color: #94A3B8;">⚡ 24/7 Solar &amp; Inverter Active</span></li>
+                        <li><span style="font-size: 0.78rem; color: #94A3B8;">âš¡ 24/7 Solar &amp; Inverter Active</span></li>
                     </ul>
                 </div>
             </div>
