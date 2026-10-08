@@ -498,9 +498,9 @@ footer {
 
 .footer-contact-info {
   color: #DDD;
-  cursor: default;
+  cursor: pointer;
+  text-decoration: none;
   transition: color 0.2s ease;
-  user-select: text;
 }
 .footer-contact-info:hover, .footer-contact-info:active {
   color: var(--orange);
