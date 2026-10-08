@@ -11,7 +11,7 @@
   
   /* Neutral/Complementary Colors */
   --text-dark: #1A1A1A;
-  --text-light: #666666;
+  --text-light: #374151;
   --bg-light: #F4F7F9;
   --bg-dark: #222222;
   
@@ -539,7 +539,7 @@ footer {
   width: 34px; height: 34px;
   border-radius: 50%;
   font-size: 22px; line-height: 1;
-  color: #475569;
+  color: #334155;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -561,7 +561,7 @@ footer {
 }
 .modal-header-content p {
   margin: 0 0 6px 0;
-  color: #64748B;
+  color: #334155;
   font-size: 0.9rem;
 }
 .stars-badge {
@@ -648,7 +648,7 @@ footer {
 }
 .review-date {
   font-size: 0.78rem;
-  color: #94A3B8;
+  color: #64748B;
 }
 .review-stars {
   color: #F59E0B;
@@ -994,4 +994,16 @@ footer {
     padding: 0.22rem 0.5rem;
     font-size: 0.68rem;
   }
+}
+
+/* Global High-Contrast Placeholders */
+::placeholder {
+  color: #64748B !important;
+  opacity: 1 !important;
+}
+:-ms-input-placeholder {
+  color: #64748B !important;
+}
+::-ms-input-placeholder {
+  color: #64748B !important;
 }

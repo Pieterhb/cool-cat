@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/test-calendar">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1790581824.css?v=1791467000">
+    <link rel="stylesheet" href="styles-v1790581824.css?v=1791468000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -94,7 +94,7 @@
             font-family: var(--font-heading);
             font-size: 1.17rem;
             font-weight: 600;
-            color: #94A3B8;
+            color: #334155;
             transition: all 0.3s ease;
         }
 
@@ -111,7 +111,7 @@
             height: 38px;
             border-radius: 50%;
             background: #E2E8F0;
-            color: #64748B;
+            color: #334155;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -495,7 +495,7 @@
             font-family: var(--font-heading);
             font-weight: 700;
             font-size: 0.82rem;
-            color: #64748B;
+            color: #334155;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             padding: 0.4rem 0;
@@ -539,7 +539,8 @@
         }
 
         .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
-        .cal-day.disabled { background: #F8FAFC; color: #CBD5E1; border-color: #F1F5F9; cursor: not-allowed; opacity: 0.55; }
+        .cal-day.disabled { background: #F8FAFC; color: #334155; border-color: #E2E8F0; cursor: not-allowed; opacity: 0.9; } 
+        .cal-day.disabled .cal-day-num { color: #64748B !important; }
         .cal-day.today { border: 2px solid var(--sapphire-blue); }
 
         .cal-day-top {
@@ -683,7 +684,7 @@
         }
         .cal-avail-pill.pill-min-stay {
             background: #F1F5F9;
-            color: #64748B;
+            color: #334155;
             font-size: 0.6rem;
         }
 
@@ -763,7 +764,7 @@
             align-items: flex-start;
             gap: 0.6rem;
             font-size: 0.8rem;
-            color: #475569;
+            color: #334155;
         }
 
         .legend-dot {
@@ -820,7 +821,7 @@
             background: #F8FAFC;
             border: 1px dashed #CBD5E1;
             border-radius: 12px;
-            color: #64748B;
+            color: #334155;
             font-size: 0.85rem;
             margin-bottom: 1.2rem;
         }
@@ -876,7 +877,7 @@
 
         .cart-stay-dates {
             font-size: 0.8rem;
-            color: #475569;
+            color: #334155;
             margin-bottom: 0.3rem;
         }
 
@@ -920,7 +921,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #64748B;
+            color: #334155;
             margin-bottom: 0.2rem;
         }
 
@@ -955,7 +956,7 @@
             display: flex;
             justify-content: space-between;
             padding: 0.4rem 0;
-            color: #475569;
+            color: #334155;
             border-bottom: 1px dashed #E2E8F0;
         }
 
@@ -1088,7 +1089,7 @@
 
         .recap-meta {
             font-size: 0.88rem;
-            color: #475569;
+            color: #334155;
             margin-top: 0.2rem;
         }
 
@@ -1179,7 +1180,7 @@
             border-bottom-left-radius: 10px;
             font-size: 0.9rem;
             font-weight: 700;
-            color: #475569;
+            color: #334155;
             border-right: 1px solid #CBD5E1;
             user-select: none;
         }
@@ -1253,7 +1254,7 @@
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.82rem;
-            color: #64748B;
+            color: #334155;
             margin-top: 1rem;
         }
 
@@ -1330,7 +1331,7 @@
             justify-content: space-between;
             padding: 0.5rem 0;
             font-size: 0.9rem;
-            color: #475569;
+            color: #334155;
             border-bottom: 1px dashed #E2E8F0;
         }
 
@@ -1404,7 +1405,7 @@
             border-radius: 50%;
             font-size: 1.2rem;
             font-weight: bold;
-            color: #64748B;
+            color: #334155;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -1621,7 +1622,7 @@
                     <div class="summary-card">
                         <div class="summary-header">
                             <h3 class="summary-title">Your Booking Summary</h3>
-                            <p style="font-size: 0.85rem; color: #64748B; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
+                            <p style="font-size: 0.85rem; color: #334155; margin: 0.2rem 0 0;">Review your selected dates and live pricing.</p>
                         </div>
 
                         <!-- In-progress check-in notice -->
@@ -1649,7 +1650,7 @@
                             <select id="sidebarGuestCount" class="form-select" onchange="handleSidebarGuestCountChange()" style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.92rem; font-weight: 700; border: 1.5px solid #0F52BA; border-radius: 8px; background-color: #FFFFFF;">
                                 <option value="" disabled selected>-- Select Number of Guests --</option>
                             </select>
-                            <div id="sidebarGuestHelpText" style="font-size: 0.74rem; color: #64748B; margin-top: 0.35rem;">
+                            <div id="sidebarGuestHelpText" style="font-size: 0.74rem; color: #334155; margin-top: 0.35rem;">
                                 Select how many people will be arriving (1 up to max capacity).
                             </div>
                         </div>
@@ -1668,7 +1669,7 @@
 
                         <!-- Referral / Promo Code Box -->
                         <div style="margin: 0.8rem 0 1rem;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Have a Referral / Promo Code?</label>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; display: block; margin-bottom: 0.3rem;">Have a Referral / Promo Code?</label>
                             <div style="display: flex; gap: 0.4rem;">
                                 <input type="text" id="promoCodeInput" placeholder="e.g. JANNIE10" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.85rem; text-transform: uppercase; font-weight: 700;">
                                 <button type="button" class="btn-sm" style="background: var(--sapphire-blue); color: white; border-radius: 8px; font-weight: 700; padding: 0.5rem 0.9rem;" onclick="applyPromoCodeManual()">Apply</button>
@@ -1725,7 +1726,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
                             <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark);">1 Reserved Stay</div>
                             <div style="text-align: right;">
-                                <div style="font-size: 0.75rem; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
+                                <div style="font-size: 0.75rem; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
                                 <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
                                 <div id="recapDepositSubtext" style="font-size: 0.8rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
                             </div>
@@ -1835,7 +1836,7 @@
                     <div class="success-icon-circle">✓</div>
                     
                     <h2 style="font-size: 2rem; color: var(--sapphire-blue-dark); margin-bottom: 0.2rem;">Booking Confirmed!</h2>
-                    <p style="font-size: 1rem; color: #64748B;">Thank you, <span id="confGuestName">Piet</span>! Your stay at Cool-Cat is officially secured.</p>
+                    <p style="font-size: 1rem; color: #334155;">Thank you, <span id="confGuestName">Piet</span>! Your stay at Cool-Cat is officially secured.</p>
                     
                     <div class="success-ref">Booking Ref: <span id="confBookingRef">#SAN-10001</span></div>
 
@@ -1894,7 +1895,7 @@
         <div class="modal-rules-card">
             <button class="modal-rules-close" onclick="closeRulesModal()">&times;</button>
             <h2 style="color: var(--sapphire-blue-dark); margin-bottom: 0.5rem; font-size: 1.5rem;">House Rules &amp; Policies</h2>
-            <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Cool-Cat &bull; Strand, Western Cape</p>
+            <p style="font-size: 0.85rem; color: #334155; margin-bottom: 1.5rem;">Cool-Cat &bull; Strand, Western Cape</p>
 
             <div style="font-size: 0.9rem; color: #334155; line-height: 1.6;">
                 <h4 style="color: var(--sapphire-blue); margin-top: 1rem; margin-bottom: 0.3rem;">🚭 1. No Indoor Smoking</h4>
@@ -1929,21 +1930,21 @@
             <button class="modal-rules-close" onclick="closeReferralModal()">&times;</button>
             <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">🎁</div>
             <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.4rem;">Join the Cool-Cat Referral Program</h2>
-            <p style="font-size: 0.85rem; color: #64748B; text-align: center; margin-bottom: 1.2rem;">
+            <p style="font-size: 0.85rem; color: #334155; text-align: center; margin-bottom: 1.2rem;">
                 Earn <strong>10% cash commission</strong> into your bank account on every completed stay you refer to Cool-Cat in Strand!
             </p>
 
             <form id="referralJoinForm" onsubmit="handleGenerateReferralLink(event)">
                 <div style="margin-bottom: 0.9rem;">
-                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">First Name</label>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155; display: block; margin-bottom: 0.3rem;">First Name</label>
                     <input type="text" id="refFirstName" required placeholder="e.g. Jannie" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
                 </div>
                 <div style="margin-bottom: 0.9rem;">
-                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Last Name</label>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155; display: block; margin-bottom: 0.3rem;">Last Name</label>
                     <input type="text" id="refLastName" required placeholder="e.g. van der Merwe" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
                 </div>
                 <div style="margin-bottom: 1.2rem;">
-                    <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem;">Email Address</label>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155; display: block; margin-bottom: 0.3rem;">Email Address</label>
                     <input type="email" id="refEmail" required placeholder="jannie@example.com" style="width: 100%; padding: 0.6rem; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
@@ -2012,7 +2013,7 @@
             </div>
             <div class="footer-bottom" style="line-height: 1.7; font-size: 0.82rem; opacity: 0.9;">
                 <div>&copy; 2026 Cool Cat Holiday Accommodation (Pty) Ltd (Reg. No. 2026/626178/07). All rights reserved. &bull; Strand, Western Cape, 7140, South Africa</div>
-                <div style="font-size: 0.76rem; color: #94A3B8; margin-top: 0.4rem;">
+                <div style="font-size: 0.76rem; color: #334155; margin-top: 0.4rem;">
                     <strong>ECT Act Compliance:</strong> CIPC Reg. 9463921745 &bull; Reg. No. 2026/626178/07 &bull; Physical Location: Strand, Western Cape, 7140 &bull; 
                     <strong>POPIA Notice:</strong> Guest personal and booking data is processed in strict compliance with the South African Protection of Personal Information Act (POPIA) and never shared with third parties.
                 </div>
@@ -2674,7 +2675,7 @@
                         dayCell.classList.add('checkout-min-stay');
                         if (isBooked) dayCell.classList.add('booked-out');
                         availPillHtml = `<span class="cal-avail-pill pill-min-stay">Min 2 Nights</span>`;
-                        tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ 1 Night stay (Minimum is 2 nights)</span><br><span style="color:#CBD5E1;">Click next day or further down the calendar to check out.</span>`;
+                        tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ 1 Night stay (Minimum is 2 nights)</span><br><span style="color: #334155;">Click next day or further down the calendar to check out.</span>`;
                     } else if (checkoutStatus.isValidCheckout) {
                         if (isBooked) {
                             // Turnover day: morning checkout before next arrival
@@ -3031,7 +3032,7 @@
                 staysSubtotal += stay.subtotal;
 
                 const breakdownRows = (stay.nightlyRates || []).map(nr => 
-                    `<div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #64748B; padding: 0.12rem 0;">
+                    `<div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #334155; padding: 0.12rem 0;">
                         <span>${nr.label}</span>
                         <span>R${nr.rate.toLocaleString()}</span>
                     </div>`
@@ -3280,7 +3281,7 @@
                                 <span style="font-size: 1.1rem;">${s.roomIcon}</span>
                                 <strong style="font-size: 0.95rem; color: #0F172A;">${s.roomName}</strong>
                             </div>
-                            <div style="font-size: 0.84rem; color: #475569; margin-bottom: 0.25rem;">
+                            <div style="font-size: 0.84rem; color: #334155; margin-bottom: 0.25rem;">
                                 📅 ${formatFriendlyDate(s.checkIn)} – ${formatFriendlyDate(s.checkOut)} &bull; <strong>${s.nights} Night${s.nights > 1 ? 's' : ''}</strong>
                             </div>
                             <div style="font-size: 0.81rem; color: #0284C7; font-weight: 600; margin-bottom: 0.3rem;">
@@ -3296,7 +3297,7 @@
                                     <input type="checkbox" id="bfChk_${s.id}" ${s.includeBreakfast ? 'checked' : ''} onchange="toggleStayBreakfast('${s.id}')" style="margin-top: 3px; flex-shrink: 0;">
                                     <div>
                                         <strong style="font-size: 0.88rem; color: #1E293B;">🍳 Add Daily Breakfast Package</strong><br>
-                                        <span style="font-size: 0.78rem; color: #64748B;">Farm-fresh breakfast (+R120 per guest / night) &mdash; Estimated for ${s.guestCount} guest${s.guestCount > 1 ? 's' : ''}: R${(s.guestCount * s.nights * 120).toLocaleString()} total</span>
+                                        <span style="font-size: 0.78rem; color: #334155;">Farm-fresh breakfast (+R120 per guest / night) &mdash; Estimated for ${s.guestCount} guest${s.guestCount > 1 ? 's' : ''}: R${(s.guestCount * s.nights * 120).toLocaleString()} total</span>
                                     </div>
                                 </label>
 
@@ -3336,7 +3337,7 @@
             const isDeposit = (calculatedDepositDue < calculatedGrandTotal);
             if (recapDepositSubtext) {
                 if (isDeposit) {
-                    recapDepositSubtext.innerHTML = `💳 <strong>50% Deposit: R${calculatedDepositDue.toLocaleString()} Due Now</strong><br><span style="color: #64748B; font-weight: normal; font-size: 0.76rem;">(Remaining R${calculatedBalanceDue.toLocaleString()} due at check-in)</span>`;
+                    recapDepositSubtext.innerHTML = `💳 <strong>50% Deposit: R${calculatedDepositDue.toLocaleString()} Due Now</strong><br><span style="color: #334155; font-weight: normal; font-size: 0.76rem;">(Remaining R${calculatedBalanceDue.toLocaleString()} due at check-in)</span>`;
                 } else {
                     recapDepositSubtext.innerHTML = `💳 <strong>100% Full Payment Required</strong>`;
                 }
