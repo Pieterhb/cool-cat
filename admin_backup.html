@@ -1930,6 +1930,118 @@
                             </div>
                         </div>
 
+                        
+                        <!-- 0.2. HIGH-DEMAND & EVENT SURCHARGES OVERRIDE -->
+                        <div style="margin-bottom: 2rem; background: #FEF3C7; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 1.25rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
+                                <div>
+                                    <h4 style="color: #92400E; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🏆 HIGH-DEMAND &amp; EVENT SURCHARGES OVERRIDE</span>
+                                        <span style="font-size: 0.72rem; background: #FDE68A; color: #78350F; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700;">EVENT ENGINE</span>
+                                    </h4>
+                                    <span style="font-size: 0.82rem; color: #78350F;">Set premium event flat rates for high-demand dates (e.g. Cape Town Cycle Tour / Argus, Easter, Wine Festivals). The Event Name is displayed on guest calendars so guests know why the rate is higher.</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 0.75rem 1rem;">
+                                <label for="event_surge_name" style="font-weight: 700; color: #92400E; font-size: 0.88rem; white-space: nowrap;">🏷️ Event Name / Reason:</label>
+                                <input type="text" id="event_surge_name" class="adm-input" placeholder="e.g. Argus Cycling Tour, Easter Weekend, Two Oceans" style="flex: 1; min-width: 240px; font-weight: 700; color: #1E293B;">
+                                <button type="button" class="btn-adm-secondary" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;" onclick="syncEventDatesToAllRooms()" title="Copy King Arthur event dates to all other rooms">⚡ Copy Dates to All Rooms</button>
+                            </div>
+
+                            <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Room Name</th>
+                                            <th>Event Start Date</th>
+                                            <th>Event End Date</th>
+                                            <th>Event Rate / Night (Flat ZAR)</th>
+                                            <th style="text-align: center;">Event Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td>
+                                                <input type="date" id="event_king_start" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <input type="date" id="event_king_end" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:0.3rem;">
+                                                    <span style="color: #334155;font-weight:700;">R</span>
+                                                    <input type="number" id="event_king_rate" class="adm-input" value="1300" style="width: 110px;">
+                                                </div>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <input type="hidden" id="event_king_active" value="false">
+                                                <button type="button" class="btn-toggle-special special-off" id="btn_event_king" onclick="toggleEvent('king')">🔴 OFF</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td>
+                                                <input type="date" id="event_santori_start" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <input type="date" id="event_santori_end" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:0.3rem;">
+                                                    <span style="color: #334155;font-weight:700;">R</span>
+                                                    <input type="number" id="event_santori_rate" class="adm-input" value="1100" style="width: 110px;">
+                                                </div>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <input type="hidden" id="event_santori_active" value="false">
+                                                <button type="button" class="btn-toggle-special special-off" id="btn_event_santori" onclick="toggleEvent('santori')">🔴 OFF</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>🏛️ Mykonos Room</strong></td>
+                                            <td>
+                                                <input type="date" id="event_mykonos_start" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <input type="date" id="event_mykonos_end" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:0.3rem;">
+                                                    <span style="color: #334155;font-weight:700;">R</span>
+                                                    <input type="number" id="event_mykonos_rate" class="adm-input" value="1100" style="width: 110px;">
+                                                </div>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <input type="hidden" id="event_mykonos_active" value="false">
+                                                <button type="button" class="btn-toggle-special special-off" id="btn_event_mykonos" onclick="toggleEvent('mykonos')">🔴 OFF</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
+                                            <td>
+                                                <input type="date" id="event_deluxe_start" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <input type="date" id="event_deluxe_end" class="adm-input" style="width: 145px;">
+                                            </td>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:0.3rem;">
+                                                    <span style="color: #334155;font-weight:700;">R</span>
+                                                    <input type="number" id="event_deluxe_rate" class="adm-input" value="1700" style="width: 110px;">
+                                                </div>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <input type="hidden" id="event_deluxe_active" value="false">
+                                                <button type="button" class="btn-toggle-special special-off" id="btn_event_deluxe" onclick="toggleEvent('deluxe')">🔴 OFF</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <!-- 0.5. SPECIAL HOLIDAY PACKAGES (Whole House & 3-Room Package Discounts) -->
                         <div style="margin-bottom: 2rem; background: #EFF6FF; border: 1.5px solid #93C5FD; border-radius: 12px; padding: 1.25rem;">
                             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
@@ -2949,6 +3061,32 @@
                     if (config[key] !== undefined) {
                         const el = document.getElementById('rate_' + key);
                         if (el) el.value = config[key];
+                    }
+                });
+
+                // Load Event Surcharges Config & Toggle Buttons
+                if (config.event_surge_name !== undefined) {
+                    const nameEl = document.getElementById('event_surge_name');
+                    if (nameEl) nameEl.value = config.event_surge_name;
+                }
+                const eventRoomKeys = ['king', 'santori', 'mykonos', 'deluxe'];
+                eventRoomKeys.forEach(rk => {
+                    const isEvActive = (config['event_' + rk + '_active'] === true || config['event_' + rk + '_active'] === 'true');
+                    const evActInput = document.getElementById('event_' + rk + '_active');
+                    if (evActInput) evActInput.value = isEvActive ? 'true' : 'false';
+                    updateEventButtonUI(rk, isEvActive);
+
+                    if (config['event_' + rk + '_start'] !== undefined) {
+                        const startEl = document.getElementById('event_' + rk + '_start');
+                        if (startEl) startEl.value = config['event_' + rk + '_start'];
+                    }
+                    if (config['event_' + rk + '_end'] !== undefined) {
+                        const endEl = document.getElementById('event_' + rk + '_end');
+                        if (endEl) endEl.value = config['event_' + rk + '_end'];
+                    }
+                    if (config['event_' + rk + '_rate'] !== undefined) {
+                        const rateEl = document.getElementById('event_' + rk + '_rate');
+                        if (rateEl) rateEl.value = config['event_' + rk + '_rate'];
                     }
                 });
 
@@ -5834,6 +5972,36 @@ We look forward to hosting you at Cool-Cat!`;
                 btn.innerHTML = '⏳ Saving to Cloud...';
             }
 
+            // Date Overlap Validation: Ensure Active Specials & Active Event Surcharges do NOT clash
+            const roomNamesMap = {
+                king: 'King Arthur Room',
+                santori: 'Santori Room',
+                mykonos: 'Mykonos Room',
+                deluxe: 'Cool-Cat Deluxe Suite'
+            };
+            const clashingRooms = [];
+            ['king', 'santori', 'mykonos', 'deluxe'].forEach(rk => {
+                const spActive = document.getElementById('special_' + rk + '_active')?.value === 'true';
+                const evActive = document.getElementById('event_' + rk + '_active')?.value === 'true';
+                if (spActive && evActive) {
+                    const spStart = document.getElementById('special_' + rk + '_start')?.value || '';
+                    const spEnd = document.getElementById('special_' + rk + '_end')?.value || '';
+                    const evStart = document.getElementById('event_' + rk + '_start')?.value || '';
+                    const evEnd = document.getElementById('event_' + rk + '_end')?.value || '';
+                    if (spStart && spEnd && evStart && evEnd) {
+                        if (spStart <= evEnd && evStart <= spEnd) {
+                            clashingRooms.push('• ' + roomNamesMap[rk] + ' (Discount: ' + spStart + ' to ' + spEnd + ' vs Event: ' + evStart + ' to ' + evEnd + ')');
+                        }
+                    }
+                }
+            });
+
+            if (clashingRooms.length > 0) {
+                if (btn) { btn.disabled = false; btn.innerHTML = originalBtnText; }
+                alert('⚠️ Date Overlap Conflict Detected:\n\nThe following rooms have both an ACTIVE Promotional Discount and an ACTIVE Event Surcharge on overlapping dates:\n\n' + clashingRooms.join('\n') + '\n\nPlease adjust the dates or turn off one of the overrides so they do not conflict.');
+                return;
+            }
+
             const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
             const rates = {
                 nextYearMarkupPct: markup,
@@ -5877,26 +6045,48 @@ We look forward to hosting you at Cool-Cat!`;
                 festive_deluxe_wd:  Number(document.getElementById('rate_festive_deluxe_wd').value)  || 2430,
                 festive_deluxe_we:  Number(document.getElementById('rate_festive_deluxe_we').value)  || 3150,
 
+                // High-Demand & Event Surcharges
+                event_surge_name: document.getElementById('event_surge_name')?.value.trim() || '',
+                event_king_active: document.getElementById('event_king_active')?.value === 'true',
+                event_king_start: document.getElementById('event_king_start')?.value || '',
+                event_king_end: document.getElementById('event_king_end')?.value || '',
+                event_king_rate: Number(document.getElementById('event_king_rate')?.value) || 0,
+
+                event_santori_active: document.getElementById('event_santori_active')?.value === 'true',
+                event_santori_start: document.getElementById('event_santori_start')?.value || '',
+                event_santori_end: document.getElementById('event_santori_end')?.value || '',
+                event_santori_rate: Number(document.getElementById('event_santori_rate')?.value) || 0,
+
+                event_mykonos_active: document.getElementById('event_mykonos_active')?.value === 'true',
+                event_mykonos_start: document.getElementById('event_mykonos_start')?.value || '',
+                event_mykonos_end: document.getElementById('event_mykonos_end')?.value || '',
+                event_mykonos_rate: Number(document.getElementById('event_mykonos_rate')?.value) || 0,
+
+                event_deluxe_active: document.getElementById('event_deluxe_active')?.value === 'true',
+                event_deluxe_start: document.getElementById('event_deluxe_start')?.value || '',
+                event_deluxe_end: document.getElementById('event_deluxe_end')?.value || '',
+                event_deluxe_rate: Number(document.getElementById('event_deluxe_rate')?.value) || 0,
+
                 // Active Specials Overrides
-                special_king_active: document.getElementById('special_king_active').value === 'true',
-                special_king_start: document.getElementById('special_king_start').value || '',
-                special_king_end: document.getElementById('special_king_end').value || '',
-                special_king_rate: Number(document.getElementById('special_king_rate').value) || 0,
+                special_king_active: document.getElementById('special_king_active')?.value === 'true',
+                special_king_start: document.getElementById('special_king_start')?.value || '',
+                special_king_end: document.getElementById('special_king_end')?.value || '',
+                special_king_rate: Number(document.getElementById('special_king_rate')?.value) || 0,
 
-                special_santori_active: document.getElementById('special_santori_active').value === 'true',
-                special_santori_start: document.getElementById('special_santori_start').value || '',
-                special_santori_end: document.getElementById('special_santori_end').value || '',
-                special_santori_rate: Number(document.getElementById('special_santori_rate').value) || 0,
+                special_santori_active: document.getElementById('special_santori_active')?.value === 'true',
+                special_santori_start: document.getElementById('special_santori_start')?.value || '',
+                special_santori_end: document.getElementById('special_santori_end')?.value || '',
+                special_santori_rate: Number(document.getElementById('special_santori_rate')?.value) || 0,
 
-                special_mykonos_active: document.getElementById('special_mykonos_active').value === 'true',
-                special_mykonos_start: document.getElementById('special_mykonos_start').value || '',
-                special_mykonos_end: document.getElementById('special_mykonos_end').value || '',
-                special_mykonos_rate: Number(document.getElementById('special_mykonos_rate').value) || 0,
+                special_mykonos_active: document.getElementById('special_mykonos_active')?.value === 'true',
+                special_mykonos_start: document.getElementById('special_mykonos_start')?.value || '',
+                special_mykonos_end: document.getElementById('special_mykonos_end')?.value || '',
+                special_mykonos_rate: Number(document.getElementById('special_mykonos_rate')?.value) || 0,
 
-                special_deluxe_active: document.getElementById('special_deluxe_active').value === 'true',
-                special_deluxe_start: document.getElementById('special_deluxe_start').value || '',
-                special_deluxe_end: document.getElementById('special_deluxe_end').value || '',
-                special_deluxe_rate: Number(document.getElementById('special_deluxe_rate').value) || 0,
+                special_deluxe_active: document.getElementById('special_deluxe_active')?.value === 'true',
+                special_deluxe_start: document.getElementById('special_deluxe_start')?.value || '',
+                special_deluxe_end: document.getElementById('special_deluxe_end')?.value || '',
+                special_deluxe_rate: Number(document.getElementById('special_deluxe_rate')?.value) || 0,
 
                 // Special Holiday Packages Discount (0% - 100%)
                 pkg_discount_four: Math.max(0, Math.min(100, Number(document.getElementById('pkg_discount_four')?.value) || 0)),

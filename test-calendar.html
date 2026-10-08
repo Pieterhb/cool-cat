@@ -2228,6 +2228,55 @@
             };
         }
 
+        
+        function getEventSurgeInfo(roomId, dateStr) {
+            if (typeof SITE_CONFIG === 'undefined' || !SITE_CONFIG) return null;
+            const prefixMap = {
+                'king-arthur': 'king',
+                'king': 'king',
+                'santori': 'santori',
+                'mykonos': 'mykonos',
+                'deluxe-suite': 'deluxe',
+                'deluxe': 'deluxe'
+            };
+            const eventName = (SITE_CONFIG.event_surge_name || '').trim() || 'Special Event';
+
+            if (roomId === 'all') {
+                const activeRooms = ['king', 'santori', 'mykonos', 'deluxe'].filter(p => {
+                    const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
+                    const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
+                    const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
+                    return act && st && en && dateStr >= st && dateStr <= en;
+                });
+                if (activeRooms.length > 0) {
+                    return { name: eventName, active: true };
+                }
+                return null;
+            }
+
+            if (roomId === 'three-rooms') {
+                const activeRooms = ['king', 'santori', 'mykonos'].filter(p => {
+                    const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
+                    const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
+                    const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
+                    return act && st && en && dateStr >= st && dateStr <= en;
+                });
+                if (activeRooms.length > 0) {
+                    return { name: eventName, active: true };
+                }
+                return null;
+            }
+
+            const prefix = prefixMap[roomId] || roomId;
+            const isEvActive = (SITE_CONFIG['event_' + prefix + '_active'] === true || SITE_CONFIG['event_' + prefix + '_active'] === 'true');
+            const evStart = String(SITE_CONFIG['event_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+            const evEnd = String(SITE_CONFIG['event_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+            if (isEvActive && evStart && evEnd && dateStr >= evStart && dateStr <= evEnd) {
+                return { name: eventName, active: true };
+            }
+            return null;
+        }
+
         function calculateNightPrice(room, date) {
             const dayOfWeek = date.getDay();
             const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0);
@@ -2253,12 +2302,24 @@
             const d = String(date.getDate()).padStart(2, '0');
             const dateStr = `${y}-${m}-${d}`;
 
-            // Check if an ACTIVE SPECIAL override applies for this date & room
+            // 1. Check if an ACTIVE EVENT SURCHARGE applies for this date & room (Event Surcharges take priority)
             if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
-                const isSpecialActive = (SITE_CONFIG[`special_${prefix}_active`] === true || SITE_CONFIG[`special_${prefix}_active`] === 'true');
-                const spStart = String(SITE_CONFIG[`special_${prefix}_start`] || '').trim().replace(/\//g, '-');
-                const spEnd = String(SITE_CONFIG[`special_${prefix}_end`] || '').trim().replace(/\//g, '-');
-                const spRate = Number(SITE_CONFIG[`special_${prefix}_rate`]);
+                const isEventActive = (SITE_CONFIG['event_' + prefix + '_active'] === true || SITE_CONFIG['event_' + prefix + '_active'] === 'true');
+                const evStart = String(SITE_CONFIG['event_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+                const evEnd = String(SITE_CONFIG['event_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+                const evRate = Number(SITE_CONFIG['event_' + prefix + '_rate']);
+
+                if (isEventActive && evStart && evEnd && dateStr >= evStart && dateStr <= evEnd && evRate > 0) {
+                    return evRate;
+                }
+            }
+
+            // 2. Check if an ACTIVE SPECIAL override applies for this date & room
+            if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) {
+                const isSpecialActive = (SITE_CONFIG['special_' + prefix + '_active'] === true || SITE_CONFIG['special_' + prefix + '_active'] === 'true');
+                const spStart = String(SITE_CONFIG['special_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+                const spEnd = String(SITE_CONFIG['special_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+                const spRate = Number(SITE_CONFIG['special_' + prefix + '_rate']);
 
                 if (isSpecialActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
                     return spRate;
@@ -2309,7 +2370,9 @@
                 const markupPct = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG && SITE_CONFIG.nextYearMarkupPct !== undefined)
                     ? Number(SITE_CONFIG.nextYearMarkupPct)
                     : 10;
-                rate = rate * (1 + markupPct / 100);
+                if (markupPct > 0) {
+                    rate = rate * (1 + markupPct / 100);
+                }
             }
 
             return Math.round(rate);

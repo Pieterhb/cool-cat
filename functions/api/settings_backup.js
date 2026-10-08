@@ -57,7 +57,7 @@ const DEFAULT_CONFIG = {
     festive_deluxe_wd:  2430,
     festive_deluxe_we:  3150,
 
-    // Active Specials Overrides
+    // Active Specials Overrides (Discounts)
     special_king_active: false,
     special_king_start: '',
     special_king_end: '',
@@ -77,6 +77,28 @@ const DEFAULT_CONFIG = {
     special_deluxe_start: '',
     special_deluxe_end: '',
     special_deluxe_rate: 990,
+
+    // High-Demand & Event Surcharges (Event Surges)
+    event_surge_name: '',
+    event_king_active: false,
+    event_king_start: '',
+    event_king_end: '',
+    event_king_rate: 1300,
+
+    event_santori_active: false,
+    event_santori_start: '',
+    event_santori_end: '',
+    event_santori_rate: 1100,
+
+    event_mykonos_active: false,
+    event_mykonos_start: '',
+    event_mykonos_end: '',
+    event_mykonos_rate: 1100,
+
+    event_deluxe_active: false,
+    event_deluxe_start: '',
+    event_deluxe_end: '',
+    event_deluxe_rate: 1700,
 
     // Package discounts (0% - 100%)
     pkg_discount_four: 0,
