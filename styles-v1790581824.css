@@ -904,36 +904,65 @@ footer {
 /* Small Cellphone 9:16 Screens - Balanced Navbar Spacing */
 @media (max-width: 480px) {
   .container {
-    padding: 0 0.75rem;
+    padding: 0 0.65rem;
   }
 
   .nav-container {
     gap: 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo-wrapper {
+    gap: 0.45rem;
   }
 
   .logo-header-row {
     gap: 0;
+    display: flex;
+    align-items: center;
   }
 
   .logo-text {
-    font-size: 0.84rem;
-    max-width: 165px;
+    font-size: 1.1rem; /* 30% larger for cellphone screens */
+    line-height: 1.12;
+    max-width: 190px;
+    white-space: normal;
   }
 
   .logo-img {
-    height: 32px;
+    height: 34px;
+    width: 34px;
+    flex-shrink: 0;
   }
 
   .btn-nav-admin {
-    font-size: 0.68rem;
-    padding: 0.18rem 0.52rem;
-    letter-spacing: 0.05em;
-    margin-left: 12px;
-    margin-right: 16px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.24rem 0.65rem;
+    letter-spacing: 0.04em;
+    margin-left: 14px;
+    margin-right: 14px;
+    flex-shrink: 0;
   }
 
   .mobile-menu-btn {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     padding: 2px 4px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .logo-text {
+    font-size: 0.98rem;
+    max-width: 155px;
+  }
+
+  .btn-nav-admin {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 0.2rem 0.52rem;
+    font-size: 0.68rem;
   }
 }
