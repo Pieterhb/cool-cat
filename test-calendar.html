@@ -826,16 +826,18 @@
         }
 
         .cart-stay-card {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
             border-radius: 12px;
             padding: 0.85rem 1rem;
             position: relative;
-            transition: border-color 0.2s ease;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
         }
 
         .cart-stay-card:hover {
-            border-color: #CBD5E1;
+            border-color: #F59E0B;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.14);
         }
 
         .cart-stay-head {
@@ -883,7 +885,7 @@
             font-weight: 700;
             color: #1E293B;
             text-align: right;
-            border-top: 1px dashed #E2E8F0;
+            border-top: 1px dashed #FCD34D;
             padding-top: 0.35rem;
             margin-top: 0.35rem;
         }
@@ -3049,7 +3051,7 @@
                             <strong style="color: var(--sapphire-blue-dark); margin-left: 0.3rem;">(${stay.nights}N)</strong>
                         </div>
                         <div style="font-size: 0.78rem; color: #0284C7; font-weight: 600; margin-top: 0.2rem;">👥 ${stay.guestCount} Guest${stay.guestCount > 1 ? 's' : ''} arriving (max ${stay.maxGuests})</div>
-                        <div style="margin-top: 0.35rem; background: #FFFFFF; border-radius: 6px; padding: 0.4rem 0.6rem; border: 1px solid #E2E8F0;">
+                        <div style="margin-top: 0.35rem; background: #FFFFFF; border-radius: 6px; padding: 0.4rem 0.6rem; border: 1px solid #FDE68A;">
                             ${breakdownRows}
                         </div>
                         <div class="cart-stay-subtotal">
