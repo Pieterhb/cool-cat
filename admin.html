@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -4040,7 +4040,7 @@
                 if (sp && sp.active && sp.start && sp.end && dStr >= sp.start && dStr <= sp.end && sp.rate > 0) {
                     return sp.rate;
                 }
-                const rRates = ratesCfg[\\] || ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId] || { wd: 950, we: 1200 };
+                const rRates = ratesCfg[`${seasonPrefix}${rId}`] || ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId] || { wd: 950, we: 1200 };
                 let rRate = isWeekend ? rRates.we : rRates.wd;
                 if (date.getFullYear() > today.getFullYear()) {
                     rRate = rRate * (1 + ratesCfg.nextYearMarkupPct / 100);
