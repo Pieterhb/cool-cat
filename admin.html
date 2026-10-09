@@ -682,6 +682,35 @@
             box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45);
         }
 
+        .btn-copy-event-dates {
+            background: #EA580C;
+            color: #FFFFFF;
+            border: 1px solid #C2410C;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.42rem 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(234, 88, 12, 0.3);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            white-space: nowrap;
+        }
+
+        .btn-copy-event-dates:hover {
+            background: #D97706;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(234, 88, 12, 0.45);
+        }
+
+        .btn-copy-event-dates:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(234, 88, 12, 0.25);
+        }
+
+
         /* Section View Toggles */
         .tab-section {
             display: none;
@@ -1946,7 +1975,7 @@
                             <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 0.75rem 1rem;">
                                 <label for="event_surge_name" style="font-weight: 700; color: #92400E; font-size: 0.88rem; white-space: nowrap;">🏷️ Event Name / Reason:</label>
                                 <input type="text" id="event_surge_name" class="adm-input" placeholder="e.g. Argus Cycling Tour, Easter Weekend, Two Oceans" style="flex: 1; min-width: 240px; font-weight: 700; color: #1E293B;">
-                                <button type="button" class="btn-adm-secondary" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;" onclick="syncEventDatesToAllRooms()" title="Copy King Arthur event dates to all other rooms">⚡ Copy Dates to All Rooms</button>
+                                <button type="button" class="btn-copy-event-dates" onclick="syncEventDatesToAllRooms()" title="Copy King Arthur event dates to all other rooms">⚡ Copy Dates to All Rooms</button>
                             </div>
 
                             <div class="adm-table-wrapper" style="background: white; border-radius: 8px;">
@@ -2982,6 +3011,15 @@
             renderMarketerBatchesTable();
             populateAdminCalMonthJump();
             renderAdminCalendar();
+            // Real-time sync from rates inputs to calendar
+            document.querySelectorAll('#tabRates input').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    if (typeof renderAdminCalendar === 'function') {
+                        renderAdminCalendar();
+                    }
+                });
+            });
+
             loadSavedSystemSettings();
         }
 
@@ -2993,6 +3031,9 @@
             const newState = !isCurrentlyActive;
             input.value = newState ? 'true' : 'false';
             updateSpecialButtonUI(roomKey, newState);
+            if (typeof renderAdminCalendar === 'function') {
+                renderAdminCalendar();
+            }
         }
 
         function updateSpecialButtonUI(roomKey, isActive) {
@@ -3005,6 +3046,49 @@
                 btn.className = 'btn-toggle-special special-off';
                 btn.innerHTML = '🔴 OFF';
             }
+        }
+
+
+        function toggleEvent(roomKey) {
+            var input = document.getElementById('event_' + roomKey + '_active');
+            var btn = document.getElementById('btn_event_' + roomKey);
+            if (!input || !btn) return;
+            var isCurrentlyActive = (input.value === 'true');
+            var newState = !isCurrentlyActive;
+            input.value = newState ? 'true' : 'false';
+            updateEventButtonUI(roomKey, newState);
+            if (typeof renderAdminCalendar === 'function') {
+                renderAdminCalendar();
+            }
+        }
+
+        function updateEventButtonUI(roomKey, isActive) {
+            var btn = document.getElementById('btn_event_' + roomKey);
+            if (!btn) return;
+            if (isActive) {
+                btn.className = 'btn-toggle-special special-on';
+                btn.innerHTML = '🟢 ACTIVE';
+            } else {
+                btn.className = 'btn-toggle-special special-off';
+                btn.innerHTML = '🔴 OFF';
+            }
+        }
+
+        function syncEventDatesToAllRooms() {
+            var startEl = document.getElementById('event_king_start');
+            var endEl = document.getElementById('event_king_end');
+            var startVal = startEl ? startEl.value : '';
+            var endVal = endEl ? endEl.value : '';
+            ['santori', 'mykonos', 'deluxe'].forEach(function(rk) {
+                var s = document.getElementById('event_' + rk + '_start');
+                var e = document.getElementById('event_' + rk + '_end');
+                if (s) s.value = startVal;
+                if (e) e.value = endVal;
+            });
+            if (typeof renderAdminCalendar === 'function') {
+                renderAdminCalendar();
+            }
+            alert('⚡ King Arthur event dates copied to Santori, Mykonos, and Cool-Cat Deluxe Suite!');
         }
 
         async function loadSavedRatesIntoAdmin() {
@@ -3936,11 +4020,27 @@
             const dStr = formatDateStr(date);
 
             function getSingleRoomNightPrice(rId) {
+                // Event surcharges (from admin form inputs) take highest priority
+                var evPrefixMap = { 'king-arthur': 'king', 'santori': 'santori', 'mykonos': 'mykonos', 'deluxe-suite': 'deluxe' };
+                var evPrefix = evPrefixMap[rId] || rId;
+                var evActiveEl = document.getElementById('event_' + evPrefix + '_active');
+                var evStartEl  = document.getElementById('event_' + evPrefix + '_start');
+                var evEndEl    = document.getElementById('event_' + evPrefix + '_end');
+                var evRateEl   = document.getElementById('event_' + evPrefix + '_rate');
+                if (evActiveEl && evStartEl && evEndEl && evRateEl) {
+                    var isEvActive = (evActiveEl.value === 'true');
+                    var evStart = String(evStartEl.value || '').trim();
+                    var evEnd   = String(evEndEl.value || '').trim();
+                    var evRate  = Number(evRateEl.value);
+                    if (isEvActive && evStart && evEnd && dStr >= evStart && dStr <= evEnd && evRate > 0) {
+                        return evRate;
+                    }
+                }
                 const sp = ratesCfg.specials && ratesCfg.specials[rId];
                 if (sp && sp.active && sp.start && sp.end && dStr >= sp.start && dStr <= sp.end && sp.rate > 0) {
                     return sp.rate;
                 }
-                const rRates = ratesCfg[`${seasonPrefix}${rId}`] || ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId] || { wd: 950, we: 1200 };
+                const rRates = ratesCfg[\\] || ratesCfg[rId] || ADMIN_DEFAULT_RATES[rId] || { wd: 950, we: 1200 };
                 let rRate = isWeekend ? rRates.we : rRates.wd;
                 if (date.getFullYear() > today.getFullYear()) {
                     rRate = rRate * (1 + ratesCfg.nextYearMarkupPct / 100);
@@ -4176,10 +4276,63 @@
                 let isBlocked = false;
                 let bookingDetails = null;
 
+                // Detect active event surcharge or promotional special on this date
+                var evPrefixMap = { 'king-arthur': 'king', 'santori': 'santori', 'mykonos': 'mykonos', 'deluxe-suite': 'deluxe' };
+                var evPrefix = evPrefixMap[adminCalRoomId] || adminCalRoomId;
+                var activeEventInfo = null;
+                var activePromoInfo = null;
+
+                if (adminCalRoomId === 'all') {
+                    var indRooms = ['king', 'santori', 'mykonos', 'deluxe'];
+                    var activeEvRooms = indRooms.filter(function(p) {
+                        var act = document.getElementById('event_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('event_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeEvRooms.length > 0) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surge';
+                        activeEventInfo = { name: evName, count: activeEvRooms.length };
+                    }
+                    var activeSpRooms = indRooms.filter(function(p) {
+                        var act = document.getElementById('special_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('special_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('special_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeSpRooms.length > 0) {
+                        activePromoInfo = { count: activeSpRooms.length };
+                    }
+                } else {
+                    var evAct = document.getElementById('event_' + evPrefix + '_active')?.value === 'true';
+                    var evSt = String(document.getElementById('event_' + evPrefix + '_start')?.value || '').trim();
+                    var evEn = String(document.getElementById('event_' + evPrefix + '_end')?.value || '').trim();
+                    if (evAct && evSt && evEn && dateStr >= evSt && dateStr <= evEn) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surcharge';
+                        activeEventInfo = { name: evName };
+                    }
+                    var spAct = document.getElementById('special_' + evPrefix + '_active')?.value === 'true';
+                    var spSt = String(document.getElementById('special_' + evPrefix + '_start')?.value || '').trim();
+                    var spEn = String(document.getElementById('special_' + evPrefix + '_end')?.value || '').trim();
+                    if (spAct && spSt && spEn && dateStr >= spSt && dateStr <= spEn) {
+                        activePromoInfo = { active: true };
+                    }
+                }
+
                 if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
                     if (avail.availableCount === 4) {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-open">4 Open</span>`;
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 4 Open</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 4 Open</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="adm-cal-avail-pill pill-open">4 Open</span>`;
+                        }
                     } else if (avail.availableCount === 0) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-booked">Fully Booked</span>`;
                         isBooked = true;
@@ -4222,7 +4375,17 @@
                             dayCell.classList.add('booked-day');
                         }
                     } else {
-                        pillHtml = `<span class="adm-cal-avail-pill pill-open">Open</span>`;
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 EVENT</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 PROMO</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="adm-cal-avail-pill pill-open">Open</span>`;
+                        }
                     }
                 }
 
@@ -4249,6 +4412,11 @@
                     }
                 } else {
                     tooltipContent += `<span style="color:#86EFAC; font-weight:700;">✓ Available for Booking</span><br>`;
+                    if (activeEventInfo) {
+                        tooltipContent += `<span style="color:#FDE68A; font-weight:700;">🏆 Event Surcharge Active:</span> <strong>${activeEventInfo.name}</strong><br>`;
+                    } else if (activePromoInfo) {
+                        tooltipContent += `<span style="color:#FDA4AF; font-weight:700;">🔥 Promotional Special Active</span><br>`;
+                    }
                     tooltipContent += `Rate: <strong>R${rate.toLocaleString()}</strong> / night<br>`;
                     tooltipContent += `<em>Click to select Check-In / Check-Out</em>`;
                 }
@@ -4260,7 +4428,7 @@
                     </div>
                     ${midHtml}
                     <div class="adm-cal-day-bottom">
-                        <span class="adm-cal-price-tag">R${rate.toLocaleString()}</span>
+                        <span class="adm-cal-price-tag" style="${activeEventInfo ? "color:#B45309;font-weight:800;" : (activePromoInfo ? "color:#BE123C;font-weight:800;" : "")}">R${rate.toLocaleString()}</span>
                     </div>
                     <div class="adm-cal-tooltip">${tooltipContent}</div>
                 `;

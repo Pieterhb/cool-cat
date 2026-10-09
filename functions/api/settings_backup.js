@@ -13,8 +13,8 @@ const CORS_HEADERS = {
     'Pragma': 'no-cache'
 };
 
-// Default config — used when nothing has been saved yet
-// Default config — used when nothing has been saved yet
+// Default config – used when nothing has been saved yet
+// Default config – used when nothing has been saved yet
 const DEFAULT_CONFIG = {
     nextYearMarkupPct: 10,
     // Mid Season (Standard Base Rates)
@@ -129,7 +129,6 @@ export async function onRequestPost(context) {
     try {
         const payload = await request.json();
 
-        // Validate fields
         const allowedNumeric = [
             'nextYearMarkupPct',
             'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
@@ -137,16 +136,21 @@ export async function onRequestPost(context) {
             'peak_king_wd', 'peak_king_we', 'peak_santori_wd', 'peak_santori_we', 'peak_mykonos_wd', 'peak_mykonos_we', 'peak_deluxe_wd', 'peak_deluxe_we',
             'festive_king_wd', 'festive_king_we', 'festive_santori_wd', 'festive_santori_we', 'festive_mykonos_wd', 'festive_mykonos_we', 'festive_deluxe_wd', 'festive_deluxe_we',
             'special_king_rate', 'special_santori_rate', 'special_mykonos_rate', 'special_deluxe_rate',
+            'event_king_rate', 'event_santori_rate', 'event_mykonos_rate', 'event_deluxe_rate',
             'pkg_discount_four', 'pkg_discount_three'
         ];
 
         const allowedBoolean = [
-            'special_king_active', 'special_santori_active', 'special_mykonos_active', 'special_deluxe_active'
+            'special_king_active', 'special_santori_active', 'special_mykonos_active', 'special_deluxe_active',
+            'event_king_active', 'event_santori_active', 'event_mykonos_active', 'event_deluxe_active'
         ];
 
         const allowedString = [
             'special_king_start', 'special_king_end', 'special_santori_start', 'special_santori_end',
-            'special_mykonos_start', 'special_mykonos_end', 'special_deluxe_start', 'special_deluxe_end'
+            'special_mykonos_start', 'special_mykonos_end', 'special_deluxe_start', 'special_deluxe_end',
+            'event_surge_name',
+            'event_king_start', 'event_king_end', 'event_santori_start', 'event_santori_end',
+            'event_mykonos_start', 'event_mykonos_end', 'event_deluxe_start', 'event_deluxe_end'
         ];
 
         const update = {};
@@ -185,7 +189,7 @@ export async function onRequestPost(context) {
             config = { ...config, ...update };
             await env.COOLCAT_KV.put('site_config', JSON.stringify(config));
         } else {
-            // No KV bound (local dev) — just echo back
+            // No KV bound (local dev) – just echo back
             config = { ...config, ...update };
         }
 

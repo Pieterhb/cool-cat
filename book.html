@@ -3171,7 +3171,12 @@
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     } else {
+                        const evSurge = getEventSurgeInfo(selectedRoomId, dateStr);
+                    if (evSurge) {
+                        availPillHtml = `<span class="cal-avail-pill" style="background:#FEF3C7;color:#92400E;font-weight:700;">🏆 Event</span>`;
+                    } else {
                         availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
+                    }
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
                     }
@@ -3236,7 +3241,10 @@
                         : (selectedRoomId === 'three-rooms')
                         ? (Number(SITE_CONFIG && SITE_CONFIG.pkg_discount_three) || 0)
                         : 0;
-                    if (activePkgPct > 0) {
+                    const evSurge = getEventSurgeInfo(selectedRoomId, dateStr);
+                    if (evSurge) {
+                        tooltipText += `<br><span style="color:#FDE68A;font-weight:700;">🏆 ${evSurge.name} (${priceText}/night)</span> &bull; Available`;
+                    } else if (activePkgPct > 0) {
                         tooltipText += `<br>${priceText} &bull; Available <span style="color:#6EE7B7; font-weight:700;">(${activePkgPct}% Package Discount applied in cart)</span>`;
                     } else {
                         tooltipText += `<br>${priceText} &bull; Available`;
@@ -4689,7 +4697,10 @@
             let totalMonthRate = 0;
             let validDaysCount = 0;
             let hasActiveSpecial = false;
+            let hasActiveEvent = false;
+            let eventSurgeTitle = '';
             const specialRates = [];
+            const eventRates = [];
             const seasonCounts = { low: 0, mid: 0, peak: 0, festive: 0 };
 
             function formatR(val) {
@@ -4755,6 +4766,16 @@
                         if (isSpActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) {
                             hasActiveSpecial = true;
                             specialRates.push(spRate);
+                        }
+                        const isEvActive = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG) &&
+                            (SITE_CONFIG[`event_${prefix}_active`] === true || SITE_CONFIG[`event_${prefix}_active`] === 'true');
+                        const evStart = String((SITE_CONFIG && SITE_CONFIG[`event_${prefix}_start`]) || '').trim().replace(/\//g, '-');
+                        const evEnd = String((SITE_CONFIG && SITE_CONFIG[`event_${prefix}_end`]) || '').trim().replace(/\//g, '-');
+                        const evRate = Number(SITE_CONFIG && SITE_CONFIG[`event_${prefix}_rate`]);
+                        if (isEvActive && evStart && evEnd && dateStr >= evStart && dateStr <= evEnd && evRate > 0) {
+                            hasActiveEvent = true;
+                            eventRates.push(evRate);
+                            eventSurgeTitle = (SITE_CONFIG && SITE_CONFIG.event_surge_name) ? SITE_CONFIG.event_surge_name.trim() : 'Event Surcharge';
                         }
                         dayRate = calculateNightPrice(r, dateObj);
                     }
@@ -4827,6 +4848,24 @@
                     `;
                 } else {
                     bannerRate.innerHTML = '';
+                }
+            } else if (hasActiveEvent) {
+                if (bannerContainer) bannerContainer.classList.add('is-peak');
+                if (bannerBadge) {
+                    bannerBadge.className = 'banner-status-badge badge-peak';
+                    bannerBadge.textContent = `🏆 ${eventSurgeTitle.toUpperCase() || 'EVENT SURCHARGE'}`;
+                    bannerBadge.style.display = 'inline-flex';
+                }
+                if (eventRates.length > 0) {
+                    const minEv = Math.min(...eventRates);
+                    const maxEv = Math.max(...eventRates);
+                    if (minEv === maxEv) {
+                        bannerRate.textContent = `Event Rate: R${formatR(minEv)} / night`;
+                    } else {
+                        bannerRate.textContent = `Event Rate from R${formatR(minEv)} / night`;
+                    }
+                } else {
+                    bannerRate.textContent = `Event Rate Active`;
                 }
             } else if (hasActiveSpecial) {
                 if (bannerContainer) bannerContainer.classList.add('is-special');
