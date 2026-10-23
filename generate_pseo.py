@@ -559,6 +559,7 @@ def generate():
     <url><loc>{base_url}/faq</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
     <url><loc>{base_url}/terms</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
     <url><loc>{base_url}/privacy</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+    <url><loc>{base_url}/cancellation</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 """
     for loc in locations:
         sitemap += f"    <url><loc>{base_url}/explore/{loc['slug']}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n"

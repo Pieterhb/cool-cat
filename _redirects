@@ -1,4 +1,6 @@
 # Cloudflare Pages 301 Permanent Redirects for SEO Canonicalization
+
+# 1. Primary Pages: 301 Redirect .html to clean canonical URLs
 /index.html               /                                       301
 /rooms.html               /rooms                                  301
 /guide.html               /guide                                  301
@@ -6,10 +8,39 @@
 /explore.html             /explore                                301
 /privacy.html             /privacy                                301
 /terms.html               /terms                                  301
-/cancellation.html         /cancellation                           301
+/cancellation.html        /cancellation                           301
 /entertainment.html       /entertainment                          301
 /book.html                /book                                   301
 /admin.html               /admin                                  301
+
+# 2. Legacy Booking Engine / Calendar Prototype (Direct 301 to live booking engine)
 /test-calendar.html       /book                                   301
 /test-calendar            /book                                   301
+/test-calendar/           /book                                   301
+
+# 3. Explore Destination Pages: 301 Redirect .html to clean URLs
 /explore/:slug.html       /explore/:slug                          301
+
+# 4. Common Legacy Aliases & 404 Prevention
+/cancellation-policy      /cancellation                           301
+/cancellation-policy.html /cancellation                           301
+/terms-and-conditions     /terms                                  301
+/terms-and-conditions.html /terms                                 301
+/privacy-policy           /privacy                                301
+/privacy-policy.html      /privacy                                301
+/booking                  /book                                   301
+/booking.html             /book                                   301
+/accommodations           /rooms                                  301
+/accommodation            /rooms                                  301
+/rates                    /rooms                                  301
+/rates.html               /rooms                                  301
+/pricing                  /rooms                                  301
+/pricing.html             /rooms                                  301
+/contact                  /                                       301
+/contact.html             /                                       301
+/about                    /                                       301
+/about.html               /                                       301
+
+# 5. Cloudflare Email Protection Crawler 404 Prevention
+/cdn-cgi/l/email-protection /                                     301
+/cdn-cgi/*                /                                       301
