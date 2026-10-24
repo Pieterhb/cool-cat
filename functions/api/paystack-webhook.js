@@ -127,7 +127,7 @@ export async function onRequestPost(context) {
                     staysList.forEach(s => {
                         const stayRooms = s.roomId === 'all'
                             ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
-                            : [s.roomId];
+                            : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori', 'mykonos'] : (s.roomId === 'santori' ? ['santori', 'mykonos'] : [s.roomId]));
                         stayRooms.forEach(rid => {
                             existing.push({
                                 id: `${cleanBookingRef}_${rid}_${s.checkInStr || s.checkIn}`,

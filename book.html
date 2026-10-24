@@ -1749,33 +1749,29 @@
                                 <span>🛏️ PICK YOUR COOL-CAT ROOM:</span>
                             </div>
                             <div class="room-tabs" id="roomTabs">
-                                <!-- Row 1: Four Rooms (formerly All Rooms) -->
+                                <!-- Row 1: Four Rooms -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="all" onclick="switchRoom('all')">
-                                        <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                        <span>🏨 FOUR ROOMS (King Arthur Suite, Santori Suite, Deluxe Suite)</span>
                                         <span class="room-tab-badge" id="badge_all">0</span>
                                     </button>
                                 </div>
-                                <!-- Row 2: Three Rooms – fully active -->
+                                <!-- Row 2: Three Rooms -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="three-rooms" onclick="switchRoom('three-rooms')">
-                                        <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
+                                        <span>🏠 THREE ROOMS (King Arthur Suite &amp; Santori Suite)</span>
                                         <span class="room-tab-badge" id="badge_three-rooms">0</span>
                                     </button>
                                 </div>
-                                <!-- Row 3: Individual room buttons -->
+                                <!-- Row 3: Individual suite buttons -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="king-arthur" onclick="switchRoom('king-arthur')">
-                                        <span>👑 King Arthur</span>
+                                        <span>👑 King Arthur Suite</span>
                                         <span class="room-tab-badge" id="badge_king-arthur">0</span>
                                     </button>
                                     <button class="room-tab-btn" data-room="santori" onclick="switchRoom('santori')">
-                                        <span>🌊 Santori</span>
+                                        <span>🌊 Santori Suite</span>
                                         <span class="room-tab-badge" id="badge_santori">0</span>
-                                    </button>
-                                    <button class="room-tab-btn" data-room="mykonos" onclick="switchRoom('mykonos')">
-                                        <span>🏛️ Mykonos</span>
-                                        <span class="room-tab-badge" id="badge_mykonos">0</span>
                                     </button>
                                     <button class="room-tab-btn" data-room="deluxe-suite" onclick="switchRoom('deluxe-suite')">
                                         <span>✨ Deluxe Suite</span>
@@ -1784,13 +1780,14 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Selected Room Details Bar -->
+                    <!-- Selected Room Details Bar -->
                         <div class="selected-room-info" id="roomInfoBanner">
                             <div class="room-meta">
                                 <span class="banner-status-badge badge-mid" id="bannerStatusBadge">🟡 MID SEASON</span>
                                 <strong id="bannerRoomName">All 4 Rooms (Entire Property)</strong>
-                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)</span>
                             </div>
                             <div class="room-rate-tag" id="bannerRoomRate">
                                 From R2,650 to R3,400 / night
@@ -2435,7 +2432,7 @@
         const ROOMS = [
             {
                 id: 'king-arthur',
-                name: 'King Arthur Room',
+                name: 'King Arthur Suite',
                 specs: 'Regal King Bed · Own Bathroom · Sleeps 2',
                 baseWeekday: 950,
                 baseWeekend: 1200,
@@ -2444,21 +2441,12 @@
             },
             {
                 id: 'santori',
-                name: 'Santori Room',
-                specs: 'Cosy Double Bed · Shared Bathroom · Sleeps 2',
+                name: 'Santori Suite',
+                specs: 'Two Private Separate Bedrooms (2 Double Beds) · Sleeps up to 4',
                 baseWeekday: 850,
                 baseWeekend: 1100,
-                maxGuests: 2,
+                maxGuests: 4,
                 icon: '🌊'
-            },
-            {
-                id: 'mykonos',
-                name: 'Mykonos Room',
-                specs: 'Two Single Beds (Double) · Shared Bathroom · Sleeps 2',
-                baseWeekday: 850,
-                baseWeekend: 1100,
-                maxGuests: 2,
-                icon: '🏛️'
             },
             {
                 id: 'deluxe-suite',
@@ -2471,11 +2459,11 @@
             }
         ];
 
-        // All 4 room IDs - used when expanding an "all" stay into individual room bookings
-        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+        // All bookable suite IDs for Four Rooms
+        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'deluxe-suite'];
 
-        // 3-room subset (excludes Deluxe Suite) - used for "three-rooms" combined booking
-        const THREE_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
+        // 3-room subset (King Arthur Suite + Santori Suite [2 rooms] = 3 bedrooms)
+        const THREE_ROOMS_SUBSET = ['king-arthur', 'santori'];
         const THREE_ROOMS = ROOMS.filter(r => THREE_ROOMS_SUBSET.includes(r.id));
 
         // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
@@ -2644,14 +2632,14 @@
                 'king-arthur': 'king',
                 'king': 'king',
                 'santori': 'santori',
-                'mykonos': 'mykonos',
+                'mykonos': 'santori',
                 'deluxe-suite': 'deluxe',
                 'deluxe': 'deluxe'
             };
             const eventName = (SITE_CONFIG.event_surge_name || '').trim() || 'Special Event';
 
             if (roomId === 'all') {
-                const activeRooms = ['king', 'santori', 'mykonos', 'deluxe'].filter(p => {
+                const activeRooms = ['king', 'santori', 'deluxe'].filter(p => {
                     const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
                     const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
                     const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
@@ -2664,7 +2652,7 @@
             }
 
             if (roomId === 'three-rooms') {
-                const activeRooms = ['king', 'santori', 'mykonos'].filter(p => {
+                const activeRooms = ['king', 'santori'].filter(p => {
                     const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
                     const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
                     const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
@@ -2699,7 +2687,7 @@
                 'king-arthur': 'king',
                 'king': 'king',
                 'santori': 'santori',
-                'mykonos': 'mykonos',
+                'mykonos': 'santori',
                 'deluxe-suite': 'deluxe',
                 'deluxe': 'deluxe'
             };
@@ -2794,10 +2782,11 @@
                 // Check stays array inside booking record (if present)
                 if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
                     return b.stays.some(s => {
-                        // 'all' blocks every room; 'three-rooms' blocks the 3-room subset
                         const blocksThisRoom = s.roomId === roomId
+                            || (roomId === 'santori' && s.roomId === 'mykonos')
+                            || (roomId === 'mykonos' && s.roomId === 'santori')
                             || s.roomId === 'all'
-                            || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                            || (s.roomId === 'three-rooms' && (THREE_ROOMS_SUBSET.includes(roomId) || roomId === 'mykonos'));
                         if (!blocksThisRoom) return false;
                         const cIn = s.checkInStr || s.checkIn;
                         const cOut = s.checkOutStr || s.checkOut;
@@ -2811,8 +2800,10 @@
                 }
 
                 const blocksThisRoom = b.roomId === roomId
+                    || (roomId === 'santori' && b.roomId === 'mykonos')
+                    || (roomId === 'mykonos' && b.roomId === 'santori')
                     || b.roomId === 'all'
-                    || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                    || (b.roomId === 'three-rooms' && (THREE_ROOMS_SUBSET.includes(roomId) || roomId === 'mykonos'));
                 if (!blocksThisRoom) return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -3021,7 +3012,7 @@
             document.getElementById('monthJumpSelect').value = `${year}-${month}`;
 
             // Update badges on room selector tabs
-            const roomIds = ['all', 'three-rooms', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            const roomIds = ['all', 'three-rooms', 'king-arthur', 'santori', 'deluxe-suite'];
             roomIds.forEach(rId => {
                 const badge = document.getElementById(`badge_${rId}`);
                 if (badge) {
@@ -3355,7 +3346,7 @@
                         if (indivCount > 0) {
                             showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Three Rooms.`);
                         } else {
-                            showToast("All 3 rooms (King Arthur, Santori, Mykonos) must be available on this date to book Three Rooms.");
+                            showToast("Both suites (King Arthur Suite & Santori Suite) must be available on this date to book Three Rooms.");
                         }
                         return;
                     }
@@ -3376,7 +3367,7 @@
 
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 pendingCheckIn = { roomId: selectedRoomId, date: new Date(dateObj) };
                 showToast(`📍 ${roomDisplayName}: Check-in set for ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
@@ -3400,7 +3391,7 @@
                 pendingCheckIn.date = new Date(dateObj);
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 showToast(`📍 ${roomDisplayName}: Check-in moved to ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
@@ -3499,13 +3490,13 @@
                 d.setDate(d.getDate() + 1);
             }
 
-            const stayMaxGuests = isAll ? 8 : isThree ? 6 : 2;
+            const stayMaxGuests = isAll ? 8 : isThree ? 6 : (selectedRoomId === 'santori' ? 4 : 2);
             const stayGuestCount = (selectedGuestCount && selectedGuestCount >= 1 && selectedGuestCount <= stayMaxGuests) ? selectedGuestCount : stayMaxGuests;
 
             const newStay = {
                 id: 'stay_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
                 roomId: selectedRoomId,
-                roomName: isAll ? 'All 4 Rooms (Entire Property)' : isThree ? 'Three Rooms (King Arthur, Santori, Mykonos)' : roomObj.name,
+                roomName: isAll ? 'All 4 Rooms (Entire Property)' : isThree ? 'Three Rooms (King Arthur Suite & Santori Suite)' : roomObj.name,
                 roomIcon: isAll ? '🏨' : isThree ? '🏠' : roomObj.icon,
                 checkIn: new Date(checkInDate),
                 checkOut: new Date(checkOutDate),
@@ -3578,7 +3569,7 @@
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const rName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} – click check-out date`;
                 pendingBox.style.display = 'flex';
@@ -3837,6 +3828,7 @@
         function getActiveTabMaxGuests() {
             if (selectedRoomId === 'all') return 8;
             if (selectedRoomId === 'three-rooms') return 6;
+            if (selectedRoomId === 'santori') return 4;
             return 2;
         }
 
@@ -3844,7 +3836,7 @@
             if (selectedStays && selectedStays.length > 0) {
                 let max = 0;
                 selectedStays.forEach(s => {
-                    max += (s.roomId === 'all') ? 8 : (s.roomId === 'three-rooms') ? 6 : 2;
+                    max += (s.roomId === 'all') ? 8 : (s.roomId === 'three-rooms') ? 6 : (s.roomId === 'santori') ? 4 : 2;
                 });
                 return Math.min(10, Math.max(1, max));
             }
@@ -4294,7 +4286,7 @@
             const primaryRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
                 : isThreeRooms
-                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const staysJson = JSON.stringify(selectedStays.map(s => ({
@@ -4392,7 +4384,7 @@
             const primaryRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
                 : isThreeRooms
-                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const bookingPayload = {
@@ -4667,16 +4659,16 @@
             if (isAll) {
                 bannerName.textContent = '🏨 FOUR ROOMS (Whole Property)';
                 if (pkgDiscount > 0) {
-                    bannerSpecs.innerHTML = `Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ Whole Property Special: Book all 4 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
+                    bannerSpecs.innerHTML = `Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ Whole Property Special: Book all rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
                 } else {
-                    bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+                    bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)';
                 }
             } else if (isThree) {
-                bannerName.textContent = '🏠 THREE ROOMS (3 Suites)';
+                bannerName.textContent = '🏠 THREE ROOMS (2 Suites / 3 Bedrooms)';
                 if (pkgDiscount > 0) {
-                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Suite Special: Book 3 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
+                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Bedrooms (King Arthur Suite &amp; Santori Suite [2 Rooms]) – Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Bedroom Special: Book King Arthur &amp; Santori Suites together and save ${pkgDiscount}% automatically on all dates!</span>`;
                 } else {
-                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite';
+                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Bedrooms (King Arthur Suite & Santori Suite [2 Rooms]) – Excludes Deluxe Suite';
                 }
             } else {
                 const r = ROOMS.find(item => item.id === selectedRoomId);
@@ -5030,7 +5022,7 @@
                     'king': 'king-arthur',
                     'kingarthur': 'king-arthur',
                     'santori': 'santori',
-                    'mykonos': 'mykonos',
+                    'mykonos': 'santori',
                     'deluxe-suite': 'deluxe-suite',
                     'deluxe': 'deluxe-suite',
                     'deluxesuite': 'deluxe-suite',
@@ -5146,11 +5138,10 @@
             const cOut = urlParams.get('out') || '';
 
             const roomNames = {
-                'all': 'Four Rooms (King Arthur, Santori, Mykonos, Deluxe Suite)',
-                'three-rooms': 'Three Rooms (King Arthur, Santori, Mykonos)',
-                'king-arthur': 'King Arthur Room',
-                'santori': 'Santori Room',
-                'mykonos': 'Mykonos Room',
+                'all': 'Four Rooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)',
+                'three-rooms': 'Three Rooms (King Arthur Suite & Santori Suite [2 Rooms])',
+                'king-arthur': 'King Arthur Suite',
+                'santori': 'Santori Suite (2 Bedrooms)',
                 'deluxe-suite': 'Cool-Cat Deluxe Suite'
             };
 

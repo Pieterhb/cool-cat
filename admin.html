@@ -1499,16 +1499,13 @@
                         <div class="adm-room-tabs-wrapper">
                             <div class="adm-room-tabs" id="admRoomTabs">
                                 <button type="button" class="adm-room-tab active" data-room="all" onclick="setAdminCalRoom('all')">
-                                    🏨 All Rooms (4 Rooms)
+                                    🏨 All Rooms (4 Bedrooms)
                                 </button>
                                 <button type="button" class="adm-room-tab" data-room="king-arthur" onclick="setAdminCalRoom('king-arthur')">
-                                    👑 King Arthur Room
+                                    👑 King Arthur Suite
                                 </button>
                                 <button type="button" class="adm-room-tab" data-room="santori" onclick="setAdminCalRoom('santori')">
-                                    🌊 Santori Room
-                                </button>
-                                <button type="button" class="adm-room-tab" data-room="mykonos" onclick="setAdminCalRoom('mykonos')">
-                                    🏛️ Mykonos Room
+                                    🌊 Santori Suite (2 Bedrooms)
                                 </button>
                                 <button type="button" class="adm-room-tab" data-room="deluxe-suite" onclick="setAdminCalRoom('deluxe-suite')">
                                     ✨ Deluxe Suite
@@ -1879,7 +1876,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>
                                                 <input type="date" id="special_king_start" class="adm-input" style="width: 145px;">
                                             </td>
@@ -1898,7 +1895,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
                                             <td>
                                                 <input type="date" id="special_santori_start" class="adm-input" style="width: 145px;">
                                             </td>
@@ -1916,25 +1913,7 @@
                                                 <button type="button" class="btn-toggle-special special-off" id="btn_special_santori" onclick="toggleSpecial('santori')">🔴 OFF</button>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>
-                                                <input type="date" id="special_mykonos_start" class="adm-input" style="width: 145px;">
-                                            </td>
-                                            <td>
-                                                <input type="date" id="special_mykonos_end" class="adm-input" style="width: 145px;">
-                                            </td>
-                                            <td>
-                                                <div style="display:flex;align-items:center;gap:0.3rem;">
-                                                    <span style="color: #334155;font-weight:700;">R</span>
-                                                    <input type="number" id="special_mykonos_rate" class="adm-input" value="599" style="width: 110px;">
-                                                </div>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <input type="hidden" id="special_mykonos_active" value="false">
-                                                <button type="button" class="btn-toggle-special special-off" id="btn_special_mykonos" onclick="toggleSpecial('mykonos')">🔴 OFF</button>
-                                            </td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
                                             <td>
@@ -1991,7 +1970,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>
                                                 <input type="date" id="event_king_start" class="adm-input" style="width: 145px;">
                                             </td>
@@ -2010,7 +1989,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
                                             <td>
                                                 <input type="date" id="event_santori_start" class="adm-input" style="width: 145px;">
                                             </td>
@@ -2028,25 +2007,7 @@
                                                 <button type="button" class="btn-toggle-special special-off" id="btn_event_santori" onclick="toggleEvent('santori')">🔴 OFF</button>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>
-                                                <input type="date" id="event_mykonos_start" class="adm-input" style="width: 145px;">
-                                            </td>
-                                            <td>
-                                                <input type="date" id="event_mykonos_end" class="adm-input" style="width: 145px;">
-                                            </td>
-                                            <td>
-                                                <div style="display:flex;align-items:center;gap:0.3rem;">
-                                                    <span style="color: #334155;font-weight:700;">R</span>
-                                                    <input type="number" id="event_mykonos_rate" class="adm-input" value="1100" style="width: 110px;">
-                                                </div>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <input type="hidden" id="event_mykonos_active" value="false">
-                                                <button type="button" class="btn-toggle-special special-off" id="btn_event_mykonos" onclick="toggleEvent('mykonos')">🔴 OFF</button>
-                                            </td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
                                             <td>
@@ -2094,7 +2055,7 @@
                                         <tr>
                                             <td>
                                                 <div style="font-weight: 800; font-size: 0.95rem; color: #0F172A; display: flex; align-items: center; gap: 0.4rem;">
-                                                    <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                                    <span>🏨 FOUR ROOMS (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)</span>
                                                 </div>
                                                 <div style="font-size: 0.8rem; color: #334155; margin-top: 0.2rem;">Whole Property • Sleeps up to 8 Guests</div>
                                             </td>
@@ -2108,7 +2069,7 @@
                                         <tr>
                                             <td>
                                                 <div style="font-weight: 800; font-size: 0.95rem; color: #0F172A; display: flex; align-items: center; gap: 0.4rem;">
-                                                    <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
+                                                    <span>🏠 THREE ROOMS (King Arthur Suite &amp; Santori Suite [2 Rooms])</span>
                                                 </div>
                                                 <div style="font-size: 0.8rem; color: #334155; margin-top: 0.2rem;">3 Suites (Excludes Deluxe Suite) • Sleeps up to 6 Guests</div>
                                             </td>
@@ -2147,22 +2108,16 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>2 Adults</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_king_wd" class="adm-input" value="808" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_king_we" class="adm-input" value="1020" style="width: 110px;"></div></td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
-                                            <td>2 Adults</td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
+                                            <td>4 Guests (2 Rooms)</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_santori_wd" class="adm-input" value="723" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_santori_we" class="adm-input" value="935" style="width: 110px;"></div></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>2 Adults</td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_mykonos_wd" class="adm-input" value="723" style="width: 110px;"></div></td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_low_mykonos_we" class="adm-input" value="935" style="width: 110px;"></div></td>
                                         </tr>
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
@@ -2198,23 +2153,18 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>2 Adults</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_king_wd" class="adm-input" value="950" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_king_we" class="adm-input" value="1200" style="width: 110px;"></div></td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
-                                            <td>2 Adults</td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
+                                            <td>4 Guests (2 Rooms)</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_santori_wd" class="adm-input" value="850" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_santori_we" class="adm-input" value="1100" style="width: 110px;"></div></td>
                                         </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>2 Adults</td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_mykonos_wd" class="adm-input" value="850" style="width: 110px;"></div></td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_mykonos_we" class="adm-input" value="1100" style="width: 110px;"></div></td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
                                             <td>2 Adults</td>
@@ -2249,23 +2199,18 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>2 Adults</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_king_wd" class="adm-input" value="1283" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_king_we" class="adm-input" value="1620" style="width: 110px;"></div></td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
-                                            <td>2 Adults</td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
+                                            <td>4 Guests (2 Rooms)</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_santori_wd" class="adm-input" value="1148" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_santori_we" class="adm-input" value="1485" style="width: 110px;"></div></td>
                                         </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>2 Adults</td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_mykonos_wd" class="adm-input" value="1148" style="width: 110px;"></div></td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_peak_mykonos_we" class="adm-input" value="1485" style="width: 110px;"></div></td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
                                             <td>2 Adults</td>
@@ -2300,23 +2245,18 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>👑 King Arthur Room</strong></td>
+                                            <td><strong>👑 King Arthur Suite</strong></td>
                                             <td>2 Adults</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_king_wd" class="adm-input" value="1710" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_king_we" class="adm-input" value="2160" style="width: 110px;"></div></td>
                                         </tr>
                                         <tr>
-                                            <td><strong>🌊 Santori Room</strong></td>
-                                            <td>2 Adults</td>
+                                            <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
+                                            <td>4 Guests (2 Rooms)</td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_santori_wd" class="adm-input" value="1530" style="width: 110px;"></div></td>
                                             <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_santori_we" class="adm-input" value="1980" style="width: 110px;"></div></td>
                                         </tr>
-                                        <tr>
-                                            <td><strong>🏛️ Mykonos Room</strong></td>
-                                            <td>2 Adults</td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_mykonos_wd" class="adm-input" value="1530" style="width: 110px;"></div></td>
-                                            <td><div style="display:flex;align-items:center;gap:0.3rem;"><span style="color: #334155;font-weight:700;">R</span><input type="number" id="rate_festive_mykonos_we" class="adm-input" value="1980" style="width: 110px;"></div></td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td><strong>✨ Cool-Cat Deluxe Suite</strong></td>
                                             <td>2 Adults</td>
@@ -2576,12 +2516,12 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><strong>👑 King Arthur Room</strong></td>
+                                        <td><strong>👑 King Arthur Suite</strong></td>
                                         <td><code id="ical_king">https://cool-cat.co.za/api/ical?room=king-arthur</code></td>
                                         <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_king')">Copy URL</button></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>🌊 Santori Room</strong></td>
+                                        <td><strong>🌊 Santori Suite (2 Bedrooms)</strong></td>
                                         <td><code id="ical_santori">https://cool-cat.co.za/api/ical?room=santori</code></td>
                                         <td><button class="btn-sm btn-adm-primary" onclick="copyIcalUrl('ical_santori')">Copy URL</button></td>
                                     </tr>
@@ -2660,10 +2600,10 @@
                         <div class="adm-form-group" style="margin-bottom: 0.8rem;">
                             <label>Select Room</label>
                             <select id="manRoomSelect" class="adm-input" required onchange="onModalRoomChange()">
-                                <option value="all">🏨 All Rooms (4 Rooms: King Arthur, Santori, Mykonos, Deluxe Suite)</option>
-                                <option value="king-arthur">👑 King Arthur Room</option>
-                                <option value="santori">🌊 Santori Room</option>
-                                <option value="mykonos">🏛️ Mykonos Room</option>
+                                <option value="all">🏨 All Rooms (4 Bedrooms: King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)</option>
+                                <option value="three-rooms">🏠 Three Rooms (King Arthur Suite &amp; Santori Suite [2 Rooms])</option>
+                                <option value="king-arthur">👑 King Arthur Suite</option>
+                                <option value="santori">🌊 Santori Suite (2 Bedrooms)</option>
                                 <option value="deluxe-suite">✨ Cool-Cat Deluxe Suite</option>
                             </select>
                         </div>
@@ -3079,7 +3019,7 @@
             var endEl = document.getElementById('event_king_end');
             var startVal = startEl ? startEl.value : '';
             var endVal = endEl ? endEl.value : '';
-            ['santori', 'mykonos', 'deluxe'].forEach(function(rk) {
+            ['santori', 'deluxe'].forEach(function(rk) {
                 var s = document.getElementById('event_' + rk + '_start');
                 var e = document.getElementById('event_' + rk + '_end');
                 if (s) s.value = startVal;
@@ -3153,7 +3093,7 @@
                     const nameEl = document.getElementById('event_surge_name');
                     if (nameEl) nameEl.value = config.event_surge_name;
                 }
-                const eventRoomKeys = ['king', 'santori', 'mykonos', 'deluxe'];
+                const eventRoomKeys = ['king', 'santori', 'deluxe'];
                 eventRoomKeys.forEach(rk => {
                     const isEvActive = (config['event_' + rk + '_active'] === true || config['event_' + rk + '_active'] === 'true');
                     const evActInput = document.getElementById('event_' + rk + '_active');
@@ -3808,10 +3748,11 @@
         // =========================================================
 
         const ADMIN_ROOM_NAMES = {
-            'all': 'All Rooms (4 Rooms)',
-            'king-arthur': 'King Arthur Room',
-            'santori': 'Santori Room',
-            'mykonos': 'Mykonos Room',
+            'all': 'All Rooms (4 Bedrooms)',
+            'three-rooms': 'Three Rooms (King Arthur & Santori)',
+            'king-arthur': 'King Arthur Suite',
+            'santori': 'Santori Suite (2 Bedrooms)',
+            'mykonos': 'Santori Suite (Bedroom 2)',
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
@@ -4074,8 +4015,9 @@
                     if (dateStr < cIn || dateStr >= cOut) return false;
                     // For All Rooms tab: any stay on this date counts toward property occupancy
                     if (roomId === 'all') return true;
-                    // For an individual room: match if stay is for this room OR if stay is for 'all' (entire property)
-                    return (s.roomId === roomId || s.roomId === 'all');
+                    if (roomId === 'three-rooms') return (s.roomId === 'three-rooms' || s.roomId === 'all' || s.roomId === 'king-arthur' || s.roomId === 'santori' || s.roomId === 'mykonos');
+                    if (roomId === 'santori') return (s.roomId === 'santori' || s.roomId === 'mykonos' || s.roomId === 'all' || s.roomId === 'three-rooms');
+                    return (s.roomId === roomId || s.roomId === 'all' || (s.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(roomId)));
                 });
             }
 
@@ -5398,14 +5340,15 @@ We look forward to hosting you at Cool-Cat!`;
         function sendCleanerWhatsApp() {
             const todayStr = new Date().toISOString().split('T')[0];
             const roomKeys = [
-                { id: 'king-arthur', name: 'Room 1 (👑 King Arthur)' },
-                { id: 'santori', name: 'Room 2 (🌊 Santori)' },
-                { id: 'mykonos', name: 'Room 3 (🏛️ Mykonos)' },
-                { id: 'deluxe-suite', name: 'Room 4 (✨ Deluxe Suite)' }
+                { id: 'king-arthur', name: 'Suite 1 (👑 King Arthur Suite)' },
+                { id: 'santori', name: 'Suite 2 (🌊 Santori Suite - Room A)' },
+                { id: 'mykonos', name: 'Suite 2 (🌊 Santori Suite - Room B)' },
+                { id: 'deluxe-suite', name: 'Suite 3 (✨ Deluxe Suite)' }
             ];
 
             const coversRoom = (b, rId) => {
                 if (b.roomId === rId || b.roomId === 'all') return true;
+                if (b.roomId === 'santori' && (rId === 'santori' || rId === 'mykonos')) return true;
                 if (b.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(rId)) return true;
                 return false;
             };
@@ -6142,13 +6085,12 @@ We look forward to hosting you at Cool-Cat!`;
 
             // Date Overlap Validation: Ensure Active Specials & Active Event Surcharges do NOT clash
             const roomNamesMap = {
-                king: 'King Arthur Room',
-                santori: 'Santori Room',
-                mykonos: 'Mykonos Room',
+                king: 'King Arthur Suite',
+                santori: 'Santori Suite (2 Bedrooms)',
                 deluxe: 'Cool-Cat Deluxe Suite'
             };
             const clashingRooms = [];
-            ['king', 'santori', 'mykonos', 'deluxe'].forEach(rk => {
+            ['king', 'santori', 'deluxe'].forEach(rk => {
                 const spActive = document.getElementById('special_' + rk + '_active')?.value === 'true';
                 const evActive = document.getElementById('event_' + rk + '_active')?.value === 'true';
                 if (spActive && evActive) {
@@ -6178,8 +6120,8 @@ We look forward to hosting you at Cool-Cat!`;
                 king_we:    Number(document.getElementById('rate_king_we').value)    || 1200,
                 santori_wd: Number(document.getElementById('rate_santori_wd').value) || 850,
                 santori_we: Number(document.getElementById('rate_santori_we').value) || 1100,
-                mykonos_wd: Number(document.getElementById('rate_mykonos_wd').value) || 850,
-                mykonos_we: Number(document.getElementById('rate_mykonos_we').value) || 1100,
+                mykonos_wd: Number(document.getElementById('rate_santori_wd')?.value) || 850,
+                mykonos_we: Number(document.getElementById('rate_santori_we')?.value) || 1100,
                 deluxe_wd:  Number(document.getElementById('rate_deluxe_wd').value)  || 1350,
                 deluxe_we:  Number(document.getElementById('rate_deluxe_we').value)  || 1750,
 
@@ -6188,8 +6130,8 @@ We look forward to hosting you at Cool-Cat!`;
                 low_king_we:    Number(document.getElementById('rate_low_king_we').value)    || 1020,
                 low_santori_wd: Number(document.getElementById('rate_low_santori_wd').value) || 723,
                 low_santori_we: Number(document.getElementById('rate_low_santori_we').value) || 935,
-                low_mykonos_wd: Number(document.getElementById('rate_low_mykonos_wd').value) || 723,
-                low_mykonos_we: Number(document.getElementById('rate_low_mykonos_we').value) || 935,
+                low_mykonos_wd: Number(document.getElementById('rate_low_santori_wd')?.value) || 723,
+                low_mykonos_we: Number(document.getElementById('rate_low_santori_we')?.value) || 935,
                 low_deluxe_wd:  Number(document.getElementById('rate_low_deluxe_wd').value)  || 1148,
                 low_deluxe_we:  Number(document.getElementById('rate_low_deluxe_we').value)  || 1488,
 
@@ -6198,8 +6140,8 @@ We look forward to hosting you at Cool-Cat!`;
                 peak_king_we:    Number(document.getElementById('rate_peak_king_we').value)    || 1620,
                 peak_santori_wd: Number(document.getElementById('rate_peak_santori_wd').value) || 1148,
                 peak_santori_we: Number(document.getElementById('rate_peak_santori_we').value) || 1485,
-                peak_mykonos_wd: Number(document.getElementById('rate_peak_mykonos_wd').value) || 1148,
-                peak_mykonos_we: Number(document.getElementById('rate_peak_mykonos_we').value) || 1485,
+                peak_mykonos_wd: Number(document.getElementById('rate_peak_santori_wd')?.value) || 1148,
+                peak_mykonos_we: Number(document.getElementById('rate_peak_santori_we')?.value) || 1485,
                 peak_deluxe_wd:  Number(document.getElementById('rate_peak_deluxe_wd').value)  || 1823,
                 peak_deluxe_we:  Number(document.getElementById('rate_peak_deluxe_we').value)  || 2363,
 
@@ -6208,8 +6150,8 @@ We look forward to hosting you at Cool-Cat!`;
                 festive_king_we:    Number(document.getElementById('rate_festive_king_we').value)    || 2160,
                 festive_santori_wd: Number(document.getElementById('rate_festive_santori_wd').value) || 1530,
                 festive_santori_we: Number(document.getElementById('rate_festive_santori_we').value) || 1980,
-                festive_mykonos_wd: Number(document.getElementById('rate_festive_mykonos_wd').value) || 1530,
-                festive_mykonos_we: Number(document.getElementById('rate_festive_mykonos_we').value) || 1980,
+                festive_mykonos_wd: Number(document.getElementById('rate_festive_santori_wd')?.value) || 1530,
+                festive_mykonos_we: Number(document.getElementById('rate_festive_santori_we')?.value) || 1980,
                 festive_deluxe_wd:  Number(document.getElementById('rate_festive_deluxe_wd').value)  || 2430,
                 festive_deluxe_we:  Number(document.getElementById('rate_festive_deluxe_we').value)  || 3150,
 
@@ -6225,10 +6167,10 @@ We look forward to hosting you at Cool-Cat!`;
                 event_santori_end: document.getElementById('event_santori_end')?.value || '',
                 event_santori_rate: Number(document.getElementById('event_santori_rate')?.value) || 0,
 
-                event_mykonos_active: document.getElementById('event_mykonos_active')?.value === 'true',
-                event_mykonos_start: document.getElementById('event_mykonos_start')?.value || '',
-                event_mykonos_end: document.getElementById('event_mykonos_end')?.value || '',
-                event_mykonos_rate: Number(document.getElementById('event_mykonos_rate')?.value) || 0,
+                event_mykonos_active: false,
+                event_mykonos_start: '',
+                event_mykonos_end: '',
+                event_mykonos_rate: 0,
 
                 event_deluxe_active: document.getElementById('event_deluxe_active')?.value === 'true',
                 event_deluxe_start: document.getElementById('event_deluxe_start')?.value || '',
@@ -6246,10 +6188,10 @@ We look forward to hosting you at Cool-Cat!`;
                 special_santori_end: document.getElementById('special_santori_end')?.value || '',
                 special_santori_rate: Number(document.getElementById('special_santori_rate')?.value) || 0,
 
-                special_mykonos_active: document.getElementById('special_mykonos_active')?.value === 'true',
-                special_mykonos_start: document.getElementById('special_mykonos_start')?.value || '',
-                special_mykonos_end: document.getElementById('special_mykonos_end')?.value || '',
-                special_mykonos_rate: Number(document.getElementById('special_mykonos_rate')?.value) || 0,
+                special_mykonos_active: false,
+                special_mykonos_start: '',
+                special_mykonos_end: '',
+                special_mykonos_rate: 0,
 
                 special_deluxe_active: document.getElementById('special_deluxe_active')?.value === 'true',
                 special_deluxe_start: document.getElementById('special_deluxe_start')?.value || '',

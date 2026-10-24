@@ -1,4 +1,4 @@
-﻿// Cloudflare Pages Function: /api/verify-payment
+// Cloudflare Pages Function: /api/verify-payment
 // Verifies Paystack transaction, saves booking, and dispatches confirmation emails
 
 export async function onRequestPost(context) {
@@ -113,7 +113,7 @@ export async function onRequestPost(context) {
 
         const staysList = (payload.stays && Array.isArray(payload.stays) && payload.stays.length > 0) ? payload.stays : [{
             roomId: roomId || 'king-arthur',
-            roomName: roomName || 'King Arthur Room',
+            roomName: roomName || 'King Arthur Suite',
             checkIn: checkIn,
             checkOut: checkOut,
             checkInStr: checkIn,
@@ -234,7 +234,7 @@ export async function onRequestPost(context) {
             staysList.forEach(s => {
                 const stayRooms = s.roomId === 'all'
                     ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
-                    : [s.roomId];
+                    : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori', 'mykonos'] : (s.roomId === 'santori' ? ['santori', 'mykonos'] : [s.roomId]));
                 stayRooms.forEach(rid => {
                     existing.push({
                         id: `${bookingRef}_${rid}_${s.checkInStr || s.checkIn}`,

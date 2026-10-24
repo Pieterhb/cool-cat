@@ -145,10 +145,11 @@ export async function onRequestPost(context) {
         }
 
         const roomNames = {
-            'all': 'All 4 Rooms (Entire Property)',
-            'king-arthur': 'King Arthur Room',
-            'santori': 'Santori Room',
-            'mykonos': 'Mykonos Room',
+            'all': 'All Rooms (4 Bedrooms: King Arthur Suite, Santori Suite, Deluxe Suite)',
+            'three-rooms': 'Three Rooms (King Arthur Suite & Santori Suite)',
+            'king-arthur': 'King Arthur Suite',
+            'santori': 'Santori Suite (2 Bedrooms)',
+            'mykonos': 'Santori Suite (Bedroom 2)',
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
@@ -214,7 +215,7 @@ export async function onRequestPost(context) {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
             
-            // If booking all rooms, store parent booking + 4 separate blocks so calendar locks all 4 rooms
+            // If booking all rooms or packages, store calendar blocks
             if (roomId === 'all') {
                 existing.push(newBooking);
                 const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
@@ -237,6 +238,50 @@ export async function onRequestPost(context) {
                         status: finalStatus,
                         createdAt: new Date().toISOString()
                     });
+                });
+            } else if (roomId === 'three-rooms') {
+                existing.push(newBooking);
+                const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+                threeRooms.forEach(r => {
+                    existing.push({
+                        id: `${bookingRef}_${r}`,
+                        parentBookingId: bookingRef,
+                        isCalendarBlock: true,
+                        roomId: r,
+                        roomName: roomNames[r],
+                        checkIn,
+                        checkOut,
+                        nights: nightsCount,
+                        guestName: newBooking.guestName,
+                        guestEmail: newBooking.guestEmail,
+                        guestPhone: newBooking.guestPhone,
+                        totalAmount: 0,
+                        amountPaid: 0,
+                        balanceDue: 0,
+                        status: finalStatus,
+                        createdAt: new Date().toISOString()
+                    });
+                });
+            } else if (roomId === 'santori') {
+                existing.push(newBooking);
+                // Also block bedroom 2 (mykonos) so both rooms of Santori Suite are reserved
+                existing.push({
+                    id: `${bookingRef}_mykonos`,
+                    parentBookingId: bookingRef,
+                    isCalendarBlock: true,
+                    roomId: 'mykonos',
+                    roomName: 'Santori Suite (Bedroom 2)',
+                    checkIn,
+                    checkOut,
+                    nights: nightsCount,
+                    guestName: newBooking.guestName,
+                    guestEmail: newBooking.guestEmail,
+                    guestPhone: newBooking.guestPhone,
+                    totalAmount: 0,
+                    amountPaid: 0,
+                    balanceDue: 0,
+                    status: finalStatus,
+                    createdAt: new Date().toISOString()
                 });
             } else {
                 existing.push(newBooking);
