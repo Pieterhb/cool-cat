@@ -2549,7 +2549,8 @@
                         if (data.nextSequence) {
                             window._serverNextSeq = data.nextSequence;
                         }
-                        renderCalendar();
+                        // Only re-render if not mid-interaction (avoids blank flash during date selection)
+                        if (!pendingCheckIn) renderCalendar();
                     }
                 }
             } catch (e) {
@@ -2565,7 +2566,8 @@
                     if (data && data.success && data.config) {
                         applyConfigToRooms(data.config);
                         localStorage.setItem('coolcat_rates_config', JSON.stringify(data.config));
-                        renderCalendar();
+                        // Only re-render if not mid-interaction (avoids blank flash during date selection)
+                        if (!pendingCheckIn) renderCalendar();
                         updateSummarySidebar();
                         updateBannerRoomInfo();
                     }
@@ -3077,21 +3079,21 @@
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
-                    } else if (avail.availableCount === 4 && indivCartCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                    } else if (avail.availableCount === ROOMS.length && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">${ROOMS.length} Open</span>`;
                     } else if (avail.availableCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                         isBooked = true;
-                    } else if (avail.availableCount < 4) {
+                    } else if (avail.availableCount < ROOMS.length) {
                         const n = avail.availableCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        const n = 4 - indivCartCount;
+                        const n = ROOMS.length - indivCartCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true; // Block "All Rooms" booking on these dates
                     } else {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-full">${ROOMS.length} Open</span>`;
                     }
 
                 } else if (selectedRoomId === 'three-rooms') {
@@ -3141,7 +3143,7 @@
                     const totalOccupiedOnDate = ROOMS.filter(r =>
                         isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(r.id))) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
                     ).length;
-                    const freeRoomsLeft = 4 - totalOccupiedOnDate;
+                    const freeRoomsLeft = ROOMS.length - totalOccupiedOnDate;
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
@@ -3155,7 +3157,7 @@
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
-                    } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
+                    } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
                         // This room is OPEN, and other rooms are booked in DB!
                         const n = freeRoomsLeft;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
@@ -3194,12 +3196,12 @@
                         const indivCartBlocking = ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
-                        if (indivCartBlocking > 0 && avail.availableCount === 4) {
+                        if (indivCartBlocking > 0 && avail.availableCount === ROOMS.length) {
                             tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart – can't book Four Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free – can't book Four Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of ${ROOMS.length} rooms free – can't book Four Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 4 rooms fully booked – no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All ${ROOMS.length} rooms fully booked – no availability</span>`;
                         }
                     } else if (selectedRoomId === 'three-rooms') {
                         const threeAvail = getDateAvailabilityForThreeRoomsBooking(dateStr);
@@ -3223,9 +3225,9 @@
                     }
                 } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
                     const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
-                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of 4 Free)`;
-                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
-                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of 4 Rooms Free)`;
+                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of ${ROOMS.length} Free)`;
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
+                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of ${ROOMS.length} Rooms Free)`;
                 } else {
                     const activePkgPct = (selectedRoomId === 'all')
                         ? (Number(SITE_CONFIG && SITE_CONFIG.pkg_discount_four) || 0)
@@ -3275,12 +3277,12 @@
                                 const indivCartBlocking = ROOMS.filter(r =>
                                     selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
                                 ).length;
-                                if (indivCartBlocking > 0 && fullAvail.availableCount === 4) {
+                                if (indivCartBlocking > 0 && fullAvail.availableCount === ROOMS.length) {
                                     showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book Four Rooms on other dates.`);
                                 } else if (fullAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. Four Rooms requires all 4 to be available. Book rooms individually instead.`);
+                                    showToast(`⚠️ Only ${fullAvail.availableCount} of ${ROOMS.length} rooms are free on this date. Four Rooms requires all ${ROOMS.length} to be available. Book rooms individually instead.`);
                                 } else {
-                                    showToast("🚫 All 4 rooms fully booked on this date. Please select different dates.");
+                                    showToast(`🚫 All ${ROOMS.length} rooms fully booked on this date. Please select different dates.`);
                                 }
                             } else if (selectedRoomId === 'three-rooms') {
                                 const threeAvail = getDateAvailabilityForThreeRoomsBooking(formatDateKey(dateObj));
@@ -3326,14 +3328,14 @@
                 // Validate availability
                 if (selectedRoomId === 'all') {
                     const avail = getDateAvailability(dateStr);
-                    if (avail.availableCount < 4) {
+                    if (avail.availableCount < ROOMS.length) {
                         const indivCount = ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCount > 0) {
                             showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Four Rooms.`);
                         } else {
-                            showToast("All 4 rooms must be available on this date to book the entire property.");
+                            showToast(`All ${ROOMS.length} rooms must be available on this date to book the entire property.`);
                         }
                         return;
                     }
@@ -3423,7 +3425,7 @@
             while (d < checkOutDate) {
                 const dKey = formatDateKey(d);
                 if (selectedRoomId === 'all') {
-                    if (getDateAvailability(dKey).availableCount < 4) {
+                    if (getDateAvailability(dKey).availableCount < ROOMS.length) {
                         hasConflict = true;
                         break;
                     }
