@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rooms &amp; Accommodation | Cool-Cat Strand, South Africa</title>
-    <meta name="description" content="Explore our comfortable accommodation at Cool-Cat in Strand. Choose from the King Arthur Suite, Santori Suite (2 private bedrooms), or Cool Cat Deluxe Suite. From R550/night, with complimentary coffee and tea station.">
+    <meta name="description" content="Explore our comfortable accommodation at Cool-Cat in Strand. Choose from the King Arthur Suite, Santori Suite (2 private bedrooms), or Cool Cat Deluxe Suite. From R850/night, with complimentary coffee and tea station.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://cool-cat.co.za/rooms">
 
     <!-- Open Graph / Social Meta Tags -->
     <meta property="og:site_name" content="Cool-Cat">
     <meta property="og:title" content="Rooms &amp; Accommodation | Cool-Cat Strand">
-    <meta property="og:description" content="Explore our comfortable accommodation at Cool-Cat in Strand. Choose from the King Arthur Suite, Santori Suite (2 private bedrooms), or Cool Cat Deluxe Suite. From R550/night.">
+    <meta property="og:description" content="Explore our comfortable accommodation at Cool-Cat in Strand. Choose from the King Arthur Suite, Santori Suite (2 private bedrooms), or Cool Cat Deluxe Suite. From R850/night.">
     <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -22,7 +22,7 @@
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Rooms &amp; Accommodation | Cool-Cat Strand">
-    <meta name="twitter:description" content="Explore our comfortable rooms at Cool-Cat in Strand. From R550/night, with complimentary coffee and tea station.">
+    <meta name="twitter:description" content="Explore our comfortable rooms at Cool-Cat in Strand. From R850/night, with complimentary coffee and tea station.">
     <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
 
     <!-- JSON-LD: LodgingBusiness with Room ItemList -->
@@ -203,7 +203,7 @@
                     <div class="card-content">
                         <h2>King Arthur Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-king-arthur" style="margin-bottom: 0.35rem;">From R650 / night</div>
+                        <div class="room-price" id="price-king-arthur" style="margin-bottom: 0.35rem;">From R850 / night</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 16 Nov – 31 Dec Special:</span>
                             <span class="special-price">R990</span> <span class="special-unit">/ night</span>
@@ -233,7 +233,7 @@
                     <div class="card-content">
                         <h2>Santori Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-santori" style="margin-bottom: 0.35rem;">From R550 / night</div>
+                        <div class="room-price" id="price-santori" style="margin-bottom: 0.35rem;">From R1 300 / night</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 16 Nov – 31 Dec Special:</span>
                             <span class="special-price">R1 880</span> <span class="special-unit">/ night</span>
@@ -299,7 +299,7 @@
                     <div class="card-content">
                         <h2>THREE ROOMS (King Arthur Suite &amp; Santori Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-three-rooms" style="margin-bottom: 0.35rem;">From R1 750 / night</div>
+                        <div class="room-price" id="price-three-rooms" style="margin-bottom: 0.35rem;">From R2 150 / night</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 16 Nov – 31 Dec Special:</span>
                             <span class="special-price">R2 870</span> <span class="special-unit">/ night</span>
@@ -333,7 +333,7 @@
                     <div class="card-content">
                         <h2>FOUR ROOMS (King Arthur Suite, Santori Suite, Deluxe Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-four-rooms" style="margin-bottom: 0.35rem;">From R2 600 / night</div>
+                        <div class="room-price" id="price-four-rooms" style="margin-bottom: 0.35rem;">From R3 000 / night</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 16 Nov – 31 Dec Special:</span>
                             <span class="special-price">R3 860</span> <span class="special-unit">/ night</span>
@@ -640,8 +640,8 @@
         function getSmartLowestRate(prefix, lowKey, cfg, todayStr) {
             var lowRate = Number(cfg[lowKey]);
             if (isNaN(lowRate) || lowRate <= 0) {
-                if (prefix === 'king') lowRate = 650;
-                else if (prefix === 'santori') lowRate = 550;
+                if (prefix === 'king') lowRate = 850;
+                else if (prefix === 'santori') lowRate = 1300;
                 else if (prefix === 'mykonos') lowRate = 550;
                 else if (prefix === 'deluxe') lowRate = 850;
             }
@@ -687,29 +687,27 @@
             var santori = getSmartLowestRate('santori', 'low_santori_wd', cfg, todayStr);
             var deluxe = getSmartLowestRate('deluxe', 'low_deluxe_wd', cfg, todayStr);
 
+            var kingRate = Math.max(850, king.rate);
+            var santoriRate = Math.max(1300, santori.rate);
+            var deluxeRate = Math.max(850, deluxe.rate);
+
             // Single suites
             var elKing = document.getElementById('price-king-arthur');
-            if (elKing) elKing.textContent = formatPriceText(king.rate);
+            if (elKing) elKing.textContent = formatPriceText(kingRate);
 
             var elSantori = document.getElementById('price-santori');
-            if (elSantori) elSantori.textContent = formatPriceText(santori.rate);
+            if (elSantori) elSantori.textContent = formatPriceText(santoriRate);
 
             var elDeluxe = document.getElementById('price-deluxe');
-            if (elDeluxe) elDeluxe.textContent = formatPriceText(deluxe.rate);
+            if (elDeluxe) elDeluxe.textContent = formatPriceText(deluxeRate);
 
-            // 3 Rooms Package: King Arthur Suite (1) + Santori Suite (2)
-            var sumThree = king.rate + santori.rate;
-            var discThree = Math.max(0, Math.min(100, Number(cfg.pkg_discount_three) || 0));
-            var finalThree = Math.round(sumThree * (1 - discThree / 100));
+            // 3 Rooms Package: King Arthur Suite (1) + Santori Suite (2) = R2 150
             var elThree = document.getElementById('price-three-rooms');
-            if (elThree) elThree.textContent = formatPriceText(finalThree);
+            if (elThree) elThree.textContent = formatPriceText(2150);
 
-            // 4 Rooms Package: King Arthur Suite (1) + Santori Suite (2) + Deluxe Suite (1)
-            var sumFour = king.rate + santori.rate + deluxe.rate;
-            var discFour = Math.max(0, Math.min(100, Number(cfg.pkg_discount_four) || 0));
-            var finalFour = Math.round(sumFour * (1 - discFour / 100));
+            // 4 Rooms Package: King Arthur Suite (1) + Santori Suite (2) + Deluxe Suite (1) = R3 000
             var elFour = document.getElementById('price-four-rooms');
-            if (elFour) elFour.textContent = formatPriceText(finalFour);
+            if (elFour) elFour.textContent = formatPriceText(3000);
         }
 
         // Instant render from local cache if present
