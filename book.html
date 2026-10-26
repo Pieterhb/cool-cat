@@ -2884,13 +2884,15 @@
 
             ROOMS.forEach(room => {
                 const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
-                // Only count "all" cart stays for display blocking
-                const bookedInAllCart = selectedStays.some(s => {
-                    if (s.roomId !== 'all') return false;
-                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                // Count "all" cart stays, AND "three-rooms" cart stays (which cover KA + Santori)
+                const bookedInCart = selectedStays.some(s => {
+                    if (s.roomId === 'all') return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    if (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(room.id))
+                        return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    return false;
                 });
 
-                if (bookedInDB || bookedInAllCart) {
+                if (bookedInDB || bookedInCart) {
                     bookedCount++;
                 } else {
                     availableRooms.push(room);
