@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -3106,21 +3106,21 @@
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
-                    } else if (avail.availableCount === 3 && indivCartCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                    } else if (avail.availableCount === THREE_ROOMS.length && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                     } else if (avail.availableCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                         isBooked = true;
-                    } else if (avail.availableCount < 3) {
+                    } else if (avail.availableCount < THREE_ROOMS.length) {
                         const n = avail.availableCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        const n = 3 - indivCartCount;
+                        const n = THREE_ROOMS.length - indivCartCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                     }
 
                 } else {
@@ -3340,7 +3340,7 @@
                     }
                 } else if (selectedRoomId === 'three-rooms') {
                     const avail = getDateAvailabilityForThreeRoomsBooking(dateStr);
-                    if (avail.availableCount < 3) {
+                    if (avail.availableCount < THREE_ROOMS.length) {
                         const indivCount = THREE_ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
@@ -3429,7 +3429,7 @@
                         break;
                     }
                 } else if (selectedRoomId === 'three-rooms') {
-                    if (getDateAvailabilityForThreeRoomsBooking(dKey).availableCount < 3) {
+                    if (getDateAvailabilityForThreeRoomsBooking(dKey).availableCount < THREE_ROOMS.length) {
                         hasConflict = true;
                         break;
                     }
