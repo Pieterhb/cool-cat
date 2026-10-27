@@ -203,9 +203,9 @@
                     <div class="card-content">
                         <h2>King Arthur Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-king-arthur" style="margin-bottom: 0.35rem;">Low Season from R850 / night</div>
+                        <div class="room-price" id="price-king-arthur" style="margin-bottom: 0.35rem;">Low Season from R1 790 / night</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 PEAK SEASON SPECIAL (16 Nov – 31 Dec):</span>
+                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
                             <span class="special-price">R990</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
@@ -233,9 +233,9 @@
                     <div class="card-content">
                         <h2>Santori Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-santori" style="margin-bottom: 0.35rem;">Low Season from R1 300 / night</div>
+                        <div class="room-price" id="price-santori" style="margin-bottom: 0.35rem;">Low Season from R3 400 / night</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 PEAK SEASON SPECIAL (16 Nov – 31 Dec):</span>
+                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
                             <span class="special-price">R1 880</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R3 400</s>)</span>
                         </div>
@@ -262,9 +262,9 @@
                     <div class="card-content">
                         <h2>Cool Cat Deluxe Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-deluxe" style="margin-bottom: 0.35rem;">Low Season from R850 / night</div>
+                        <div class="room-price" id="price-deluxe" style="margin-bottom: 0.35rem;">Low Season from R1 790 / night</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 PEAK SEASON SPECIAL (16 Nov – 31 Dec):</span>
+                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
                             <span class="special-price">R990</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
@@ -299,9 +299,9 @@
                     <div class="card-content">
                         <h2>THREE ROOMS (King Arthur Suite &amp; Santori Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-three-rooms" style="margin-bottom: 0.35rem;">Low Season from R2 150 / night</div>
+                        <div class="room-price" id="price-three-rooms" style="margin-bottom: 0.35rem;">Low Season from R5 190 / night</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 PEAK SEASON SPECIAL (16 Nov – 31 Dec):</span>
+                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
                             <span class="special-price">R2 870</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R5 190</s>)</span>
                         </div>
@@ -333,9 +333,9 @@
                     <div class="card-content">
                         <h2>FOUR ROOMS (King Arthur Suite, Santori Suite, Deluxe Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.25rem;">✨ BEST VALUE RATES AVAILABLE</div>
-                        <div class="room-price" id="price-four-rooms" style="margin-bottom: 0.35rem;">Low Season from R3 000 / night</div>
+                        <div class="room-price" id="price-four-rooms" style="margin-bottom: 0.35rem;">Low Season from R6 980 / night</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 PEAK SEASON SPECIAL (16 Nov – 31 Dec):</span>
+                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
                             <span class="special-price">R3 860</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R6 980</s>)</span>
                         </div>
@@ -640,10 +640,10 @@
         function getSmartLowestRate(prefix, lowKey, cfg, todayStr) {
             var lowRate = Number(cfg[lowKey]);
             if (isNaN(lowRate) || lowRate <= 0) {
-                if (prefix === 'king') lowRate = 850;
-                else if (prefix === 'santori') lowRate = 1300;
+                if (prefix === 'king') lowRate = 1790;
+                else if (prefix === 'santori') lowRate = 3400;
                 else if (prefix === 'mykonos') lowRate = 550;
-                else if (prefix === 'deluxe') lowRate = 850;
+                else if (prefix === 'deluxe') lowRate = 1790;
             }
 
             var isSpecialActive = (cfg['special_' + prefix + '_active'] === true || cfg['special_' + prefix + '_active'] === 'true');
@@ -687,9 +687,9 @@
             var santori = getSmartLowestRate('santori', 'low_santori_wd', cfg, todayStr);
             var deluxe = getSmartLowestRate('deluxe', 'low_deluxe_wd', cfg, todayStr);
 
-            var kingRate = Math.max(850, king.rate);
-            var santoriRate = Math.max(1300, santori.rate);
-            var deluxeRate = Math.max(850, deluxe.rate);
+            var kingRate = Math.max(1790, king.rate);
+            var santoriRate = Math.max(3400, santori.rate);
+            var deluxeRate = Math.max(1790, deluxe.rate);
 
             // Single suites
             var elKing = document.getElementById('price-king-arthur');
@@ -701,13 +701,13 @@
             var elDeluxe = document.getElementById('price-deluxe');
             if (elDeluxe) elDeluxe.textContent = formatPriceText(deluxeRate);
 
-            // 3 Rooms Package: King Arthur Suite (1) + Santori Suite (2) = R2 150
+            // 3 Rooms Package: King Arthur Suite (1) + Santori Suite (2) = R5 190
             var elThree = document.getElementById('price-three-rooms');
-            if (elThree) elThree.textContent = formatPriceText(2150);
+            if (elThree) elThree.textContent = formatPriceText(5190);
 
-            // 4 Rooms Package: King Arthur Suite (1) + Santori Suite (2) + Deluxe Suite (1) = R3 000
+            // 4 Rooms Package: King Arthur Suite (1) + Santori Suite (2) + Deluxe Suite (1) = R6 980
             var elFour = document.getElementById('price-four-rooms');
-            if (elFour) elFour.textContent = formatPriceText(3000);
+            if (elFour) elFour.textContent = formatPriceText(6980);
         }
 
         // Instant render from local cache if present
