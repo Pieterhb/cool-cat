@@ -1537,6 +1537,9 @@
                                 <button type="button" class="adm-room-tab active" data-room="all" onclick="setAdminCalRoom('all')">
                                     🏨 All Rooms (4 Bedrooms)
                                 </button>
+                                <button type="button" class="adm-room-tab" data-room="three-rooms" onclick="setAdminCalRoom('three-rooms')">
+                                    🏠 Bottom Rooms (3 Bedrooms)
+                                </button>
                                 <button type="button" class="adm-room-tab" data-room="king-arthur" onclick="setAdminCalRoom('king-arthur')">
                                     👑 King Arthur Suite
                                 </button>
@@ -2632,7 +2635,7 @@
                             <label>Select Room</label>
                             <select id="manRoomSelect" class="adm-input" required onchange="onModalRoomChange()">
                                 <option value="all">🏨 All Rooms (4 Bedrooms: King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)</option>
-                                <option value="three-rooms">🏠 Three Rooms (King Arthur Suite &amp; Santori Suite [2 Rooms])</option>
+                                <option value="three-rooms">🏠 Bottom Rooms (3 Bedrooms: King Arthur Suite &amp; Santori Suite [2 Rooms])</option>
                                 <option value="king-arthur">👑 King Arthur Suite</option>
                                 <option value="santori">🌊 Santori Suite (2 Bedrooms)</option>
                                 <option value="deluxe-suite">✨ Cool-Cat Deluxe Suite</option>
@@ -3780,7 +3783,7 @@
 
         const ADMIN_ROOM_NAMES = {
             'all': 'All Rooms (4 Bedrooms)',
-            'three-rooms': 'Three Rooms (King Arthur & Santori)',
+            'three-rooms': 'Bottom Rooms (3 Bedrooms)',
             'king-arthur': 'King Arthur Suite',
             'santori': 'Santori Suite (2 Bedrooms)',
             'mykonos': 'Santori Suite (Bedroom 2)',
@@ -3797,6 +3800,7 @@
             if (!roomId) return 'CC-';
             const r = String(roomId).toLowerCase();
             if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r.includes('three') || r.includes('bottom')) return 'THR-';
             if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
             if (r.includes('santor') || r.includes('san')) return 'SAN-';
             if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
@@ -3848,6 +3852,7 @@
 
         const ADMIN_ROOM_ICONS = {
             'all': '🏨',
+            'three-rooms': '🏠',
             'king-arthur': '👑',
             'santori': '🌊',
             'mykonos': '🏛️',
@@ -4023,6 +4028,9 @@
             if (roomId === 'all') {
                 const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
                 return individualRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
+            } else if (roomId === 'three-rooms') {
+                const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+                return threeRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
             } else {
                 return getSingleRoomNightPrice(roomId);
             }
@@ -4059,8 +4067,14 @@
             }
 
             // 3. For calendar blocks or single-stay bookings:
-            if (roomId !== 'all') {
-                if (b.roomId !== roomId && b.roomId !== 'all') return false;
+            if (roomId === 'all') {
+                // Any booking blocks 'all'
+            } else if (roomId === 'three-rooms') {
+                if (!['three-rooms', 'all', 'king-arthur', 'santori', 'mykonos'].includes(b.roomId)) return false;
+            } else if (roomId === 'santori') {
+                if (!['santori', 'mykonos', 'all', 'three-rooms'].includes(b.roomId)) return false;
+            } else {
+                if (b.roomId !== roomId && b.roomId !== 'all' && !(b.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(roomId))) return false;
             }
 
             return (dateStr >= b.checkIn && dateStr < b.checkOut);
@@ -4093,6 +4107,29 @@
             };
         }
 
+        function getAdminDateAvailabilityForThreeRooms(dateStr) {
+            const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+            const bookedRooms = [];
+            const availableRooms = [];
+
+            threeRooms.forEach(rId => {
+                const b = ADMIN_BOOKINGS.find(bk => isBookingBlockingRoomOnDate(bk, rId, dateStr));
+                if (b) {
+                    bookedRooms.push({ roomId: rId, booking: b });
+                } else {
+                    availableRooms.push(rId);
+                }
+            });
+
+            return {
+                total: threeRooms.length,
+                bookedCount: bookedRooms.length,
+                availableCount: availableRooms.length,
+                bookedRooms: bookedRooms,
+                availableRooms: availableRooms
+            };
+        }
+
         function checkBookingConflicts(roomId, checkInStr, checkOutStr, excludeBookingId = null) {
             if (!checkInStr || !checkOutStr) return { hasConflict: false, conflicts: [] };
             const checkIn = new Date(checkInStr + 'T00:00:00');
@@ -4106,6 +4143,16 @@
                 const dStr = formatDateStr(curr);
                 if (roomId === 'all') {
                     const avail = getAdminDateAvailability(dStr);
+                    if (avail.bookedCount > 0) {
+                        avail.bookedRooms.forEach(br => {
+                            if (excludeBookingId && (br.booking.id === excludeBookingId || br.booking.parentBookingId === excludeBookingId)) return;
+                            if (!conflicts.some(c => c.booking.id === br.booking.id && c.dateStr === dStr)) {
+                                conflicts.push({ dateStr: dStr, booking: br.booking, room: br.roomId });
+                            }
+                        });
+                    }
+                } else if (roomId === 'three-rooms') {
+                    const avail = getAdminDateAvailabilityForThreeRooms(dStr);
                     if (avail.bookedCount > 0) {
                         avail.bookedRooms.forEach(br => {
                             if (excludeBookingId && (br.booking.id === excludeBookingId || br.booking.parentBookingId === excludeBookingId)) return;
@@ -4276,6 +4323,27 @@
                     if (activeSpRooms.length > 0) {
                         activePromoInfo = { count: activeSpRooms.length };
                     }
+                } else if (adminCalRoomId === 'three-rooms') {
+                    var threeEvRooms = ['king', 'santori', 'mykonos'];
+                    var activeEvRooms = threeEvRooms.filter(function(p) {
+                        var act = document.getElementById('event_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('event_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeEvRooms.length > 0) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surge';
+                        activeEventInfo = { name: evName, count: activeEvRooms.length };
+                    }
+                    var activeSpRooms = threeEvRooms.filter(function(p) {
+                        var act = document.getElementById('special_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('special_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('special_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeSpRooms.length > 0) {
+                        activePromoInfo = { count: activeSpRooms.length };
+                    }
                 } else {
                     var evAct = document.getElementById('event_' + evPrefix + '_active')?.value === 'true';
                     var evSt = String(document.getElementById('event_' + evPrefix + '_start')?.value || '').trim();
@@ -4313,6 +4381,44 @@
                         dayCell.classList.add('booked-day');
                     } else {
                         const words = { 1: 'ONE ROOM LEFT', 2: 'TWO ROOMS LEFT', 3: 'THREE ROOMS LEFT' };
+                        const label = words[avail.availableCount] || `${avail.availableCount} ROOMS LEFT`;
+                        pillHtml = `<span class="adm-cal-avail-pill pill-partial">${label}</span>`;
+                        isBlocked = true;
+                        monthBlockedNights++;
+                        dayCell.classList.add('blocked-day');
+                    }
+                    if (avail.bookedCount > 0) {
+                        const uniqueNames = [];
+                        avail.bookedRooms.forEach(br => {
+                            const name = (br.booking.guestName || 'Guest').trim();
+                            if (name && !uniqueNames.includes(name)) {
+                                uniqueNames.push(name);
+                            }
+                        });
+                        const names = uniqueNames.slice(0, 2).join(', ');
+                        midHtml = `<div class="adm-cal-day-mid">👤 ${names}</div>`;
+                    }
+                } else if (adminCalRoomId === 'three-rooms') {
+                    const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
+                    if (avail.availableCount === 3) {
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 3 Open</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 3 Open</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="adm-cal-avail-pill pill-open">3 Open</span>`;
+                        }
+                    } else if (avail.availableCount === 0) {
+                        pillHtml = `<span class="adm-cal-avail-pill pill-booked">Fully Booked</span>`;
+                        isBooked = true;
+                        monthBookedNights++;
+                        dayCell.classList.add('booked-day');
+                    } else {
+                        const words = { 1: 'ONE ROOM LEFT', 2: 'TWO ROOMS LEFT' };
                         const label = words[avail.availableCount] || `${avail.availableCount} ROOMS LEFT`;
                         pillHtml = `<span class="adm-cal-avail-pill pill-partial">${label}</span>`;
                         isBlocked = true;
@@ -4413,7 +4519,7 @@
 
             // Update footer occupancy stats
             if (footerEl) {
-                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 4 : 1;
+                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 4 : (adminCalRoomId === 'three-rooms' ? 3 : 1);
                 const totalPossibleNights = daysInMonth * totalRoomsMultiplier;
                 let actualBookedNights = 0;
 
@@ -4421,6 +4527,9 @@
                     const dStr = formatDateStr(new Date(year, month, d));
                     if (adminCalRoomId === 'all') {
                         const av = getAdminDateAvailability(dStr);
+                        actualBookedNights += av.bookedCount;
+                    } else if (adminCalRoomId === 'three-rooms') {
+                        const av = getAdminDateAvailabilityForThreeRooms(dStr);
                         actualBookedNights += av.bookedCount;
                     } else {
                         const b = getBookingOnDateForRoom(adminCalRoomId, dStr);
@@ -4468,7 +4577,14 @@
                     const avail = getAdminDateAvailability(dateStr);
                     let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 4 rooms occupied:\n`;
                     avail.bookedRooms.forEach(br => {
-                        msg += `• ${ADMIN_ROOM_NAMES[br.roomId]}: ${br.booking.guestName} (#${br.booking.id})\n`;
+                        msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})\n`;
+                    });
+                    alert(msg);
+                } else if (adminCalRoomId === 'three-rooms') {
+                    const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
+                    let msg = `📅 Availability on ${dateStr} for Bottom Rooms (3 Bedrooms):\n\n${avail.bookedCount} of 3 rooms occupied:\n`;
+                    avail.bookedRooms.forEach(br => {
+                        msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})\n`;
                     });
                     alert(msg);
                 }
@@ -4610,13 +4726,27 @@
                         isBooked = true;
                         dayCell.classList.add('booked');
                         dayCell.title = `Sold Out - All rooms booked`;
-                    } else if (avail.availableCount < 3) {
+                    } else if (avail.availableCount < 4) {
                         isBlocked = true;
                         dayCell.classList.add('blocked');
                         dayCell.title = `${avail.availableCount} of 4 rooms available`;
                     } else {
                         dayCell.classList.add('avail');
                         dayCell.title = `All 4 rooms open`;
+                    }
+                } else if (roomId === 'three-rooms') {
+                    const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
+                    if (avail.availableCount === 0) {
+                        isBooked = true;
+                        dayCell.classList.add('booked');
+                        dayCell.title = `Sold Out - All 3 rooms booked`;
+                    } else if (avail.availableCount < 3) {
+                        isBlocked = true;
+                        dayCell.classList.add('blocked');
+                        dayCell.title = `${avail.availableCount} of 3 rooms available`;
+                    } else {
+                        dayCell.classList.add('avail');
+                        dayCell.title = `All 3 bottom rooms open`;
                     }
                 } else {
                     const b = getBookingOnDateForRoom(roomId, dateStr);
