@@ -504,9 +504,9 @@
 
         /* ── Maintenance buttons ── */
         .btn-maintenance-indigo {
-            background: #EEF2FF !important;
-            color: #4338CA !important;
-            border: 1px solid #C7D2FE !important;
+            background: #7C3AED !important;
+            color: #FFFFFF !important;
+            border: 1px solid #6D28D9 !important;
             padding: 0.5rem 1rem !important;
             font-weight: 600 !important;
             border-radius: 6px !important;
@@ -515,13 +515,13 @@
         }
         .btn-maintenance-indigo:hover {
             transform: translateY(-2px) !important;
-            background: #E0E7FF !important;
-            box-shadow: 0 4px 10px rgba(67, 56, 202, 0.25) !important;
+            background: #6D28D9 !important;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3) !important;
         }
         .btn-maintenance-red {
-            background: #FEE2E2 !important;
-            color: #991B1B !important;
-            border: 1px solid #FECACA !important;
+            background: #DC2626 !important;
+            color: #FFFFFF !important;
+            border: 1px solid #B91C1C !important;
             padding: 0.5rem 1rem !important;
             font-weight: 600 !important;
             border-radius: 6px !important;
@@ -530,8 +530,8 @@
         }
         .btn-maintenance-red:hover {
             transform: translateY(-2px) !important;
-            background: #FECACA !important;
-            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.25) !important;
+            background: #B91C1C !important;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3) !important;
         }
         /* Locked / disabled state for maintenance buttons */
         .btn-maintenance-locked {
@@ -1821,7 +1821,7 @@
                                 <button type="button" class="btn-payout-purple" onclick="openMarketerPayoutModal()">
                                     ➕ Record EFT Payout
                                 </button>
-                                <button type="button" class="btn-sm" style="background: #FEF2F2; color: #DC2626; border: 1.5px solid #FCA5A5; font-weight: 700; padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer;" onclick="clearAllMarketerBatches()" title="Delete all recorded marketer payout batches">
+                                <button type="button" class="btn-sm" style="background: #DC2626; color: #FFFFFF; border: 1.5px solid #B91C1C; font-weight: 700; padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer; transition: background 0.2s ease;" onmouseover="this.style.background='#B91C1C'" onmouseout="this.style.background='#DC2626'" onclick="clearAllMarketerBatches()" title="Delete all recorded marketer payout batches">
                                     🗑️ Clear All Batches
                                 </button>
                             </div>
@@ -6053,7 +6053,7 @@ We look forward to hosting you at Cool-Cat!`;
                         <button type="button" class="btn-sm btn-wa" onclick="sendMarketerBatchWhatsApp('${batch.id}')" title="Send Payout Proof via WhatsApp">
                             📲 Proof
                         </button>
-                        <button type="button" class="btn-sm" style="background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; font-weight: 700; cursor: pointer;" onclick="deleteMarketerBatch('${batch.id}')" title="Delete this payout batch record">
+                        <button type="button" class="btn-sm" style="background: #DC2626; color: #FFFFFF; border: 1px solid #B91C1C; font-weight: 700; cursor: pointer; transition: background 0.2s ease;" onmouseover="this.style.background='#B91C1C'" onmouseout="this.style.background='#DC2626'" onclick="deleteMarketerBatch('${batch.id}')" title="Delete this payout batch record">
                             🗑️ Delete
                         </button>
                     </div>
