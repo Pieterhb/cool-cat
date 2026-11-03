@@ -342,12 +342,12 @@ async function dispatchBookingEmails(booking, env) {
             <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> | Pass: <code>004eda35aef</code></p>
             <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool-Cat, Strand, Western Cape</p>
             <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
-            <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (063 712 4491)</p>
+            <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (072 889 4840)</p>
           </div>
 
           <div style="font-size: 13px; color: #64748b; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
             <p style="margin: 2px 0;"><strong>House Reminders:</strong> Non-smoking inside bedrooms • No pets allowed • Quiet hours 23:00 - 06:00.</p>
-            <p style="margin: 2px 0;">Have a question? Reply directly to this email or WhatsApp Michele at 063 712 4491.</p>
+            <p style="margin: 2px 0;">Have a question? Reply directly to this email or WhatsApp Michele at 072 889 4840.</p>
           </div>
         </div>
       </div>

@@ -202,7 +202,7 @@ export async function onRequestPost(context) {
             nights: nightsCount,
             guestName: guestName || 'Direct / Owner Block',
             guestEmail: guestEmail || 'direct@cool-cat.co.za',
-            guestPhone: guestPhone || '+27637124491',
+            guestPhone: guestPhone || '+27728894840',
             totalAmount: numTotal,
             amountPaid: numPaid,
             balanceDue: numBalance,

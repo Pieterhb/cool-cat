@@ -2122,7 +2122,7 @@
                             </div>
                             <div style="text-align: right;">
                                 <div style="font-size: 0.75rem; font-weight: 700; color: #334155; text-transform: uppercase;">Official Stay Voucher</div>
-                                <div style="font-size: 0.85rem; font-weight: 800; color: #0F52BA;">Tel: <a href="tel:0637124491" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">063 712 4491</a></div>
+                                <div style="font-size: 0.85rem; font-weight: 800; color: #0F52BA;">Tel: <a href="tel:0728894840" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">072 889 4840</a></div>
                             </div>
                         </div>
                     </div>
@@ -2165,13 +2165,13 @@
                         <div class="access-item">🕚 <strong>Check-Out Time:</strong> 10:00 AM</div>
                         <div class="access-item">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> &bull; Password: <code>004eda35aef</code></div>
                         <div class="access-item">📍 <strong>Location:</strong> Strand, Western Cape &bull; <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
-                        <div class="access-item">📱 <strong>Host Contact:</strong> Enquiries (<a href="tel:0637124491" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">063 712 4491</a>)</div>
+                        <div class="access-item">📱 <strong>Host Contact:</strong> Enquiries (<a href="tel:0728894840" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">072 889 4840</a>)</div>
                     </div>
 
                     <!-- Instant Guest Action Buttons -->
                     <div class="conf-actions-grid" style="margin-top: 1.5rem;">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem;">
-                            <a id="confWhatsAppBtn" href="https://wa.me/27637124491" target="_blank" class="btn btn-conf-action" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            <a id="confWhatsAppBtn" href="https://wa.me/27728894840" target="_blank" class="btn btn-conf-action" style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
                                 📲 WhatsApp Michele (Host)
                             </a>
                             <a href="/guide" target="_blank" class="btn btn-conf-action" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
@@ -2378,8 +2378,8 @@
                 <div class="footer-col">
                     <h3>Contact Us</h3>
                     <ul>
-                        <li>📱 <a href="tel:0637124491" class="footer-contact-info">063 712 4491 (Enquiries)</a></li>
-                        <li>💬 <a href="https://wa.me/27637124491" target="_blank">WhatsApp Us</a></li>
+                        <li>📱 <a href="tel:0728894840" class="footer-contact-info">072 889 4840 (Enquiries)</a></li>
+                        <li>💬 <a href="https://wa.me/27728894840" target="_blank">WhatsApp Us</a></li>
                         <li>✉️ <a href="#" onclick="openEmail('bookings@cool-cat.co.za','Booking Inquiry');return false;"><!--email_off-->bookings@cool-cat.co.za<!--/email_off--></a></li>
                         <li>✉️ <a href="#" onclick="openEmail('corrie@cool-cat.co.za','General Inquiry');return false;"><!--email_off-->corrie@cool-cat.co.za<!--/email_off--></a></li>
                     </ul>
@@ -4516,7 +4516,7 @@
             const waBtn = document.getElementById('confWhatsAppBtn');
             if (waBtn) {
                 const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${cleanRef}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
-                waBtn.href = `https://wa.me/27637124491?text=${waText}`;
+                waBtn.href = `https://wa.me/27728894840?text=${waText}`;
             }
 
             // Store current booking in window memory for ICS export
@@ -4584,7 +4584,7 @@
                     ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
                     ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
                     ics.push(`SUMMARY:Stay at Cool-Cat (${s.roomName})`);
-                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: Gouws (Pass: 004eda35aef)\\nHost Michele: 063 712 4491`);
+                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: Gouws (Pass: 004eda35aef)\\nHost Michele: 072 889 4840`);
                     ics.push(`LOCATION:Cool-Cat B&B, Strand, Western Cape, South Africa`);
                     ics.push('STATUS:CONFIRMED');
                     ics.push('END:VEVENT');
@@ -5188,7 +5188,7 @@
 
             const waMsg = `Hi Michele, I have made an EFT payment for Cool-Cat booking ref #${cleanPayRef} (${name}). Here is my proof of payment:`;
             const waBtn = document.getElementById('qpEftWaBtn');
-            if (waBtn) waBtn.href = `https://wa.me/27637124491?text=${encodeURIComponent(waMsg)}`;
+            if (waBtn) waBtn.href = `https://wa.me/27728894840?text=${encodeURIComponent(waMsg)}`;
 
             selectQuotePayOption('deposit');
 
