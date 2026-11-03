@@ -1821,6 +1821,9 @@
                                 <button type="button" class="btn-payout-purple" onclick="openMarketerPayoutModal()">
                                     ➕ Record EFT Payout
                                 </button>
+                                <button type="button" class="btn-sm" style="background: #FEF2F2; color: #DC2626; border: 1.5px solid #FCA5A5; font-weight: 700; padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer;" onclick="clearAllMarketerBatches()" title="Delete all recorded marketer payout batches">
+                                    🗑️ Clear All Batches
+                                </button>
                             </div>
                         </div>
 
@@ -6050,6 +6053,9 @@ We look forward to hosting you at Cool-Cat!`;
                         <button type="button" class="btn-sm btn-wa" onclick="sendMarketerBatchWhatsApp('${batch.id}')" title="Send Payout Proof via WhatsApp">
                             📲 Proof
                         </button>
+                        <button type="button" class="btn-sm" style="background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; font-weight: 700; cursor: pointer;" onclick="deleteMarketerBatch('${batch.id}')" title="Delete this payout batch record">
+                            🗑️ Delete
+                        </button>
                     </div>
                 `;
 
@@ -6065,6 +6071,67 @@ We look forward to hosting you at Cool-Cat!`;
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        async function deleteMarketerBatch(batchId) {
+            const batch = (ADMIN_MARKETER_PAYOUTS || []).find(b => b.id === batchId);
+            if (!batch) return;
+
+            const amtStr = Number(batch.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (!confirm(`🗑️ DELETE PAYOUT BATCH ${batch.id}?\n\nAmount: R${amtStr}\nDate: ${batch.date || '-'}\nBank Ref: ${batch.bankRef || '-'}\n\nAre you sure you want to permanently delete this payout proof record?\n\nAny bookings linked to this batch will be returned to unsettled status.`)) {
+                return;
+            }
+
+            ADMIN_MARKETER_PAYOUTS = (ADMIN_MARKETER_PAYOUTS || []).filter(b => b.id !== batchId);
+
+            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+
+            calculateKpis();
+            renderMarketerBatchesTable();
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
+                });
+            } catch(err) {
+                console.error("Delete batch remote save error:", err);
+            }
+        }
+
+        async function clearAllMarketerBatches() {
+            if (!ADMIN_MARKETER_PAYOUTS || ADMIN_MARKETER_PAYOUTS.length === 0) {
+                alert("ℹ️ There are no payout batches to delete.");
+                return;
+            }
+
+            const totalCount = ADMIN_MARKETER_PAYOUTS.length;
+            const totalAmount = ADMIN_MARKETER_PAYOUTS.reduce((s, b) => s + Number(b.amount || 0), 0);
+            const amtStr = totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if (!confirm(`⚠️ DELETE ALL ${totalCount} PAYOUT BATCHES?\n\nTotal Settled Commission: R${amtStr}\n\nThis will permanently delete ALL recorded marketer payout proof records.\n\nAre you sure?`)) {
+                return;
+            }
+
+            ADMIN_MARKETER_PAYOUTS = [];
+
+            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify([])); } catch(e) {}
+
+            calculateKpis();
+            renderMarketerBatchesTable();
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marketer_payouts: [] })
+                });
+            } catch(err) {
+                console.error("Clear all batches remote save error:", err);
+            }
+
+            alert("✅ All marketer payout batches have been deleted.");
         }
 
         async function toggleBatchStatus(batchId) {
@@ -6611,12 +6678,22 @@ We look forward to hosting you at Cool-Cat!`;
                 const data = await res.json();
                 if (data.success) {
                     ADMIN_BOOKINGS = [];
+                    ADMIN_MARKETER_PAYOUTS = [];
+                    try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify([])); } catch(e) {}
+                    try {
+                        fetch('/api/settings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ marketer_payouts: [] })
+                        });
+                    } catch(e) {}
                     calculateKpis();
                     renderBookingsTables();
                     renderFinancesTable();
                     renderGuestsTable();
                     renderAdminCalendar();
-                    alert('✅ Database reset complete. All test bookings have been permanently wiped.\n\nThe system is now clean and ready for real guest bookings!');
+                    renderMarketerBatchesTable();
+                    alert('✅ Database reset complete. All test bookings and payout records have been permanently wiped.\n\nThe system is now clean and ready for real guest bookings!');
                 } else {
                     alert(`⚠️ Reset failed: ${data.error || 'Unknown error'}`);
                 }
