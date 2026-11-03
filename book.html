@@ -1723,9 +1723,9 @@
                     <span>Select Dates &amp; Room</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step" id="wizStep2" onclick="if(selectedStays && selectedStays.length > 0) goToStep2();" style="cursor: pointer;" title="Step 2: Guest Details & Breakfast">
+                <div class="wizard-step" id="wizStep2" onclick="if(selectedStays && selectedStays.length > 0) goToStep2();" style="cursor: pointer;" title="Step 2: Guest Details">
                     <span class="step-circle" id="circle2">2</span>
-                    <span>Guest Details &amp; Breakfast</span>
+                    <span>Guest Details</span>
                 </div>
                 <div class="step-divider"></div>
                 <div class="wizard-step" id="wizStep3" title="Step 3: Pay via Paystack">
@@ -3970,7 +3970,7 @@
                             </div>
 
                             <!-- Breakfast toggle for this stay (Temporarily Deactivated) -->
-                            <div style="background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem; opacity: 0.75;">
+                            <div style="display: none; background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem; opacity: 0.75;">
                                 <label style="display: flex; align-items: flex-start; gap: 0.55rem; cursor: not-allowed; margin: 0;">
                                     <input type="checkbox" id="bfChk_${s.id}" disabled style="margin-top: 3px; flex-shrink: 0; cursor: not-allowed;">
                                     <div>
@@ -3994,7 +3994,7 @@
 
                             <!-- Stay total including breakfast -->
                             <div style="text-align: right; font-size: 0.9rem; font-weight: 800; color: #0F52BA; margin-top: 0.5rem;">
-                                Stay + Breakfast Total: R${stayTotalWithBf.toLocaleString()}
+                                Stay Total: R${stayTotalWithBf.toLocaleString()}
                             </div>
                         </div>
                     `;
