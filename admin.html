@@ -806,10 +806,12 @@
             background: rgba(10, 25, 47, 0.6);
             backdrop-filter: blur(4px);
             display: none;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 1.5rem;
             z-index: 1000;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .adm-modal-card {
@@ -1159,8 +1161,9 @@
         /* ========================================================= */
         .adm-modal-card-wide {
             max-width: 900px !important;
-            max-height: 92vh;
-            overflow-y: auto;
+            width: min(900px, calc(100vw - 3rem)) !important;
+            max-height: none;
+            overflow-y: visible;
             padding: 1.8rem !important;
         }
         .modal-two-col {
