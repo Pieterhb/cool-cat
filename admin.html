@@ -808,10 +808,12 @@
             display: none;
             align-items: flex-start;
             justify-content: center;
-            padding: 1.5rem;
+            /* left offset accounts for admin sidebar (260px) so modal centres in visible area */
+            padding: 1.5rem 1.5rem 1.5rem calc(260px + 1rem);
             z-index: 1000;
-            overflow-x: hidden;
+            overflow-x: auto;
             overflow-y: auto;
+            box-sizing: border-box;
         }
 
         .adm-modal-card {
@@ -1160,8 +1162,9 @@
         /* EXPANDED MODAL STYLES (2-COLUMN RESPONSIVE LAYOUT)        */
         /* ========================================================= */
         .adm-modal-card-wide {
-            max-width: 900px !important;
-            width: min(900px, calc(100vw - 3rem)) !important;
+            max-width: 860px !important;
+            /* calc: full viewport - sidebar(260px) - overlay padding(2.5rem) */
+            width: min(860px, calc(100vw - 260px - 2.5rem)) !important;
             max-height: none;
             overflow-y: visible;
             padding: 1.8rem !important;
