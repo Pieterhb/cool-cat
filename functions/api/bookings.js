@@ -98,6 +98,16 @@ export async function onRequestGet(context) {
     }
 }
 
+function formatPhoneNumber(input) {
+    if (!input) return '';
+    let raw = String(input).trim().replace(/[\s\-\(\)\.]/g, '');
+    if (raw.startsWith('00')) raw = '+' + raw.slice(2);
+    if (raw.startsWith('+')) return raw;
+    if (raw.startsWith('27') && raw.length >= 10) return '+' + raw;
+    if (raw.startsWith('0')) return '+27' + raw.slice(1);
+    return '+27' + raw;
+}
+
 function getRoomPrefix(rId) {
     if (!rId) return 'CC-';
     const r = String(rId).toLowerCase();
@@ -114,7 +124,7 @@ function getHighestSeqFromBookings(bookingsList) {
     if (Array.isArray(bookingsList)) {
         bookingsList.forEach(b => {
             const idStr = String(b.id || b.parentBookingId || '');
-            const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
+            const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i);
             if (m) {
                 const n = parseInt(m[1], 10);
                 if (n >= 10001 && n > max) max = n;
@@ -182,10 +192,10 @@ export async function onRequestPost(context) {
         let bookingRef = id || ref;
         if (!bookingRef) {
             const nextSeq = await getNextSequenceNumber(env, existing);
-            bookingRef = `${getRoomPrefix(roomId)}${nextSeq}`;
+            bookingRef = `CCH-${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);
         } else {
-            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
             if (m) {
                 const seqVal = parseInt(m[1], 10);
                 if (seqVal >= 10001) {
@@ -223,7 +233,7 @@ export async function onRequestPost(context) {
             nights: nightsCount,
             guestName: guestName || 'Direct / Owner Block',
             guestEmail: guestEmail || 'direct@cool-cat.co.za',
-            guestPhone: guestPhone || '+27728894840',
+            guestPhone: formatPhoneNumber(guestPhone) || '+27728894840',
             totalAmount: numTotal,
             amountPaid: numPaid,
             balanceDue: numBalance,

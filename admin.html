@@ -3234,7 +3234,7 @@
                 }
 
                 // 2. Handle legacy multi-room records like MAN-44982_king-arthur if saved without parent record
-                const match = (b.id || '').match(/^((?:MAN|CC|ALL|KIN|SAN|MYK|DEL)-\d+)_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
+                const match = (b.id || '').match(/^((?:MAN|CC|ALL|KIN|SAN|MYK|DEL|TRI|THR|CCH)-\d+)_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
                 if (match) {
                     const baseId = match[1];
                     if (parentIds.has(baseId)) return false;
@@ -3834,23 +3834,29 @@
             return 'CC-';
         }
 
+        function formatPhoneNumber(input) {
+            if (!input) return '';
+            let raw = String(input).trim().replace(/[\s\-\(\)\.]/g, '');
+            if (raw.startsWith('00')) raw = '+' + raw.slice(2);
+            if (raw.startsWith('+')) return raw;
+            if (raw.startsWith('27') && raw.length >= 10) return '+' + raw;
+            if (raw.startsWith('0')) return '+27' + raw.slice(1);
+            return '+27' + raw;
+        }
+
         function formatRefId(id, roomId) {
             if (!id) return '';
             let clean = String(id).trim();
             if (clean.startsWith('#')) clean = clean.substring(1);
 
-            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-\d+$/i.test(clean)) {
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-\d+$/i.test(clean)) {
                 return clean.toUpperCase();
             }
-
-            const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
-            const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
-            const prefix = getRoomPrefix(inferredRoom);
 
             clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
             const numMatch = clean.match(/\d+/);
             if (numMatch) {
-                return `${prefix}${numMatch[0]}`;
+                return `CCH-${numMatch[0]}`;
             }
             return clean;
         }
@@ -3859,7 +3865,7 @@
             let maxSeq = 10000;
             (ADMIN_BOOKINGS || []).forEach(b => {
                 const idStr = String(b.id || b.parentBookingId || '');
-                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i);
                 if (match) {
                     const num = parseInt(match[1], 10);
                     if (num >= 10001 && num > maxSeq) {
@@ -3868,8 +3874,7 @@
                 }
             });
             const nextSeq = maxSeq + 1;
-            const prefix = getRoomPrefix(roomId);
-            return `${prefix}${nextSeq}`;
+            return `CCH-${nextSeq}`;
         }
 
         function generateRefId(roomId) {
@@ -4969,7 +4974,7 @@
             const checkIn = document.getElementById('manCheckIn').value;
             const checkOut = document.getElementById('manCheckOut').value;
             const guestName = document.getElementById('manGuestName').value;
-            const phone = document.getElementById('manGuestPhone').value;
+            const phone = formatPhoneNumber(document.getElementById('manGuestPhone').value);
             const total = Number(document.getElementById('manTotalAmount').value) || 0;
 
             if (!checkIn || !checkOut) {

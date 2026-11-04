@@ -72,6 +72,16 @@ export async function onRequestPost(context) {
             }
         }
 
+        function formatPhoneNumber(input) {
+            if (!input) return '';
+            let raw = String(input).trim().replace(/[\s\-\(\)\.]/g, '');
+            if (raw.startsWith('00')) raw = '+' + raw.slice(2);
+            if (raw.startsWith('+')) return raw;
+            if (raw.startsWith('27') && raw.length >= 10) return '+' + raw;
+            if (raw.startsWith('0')) return '+27' + raw.slice(1);
+            return '+27' + raw;
+        }
+
         function getRoomPrefixForStays(stays) {
             if (!stays || stays.length === 0) return 'ALL-';
             if (stays.length > 1) return 'ALL-';
@@ -89,7 +99,7 @@ export async function onRequestPost(context) {
             if (Array.isArray(bookingsList)) {
                 bookingsList.forEach(b => {
                     const idStr = String(b.id || b.parentBookingId || '');
-                    const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
+                    const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i);
                     if (m) {
                         const n = parseInt(m[1], 10);
                         if (n >= 10001 && n > max) max = n;
@@ -150,10 +160,10 @@ export async function onRequestPost(context) {
 
         if (!bookingRef) {
             const nextSeq = await getNextSequenceNumber(env, existingForSeq);
-            bookingRef = `${getRoomPrefixForStays(staysList)}${nextSeq}`;
+            bookingRef = `CCH-${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);
         } else {
-            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
             if (m) {
                 const seqVal = parseInt(m[1], 10);
                 if (seqVal >= 10001) {
@@ -171,7 +181,7 @@ export async function onRequestPost(context) {
             id: bookingRef,
             guestName: guestName || 'Valued Guest',
             guestEmail: guestEmail || '',
-            guestPhone: guestPhone || '',
+            guestPhone: formatPhoneNumber(guestPhone) || '',
             guestCount: Number(payload.guestCount) || 2,
             includeBreakfast: !!payload.includeBreakfast,
             breakfastCount: Number(payload.breakfastCount) || 0,
@@ -220,7 +230,7 @@ export async function onRequestPost(context) {
                 nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
                 guestName: guestName || 'Valued Guest',
                 guestEmail: guestEmail || '',
-                guestPhone: guestPhone || '',
+                guestPhone: formatPhoneNumber(guestPhone) || '',
                 guestCount: Number(payload.guestCount) || 2,
                 includeBreakfast: !!payload.includeBreakfast,
                 breakfastCount: Number(payload.breakfastCount) || 0,
@@ -268,7 +278,7 @@ export async function onRequestPost(context) {
                         nights: s.nights || 1,
                         guestName: guestName || 'Valued Guest',
                         guestEmail: guestEmail || '',
-                        guestPhone: guestPhone || '',
+                        guestPhone: formatPhoneNumber(guestPhone) || '',
                         totalAmount: 0,
                         amountPaid: 0,
                         balanceDue: 0,

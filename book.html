@@ -2044,7 +2044,7 @@
                                 </label>
                                 <div class="phone-wrapper">
                                     <span class="phone-prefix">🇿🇦 +27</span>
-                                    <input type="tel" id="guestPhone" class="form-input" placeholder="82 123 4567" required>
+                                    <input type="tel" id="guestPhone" class="form-input" placeholder="82 123 4567 (or +international)" required>
                                 </div>
                             </div>
 
@@ -2294,7 +2294,7 @@
             <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">💳</div>
             <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.35rem;">Secure Reservation Payment</h2>
             <p style="font-size: 0.85rem; color: #334155; text-align: center; margin-bottom: 1.2rem;">
-                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#SAN-10001</strong>
+                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#CCH-10001</strong>
             </p>
 
             <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
@@ -2351,7 +2351,7 @@
                     Account Name: <strong>P H Botes</strong><br>
                     Account Number: <strong>1485601132</strong><br>
                     Branch Code: <strong>470010</strong><br>
-                    Reference: <strong id="qpEftRefText">SAN-10001</strong><br>
+                    Reference: <strong id="qpEftRefText">CCH-10001</strong><br>
                     <a href="#" id="qpEftWaBtn" target="_blank" class="btn-sm btn-wa" style="display:inline-block; margin-top:0.6rem; text-decoration:none;">📲 Send Proof of Payment on WhatsApp</a>
                 </div>
             </div>
@@ -3410,16 +3410,22 @@
             const checkOutDate = dateObj;
             const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
 
-            // REQUIREMENT: Minimum stay is 2 nights across all rooms & dates.
-            if (nights < 2) {
-                showToast("⚠️ Minimum stay is 2 nights. Please select a check-out date at least 2 nights after check-in.");
+            // REQUIREMENT: Minimum stay is 4 nights until 31 December 2026 (special period), then 2 nights thereafter.
+            const minNightsRequired = (checkInDate <= new Date('2026-12-31T23:59:59')) ? 4 : 2;
+            if (nights < minNightsRequired) {
+                if (minNightsRequired === 4) {
+                    showToast("⚠️ Minimum stay is 4 nights until 31 December 2026 (2 nights thereafter). Please select a check-out date at least 4 nights after check-in.");
+                } else {
+                    showToast("⚠️ Minimum stay is 2 nights. Please select a check-out date at least 2 nights after check-in.");
+                }
                 return;
             }
 
             const season = getSeasonInfo(checkInDate);
+            const effectiveMinStay = Math.max(minNightsRequired, season.minStay || 0);
 
-            if (season.minStay && nights < season.minStay) {
-                showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
+            if (nights < effectiveMinStay) {
+                showToast(`⚠️ ${season.name} requires a minimum stay of ${effectiveMinStay} nights.`);
                 return;
             }
 
@@ -4193,6 +4199,24 @@
         // ==========================================
         // 9. BOOKING REFERENCE & ROOM HELPER FUNCTIONS
         // ==========================================
+        function formatPhoneNumber(input) {
+            if (!input) return '';
+            let raw = String(input).trim().replace(/[\s\-\(\)\.]/g, '');
+            if (raw.startsWith('00')) {
+                raw = '+' + raw.slice(2);
+            }
+            if (raw.startsWith('+')) {
+                return raw;
+            }
+            if (raw.startsWith('27') && raw.length >= 10) {
+                return '+' + raw;
+            }
+            if (raw.startsWith('0')) {
+                return '+27' + raw.slice(1);
+            }
+            return '+27' + raw;
+        }
+
         function getRoomPrefix(rId) {
             if (!rId) return 'CC-';
             const r = String(rId).toLowerCase();
@@ -4219,18 +4243,14 @@
             // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
             clean = clean.replace(/_\d{5,}$/, '');
 
-            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-\d+$/i.test(clean)) {
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-\d+$/i.test(clean)) {
                 return clean.toUpperCase();
             }
-
-            const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
-            const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
-            const prefix = getRoomPrefix(inferredRoom);
 
             clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
             const numMatch = clean.match(/\d+/);
             if (numMatch) {
-                return `${prefix}${numMatch[0]}`;
+                return `CCH-${numMatch[0]}`;
             }
             return clean;
         }
@@ -4239,7 +4259,7 @@
             let maxSeq = 10000;
             (MOCK_BOOKINGS || []).forEach(b => {
                 const idStr = String(b.id || b.parentBookingId || '');
-                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i);
                 if (match) {
                     const num = parseInt(match[1], 10);
                     if (num >= 10001 && num > maxSeq) {
@@ -4251,8 +4271,7 @@
                 maxSeq = window._serverNextSeq - 1;
             }
             const nextSeq = maxSeq + 1;
-            const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
-            return `${prefix}${nextSeq}`;
+            return `CCH-${nextSeq}`;
         }
 
         // ==========================================
@@ -4284,7 +4303,7 @@
             const generatedBookingRef = getNextRefNumber(selectedStays);
             // Unique transaction ref for Paystack ledger so Paystack never throws 'Duplicate reference'
             const paystackUniqueTxRef = `${generatedBookingRef}_${Date.now()}`;
-            const cleanPhone = phone.replace(/^(\+27|0)/, '');
+            const cleanPhone = formatPhoneNumber(phone);
             const isSingleStay = selectedStays.length === 1;
             const isAllRooms = selectedStays.some(s => s.roomId === 'all');
             const isThreeRooms = selectedStays.some(s => s.roomId === 'three-rooms');
@@ -4321,7 +4340,7 @@
                         booking_ref: generatedBookingRef,
                         guest_name: fullName,
                         email: email,
-                        phone: "+27" + cleanPhone,
+                        phone: cleanPhone,
                         room_id: primaryRoomId,
                         room_name: primaryRoomName,
                         check_in: selectedStays[0]?.checkInStr || '',
@@ -4333,7 +4352,7 @@
                         custom_fields: [
                             { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
                             { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
-                            { display_name: "Phone Number", variable_name: "phone", value: "+27" + cleanPhone },
+                            { display_name: "Phone Number", variable_name: "phone", value: cleanPhone },
                             { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
                             { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
                         ]
@@ -4398,7 +4417,7 @@
                 paystackRef: txRef || cleanRef,
                 guestName: name,
                 guestEmail: email,
-                guestPhone: '+27' + phone,
+                guestPhone: formatPhoneNumber(phone),
                 roomId: primaryRoomId,
                 roomName: primaryRoomName,
                 stays: selectedStays,
@@ -5240,7 +5259,7 @@
 
         function processQuotePaystackPayment() {
             const email = (document.getElementById('qpEmail').value || '').trim();
-            const phone = (document.getElementById('qpPhone').value || '').trim();
+            const phone = formatPhoneNumber((document.getElementById('qpPhone').value || '').trim());
 
             if (!email || !email.includes('@')) {
                 alert("Please enter a valid email address for your payment receipt.");

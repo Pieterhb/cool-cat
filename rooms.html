@@ -209,7 +209,7 @@
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Single Room - For up to 2 Guests)<br>
-                        <strong style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
+                        <strong class="min-stay-badge" style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
                         <ul class="room-features">
                             <li>🛏️ Spacious luxury King-size bedroom</li>
                             <li>🛁 Own Bathroom</li>
@@ -238,7 +238,7 @@
                             <span class="special-old">(was <s>R3 400</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Two Private Separate Bedrooms - For up to 4 Guests)<br>
-                        <strong style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
+                        <strong class="min-stay-badge" style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
                         <ul class="room-features">
                             <li>🛏️ Two private separate bedrooms, each with a comfortable double bed</li>
                             <li>👥 Ideal for families, colleagues, or friends traveling together (Sleeps up to 4)</li>
@@ -266,7 +266,7 @@
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Private Deluxe Suite - For up to 2 Guests)<br>
-                        <strong style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
+                        <strong class="min-stay-badge" style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
                         <ul class="room-features">
                             <li>🛏️ Luxury double bedroom</li>
                             <li>☕ Complimentary Coffee &amp; Tea Station</li>
@@ -302,7 +302,7 @@
                             <span class="special-old">(was <s>R5 190</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Three Bedrooms / Two Suites - For up to 6 Guests)<br>
-                        <strong style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
+                        <strong class="min-stay-badge" style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
                         <ul class="room-features">
                             <li>🛏️ Spacious luxury King-size bedroom (King Arthur Suite) plus 2 private double bedrooms (Santori Suite) – 3 bedrooms total.</li>
                             <li>☕ Complimentary Coffee &amp; Tea Station</li>
@@ -335,7 +335,7 @@
                             <span class="special-old">(was <s>R6 980</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Entire Property - 4 Bedrooms for up to 8 Guests)<br>
-                        <strong style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
+                        <strong class="min-stay-badge" style="color: #000000;">📅 Minimum Stay: 4 Nights</strong></p>
                         <ul class="room-features">
                             <li>🛏️ 4 separate bedrooms: King Arthur Suite, Santori Suite (2 double rooms), and private Deluxe Suite.</li>
                             <li>☕ Complimentary Coffee &amp; Tea Station</li>
@@ -712,6 +712,17 @@
             }
         }
         fetchLiveRoomRates();
+
+        // Dynamic Minimum Stay: 4 nights through 31 Dec 2026, 2 nights thereafter
+        (function checkMinStayPolicy() {
+            var now = new Date();
+            var cutOff = new Date('2026-12-31T23:59:59');
+            if (now > cutOff) {
+                document.querySelectorAll('.min-stay-badge').forEach(function(el) {
+                    el.innerHTML = '📅 Minimum Stay: 2 Nights';
+                });
+            }
+        })();
     </script>
 </body>
 </html>
