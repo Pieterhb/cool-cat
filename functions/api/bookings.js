@@ -206,6 +206,7 @@ export async function onRequestPost(context) {
             amountPaid: numPaid,
             balanceDue: numBalance,
             paymentMethod: paymentMethod || (numPaid > 0 ? 'Card / Paystack' : 'pending'),
+            referralCode: payload.referralCode || '',
             status: finalStatus,
             createdAt: new Date().toISOString()
         };

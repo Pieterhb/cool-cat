@@ -3305,14 +3305,10 @@
 
                     // Direct Cash/EFT vs Paystack Gateway Calculation
                     let paystackPortion = 0;
-                    if (b.isPaidPaystack || b.paystackRef) {
-                        if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
-                            paystackPortion = Number(b.paystackAmount);
-                        } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
-                            paystackPortion = bPaid;
-                        } else {
-                            paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
-                        }
+                    if (b.paystackAmount !== undefined && b.paystackAmount !== null && Number(b.paystackAmount) >= 0) {
+                        paystackPortion = Math.min(bPaid, Number(b.paystackAmount));
+                    } else if ((b.isPaidPaystack || b.paystackRef || b.paymentMethod === 'card') && !b.isPaidEft) {
+                        paystackPortion = bPaid;
                     }
                     const cashPortion = Math.max(0, bPaid - paystackPortion);
                     totalCashCollected += cashPortion;
@@ -5693,6 +5689,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function exportReferralsToXLSX() {
+            ADMIN_REFERRALS = getLiveReferrals();
             const rows = [
                 ["Ref Code", "Partner Name", "Partner Email", "Partner Phone", "Referred Guest", "Stay Dates", "Booking Total (ZAR)", "10% Commission (ZAR)", "Payout Status"]
             ];
@@ -5732,52 +5729,99 @@ We look forward to hosting you at Cool-Cat!`;
 
         // 7. Referral & Affiliate Ledger Handlers
 
-        // Live referrals – loaded from Cloudflare KV via initDashboard
+        // Live referrals – dynamically derived from bookings with referral codes + settled state
         let ADMIN_REFERRALS = [];
+
+        function getLiveReferrals() {
+            const list = [];
+            const todayStr = new Date().toISOString().split('T')[0];
+            const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
+
+            (ALL_BOOKINGS || []).forEach(b => {
+                if (b.isCalendarBlock || (b.roomId && (b.roomId.startsWith('block') || b.roomId === 'blocked'))) return;
+                const refCode = (b.referralCode || '').trim();
+                if (!refCode) return;
+
+                const total = Number(b.totalAmount || 0);
+                if (total <= 0) return;
+                const comm = Math.round(total * 0.10);
+
+                let status = 'pending_stay';
+                if (storedPayouts[b.id]) {
+                    status = 'paid_eft';
+                } else if (b.checkOut && b.checkOut <= todayStr) {
+                    status = 'ready_payout';
+                }
+
+                list.push({
+                    id: b.id,
+                    code: refCode,
+                    partnerName: refCode,
+                    partnerPhone: b.guestPhone || '',
+                    partnerEmail: b.guestEmail || '',
+                    guestName: b.guestName || 'Referred Guest',
+                    stayDates: `${b.checkIn} ➔ ${b.checkOut || ''}`,
+                    bookingTotal: total,
+                    commission: comm,
+                    status: status
+                });
+            });
+            return list;
+        }
 
         function renderReferralsTable() {
             const tbody = document.getElementById('referralsTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
+            ADMIN_REFERRALS = getLiveReferrals();
+
             let totalAccrued = 0;
             let lockedTotal = 0;
             let readyTotal = 0;
 
-            ADMIN_REFERRALS.forEach(r => {
-                totalAccrued += r.commission;
-                if (r.status === 'pending_stay') lockedTotal += r.commission;
-                if (r.status === 'ready_payout') readyTotal += r.commission;
+            if (ADMIN_REFERRALS.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 2.5rem; color: #64748B; font-weight: 500;">
+                    No affiliate or referred bookings recorded yet.<br>
+                    <span style="font-size:0.82rem; color: #94A3B8;">When a guest reserves with a partner link or promo code, their stay and 10% commission will track here automatically.</span>
+                </td></tr>`;
+            } else {
+                ADMIN_REFERRALS.forEach(r => {
+                    totalAccrued += r.commission;
+                    if (r.status === 'pending_stay') lockedTotal += r.commission;
+                    if (r.status === 'ready_payout') readyTotal += r.commission;
 
-                const statusPill = r.status === 'ready_payout' 
-                    ? '<span class="status-pill status-confirmed">🟢 Ready for Payout</span>' 
-                    : (r.status === 'paid_eft' 
-                        ? '<span class="status-pill" style="background:#E2E8F0; color: #334155;">✅ Paid via EFT</span>' 
-                        : '<span class="status-pill status-deposit">⏳ Stay in Progress</span>');
+                    const statusPill = r.status === 'ready_payout' 
+                        ? '<span class="status-pill status-confirmed">🟢 Ready for Payout</span>' 
+                        : (r.status === 'paid_eft' 
+                            ? '<span class="status-pill" style="background:#E2E8F0; color: #334155;">✅ Paid via EFT</span>' 
+                            : '<span class="status-pill status-deposit">⏳ Stay in Progress</span>');
 
-                const actionBtns = r.status === 'ready_payout'
-                    ? `<button class="btn-sm btn-wa" onclick="whatsappReferrer('${r.partnerPhone}', '${r.partnerName}', ${r.commission})">📲 WhatsApp Banking Details</button>
-                       <button class="btn-sm" style="background: #166534; color: white; margin-left: 4px;" onclick="markReferralPaid('${r.id}')">Mark as Paid</button>`
-                    : (r.status === 'paid_eft'
-                        ? `<span style="font-size: 0.78rem; color: #166534; font-weight: 700;">Settled ✓</span>`
-                        : `<span style="font-size: 0.78rem; color: #334155;">Locked until checkout</span>`);
+                    const actionBtns = r.status === 'ready_payout'
+                        ? `<button class="btn-sm btn-wa" onclick="whatsappReferrer('${r.partnerPhone}', '${r.partnerName}', ${r.commission})">📲 WhatsApp Banking Details</button>
+                           <button class="btn-sm" style="background: #166534; color: white; margin-left: 4px;" onclick="markReferralPaid('${r.id}')">Mark as Paid</button>`
+                        : (r.status === 'paid_eft'
+                            ? `<span style="font-size: 0.78rem; color: #166534; font-weight: 700;">Settled ✓</span>`
+                            : `<span style="font-size: 0.78rem; color: #334155;">Locked until checkout</span>`);
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong><code style="color: var(--adm-primary);">${r.code}</code></strong></td>
-                    <td><strong>${r.partnerName}</strong><br><span style="font-size:0.75rem; color: #334155;">${r.partnerEmail}</span></td>
-                    <td>${r.guestName}</td>
-                    <td>${r.stayDates}</td>
-                    <td>R${r.bookingTotal.toLocaleString()}</td>
-                    <td style="font-weight: 800; color: #166534;">R${r.commission.toLocaleString()} (10%)</td>
-                    <td>${statusPill}</td>
-                    <td>${actionBtns}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong><code style="color: var(--adm-primary);">${r.code}</code></strong></td>
+                        <td><strong>${r.partnerName}</strong><br><span style="font-size:0.75rem; color: #334155;">${r.partnerEmail}</span></td>
+                        <td>${r.guestName}</td>
+                        <td>${r.stayDates}</td>
+                        <td>R${r.bookingTotal.toLocaleString()}</td>
+                        <td style="font-weight: 800; color: #166534;">R${r.commission.toLocaleString()} (10%)</td>
+                        <td>${statusPill}</td>
+                        <td>${actionBtns}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
+            const uniquePartners = new Set(ADMIN_REFERRALS.map(r => r.code));
             const elRefTotal = document.getElementById('refTotalCount');
-            if (elRefTotal) elRefTotal.textContent = `${ADMIN_REFERRALS.length} Partners`;
+            if (elRefTotal) elRefTotal.textContent = `${uniquePartners.size} Partner${uniquePartners.size === 1 ? '' : 's'}`;
             const elRefComm = document.getElementById('refTotalCommission');
             if (elRefComm) elRefComm.textContent = `R${totalAccrued.toLocaleString()}`;
             const elRefLocked = document.getElementById('refLockedCommission');
@@ -5787,12 +5831,11 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function markReferralPaid(refId) {
-            const item = ADMIN_REFERRALS.find(r => r.id === refId);
-            if (item) {
-                item.status = 'paid_eft';
-                renderReferralsTable();
-                alert(`✅ Commission of R${item.commission} for ${item.partnerName} marked as Paid via EFT!`);
-            }
+            const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
+            storedPayouts[refId] = { paidAt: new Date().toISOString() };
+            localStorage.setItem('cc_referral_payouts', JSON.stringify(storedPayouts));
+            renderReferralsTable();
+            alert(`✅ Commission marked as Paid via EFT!`);
         }
 
         function whatsappReferrer(phone, name, commission) {
@@ -5858,14 +5901,10 @@ We look forward to hosting you at Cool-Cat!`;
                 if (bPaid <= 0) return;
 
                 let paystackPortion = 0;
-                if (b.isPaidPaystack || b.paystackRef) {
-                    if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
-                        paystackPortion = Number(b.paystackAmount);
-                    } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
-                        paystackPortion = bPaid;
-                    } else {
-                        paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
-                    }
+                if (b.paystackAmount !== undefined && b.paystackAmount !== null && Number(b.paystackAmount) >= 0) {
+                    paystackPortion = Math.min(bPaid, Number(b.paystackAmount));
+                } else if ((b.isPaidPaystack || b.paystackRef || b.paymentMethod === 'card') && !b.isPaidEft) {
+                    paystackPortion = bPaid;
                 }
                 const cashPortion = Math.max(0, bPaid - paystackPortion);
                 const isSettled = settledBookingIds.has(b.id) || (b.parentBookingId && settledBookingIds.has(b.parentBookingId));
@@ -6208,14 +6247,10 @@ We look forward to hosting you at Cool-Cat!`;
                 if (bPaid <= 0) return;
 
                 let paystackPortion = 0;
-                if (b.isPaidPaystack || b.paystackRef) {
-                    if (b.paystackAmount !== undefined && b.paystackAmount !== null) {
-                        paystackPortion = Number(b.paystackAmount);
-                    } else if (b.paymentMethod === 'card' && !b.isRecordedPayment && !b.isPaidEft) {
-                        paystackPortion = bPaid;
-                    } else {
-                        paystackPortion = Math.min(bPaid, Math.round(bTotal * 0.5));
-                    }
+                if (b.paystackAmount !== undefined && b.paystackAmount !== null && Number(b.paystackAmount) >= 0) {
+                    paystackPortion = Math.min(bPaid, Number(b.paystackAmount));
+                } else if ((b.isPaidPaystack || b.paystackRef || b.paymentMethod === 'card') && !b.isPaidEft) {
+                    paystackPortion = bPaid;
                 }
                 const cashPortion = Math.max(0, bPaid - paystackPortion);
                 const commission = Math.round(cashPortion * 0.15 * 100) / 100;
