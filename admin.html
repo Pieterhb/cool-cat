@@ -3256,7 +3256,7 @@
                 return true;
             }).map(b => {
                 // Only sanitize legacy manual draft records with explicit 'MAN-' prefix that have zero payment recorded
-                const isUnpaidManual = b.isManual === true && b.id && b.id.startsWith('MAN-') && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
+                const isUnpaidManual = (b.isManual === true || (b.id && b.id.startsWith('MAN-'))) && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
                 if (isUnpaidManual && b.status !== 'deposit_paid' && b.status !== 'fully_paid' && b.status !== 'cancelled') {
                     return {
                         ...b,
@@ -3398,11 +3398,14 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const checkinsList = document.getElementById('todayCheckinsList');
             const checkinsCount = document.getElementById('todayCheckinsCount');
+            const checkoutsList = document.getElementById('todayCheckoutsList');
+            const checkoutsCount = document.getElementById('todayCheckoutsCount');
 
             if (!checkinsList) return;
 
             const displayList = getDisplayBookings();
-            const todayCheckins = displayList.filter(b => b.checkIn === todayStr && b.status !== 'cancelled' && b.status !== 'blocked');
+            const todayCheckins = displayList.filter(b => (b.checkIn === todayStr || (b.stays && b.stays.some(s => (s.checkInStr || s.checkIn) === todayStr))) && b.status !== 'cancelled' && b.status !== 'blocked');
+            const todayCheckouts = displayList.filter(b => (b.checkOut === todayStr || (b.stays && b.stays.some(s => (s.checkOutStr || s.checkOut) === todayStr))) && b.status !== 'cancelled' && b.status !== 'blocked');
 
             if (checkinsCount) {
                 checkinsCount.textContent = `${todayCheckins.length} Guest${todayCheckins.length === 1 ? '' : 's'}`;
@@ -3427,6 +3430,33 @@
                         </div>
                     </div>
                 `).join('');
+            }
+
+            if (checkoutsCount) {
+                checkoutsCount.textContent = `${todayCheckouts.length} Room${todayCheckouts.length === 1 ? '' : 's'}`;
+            }
+
+            if (checkoutsList) {
+                if (todayCheckouts.length === 0) {
+                    checkoutsList.innerHTML = `
+                        <div style="padding: 1rem; text-align: center; color: #334155; font-size: 0.88rem;">
+                            ✨ No check-outs scheduled for today.
+                        </div>
+                    `;
+                } else {
+                    checkoutsList.innerHTML = todayCheckouts.map(b => `
+                        <div class="ops-item">
+                            <div>
+                                <strong>${b.guestName}</strong> (${b.roomName || b.roomId})<br>
+                                <span style="font-size: 0.78rem; color: #334155;">Check-Out: by 10:00 &bull; ${b.nights || 1}N stayed &bull; ${b.guestCount || 2} Guests</span>
+                            </div>
+                            <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
+                                <span style="color: #0369A1; font-weight: 700; font-size: 0.82rem;">Departure Clean 🧹</span>
+                                <button class="btn-sm btn-wa" onclick="sendGuestReviewRequest('${b.guestName}', '${b.guestPhone || ''}')">⭐ Request Review</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
             }
         }
 
@@ -5697,22 +5727,41 @@ We look forward to hosting you at Cool-Cat!`;
                 });
             }
 
-            const seen = new Set();
-            const rows = [
-                ["Guest Name", "Email", "Phone", "Last Room", "Total Spent ZAR"]
-            ];
+            const guestMap = new Map();
             listToExport.forEach(b => {
-                const key = (b.guestEmail || b.guestName || '').toLowerCase();
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    rows.push([
-                        b.guestName,
-                        b.guestEmail || '',
-                        b.guestPhone || '',
-                        b.roomName || b.roomId,
-                        Number(b.amountPaid || 0)
-                    ]);
+                const key = (b.guestEmail || b.guestName || '').toLowerCase().trim();
+                if (!key) return;
+                const paid = Number(b.amountPaid || 0);
+                if (!guestMap.has(key)) {
+                    guestMap.set(key, {
+                        name: b.guestName,
+                        email: b.guestEmail || '',
+                        phone: b.guestPhone || '',
+                        lastRoom: b.roomName || b.roomId,
+                        totalSpent: paid,
+                        bookingCount: 1
+                    });
+                } else {
+                    const existing = guestMap.get(key);
+                    existing.totalSpent += paid;
+                    existing.bookingCount += 1;
+                    if (!existing.phone && b.guestPhone) existing.phone = b.guestPhone;
+                    if (!existing.email && b.guestEmail) existing.email = b.guestEmail;
                 }
+            });
+
+            const rows = [
+                ["Guest Name", "Email", "Phone", "Last Room", "Bookings Count", "Total Spent ZAR"]
+            ];
+            guestMap.forEach(g => {
+                rows.push([
+                    g.name,
+                    g.email,
+                    g.phone,
+                    g.lastRoom,
+                    g.bookingCount,
+                    g.totalSpent
+                ]);
             });
             downloadXLSX(rows, "cool-cat-guests-crm.xlsx", "Guests CRM");
         }

@@ -27,7 +27,7 @@ export async function onRequestGet(context) {
             return true;
         }).map(b => {
             // Only sanitize legacy manual draft records with explicit 'MAN-' prefix that have zero payment recorded
-            const isUnpaidManual = b.isManual === true && b.id && b.id.startsWith('MAN-') && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
+            const isUnpaidManual = (b.isManual === true || (b.id && b.id.startsWith('MAN-'))) && !b.isPaidEft && !b.isRecordedPayment && !b.paystackRef && Number(b.amountPaid || 0) === 0;
             if (isUnpaidManual) {
                 if (b.status === 'cancelled') {
                     return {
