@@ -8,6 +8,7 @@ export async function onRequestPost(context) {
         const payload = await request.json();
         const {
             reference,
+            paystackRef,
             guestName,
             guestEmail,
             guestPhone,
@@ -24,14 +25,15 @@ export async function onRequestPost(context) {
         } = payload;
 
         // 1. Verify with Paystack (supports live secret key and test mode fallback)
-        let paystackVerified = true;
+        let paystackVerified = false;
         let paystackData = null;
 
         const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315';
+        const txRefToVerify = (paystackRef || reference || '').trim().replace(/^#/, '');
 
-        if (reference) {
+        if (txRefToVerify) {
             try {
-                const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+                const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(txRefToVerify)}`, {
                     headers: {
                         Authorization: `Bearer ${paystackSecret}`
                     }
@@ -41,13 +43,32 @@ export async function onRequestPost(context) {
                     paystackVerified = true;
                     paystackData = data.data;
                 } else {
-                    // In test mode or fallback, accept the completed checkout reference
+                    // With live key, reject unverified transactions strictly
+                    if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+                        return new Response(JSON.stringify({
+                            success: false,
+                            error: `Paystack payment verification failed: ${data?.message || 'Transaction not verified'}`
+                        }), {
+                            status: 400,
+                            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                        });
+                    }
+                    // In test mode or fallback, accept checkout with log notice
                     paystackVerified = true;
-                    if (data) console.log("Paystack verification notice:", data.message || data);
+                    if (data) console.log("Paystack test verification notice:", data.message || data);
                 }
             } catch (pErr) {
                 console.error("Paystack verification warning:", pErr);
-                paystackVerified = true; // allow through on network error so customer booking is never lost
+                if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+                    return new Response(JSON.stringify({
+                        success: false,
+                        error: `Unable to verify payment with Paystack gateway: ${pErr.message}`
+                    }), {
+                        status: 502,
+                        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                    });
+                }
+                paystackVerified = true; // allow through in test mode on network error
             }
         }
 
@@ -168,7 +189,7 @@ export async function onRequestPost(context) {
             amountPaid: numPaid,
             balanceDue: numBal,
             paymentMethod: 'card',
-            paystackRef: rawRef || (paystackData ? paystackData.reference : bookingRef),
+            paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
             isRecordedPayment: true,
             isPaidPaystack: true,
             status: bookingStatus,
@@ -207,7 +228,7 @@ export async function onRequestPost(context) {
                 amountPaid: numPaid,
                 balanceDue: numBal,
                 paymentMethod: 'card',
-                paystackRef: rawRef || (paystackData ? paystackData.reference : bookingRef),
+                paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
                 isRecordedPayment: true,
                 isPaidPaystack: true,
                 stays: staysList,
