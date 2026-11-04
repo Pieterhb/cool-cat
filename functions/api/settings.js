@@ -7,7 +7,7 @@
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key',
     'Content-Type': 'application/json',
     'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
     'Pragma': 'no-cache'
@@ -132,6 +132,19 @@ export async function onRequestGet(context) {
 
 export async function onRequestPost(context) {
     const { request, env } = context;
+
+    // Layer 2: Verify Admin Secret Key for updating site settings & tariffs
+    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
+
+    if (token !== expectedKey) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
+            status: 401,
+            headers: CORS_HEADERS
+        });
+    }
+
     try {
         const payload = await request.json();
 

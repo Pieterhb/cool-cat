@@ -2888,6 +2888,30 @@
     <!-- DASHBOARD JAVASCRIPT ENGINE                               -->
     <!-- ========================================================= -->
     <script>
+        // =========================================================
+        // SECURITY SHIELD: Admin Key & Global Request Interceptor
+        // =========================================================
+        function getAdminKey() {
+            return localStorage.getItem('coolcat_admin_key') || sessionStorage.getItem('coolcat_admin_key') || '2026coolcat';
+        }
+
+        // Automatic security header injector for all admin API requests
+        const _nativeFetch = window.fetch;
+        window.fetch = function(url, init = {}) {
+            if (typeof url === 'string' && (url.startsWith('/api/bookings') || url.startsWith('/api/settings'))) {
+                init.headers = init.headers || {};
+                const key = getAdminKey();
+                if (init.headers instanceof Headers) {
+                    if (!init.headers.has('Authorization')) init.headers.set('Authorization', 'Bearer ' + key);
+                } else if (Array.isArray(init.headers)) {
+                    init.headers.push(['Authorization', 'Bearer ' + key]);
+                } else {
+                    if (!init.headers['Authorization']) init.headers['Authorization'] = 'Bearer ' + key;
+                }
+            }
+            return _nativeFetch.call(this, url, init);
+        };
+
         // Live bookings – loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
         // Recorded marketer commission payout batches – loaded from Cloudflare KV via /api/settings
@@ -6712,13 +6736,20 @@ We look forward to hosting you at Cool-Cat!`;
             if (!confirm('⛔ FINAL CONFIRMATION\n\nYou are about to wipe ALL bookings from the live database.\n\nType "DELETE" in the next prompt to confirm.')) {
                 return;
             }
-            const typed = prompt('Type DELETE to confirm complete reset:');
-            if ((typed || '').trim().toUpperCase() !== 'DELETE') {
-                alert('Reset cancelled – confirmation text did not match.');
+            const enteredKey = prompt('🔒 ENTER ADMIN SECRET KEY\n\nPlease enter the Admin Secret Key to authorize resetting the database:');
+            if (!enteredKey) {
+                alert('Reset cancelled – no key was entered.');
+                return;
+            }
+            if (enteredKey.trim() !== getAdminKey()) {
+                alert('⛔ ACCESS DENIED: Invalid Admin Secret Key.');
                 return;
             }
             try {
-                const res = await fetch('/api/bookings?action=reset_all', { method: 'DELETE' });
+                const res = await fetch('/api/bookings?action=reset_all', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + enteredKey.trim() }
+                });
                 const data = await res.json();
                 if (data.success) {
                     ADMIN_BOOKINGS = [];

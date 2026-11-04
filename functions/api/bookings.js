@@ -48,11 +48,33 @@ export async function onRequestGet(context) {
             return b;
         });
 
+        // Layer 3: Security & Privacy Check - Authenticated Admin vs Public Visitor
+        const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+        const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
+        const isAdmin = (token === expectedKey);
+
+        // Sanitize bookings for public calendars: hide customer names, phones, emails, and financial details
+        const responseBookings = isAdmin ? allBookings : allBookings.map(b => ({
+            id: b.id,
+            parentBookingId: b.parentBookingId,
+            isParentBooking: b.isParentBooking,
+            isCalendarBlock: b.isCalendarBlock,
+            totalStays: b.totalStays,
+            roomId: b.roomId,
+            roomName: b.roomName,
+            checkIn: b.checkIn,
+            checkOut: b.checkOut,
+            nights: b.nights,
+            status: b.status,
+            stays: b.stays
+        }));
+
         const nextSequence = await getNextSequenceNumber(env, allBookings);
 
         return new Response(JSON.stringify({
             success: true,
-            bookings: allBookings,
+            bookings: responseBookings,
             nextSequence: nextSequence
         }), {
             headers: {
@@ -289,10 +311,37 @@ export async function onRequestPost(context) {
 export async function onRequestDelete(context) {
     const { request, env } = context;
     const url = new URL(request.url);
+
+    // Layer 2: Verify Admin Secret Key for any DELETE action
+    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
+
+    if (token !== expectedKey) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+    }
+
     const action = url.searchParams.get('action');
 
-    // Action: Reset all bookings to empty list
+    // Layer 1: Reset all bookings - strictly locked in live mode
     if (action === 'reset_all') {
+        const isLive = Boolean(
+            (env && env.PAYSTACK_SECRET_KEY && env.PAYSTACK_SECRET_KEY.startsWith('sk_live_')) ||
+            (env && env.ENVIRONMENT === 'production')
+        );
+        if (isLive) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: "Action Locked: Resetting the database is permanently disabled in live production mode."
+            }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
+
         try {
             if (env && env.COOLCAT_KV) {
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify([]));
@@ -478,7 +527,7 @@ export async function onRequestOptions() {
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key'
         }
     });
 }
