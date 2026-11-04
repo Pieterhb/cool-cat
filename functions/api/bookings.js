@@ -80,9 +80,9 @@ function getRoomPrefix(rId) {
     if (!rId) return 'CC-';
     const r = String(rId).toLowerCase();
     if (r === 'all' || r.includes('all')) return 'ALL-';
+    if (r === 'three-rooms' || r.includes('three') || r.includes('bottom') || r.includes('tri') || r.includes('thr')) return 'TRI-';
     if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
-    if (r.includes('santor') || r.includes('san')) return 'SAN-';
-    if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+    if (r.includes('santor') || r.includes('san') || r.includes('mykon') || r.includes('myk')) return 'SAN-';
     if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
     return 'CC-';
 }
@@ -92,7 +92,7 @@ function getHighestSeqFromBookings(bookingsList) {
     if (Array.isArray(bookingsList)) {
         bookingsList.forEach(b => {
             const idStr = String(b.id || b.parentBookingId || '');
-            const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+            const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
             if (m) {
                 const n = parseInt(m[1], 10);
                 if (n >= 10001 && n > max) max = n;
@@ -149,7 +149,6 @@ export async function onRequestPost(context) {
             'three-rooms': 'Three Rooms (King Arthur Suite & Santori Suite)',
             'king-arthur': 'King Arthur Suite',
             'santori': 'Santori Suite (2 Bedrooms)',
-            'mykonos': 'Santori Suite (Bedroom 2)',
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
@@ -164,7 +163,7 @@ export async function onRequestPost(context) {
             bookingRef = `${getRoomPrefix(roomId)}${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);
         } else {
-            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
             if (m) {
                 const seqVal = parseInt(m[1], 10);
                 if (seqVal >= 10001) {
@@ -218,7 +217,7 @@ export async function onRequestPost(context) {
             // If booking all rooms or packages, store calendar blocks
             if (roomId === 'all') {
                 existing.push(newBooking);
-                const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+                const individualRooms = ['king-arthur', 'santori', 'deluxe-suite'];
                 individualRooms.forEach(r => {
                     existing.push({
                         id: `${bookingRef}_${r}`,
@@ -241,7 +240,7 @@ export async function onRequestPost(context) {
                 });
             } else if (roomId === 'three-rooms') {
                 existing.push(newBooking);
-                const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+                const threeRooms = ['king-arthur', 'santori'];
                 threeRooms.forEach(r => {
                     existing.push({
                         id: `${bookingRef}_${r}`,
@@ -261,27 +260,6 @@ export async function onRequestPost(context) {
                         status: finalStatus,
                         createdAt: new Date().toISOString()
                     });
-                });
-            } else if (roomId === 'santori') {
-                existing.push(newBooking);
-                // Also block bedroom 2 (mykonos) so both rooms of Santori Suite are reserved
-                existing.push({
-                    id: `${bookingRef}_mykonos`,
-                    parentBookingId: bookingRef,
-                    isCalendarBlock: true,
-                    roomId: 'mykonos',
-                    roomName: 'Santori Suite (Bedroom 2)',
-                    checkIn,
-                    checkOut,
-                    nights: nightsCount,
-                    guestName: newBooking.guestName,
-                    guestEmail: newBooking.guestEmail,
-                    guestPhone: newBooking.guestPhone,
-                    totalAmount: 0,
-                    amountPaid: 0,
-                    balanceDue: 0,
-                    status: finalStatus,
-                    createdAt: new Date().toISOString()
                 });
             } else {
                 existing.push(newBooking);

@@ -126,8 +126,8 @@ export async function onRequestPost(context) {
                 if (staysList && Array.isArray(staysList) && staysList.length > 0) {
                     staysList.forEach(s => {
                         const stayRooms = s.roomId === 'all'
-                            ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
-                            : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori', 'mykonos'] : (s.roomId === 'santori' ? ['santori', 'mykonos'] : [s.roomId]));
+                            ? ['king-arthur', 'santori', 'deluxe-suite']
+                            : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori'] : [s.roomId]);
                         stayRooms.forEach(rid => {
                             existing.push({
                                 id: `${cleanBookingRef}_${rid}_${s.checkInStr || s.checkIn}`,
@@ -151,7 +151,7 @@ export async function onRequestPost(context) {
                     });
                 } else if (isAllRooms) {
                     // Single All Rooms booking without explicit stays array: block all 4 rooms
-                    ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'].forEach(rid => {
+                    ['king-arthur', 'santori', 'deluxe-suite'].forEach(rid => {
                         existing.push({
                             id: `${cleanBookingRef}_${rid}_${checkIn}`,
                             parentBookingId: cleanBookingRef,
@@ -193,7 +193,7 @@ export async function onRequestPost(context) {
 
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
 
-                const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
+                const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
                 if (numMatch) {
                     const seqVal = parseInt(numMatch[1], 10);
                     if (seqVal >= 10001) {

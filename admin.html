@@ -2393,11 +2393,15 @@
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Public Key (pk_test_... or pk_live_...)</label>
-                                <input type="text" id="paystackPublicKey" class="adm-input" value="pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407" oninput="updateMaintenanceButtonsUI()">
+                                <input type="text" id="paystackPublicKey" class="adm-input" placeholder="pk_test_... or pk_live_..." oninput="updateMaintenanceButtonsUI()">
                             </div>
-                            <div class="adm-form-group">
-                                <label>Paystack Secret Key (sk_test_... or sk_live_...)</label>
-                                <input type="password" id="paystackSecretKey" class="adm-input" value="sk_test_40067fbb064905a9a1e33127111e043eeaee7315">
+                            <div class="adm-form-group" style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 8px; padding: 10px 14px;">
+                                <div style="font-weight: 700; color: #1E40AF; margin-bottom: 3px; font-size: 0.85rem;">
+                                    🔐 Secret Key Securely Managed in Cloudflare
+                                </div>
+                                <div style="font-size: 0.78rem; color: #3730A3; line-height: 1.35;">
+                                    Your Secret Key (<code>PAYSTACK_SECRET_KEY</code>) is stored in Cloudflare Pages Environment Variables. It is never exposed in browser HTML or localStorage.
+                                </div>
                             </div>
                             <div class="adm-form-group">
                                 <label>Paystack Webhook Endpoint (Copy into Paystack Dashboard)</label>
@@ -3152,7 +3156,7 @@
                 });
 
                 // Load Specials Config & Toggle Buttons
-                const roomKeys = ['king', 'santori', 'mykonos', 'deluxe'];
+                const roomKeys = ['king', 'santori', 'deluxe'];
                 roomKeys.forEach(rk => {
                     const isActive = (config[`special_${rk}_active`] === true || config[`special_${rk}_active`] === 'true');
                     const actInput = document.getElementById(`special_${rk}_active`);
@@ -3785,11 +3789,10 @@
         // =========================================================
 
         const ADMIN_ROOM_NAMES = {
-            'all': 'All Rooms (4 Bedrooms)',
-            'three-rooms': 'Bottom Rooms (3 Bedrooms)',
+            'all': 'All Rooms (4 Bedrooms: King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)',
+            'three-rooms': 'Bottom Rooms (3 Bedrooms: King Arthur Suite & Santori Suite [2 Rooms])',
             'king-arthur': 'King Arthur Suite',
             'santori': 'Santori Suite (2 Bedrooms)',
-            'mykonos': 'Santori Suite (Bedroom 2)',
             'deluxe-suite': 'Cool-Cat Deluxe Suite'
         };
 
@@ -3816,7 +3819,7 @@
             let clean = String(id).trim();
             if (clean.startsWith('#')) clean = clean.substring(1);
 
-            if (/^(ALL|KIN|SAN|MYK|DEL)-\d+$/i.test(clean)) {
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-\d+$/i.test(clean)) {
                 return clean.toUpperCase();
             }
 
@@ -3836,7 +3839,7 @@
             let maxSeq = 10000;
             (ADMIN_BOOKINGS || []).forEach(b => {
                 const idStr = String(b.id || b.parentBookingId || '');
-                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
                 if (match) {
                     const num = parseInt(match[1], 10);
                     if (num >= 10001 && num > maxSeq) {
@@ -3858,14 +3861,12 @@
             'three-rooms': '🏠',
             'king-arthur': '👑',
             'santori': '🌊',
-            'mykonos': '🏛️',
             'deluxe-suite': '✨'
         };
 
         const ADMIN_DEFAULT_RATES = {
             'king-arthur': { wd: 950, we: 1200 },
             'santori': { wd: 850, we: 1100 },
-            'mykonos': { wd: 850, we: 1100 },
             'deluxe-suite': { wd: 1350, we: 1750 }
         };
 
@@ -4029,10 +4030,10 @@
             }
 
             if (roomId === 'all') {
-                const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+                const individualRooms = ['king-arthur', 'santori', 'deluxe-suite'];
                 return individualRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
             } else if (roomId === 'three-rooms') {
-                const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+                const threeRooms = ['king-arthur', 'santori'];
                 return threeRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
             } else {
                 return getSingleRoomNightPrice(roomId);
@@ -4088,7 +4089,7 @@
         }
 
         function getAdminDateAvailability(dateStr) {
-            const individualRooms = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            const individualRooms = ['king-arthur', 'santori', 'deluxe-suite'];
             const bookedRooms = [];
             const availableRooms = [];
 
@@ -4111,7 +4112,7 @@
         }
 
         function getAdminDateAvailabilityForThreeRooms(dateStr) {
-            const threeRooms = ['king-arthur', 'santori', 'mykonos'];
+            const threeRooms = ['king-arthur', 'santori'];
             const bookedRooms = [];
             const availableRooms = [];
 
@@ -4306,7 +4307,7 @@
                 var activePromoInfo = null;
 
                 if (adminCalRoomId === 'all') {
-                    var indRooms = ['king', 'santori', 'mykonos', 'deluxe'];
+                    var indRooms = ['king', 'santori', 'deluxe'];
                     var activeEvRooms = indRooms.filter(function(p) {
                         var act = document.getElementById('event_' + p + '_active')?.value === 'true';
                         var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
@@ -4327,7 +4328,7 @@
                         activePromoInfo = { count: activeSpRooms.length };
                     }
                 } else if (adminCalRoomId === 'three-rooms') {
-                    var threeEvRooms = ['king', 'santori', 'mykonos'];
+                    var threeEvRooms = ['king', 'santori'];
                     var activeEvRooms = threeEvRooms.filter(function(p) {
                         var act = document.getElementById('event_' + p + '_active')?.value === 'true';
                         var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
@@ -4522,7 +4523,7 @@
 
             // Update footer occupancy stats
             if (footerEl) {
-                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 4 : (adminCalRoomId === 'three-rooms' ? 3 : 1);
+                const totalRoomsMultiplier = adminCalRoomId === 'all' ? 3 : (adminCalRoomId === 'three-rooms' ? 2 : 1);
                 const totalPossibleNights = daysInMonth * totalRoomsMultiplier;
                 let actualBookedNights = 0;
 
@@ -6528,10 +6529,9 @@ We look forward to hosting you at Cool-Cat!`;
             }
         }
 
-        function saveSystemSettings() {
+        async function saveSystemSettings() {
             const mode = document.getElementById('paystackModeSelect')?.value || 'test';
             const pubKey = document.getElementById('paystackPublicKey')?.value || '';
-            const secKey = document.getElementById('paystackSecretKey')?.value || '';
             const wifiNet = document.getElementById('wifiNetwork')?.value || '';
             const wifiPass = document.getElementById('wifiPassword')?.value || '';
             const checkIn = document.getElementById('checkInTime')?.value || '14:00';
@@ -6540,7 +6540,6 @@ We look forward to hosting you at Cool-Cat!`;
             const systemConfig = {
                 paystack_mode: mode,
                 paystack_public_key: pubKey,
-                paystack_secret_key: secKey,
                 wifi_network: wifiNet,
                 wifi_password: wifiPass,
                 checkin_time: checkIn,
@@ -6549,8 +6548,18 @@ We look forward to hosting you at Cool-Cat!`;
 
             localStorage.setItem('coolcat_system_settings', JSON.stringify(systemConfig));
             localStorage.setItem('coolcat_paystack_mode', mode);
+
+            // Save public key to Cloudflare KV so all visitors receive it
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paystack_public_key: pubKey })
+                });
+            } catch(e) {}
+
             updateMaintenanceButtonsUI();
-            alert("✅ System, Paystack API keys, and Wi-Fi credentials saved successfully!");
+            alert("✅ System settings & Paystack Public Key saved successfully to Cloudflare!");
         }
 
         function loadSavedSystemSettings() {

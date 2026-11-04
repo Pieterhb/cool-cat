@@ -2475,6 +2475,9 @@
         function applyConfigToRooms(cfg) {
             if (!cfg || typeof cfg !== 'object') return;
             SITE_CONFIG = { ...SITE_CONFIG, ...cfg };
+            if (cfg.paystackPublicKey) {
+                SITE_CONFIG.paystackPublicKey = cfg.paystackPublicKey;
+            }
             if (cfg.nextYearMarkupPct !== undefined) {
                 SITE_CONFIG.nextYearMarkupPct = Number(cfg.nextYearMarkupPct);
             }
@@ -4216,7 +4219,7 @@
             // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
             clean = clean.replace(/_\d{5,}$/, '');
 
-            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC)-\d+$/i.test(clean)) {
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-\d+$/i.test(clean)) {
                 return clean.toUpperCase();
             }
 
@@ -4236,7 +4239,7 @@
             let maxSeq = 10000;
             (MOCK_BOOKINGS || []).forEach(b => {
                 const idStr = String(b.id || b.parentBookingId || '');
-                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
                 if (match) {
                     const num = parseInt(match[1], 10);
                     if (num >= 10001 && num > maxSeq) {
@@ -4309,7 +4312,7 @@
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                    key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
@@ -5249,7 +5252,7 @@
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                    key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',

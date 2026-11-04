@@ -77,9 +77,9 @@ export async function onRequestPost(context) {
             if (stays.length > 1) return 'ALL-';
             const r = String(stays[0].roomId || '').toLowerCase();
             if (r === 'all' || r.includes('all')) return 'ALL-';
+            if (r === 'three-rooms' || r.includes('three') || r.includes('bottom') || r.includes('tri') || r.includes('thr')) return 'TRI-';
             if (r.includes('king') || r.includes('arthur') || r.includes('kin')) return 'KIN-';
-            if (r.includes('santor') || r.includes('san')) return 'SAN-';
-            if (r.includes('mykon') || r.includes('myk')) return 'MYK-';
+            if (r.includes('santor') || r.includes('san') || r.includes('mykon') || r.includes('myk')) return 'SAN-';
             if (r.includes('deluxe') || r.includes('suite') || r.includes('del')) return 'DEL-';
             return 'CC-';
         }
@@ -89,7 +89,7 @@ export async function onRequestPost(context) {
             if (Array.isArray(bookingsList)) {
                 bookingsList.forEach(b => {
                     const idStr = String(b.id || b.parentBookingId || '');
-                    const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                    const m = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i);
                     if (m) {
                         const n = parseInt(m[1], 10);
                         if (n >= 10001 && n > max) max = n;
@@ -153,7 +153,7 @@ export async function onRequestPost(context) {
             bookingRef = `${getRoomPrefixForStays(staysList)}${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);
         } else {
-            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
+            const m = String(bookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(bookingRef).match(/(\d{5})/);
             if (m) {
                 const seqVal = parseInt(m[1], 10);
                 if (seqVal >= 10001) {
@@ -254,8 +254,8 @@ export async function onRequestPost(context) {
             // 3b. Push individual per-room calendar block records so each room date is blocked
             staysList.forEach(s => {
                 const stayRooms = s.roomId === 'all'
-                    ? ['king-arthur', 'santori', 'mykonos', 'deluxe-suite']
-                    : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori', 'mykonos'] : (s.roomId === 'santori' ? ['santori', 'mykonos'] : [s.roomId]));
+                    ? ['king-arthur', 'santori', 'deluxe-suite']
+                    : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori'] : [s.roomId]);
                 stayRooms.forEach(rid => {
                     existing.push({
                         id: `${bookingRef}_${rid}_${s.checkInStr || s.checkIn}`,

@@ -115,6 +115,12 @@ export async function onRequestGet(context) {
                 config = { ...DEFAULT_CONFIG, ...saved };
             }
         }
+        // Securely deliver Paystack Public Key from Cloudflare Environment Variables or config
+        const paystackPublicKey = (env && env.PAYSTACK_PUBLIC_KEY)
+            ? env.PAYSTACK_PUBLIC_KEY
+            : (config.paystack_public_key || 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407');
+        config.paystackPublicKey = paystackPublicKey;
+
         return new Response(JSON.stringify({ success: true, config }), { headers: CORS_HEADERS });
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message, config: DEFAULT_CONFIG }), {
@@ -150,7 +156,8 @@ export async function onRequestPost(context) {
             'special_mykonos_start', 'special_mykonos_end', 'special_deluxe_start', 'special_deluxe_end',
             'event_surge_name',
             'event_king_start', 'event_king_end', 'event_santori_start', 'event_santori_end',
-            'event_mykonos_start', 'event_mykonos_end', 'event_deluxe_start', 'event_deluxe_end'
+            'event_mykonos_start', 'event_mykonos_end', 'event_deluxe_start', 'event_deluxe_end',
+            'paystack_public_key'
         ];
 
         const update = {};
