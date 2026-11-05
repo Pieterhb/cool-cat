@@ -4915,6 +4915,12 @@
             }
         }
 
+        function clearHoverRange() {
+            document.querySelectorAll('.cal-day-in-hover-range, .cal-day-hover-target').forEach(el => {
+                el.classList.remove('cal-day-in-hover-range', 'cal-day-hover-target');
+            });
+        }
+
         function switchRoom(roomId) {
             selectedRoomId = roomId;
             const tabs = document.querySelectorAll('.room-tab-btn');
@@ -4936,7 +4942,7 @@
             }
 
             // For ANY room tab chosen/activated, always default to max guests for that room
-            const roomMax = (roomId === 'all') ? 8 : (roomId === 'three-rooms') ? 6 : 2;
+            const roomMax = (roomId === 'all') ? 8 : (roomId === 'three-rooms') ? 6 : (roomId === 'santori') ? 4 : 2;
             selectedGuestCount = roomMax;
             userManuallyChangedGuestCount = false;
 

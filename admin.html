@@ -2892,7 +2892,20 @@
         // SECURITY SHIELD: Admin Key & Global Request Interceptor
         // =========================================================
         function getAdminKey() {
-            return localStorage.getItem('coolcat_admin_key') || sessionStorage.getItem('coolcat_admin_key') || '2026coolcat';
+            let key = localStorage.getItem('coolcat_admin_key') || sessionStorage.getItem('coolcat_admin_key');
+            if (!key) {
+                key = prompt('🔒 Admin Access Required\nPlease enter your Admin API Key:');
+                if (key && key.trim()) {
+                    key = key.trim();
+                    try {
+                        localStorage.setItem('coolcat_admin_key', key);
+                        sessionStorage.setItem('coolcat_admin_key', key);
+                    } catch(e) {}
+                } else {
+                    key = '';
+                }
+            }
+            return key || '';
         }
 
         // Automatic security header injector for all admin API requests
@@ -2943,6 +2956,8 @@
                 sessionStorage.removeItem('coolcat_admin_logged_in');
                 localStorage.removeItem('coolcat_admin_session');
                 sessionStorage.removeItem('coolcat_admin_session');
+                localStorage.removeItem('coolcat_admin_key');
+                sessionStorage.removeItem('coolcat_admin_key');
             } catch(e) {}
             window.location.href = '/cdn-cgi/access/logout';
         }

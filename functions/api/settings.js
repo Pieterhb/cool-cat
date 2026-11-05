@@ -136,9 +136,9 @@ export async function onRequestPost(context) {
     // Layer 2: Verify Admin Secret Key for updating site settings & tariffs
     const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
+    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '';
 
-    if (token !== expectedKey) {
+    if (!expectedKey || token !== expectedKey) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
             status: 401,
             headers: CORS_HEADERS
