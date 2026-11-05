@@ -434,7 +434,7 @@ async function dispatchBookingEmails(booking, env) {
     if (resendApiKey) {
         try {
             // Send Guest Email
-            await fetch('https://api.resend.com/emails', {
+            const guestRes = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${resendApiKey}`,
@@ -448,8 +448,15 @@ async function dispatchBookingEmails(booking, env) {
                 })
             });
 
+            let guestDelivery = { ok: guestRes.ok, status: guestRes.status };
+            if (!guestRes.ok) {
+                const guestErr = await guestRes.text();
+                console.error("Resend guest email delivery error:", guestRes.status, guestErr);
+                guestDelivery.error = guestErr;
+            }
+
             // Send Owner Alert Email
-            await fetch('https://api.resend.com/emails', {
+            const ownerRes = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${resendApiKey}`,
@@ -463,9 +470,22 @@ async function dispatchBookingEmails(booking, env) {
                 })
             });
 
-            return { sent: true, provider: 'resend' };
+            let ownerDelivery = { ok: ownerRes.ok, status: ownerRes.status };
+            if (!ownerRes.ok) {
+                const ownerErr = await ownerRes.text();
+                console.error("Resend owner email delivery error:", ownerRes.status, ownerErr);
+                ownerDelivery.error = ownerErr;
+            }
+
+            const allSent = guestRes.ok && ownerRes.ok;
+            return {
+                sent: allSent,
+                provider: 'resend',
+                guest: guestDelivery,
+                owner: ownerDelivery
+            };
         } catch (e) {
-            console.error("Resend delivery error:", e);
+            console.error("Resend delivery exception:", e);
             return { sent: false, error: e.message };
         }
     }

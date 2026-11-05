@@ -205,7 +205,7 @@
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price">R990</span> <span class="special-unit">/ night</span>
+                            <span class="special-price" id="special-price-king">R990</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Single Room - For up to 2 Guests)<br>
@@ -234,7 +234,7 @@
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price">R1 880</span> <span class="special-unit">/ night</span>
+                            <span class="special-price" id="special-price-santori">R1 880</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R3 400</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Two Private Separate Bedrooms - For up to 4 Guests)<br>
@@ -262,7 +262,7 @@
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price">R990</span> <span class="special-unit">/ night</span>
+                            <span class="special-price" id="special-price-deluxe">R990</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R1 790</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Private Deluxe Suite - For up to 2 Guests)<br>
@@ -298,7 +298,7 @@
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price">R2 870</span> <span class="special-unit">/ night</span>
+                            <span class="special-price" id="special-price-three-rooms">R2 870</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R5 190</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Three Bedrooms / Two Suites - For up to 6 Guests)<br>
@@ -331,7 +331,7 @@
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
                             <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price">R3 860</span> <span class="special-unit">/ night</span>
+                            <span class="special-price" id="special-price-four-rooms">R3 860</span> <span class="special-unit">/ night</span>
                             <span class="special-old">(was <s>R6 980</s>)</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Entire Property - 4 Bedrooms for up to 8 Guests)<br>
@@ -644,10 +644,9 @@
             return { rate: lowRate, isPromo: false };
         }
 
-        function formatPriceText(amount) {
+        function formatSpecialZar(amount) {
             var num = Math.round(Number(amount) || 0);
-            var formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            return 'Low Season from R' + formatted + ' / night';
+            return 'R' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
 
         function applyRatesToAccommodation(cfg) {
@@ -659,31 +658,37 @@
             var d = String(today.getDate()).padStart(2, '0');
             var todayStr = y + '-' + m + '-' + d;
 
-            var king = getSmartLowestRate('king', 'low_king_wd', cfg, todayStr);
-            var santori = getSmartLowestRate('santori', 'low_santori_wd', cfg, todayStr);
-            var deluxe = getSmartLowestRate('deluxe', 'low_deluxe_wd', cfg, todayStr);
+            // Dynamic rates from Admin settings (Active specials or current weekday rates)
+            var kingSpecial = getSmartLowestRate('king', 'king_wd', cfg, todayStr);
+            var santoriSpecial = getSmartLowestRate('santori', 'santori_wd', cfg, todayStr);
+            var deluxeSpecial = getSmartLowestRate('deluxe', 'deluxe_wd', cfg, todayStr);
 
-            var kingRate = Math.max(1790, king.rate);
-            var santoriRate = Math.max(3400, santori.rate);
-            var deluxeRate = Math.max(1790, deluxe.rate);
+            var kingRate = (kingSpecial && kingSpecial.rate > 0) ? kingSpecial.rate : (Number(cfg.king_wd) || 990);
+            var santoriRate = (santoriSpecial && santoriSpecial.rate > 0) ? santoriSpecial.rate : (Number(cfg.santori_wd) || 1880);
+            var deluxeRate = (deluxeSpecial && deluxeSpecial.rate > 0) ? deluxeSpecial.rate : (Number(cfg.deluxe_wd) || 990);
 
-            // Single suites
-            var elKing = document.getElementById('price-king-arthur');
-            if (elKing) elKing.textContent = formatPriceText(kingRate);
+            var elKing = document.getElementById('special-price-king');
+            if (elKing && kingRate > 0) elKing.textContent = formatSpecialZar(kingRate);
 
-            var elSantori = document.getElementById('price-santori');
-            if (elSantori) elSantori.textContent = formatPriceText(santoriRate);
+            var elSantori = document.getElementById('special-price-santori');
+            if (elSantori && santoriRate > 0) elSantori.textContent = formatSpecialZar(santoriRate);
 
-            var elDeluxe = document.getElementById('price-deluxe');
-            if (elDeluxe) elDeluxe.textContent = formatPriceText(deluxeRate);
+            var elDeluxe = document.getElementById('special-price-deluxe');
+            if (elDeluxe && deluxeRate > 0) elDeluxe.textContent = formatSpecialZar(deluxeRate);
 
-            // 3 Rooms Package: King Arthur Suite (1) + Santori Suite (2) = R5 190
-            var elThree = document.getElementById('price-three-rooms');
-            if (elThree) elThree.textContent = formatPriceText(5190);
+            // 3 Rooms Package: King Arthur + Santori (minus pkg_discount_three % if configured)
+            var sumThree = kingRate + santoriRate;
+            var discThree = Math.max(0, Math.min(100, Number(cfg.pkg_discount_three) || 0));
+            var threeRate = Math.round(sumThree * (1 - discThree / 100));
+            var elThree = document.getElementById('special-price-three-rooms');
+            if (elThree && threeRate > 0) elThree.textContent = formatSpecialZar(threeRate);
 
-            // 4 Rooms Package: King Arthur Suite (1) + Santori Suite (2) + Deluxe Suite (1) = R6 980
-            var elFour = document.getElementById('price-four-rooms');
-            if (elFour) elFour.textContent = formatPriceText(6980);
+            // 4 Rooms Package: King Arthur + Santori + Deluxe (minus pkg_discount_four % if configured)
+            var sumFour = kingRate + santoriRate + deluxeRate;
+            var discFour = Math.max(0, Math.min(100, Number(cfg.pkg_discount_four) || 0));
+            var fourRate = Math.round(sumFour * (1 - discFour / 100));
+            var elFour = document.getElementById('special-price-four-rooms');
+            if (elFour && fourRate > 0) elFour.textContent = formatSpecialZar(fourRate);
         }
 
         // Instant render from local cache if present
