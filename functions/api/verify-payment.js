@@ -173,7 +173,26 @@ export async function onRequestPost(context) {
         }
 
         const numTotal = Number(totalAmount || payload.totalAmount || 0);
-        const numPaid = Number(amountPaid !== undefined ? amountPaid : (payload.amountPaid !== undefined ? payload.amountPaid : numTotal));
+        let numPaid = Number(amountPaid !== undefined ? amountPaid : (payload.amountPaid !== undefined ? payload.amountPaid : numTotal));
+
+        // Point 3: Verify charged amount with Paystack gateway data
+        if (paystackData && paystackData.amount !== undefined) {
+            const verifiedAmountZar = Math.round(Number(paystackData.amount) / 100);
+            if (verifiedAmountZar < numPaid) {
+                if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+                    return new Response(JSON.stringify({
+                        success: false,
+                        error: "Payment verification mismatch: Expected R" + numPaid.toLocaleString() + ", but Paystack transaction charged R" + verifiedAmountZar.toLocaleString() + "."
+                    }), {
+                        status: 400,
+                        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                    });
+                }
+                // In test or non-live mode, clamp numPaid to actual charged amount
+                numPaid = verifiedAmountZar;
+            }
+        }
+
         const numBal = Number(balanceDue !== undefined ? balanceDue : Math.max(0, numTotal - numPaid));
         const bookingStatus = numBal > 0 ? 'deposit_paid' : (numPaid > 0 ? 'fully_paid' : 'not_paid');
 

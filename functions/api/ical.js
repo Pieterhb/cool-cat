@@ -20,17 +20,39 @@ export async function onRequestGet(context) {
 
         const bookings = [...defaultBookings, ...storedBookings];
 
-        // Filter bookings for the requested room
-        const activeBookings = bookings.filter(b => {
-            if (b.status === 'cancelled') return false;
-            if (requestedRoom === 'all') return true;
-            return b.roomId === requestedRoom || b.roomId === 'all';
-        });
+        // Point 4: Deduplicate and filter bookings cleanly without duplicate VEVENTs
+        const uncancelled = bookings.filter(b => b.status !== 'cancelled' && b.checkIn && b.checkOut);
 
-        // Format dates into iCal YYYYMMDD format
+        let activeBookings = [];
+        if (requestedRoom === 'all') {
+            // For the entire property calendar:
+            // Include all primary bookings (!b.isCalendarBlock).
+            // If an orphaned calendar block exists with no parent in the list, include it.
+            const parentIds = new Set(uncancelled.filter(b => !b.isCalendarBlock).map(b => b.id));
+            activeBookings = uncancelled.filter(b => !b.isCalendarBlock || !parentIds.has(b.parentBookingId));
+        } else {
+            // For a specific room (e.g. king-arthur, santori, deluxe-suite):
+            // Check which parent bookings already have a dedicated calendar block for this room
+            const childParentIds = new Set(
+                uncancelled.filter(b => b.roomId === requestedRoom && b.isCalendarBlock).map(b => b.parentBookingId)
+            );
+
+            activeBookings = uncancelled.filter(b => {
+                // Direct match for this room
+                if (b.roomId === requestedRoom) return true;
+                // If it's a booking for 'all' rooms that doesn't have a separate child block for this room
+                if (b.roomId === 'all' && !b.isCalendarBlock && !childParentIds.has(b.id)) return true;
+                // If it's a booking for 'three-rooms' (King Arthur & Santori) that doesn't have a child block for this room
+                if (b.roomId === 'three-rooms' && !b.isCalendarBlock && ['king-arthur', 'santori'].includes(requestedRoom) && !childParentIds.has(b.id)) return true;
+                return false;
+            });
+        }
+
+        // Format dates into standard RFC 5545 YYYYMMDD format (8 digits)
         function formatIcalDate(dateStr) {
             if (!dateStr) return '';
-            return dateStr.replace(/[^0-9]/g, '');
+            const clean = String(dateStr).trim().slice(0, 10).replace(/[^0-9]/g, '');
+            return clean.length === 8 ? clean : '';
         }
 
         const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
