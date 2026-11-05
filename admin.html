@@ -4466,7 +4466,7 @@
                     }
                 } else if (adminCalRoomId === 'three-rooms') {
                     const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
-                    if (avail.availableCount === 3) {
+                    if (avail.availableCount === 2) {
                         if (activeEventInfo) {
                             pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 3 Open</span>`;
                             dayCell.style.background = '#FFFBEB';
@@ -5830,7 +5830,7 @@ We look forward to hosting you at Cool-Cat!`;
             const todayStr = new Date().toISOString().split('T')[0];
             const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
 
-            (ALL_BOOKINGS || []).forEach(b => {
+            (ADMIN_BOOKINGS || []).forEach(b => {
                 if (b.isCalendarBlock || (b.roomId && (b.roomId.startsWith('block') || b.roomId === 'blocked'))) return;
                 const refCode = (b.referralCode || '').trim();
                 if (!refCode) return;
