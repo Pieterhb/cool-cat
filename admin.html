@@ -1180,21 +1180,23 @@
         /* EXPANDED MODAL STYLES (2-COLUMN RESPONSIVE LAYOUT)        */
         /* ========================================================= */
         .adm-modal-card-wide {
-            max-width: 880px !important;
-            width: 100% !important;
-            padding: 1.8rem !important;
+            max-width: 1220px !important;
+            width: 96% !important;
+            max-height: 94vh !important;
+            overflow-y: auto !important;
+            padding: 1.6rem !important;
             box-sizing: border-box;
-            overflow: visible;
         }
         .modal-two-col {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+            grid-template-columns: minmax(0, 1.45fr) minmax(320px, 1fr);
             gap: 1.5rem;
             margin-top: 1rem;
             width: 100%;
             box-sizing: border-box;
+            align-items: start;
         }
-        @media (max-width: 820px) {
+        @media (max-width: 992px) {
             .modal-two-col {
                 grid-template-columns: 1fr;
             }
@@ -1228,7 +1230,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            font-size: 0.72rem;
+            font-size: 0.76rem;
             font-weight: 800;
             color: #334155;
             margin-bottom: 0.35rem;
@@ -1236,23 +1238,33 @@
         .modal-cal-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 5px;
         }
         .modal-cal-day {
-            aspect-ratio: 1;
-            border-radius: 6px;
-            border: 1px solid #E2E8F0;
+            min-height: 68px;
+            border-radius: 8px;
+            border: 1px solid var(--adm-border, #E2E8F0);
             background: white;
+            padding: 0.35rem 0.45rem;
             font-size: 0.78rem;
-            font-weight: 700;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             cursor: pointer;
             transition: all 0.15s ease;
             position: relative;
             user-select: none;
+            box-sizing: border-box;
+        }
+        .modal-cal-day:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.15);
+            border-color: var(--adm-primary);
+            z-index: 10;
+        }
+        .modal-cal-day:hover .adm-cal-tooltip {
+            visibility: visible;
+            opacity: 1;
         }
         .modal-cal-day.empty {
             background: transparent;
@@ -1264,33 +1276,22 @@
             color: #CBD5E1;
             border-color: #F1F5F9;
             cursor: not-allowed;
-            opacity: 0.5;
+            opacity: 0.55;
         }
         .modal-cal-day.avail {
             background: #FFFFFF;
-            color: #166534;
-            border-color: #BBF7D0;
-        }
-        .modal-cal-day.avail:hover {
-            background: #DCFCE7;
-            border-color: #86EFAC;
-            transform: scale(1.06);
-            z-index: 2;
+            border-color: #E2E8F0;
         }
         .modal-cal-day.booked {
-            background: #FEE2E2;
-            color: #991B1B;
+            background: #FEF2F2;
             border-color: #FECACA;
-            cursor: not-allowed;
         }
         .modal-cal-day.blocked {
-            background: #FEF3C7;
-            color: #92400E;
+            background: #FFFBEB;
             border-color: #FDE68A;
-            cursor: not-allowed;
         }
         .modal-cal-day.today {
-            border: 2px solid var(--adm-primary);
+            border: 2px solid var(--adm-primary) !important;
         }
         .modal-cal-day.sel-start,
         .modal-cal-day.sel-end {
@@ -1298,10 +1299,68 @@
             color: white !important;
             border-color: var(--adm-primary-dark) !important;
         }
+        .modal-cal-day.sel-start .modal-cal-day-num,
+        .modal-cal-day.sel-end .modal-cal-day-num,
+        .modal-cal-day.sel-start .modal-cal-price-tag,
+        .modal-cal-day.sel-end .modal-cal-price-tag {
+            color: white !important;
+        }
         .modal-cal-day.sel-range {
             background: #DBEAFE !important;
             color: #1E40AF !important;
             border-color: #BFDBFE !important;
+        }
+        .modal-cal-day.sel-range .modal-cal-day-num {
+            color: #1E40AF !important;
+        }
+        .modal-cal-day-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px;
+        }
+        .modal-cal-day-num {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: #1E293B;
+            line-height: 1;
+        }
+        .modal-cal-avail-pill {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            display: inline-block;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        .modal-cal-avail-pill.pill-open { background: #DCFCE7; color: #15803D; }
+        .modal-cal-avail-pill.pill-booked { background: #FEE2E2; color: #B91C1C; }
+        .modal-cal-avail-pill.pill-blocked { background: #FEF3C7; color: #B45309; }
+        .modal-cal-avail-pill.pill-partial { background: #FEF3C7; color: #B45309; }
+        .modal-cal-day-mid {
+            font-size: 0.68rem;
+            color: #334155;
+            font-weight: 600;
+            margin: 1px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        .modal-cal-day-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .modal-cal-price-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #0F52BA;
+            line-height: 1;
         }
         .modal-cal-tip {
             margin-top: 0.8rem;
@@ -2614,24 +2673,69 @@
             </p>
 
             <div class="modal-two-col">
-                <!-- Left Column: Mini Availability Calendar -->
+                <!-- Left Column: Live Availability Calendar (Book Now Engine) -->
                 <div class="modal-cal-col">
-                    <div class="modal-cal-header">
-                        <span style="font-weight: 700; font-size: 0.88rem; color: var(--adm-primary-dark);" id="modalMiniCalRoomName">🏨 All 4 Rooms</span>
-                        <div style="display: flex; gap: 0.3rem; align-items: center;">
-                            <button type="button" class="btn-sm" style="padding: 0.2rem 0.55rem; font-size: 0.75rem;" onclick="changeModalMiniMonth(-1)">◀</button>
-                            <span style="font-weight: 700; font-size: 0.82rem; min-width: 105px; text-align: center;" id="modalMiniMonthLabel">September 2026</span>
-                            <button type="button" class="btn-sm" style="padding: 0.2rem 0.55rem; font-size: 0.75rem;" onclick="changeModalMiniMonth(1)">▶</button>
+                    <div class="modal-cal-header" style="background: white; padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid var(--adm-border); margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                            <button type="button" class="btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.78rem; background: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1E40AF; font-weight: 700; border-radius: 6px; cursor: pointer;" onclick="changeModalMiniMonth(-1)">◀ Prev</button>
+                            <span style="font-weight: 800; font-size: 1.05rem; min-width: 140px; text-align: center; color: var(--adm-primary-dark);" id="modalMiniMonthLabel">November 2026</span>
+                            <button type="button" class="btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.78rem; background: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1E40AF; font-weight: 700; border-radius: 6px; cursor: pointer;" onclick="changeModalMiniMonth(1)">Next ▶</button>
+                            <select id="modalMiniMonthJump" class="adm-input" style="padding: 0.3rem 0.55rem; font-size: 0.78rem; width: auto; background: #FFF7ED; border: 1.5px solid #FDBA74; color: #EA580C; font-weight: 700; border-radius: 6px; cursor: pointer;" onchange="jumpModalMiniMonthSelect(this.value)">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="season-badge badge-mid" id="modalMiniSeasonBadge" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">🟡 Mid Season</span>
                         </div>
                     </div>
-                    <div class="modal-cal-weekdays">
-                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+
+                    <div class="modal-cal-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.45rem;">
+                        <span style="color: #EA580C;">SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span style="color: #EA580C;">SAT</span>
                     </div>
+
                     <div class="modal-cal-grid" id="modalMiniGrid">
                         <!-- Populated dynamically by JS -->
                     </div>
-                    <div class="modal-cal-tip">
-                        💡 <em>Click any open date to set Check-In, then click second date for Check-Out.</em>
+
+                    <div class="modal-cal-tip" style="margin-top: 0.65rem; font-size: 0.76rem; color: #475569; text-align: center; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 0.4rem;">
+                        💡 <em>Click any open date to set Check-In, then click second date for Check-Out. Selected dates auto-fill the form.</em>
+                    </div>
+
+                    <!-- Western Cape Seasonality Guide Card (matching Book Now) -->
+                    <div class="season-legend-card" style="margin-top: 0.85rem; background: #FFFFFF; border: 1px solid var(--adm-border); border-radius: 10px; padding: 0.75rem 0.9rem;">
+                        <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--adm-primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>Western Cape Seasonality Guide</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.75rem; line-height: 1.35;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.4rem;">
+                                <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #10B981; margin-top: 3px; flex-shrink: 0;"></span>
+                                <div>
+                                    <strong style="color: #166534;">🟢 Low Season (May–Aug)</strong><br>
+                                    <span style="color: #64748B; font-size: 0.71rem;">Best value winter rates</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.4rem;">
+                                <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #F59E0B; margin-top: 3px; flex-shrink: 0;"></span>
+                                <div>
+                                    <strong style="color: #B45309;">🟡 Mid Season (Sep–Nov, Jan 11–Apr)</strong><br>
+                                    <span style="color: #64748B; font-size: 0.71rem;">Pleasant weather &amp; standard base rates</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.4rem;">
+                                <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #EA580C; margin-top: 3px; flex-shrink: 0;"></span>
+                                <div>
+                                    <strong style="color: #C2410C;">🟠 Peak Season (Dec 1–15 &amp; Easter)</strong><br>
+                                    <span style="color: #64748B; font-size: 0.71rem;">School holiday demand</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.4rem;">
+                                <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #EF4444; margin-top: 3px; flex-shrink: 0;"></span>
+                                <div>
+                                    <strong style="color: #991B1B;">🔴 Festive High Peak (Dec 16–Jan 10)</strong><br>
+                                    <span style="color: #64748B; font-size: 0.71rem;">Peak summer demand</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -4736,7 +4840,7 @@
             if (cIn) {
                 modalMiniViewDate = new Date(cIn + 'T00:00:00');
             } else {
-                modalMiniViewDate = new Date();
+                modalMiniViewDate = new Date(adminCalViewDate || new Date());
             }
 
             modal.style.display = 'flex';
@@ -4747,7 +4851,30 @@
             document.getElementById('manualBookingModal').style.display = 'none';
         }
 
+        function populateModalMiniMonthJump() {
+            const sel = document.getElementById('modalMiniMonthJump');
+            if (!sel || sel.options.length > 0) return;
+            const start = new Date(2026, 0, 1);
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            for (let i = 0; i < 24; i++) {
+                const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+                const opt = document.createElement('option');
+                opt.value = `${d.getFullYear()}-${d.getMonth()}`;
+                opt.textContent = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+                sel.appendChild(opt);
+            }
+        }
+
+        function jumpModalMiniMonthSelect(val) {
+            if (!val) return;
+            modalPendingCheckIn = null;
+            const parts = val.split('-');
+            modalMiniViewDate = new Date(Number(parts[0]), Number(parts[1]), 1);
+            renderModalMiniCalendar();
+        }
+
         function changeModalMiniMonth(delta) {
+            modalPendingCheckIn = null;
             modalMiniViewDate.setMonth(modalMiniViewDate.getMonth() + delta);
             renderModalMiniCalendar();
         }
@@ -4755,18 +4882,28 @@
         function renderModalMiniCalendar() {
             const grid = document.getElementById('modalMiniGrid');
             const label = document.getElementById('modalMiniMonthLabel');
-            const roomNameEl = document.getElementById('modalMiniCalRoomName');
+            const badgeEl = document.getElementById('modalMiniSeasonBadge');
+            const jumpSelect = document.getElementById('modalMiniMonthJump');
             if (!grid || !label) return;
 
             const roomId = document.getElementById('manRoomSelect').value;
-            if (roomNameEl) {
-                roomNameEl.textContent = `${ADMIN_ROOM_ICONS[roomId] || '🏨'} ${ADMIN_ROOM_NAMES[roomId] || 'Room'}`;
-            }
 
             const year = modalMiniViewDate.getFullYear();
             const month = modalMiniViewDate.getMonth();
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             label.textContent = `${monthNames[month]} ${year}`;
+
+            const midMonthDate = new Date(year, month, 15);
+            const season = getAdminSeasonInfo(midMonthDate);
+            if (badgeEl) {
+                badgeEl.className = `season-badge ${season.badgeClass}`;
+                badgeEl.textContent = season.name;
+            }
+
+            if (jumpSelect) {
+                populateModalMiniMonthJump();
+                jumpSelect.value = `${year}-${month}`;
+            }
 
             grid.innerHTML = '';
 
@@ -4793,61 +4930,174 @@
 
                 const dayCell = document.createElement('div');
                 dayCell.className = 'modal-cal-day';
-                dayCell.textContent = day;
-
                 if (isToday) dayCell.classList.add('today');
                 if (isPast) dayCell.classList.add('disabled');
 
+                const rate = calculateAdminNightPrice(roomId, dateObj);
+                const daySeason = getAdminSeasonInfo(dateObj);
+                const weekdayName = dateObj.toLocaleDateString('en-ZA', { weekday: 'short' });
+
+                let pillHtml = '';
+                let midHtml = '';
                 let isBooked = false;
                 let isBlocked = false;
+                let bookingDetails = null;
+
+                // Event surge & promo special check
+                var evPrefixMap = { 'king-arthur': 'king', 'santori': 'santori', 'mykonos': 'mykonos', 'deluxe-suite': 'deluxe' };
+                var evPrefix = evPrefixMap[roomId] || roomId;
+                var activeEventInfo = null;
+                var activePromoInfo = null;
 
                 if (roomId === 'all') {
+                    var indRooms = ['king', 'santori', 'deluxe'];
+                    var activeEvRooms = indRooms.filter(function(p) {
+                        var act = document.getElementById('event_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('event_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeEvRooms.length > 0) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surge';
+                        activeEventInfo = { name: evName, count: activeEvRooms.length };
+                    }
+                    var activeSpRooms = indRooms.filter(function(p) {
+                        var act = document.getElementById('special_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('special_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('special_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeSpRooms.length > 0) {
+                        activePromoInfo = { count: activeSpRooms.length };
+                    }
+
                     const avail = getAdminDateAvailability(dateStr);
-                    if (avail.availableCount === 0) {
+                    if (avail.availableCount === 4) {
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 4 Open</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 4 Open</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="modal-cal-avail-pill pill-open">4 Open</span>`;
+                        }
+                    } else if (avail.availableCount === 0) {
+                        pillHtml = `<span class="modal-cal-avail-pill pill-booked">Booked</span>`;
                         isBooked = true;
                         dayCell.classList.add('booked');
-                        dayCell.title = `Sold Out - All rooms booked`;
-                    } else if (avail.availableCount < 4) {
+                    } else {
+                        pillHtml = `<span class="modal-cal-avail-pill pill-partial">${avail.availableCount} Open</span>`;
                         isBlocked = true;
                         dayCell.classList.add('blocked');
-                        dayCell.title = `${avail.availableCount} of 4 rooms available`;
-                    } else {
-                        dayCell.classList.add('avail');
-                        dayCell.title = `All 4 rooms open`;
+                    }
+                    if (avail.bookedCount > 0) {
+                        const uniqueNames = [];
+                        avail.bookedRooms.forEach(br => {
+                            const name = (br.booking.guestName || 'Guest').trim();
+                            if (name && !uniqueNames.includes(name)) uniqueNames.push(name);
+                        });
+                        midHtml = `<div class="modal-cal-day-mid" title="${uniqueNames.join(', ')}">👤 ${uniqueNames.slice(0, 2).join(', ')}</div>`;
                     }
                 } else if (roomId === 'three-rooms') {
+                    var threeEvRooms = ['king', 'santori'];
+                    var activeEvRooms = threeEvRooms.filter(function(p) {
+                        var act = document.getElementById('event_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('event_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('event_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeEvRooms.length > 0) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surge';
+                        activeEventInfo = { name: evName, count: activeEvRooms.length };
+                    }
+                    var activeSpRooms = threeEvRooms.filter(function(p) {
+                        var act = document.getElementById('special_' + p + '_active')?.value === 'true';
+                        var st = String(document.getElementById('special_' + p + '_start')?.value || '').trim();
+                        var en = String(document.getElementById('special_' + p + '_end')?.value || '').trim();
+                        return act && st && en && dateStr >= st && dateStr <= en;
+                    });
+                    if (activeSpRooms.length > 0) {
+                        activePromoInfo = { count: activeSpRooms.length };
+                    }
+
                     const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
-                    if (avail.availableCount === 0) {
+                    if (avail.availableCount === 2) {
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 3 Open</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 3 Open</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="modal-cal-avail-pill pill-open">3 Open</span>`;
+                        }
+                    } else if (avail.availableCount === 0) {
+                        pillHtml = `<span class="modal-cal-avail-pill pill-booked">Booked</span>`;
                         isBooked = true;
                         dayCell.classList.add('booked');
-                        dayCell.title = `Sold Out - All 3 rooms booked`;
-                    } else if (avail.availableCount < 3) {
+                    } else {
+                        pillHtml = `<span class="modal-cal-avail-pill pill-partial">${avail.availableCount} Open</span>`;
                         isBlocked = true;
                         dayCell.classList.add('blocked');
-                        dayCell.title = `${avail.availableCount} of 3 rooms available`;
-                    } else {
-                        dayCell.classList.add('avail');
-                        dayCell.title = `All 3 bottom rooms open`;
+                    }
+                    if (avail.bookedCount > 0) {
+                        const uniqueNames = [];
+                        avail.bookedRooms.forEach(br => {
+                            const name = (br.booking.guestName || 'Guest').trim();
+                            if (name && !uniqueNames.includes(name)) uniqueNames.push(name);
+                        });
+                        midHtml = `<div class="modal-cal-day-mid" title="${uniqueNames.join(', ')}">👤 ${uniqueNames.slice(0, 2).join(', ')}</div>`;
                     }
                 } else {
+                    var evAct = document.getElementById('event_' + evPrefix + '_active')?.value === 'true';
+                    var evSt = String(document.getElementById('event_' + evPrefix + '_start')?.value || '').trim();
+                    var evEn = String(document.getElementById('event_' + evPrefix + '_end')?.value || '').trim();
+                    if (evAct && evSt && evEn && dateStr >= evSt && dateStr <= evEn) {
+                        var evName = String(document.getElementById('event_surge_name')?.value || '').trim() || 'Event Surcharge';
+                        activeEventInfo = { name: evName };
+                    }
+                    var spAct = document.getElementById('special_' + evPrefix + '_active')?.value === 'true';
+                    var spSt = String(document.getElementById('special_' + evPrefix + '_start')?.value || '').trim();
+                    var spEn = String(document.getElementById('special_' + evPrefix + '_end')?.value || '').trim();
+                    if (spAct && spSt && spEn && dateStr >= spSt && dateStr <= spEn) {
+                        activePromoInfo = { active: true };
+                    }
+
                     const b = getBookingOnDateForRoom(roomId, dateStr);
                     if (b) {
+                        bookingDetails = b;
                         if (b.status === 'blocked') {
                             isBlocked = true;
+                            pillHtml = `<span class="modal-cal-avail-pill pill-blocked">Hold</span>`;
+                            midHtml = `<div class="modal-cal-day-mid">🔧 ${b.guestName || 'Maintenance'}</div>`;
                             dayCell.classList.add('blocked');
-                            dayCell.title = `Blocked: ${b.guestName || 'Maintenance'}`;
                         } else {
                             isBooked = true;
+                            pillHtml = `<span class="modal-cal-avail-pill pill-booked">Booked</span>`;
+                            midHtml = `<div class="modal-cal-day-mid">👤 ${b.guestName || 'Guest'}</div>`;
                             dayCell.classList.add('booked');
-                            dayCell.title = `Booked: ${b.guestName || 'Guest'} (${b.id})`;
                         }
                     } else {
-                        dayCell.classList.add('avail');
-                        dayCell.title = `Available`;
+                        if (activeEventInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 EVENT</span>`;
+                            dayCell.style.background = '#FFFBEB';
+                            dayCell.style.borderColor = '#FCD34D';
+                        } else if (activePromoInfo) {
+                            pillHtml = `<span class="modal-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 PROMO</span>`;
+                            dayCell.style.background = '#FFF5F5';
+                            dayCell.style.borderColor = '#FDA4AF';
+                        } else {
+                            pillHtml = `<span class="modal-cal-avail-pill pill-open">Open</span>`;
+                        }
                     }
                 }
 
-                // Selection highlights - only active when dates are explicitly selected
+                // Selection highlights
                 if (checkInVal && dateStr === checkInVal) {
                     dayCell.classList.add('sel-start');
                 } else if (checkOutVal && dateStr === checkOutVal) {
@@ -4858,15 +5108,93 @@
                     dayCell.classList.add('sel-start');
                 }
 
-                if (!isPast && !isBooked && !isBlocked) {
-                    dayCell.onclick = () => handleModalMiniDayClick(dateStr);
+                // Tooltip text
+                let tooltipContent = `<strong>${weekdayName}, ${day} ${monthNames[month]} ${year}</strong> &bull; ${daySeason.name}<br>`;
+                if (isBooked || isBlocked) {
+                    if (roomId === 'all') {
+                        const avail = getAdminDateAvailability(dateStr);
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 4 rooms</span><br>`;
+                        avail.bookedRooms.forEach(br => {
+                            tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
+                        });
+                    } else if (roomId === 'three-rooms') {
+                        const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 3 rooms</span><br>`;
+                        avail.bookedRooms.forEach(br => {
+                            tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
+                        });
+                    } else if (bookingDetails) {
+                        const isBlk = bookingDetails.status === 'blocked';
+                        tooltipContent += `<span style="color:${isBlk ? '#FDE68A' : '#FCA5A5'}; font-weight:700;">${isBlk ? 'Admin Block' : 'Guest Reservation'}:</span> ${bookingDetails.guestName}<br>`;
+                        tooltipContent += `Stay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1}N)<br>`;
+                        tooltipContent += `Total: R${Number(bookingDetails.totalAmount || 0).toLocaleString()} &bull; Status: ${bookingDetails.status}<br>`;
+                    }
+                } else {
+                    tooltipContent += `<span style="color:#86EFAC; font-weight:700;">✓ Open &amp; Available</span><br>`;
+                    if (activeEventInfo) {
+                        tooltipContent += `<span style="color:#FDE68A; font-weight:700;">🏆 Event Surge:</span> ${activeEventInfo.name}<br>`;
+                    }
+                    tooltipContent += `Rate: <strong>R${rate.toLocaleString()}</strong> / night<br>`;
+                    tooltipContent += `<em>Click to select Check-In / Check-Out</em>`;
                 }
+
+                dayCell.innerHTML = `
+                    <div class="modal-cal-day-top">
+                        <span class="modal-cal-day-num">${day}</span>
+                        ${pillHtml}
+                    </div>
+                    ${midHtml}
+                    <div class="modal-cal-day-bottom">
+                        <span class="modal-cal-price-tag" style="${activeEventInfo ? "color:#B45309;" : (activePromoInfo ? "color:#BE123C;" : "")}">R${rate.toLocaleString()}</span>
+                    </div>
+                    <div class="adm-cal-tooltip">${tooltipContent}</div>
+                `;
+
+                dayCell.onclick = () => handleModalMiniDayClick(dateStr, isBooked, isBlocked, bookingDetails);
 
                 grid.appendChild(dayCell);
             }
         }
 
-        function handleModalMiniDayClick(dateStr) {
+        function handleModalMiniDayClick(dateStr, isBooked, isBlocked, bookingDetails) {
+            if (isBooked || isBlocked) {
+                if (bookingDetails) {
+                    alert(`📋 Reservation Details:
+
+Guest/Reason: ${bookingDetails.guestName}
+Room: ${bookingDetails.roomName || bookingDetails.roomId}
+Stay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1} Nights)
+Status: ${bookingDetails.status}
+Reference: #${bookingDetails.id}`);
+                } else {
+                    const roomId = document.getElementById('manRoomSelect').value;
+                    if (roomId === 'all') {
+                        const avail = getAdminDateAvailability(dateStr);
+                        let msg = `📅 Availability on ${dateStr}:
+
+${avail.bookedCount} of 4 rooms occupied:
+`;
+                        avail.bookedRooms.forEach(br => {
+                            msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})
+`;
+                        });
+                        alert(msg);
+                    } else if (roomId === 'three-rooms') {
+                        const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
+                        let msg = `📅 Availability on ${dateStr} for Bottom Rooms (3 Bedrooms):
+
+${avail.bookedCount} of 3 rooms occupied:
+`;
+                        avail.bookedRooms.forEach(br => {
+                            msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})
+`;
+                        });
+                        alert(msg);
+                    }
+                }
+                return;
+            }
+
             const clickedDate = new Date(dateStr + 'T00:00:00');
             if (!modalPendingCheckIn) {
                 modalPendingCheckIn = clickedDate;
@@ -4878,6 +5206,16 @@
                     document.getElementById('manCheckIn').value = dateStr;
                     document.getElementById('manCheckOut').value = '';
                 } else {
+                    const roomId = document.getElementById('manRoomSelect').value;
+                    const cInStr = formatDateStr(modalPendingCheckIn);
+                    const cOutStr = dateStr;
+                    const conflict = checkBookingConflicts(roomId, cInStr, cOutStr);
+                    if (conflict.hasConflict) {
+                        alert(`⚠️ Selected range (${cInStr} to ${cOutStr}) overlaps with an existing booking. Please pick open dates.`);
+                        modalPendingCheckIn = null;
+                        renderModalMiniCalendar();
+                        return;
+                    }
                     document.getElementById('manCheckOut').value = dateStr;
                     modalPendingCheckIn = null;
                 }
