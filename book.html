@@ -2787,10 +2787,8 @@
                 if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
                     return b.stays.some(s => {
                         const blocksThisRoom = s.roomId === roomId
-                            || (roomId === 'santori' && s.roomId === 'mykonos')
-                            || (roomId === 'mykonos' && s.roomId === 'santori')
                             || s.roomId === 'all'
-                            || (s.roomId === 'three-rooms' && (THREE_ROOMS_SUBSET.includes(roomId) || roomId === 'mykonos'));
+                            || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
                         if (!blocksThisRoom) return false;
                         const cIn = s.checkInStr || s.checkIn;
                         const cOut = s.checkOutStr || s.checkOut;
@@ -2804,10 +2802,8 @@
                 }
 
                 const blocksThisRoom = b.roomId === roomId
-                    || (roomId === 'santori' && b.roomId === 'mykonos')
-                    || (roomId === 'mykonos' && b.roomId === 'santori')
                     || b.roomId === 'all'
-                    || (b.roomId === 'three-rooms' && (THREE_ROOMS_SUBSET.includes(roomId) || roomId === 'mykonos'));
+                    || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
                 if (!blocksThisRoom) return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -4247,7 +4243,7 @@
                 return clean.toUpperCase();
             }
 
-            clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+            clean = clean.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
             const numMatch = clean.match(/\d+/);
             if (numMatch) {
                 return `CCH-${numMatch[0]}`;
@@ -5308,7 +5304,7 @@
 
                         closeQuotePayModal();
                         alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
-                        window.location.href = '/book.html';
+                        window.location.href = '/book';
                     },
                     onClose: function() {
                         showToast("Payment window closed.");

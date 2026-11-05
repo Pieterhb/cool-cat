@@ -3308,7 +3308,7 @@
                 if (Array.isArray(batch.bookingIds)) {
                     batch.bookingIds.forEach(id => {
                         settledBookingIds.add(id);
-                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        const clean = (id || '').replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
                         if (clean) settledBookingIds.add(clean);
                     });
                 }
@@ -3890,7 +3890,7 @@
                 return clean.toUpperCase();
             }
 
-            clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+            clean = clean.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
             const numMatch = clean.match(/\d+/);
             if (numMatch) {
                 return `CCH-${numMatch[0]}`;
@@ -4120,9 +4120,9 @@
                     if (dateStr < cIn || dateStr >= cOut) return false;
                     // For All Rooms tab: any stay on this date counts toward property occupancy
                     if (roomId === 'all') return true;
-                    if (roomId === 'three-rooms') return (s.roomId === 'three-rooms' || s.roomId === 'all' || s.roomId === 'king-arthur' || s.roomId === 'santori' || s.roomId === 'mykonos');
-                    if (roomId === 'santori') return (s.roomId === 'santori' || s.roomId === 'mykonos' || s.roomId === 'all' || s.roomId === 'three-rooms');
-                    return (s.roomId === roomId || s.roomId === 'all' || (s.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(roomId)));
+                    if (roomId === 'three-rooms') return (s.roomId === 'three-rooms' || s.roomId === 'all' || s.roomId === 'king-arthur' || s.roomId === 'santori');
+                    if (roomId === 'santori') return (s.roomId === 'santori' || s.roomId === 'all' || s.roomId === 'three-rooms');
+                    return (s.roomId === roomId || s.roomId === 'all' || (s.roomId === 'three-rooms' && ['king-arthur', 'santori'].includes(roomId)));
                 });
             }
 
@@ -4136,11 +4136,11 @@
             if (roomId === 'all') {
                 // Any booking blocks 'all'
             } else if (roomId === 'three-rooms') {
-                if (!['three-rooms', 'all', 'king-arthur', 'santori', 'mykonos'].includes(b.roomId)) return false;
+                if (!['three-rooms', 'all', 'king-arthur', 'santori'].includes(b.roomId)) return false;
             } else if (roomId === 'santori') {
-                if (!['santori', 'mykonos', 'all', 'three-rooms'].includes(b.roomId)) return false;
+                if (!['santori', 'all', 'three-rooms'].includes(b.roomId)) return false;
             } else {
-                if (b.roomId !== roomId && b.roomId !== 'all' && !(b.roomId === 'three-rooms' && ['king-arthur', 'santori', 'mykonos'].includes(roomId))) return false;
+                if (b.roomId !== roomId && b.roomId !== 'all' && !(b.roomId === 'three-rooms' && ['king-arthur', 'santori'].includes(roomId))) return false;
             }
 
             return (dateStr >= b.checkIn && dateStr < b.checkOut);
@@ -5224,9 +5224,9 @@
         }
 
         function updateLocalBookingPayment(id, payload) {
-            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
             ADMIN_BOOKINGS = ADMIN_BOOKINGS.map(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                 if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     return {
                         ...b,
@@ -5248,7 +5248,11 @@
 
             try {
                 const res = await fetch(`/api/bookings?id=${encodeURIComponent(id)}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    }
                 });
                 if (res.ok) {
                     const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
@@ -5339,15 +5343,19 @@
 
             try {
                 await fetch(`/api/bookings?id=${encodeURIComponent(id)}&hard=true`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    }
                 });
             } catch (err) {
                 console.error("Hard delete error:", err);
             }
 
-            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
             ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                 return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
             });
 
@@ -5361,9 +5369,9 @@
         }
 
         function updateLocalBookingStatus(id, status, balanceDue = 0) {
-            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
             ADMIN_BOOKINGS = ADMIN_BOOKINGS.map(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                 if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     return {
                         ...b,
@@ -5973,7 +5981,7 @@ We look forward to hosting you at Cool-Cat!`;
                 if (Array.isArray(batch.bookingIds)) {
                     batch.bookingIds.forEach(id => {
                         settledBookingIds.add(id);
-                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        const clean = (id || '').replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
                         if (clean) settledBookingIds.add(clean);
                     });
                 }
@@ -6321,7 +6329,7 @@ We look forward to hosting you at Cool-Cat!`;
                 if (Array.isArray(batch.bookingIds)) {
                     batch.bookingIds.forEach(id => {
                         bookingBatchMap.set(id, batch);
-                        const clean = (id || '').replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+                        const clean = (id || '').replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
                         if (clean) bookingBatchMap.set(clean, batch);
                     });
                 }

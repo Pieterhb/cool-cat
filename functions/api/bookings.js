@@ -417,18 +417,18 @@ export async function onRequestDelete(context) {
     try {
         if (env && env.COOLCAT_KV) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
 
             if (isHardDelete) {
                 // Permanently remove matching parent, children with parentBookingId, or prefixed room blocks
                 existing = existing.filter(b => {
-                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                    const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                     return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
                 });
             } else {
                 // Soft Cancel: Mark status as cancelled to free calendar inventory while preserving audit history
                 existing = existing.map(b => {
-                    const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                    const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                     if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                         return {
                             ...b,
@@ -478,10 +478,10 @@ export async function onRequestPut(context) {
             let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
             let updated = false;
 
-            const baseId = id.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
 
             existing = existing.map(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/, '');
+                const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                 if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     updated = true;
                     if (b.isCalendarBlock) {

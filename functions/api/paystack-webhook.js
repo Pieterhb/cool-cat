@@ -193,7 +193,7 @@ export async function onRequestPost(context) {
 
                 await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
 
-                const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
+                const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
                 if (numMatch) {
                     const seqVal = parseInt(numMatch[1], 10);
                     if (seqVal >= 10001) {
