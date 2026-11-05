@@ -2897,19 +2897,26 @@
 
         // Automatic security header injector for all admin API requests
         const _nativeFetch = window.fetch;
-        window.fetch = function(url, init = {}) {
-            if (typeof url === 'string' && (url.startsWith('/api/bookings') || url.startsWith('/api/settings'))) {
-                init.headers = init.headers || {};
+        window.fetch = function(input, init) {
+            init = init || {};
+            const urlStr = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+            if (urlStr && (urlStr.includes('/api/bookings') || urlStr.includes('/api/settings'))) {
                 const key = getAdminKey();
+                if (!init.headers) {
+                    init.headers = {};
+                }
                 if (init.headers instanceof Headers) {
                     if (!init.headers.has('Authorization')) init.headers.set('Authorization', 'Bearer ' + key);
+                    if (!init.headers.has('X-Admin-Key')) init.headers.set('X-Admin-Key', key);
                 } else if (Array.isArray(init.headers)) {
                     init.headers.push(['Authorization', 'Bearer ' + key]);
+                    init.headers.push(['X-Admin-Key', key]);
                 } else {
                     if (!init.headers['Authorization']) init.headers['Authorization'] = 'Bearer ' + key;
+                    if (!init.headers['X-Admin-Key']) init.headers['X-Admin-Key'] = key;
                 }
             }
-            return _nativeFetch.call(this, url, init);
+            return _nativeFetch.call(this, input, init);
         };
 
         // Live bookings – loaded from Cloudflare KV via /api/bookings on dashboard init
@@ -6109,7 +6116,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
                 });
                 if (res.ok) {
@@ -6210,7 +6221,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
                 });
             } catch(err) {
@@ -6242,7 +6257,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify({ marketer_payouts: [] })
                 });
             } catch(err) {
@@ -6265,7 +6284,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
                 });
             } catch(e) {
@@ -6552,7 +6575,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 const res = await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify(rates)
                 });
                 if (res.ok) {
@@ -6666,7 +6693,11 @@ We look forward to hosting you at Cool-Cat!`;
             try {
                 await fetch('/api/settings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify({ paystack_public_key: pubKey })
                 });
             } catch(e) {}
@@ -6752,7 +6783,13 @@ We look forward to hosting you at Cool-Cat!`;
                 return;
             }
             try {
-                const res = await fetch('/api/bookings?action=purge_ghosts', { method: 'DELETE' });
+                const res = await fetch('/api/bookings?action=purge_ghosts', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    }
+                });
                 const data = await res.json();
                 if (data.success) {
                     alert(`✅ ${data.message}\n\n${data.purgedCount > 0 ? `${data.purgedCount} ghost record(s) were permanently removed.` : 'Database was already clean – no orphaned records found.'}`);
@@ -6812,7 +6849,11 @@ We look forward to hosting you at Cool-Cat!`;
                     try {
                         fetch('/api/settings', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + enteredKey.trim(),
+                                'X-Admin-Key': enteredKey.trim()
+                            },
                             body: JSON.stringify({ marketer_payouts: [] })
                         });
                     } catch(e) {}

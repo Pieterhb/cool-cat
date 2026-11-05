@@ -2,7 +2,7 @@
 // Handles GET (retrieve active bookings), POST (create/block booking), DELETE (cancel booking), and PUT (update status)
 
 export async function onRequestGet(context) {
-    const { env } = context;
+    const { request, env } = context;
 
     // Initial bookings (empty by default; populated via live bookings & admin in Cloudflare KV)
     const defaultBookings = [];
