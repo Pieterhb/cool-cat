@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://cool-cat.co.za/book">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793966368.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1793967736.css?v=1791468000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -5115,6 +5115,37 @@
                 if (rawPending) {
                     try {
                         const pending = JSON.parse(rawPending);
+
+                        // If returning from mobile 3DS on a Quote payment:
+                        if (pending.isQuotePayment) {
+                            history.replaceState({}, document.title, window.location.pathname);
+                            sessionStorage.removeItem('coolcat_pending_booking');
+
+                            fetch('/api/verify-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    reference: pending.bookingRef,
+                                    paystackRef: paystackReturnRef,
+                                    guestName: pending.fullName,
+                                    guestEmail: pending.email,
+                                    guestPhone: pending.phone,
+                                    roomId: pending.roomId,
+                                    roomName: pending.roomName,
+                                    checkIn: pending.checkIn,
+                                    checkOut: pending.checkOut,
+                                    totalAmount: pending.grandTotal,
+                                    amountPaid: pending.depositDue,
+                                    balanceDue: pending.balanceDue,
+                                    isQuotePayment: true
+                                })
+                            }).catch(err => console.error("Payment sync notice:", err));
+
+                            alert(`🎉 Payment of R${Number(pending.depositDue).toLocaleString()} received successfully for booking #${pending.bookingRef}!\n\nYour confirmation receipt has been issued.`);
+                            window.location.href = '/book';
+                            return;
+                        }
+
                         if (Array.isArray(pending.stays) && pending.stays.length > 0) {
                             selectedStays = pending.stays;
                         }
@@ -5194,6 +5225,22 @@
             };
 
             const cleanPayRef = formatRefId(payRef, room);
+
+            // Anti-Tampering Check: Cross-reference with authentic database bookings if loaded
+            if (Array.isArray(MOCK_BOOKINGS) && MOCK_BOOKINGS.length > 0) {
+                const dbMatch = MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
+                if (dbMatch) {
+                    if (Number(dbMatch.totalAmount) > 0) {
+                        total = Number(dbMatch.totalAmount);
+                        const balance = Number(dbMatch.balanceDue);
+                        dep = (balance > 0 && balance <= total) ? balance : Math.round(total * 0.5);
+                    }
+                    if (dbMatch.guestName && dbMatch.guestName !== 'Valued Guest') name = dbMatch.guestName;
+                    if (dbMatch.roomId) room = dbMatch.roomId;
+                    if (dbMatch.checkIn) cIn = dbMatch.checkIn;
+                    if (dbMatch.checkOut) cOut = dbMatch.checkOut;
+                }
+            }
 
             activeQuotePay = {
                 ref: cleanPayRef,
@@ -5358,6 +5405,27 @@ Your confirmation receipt has been issued.`);
                         showToast("Payment window closed.");
                     }
                 });
+
+                // Save pending quote booking to sessionStorage in case Paystack redirects (mobile/3DS)
+                try {
+                    sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
+                        isQuotePayment: true,
+                        bookingRef: activeQuotePay.ref,
+                        fullName: activeQuotePay.name,
+                        email: email,
+                        phone: phone,
+                        roomId: activeQuotePay.room,
+                        roomName: activeQuotePay.roomName,
+                        checkIn: activeQuotePay.checkIn,
+                        checkOut: activeQuotePay.checkOut,
+                        grandTotal: activeQuotePay.totalAmount,
+                        depositDue: activeQuotePay.chosenAmount,
+                        balanceDue: Math.max(0, activeQuotePay.totalAmount - activeQuotePay.chosenAmount),
+                        paystackTxRef: paystackRef
+                    }));
+                } catch (e) {
+                    console.warn("Could not save quote pending booking to sessionStorage:", e);
+                }
 
                 handler.openIframe();
             } else {

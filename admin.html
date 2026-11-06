@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793966368.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1793967736.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -5910,7 +5910,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
 
             // Generate direct booking & quick pay link
             const origin = window.location.origin || 'https://cool-cat.co.za';
-            const payUrl = `${origin}/book.html?payRef=${encodeURIComponent(cleanRef)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
+            const payUrl = `${origin}/book?payRef=${encodeURIComponent(cleanRef)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
 
             const msgText = 
 `*Cool-Cat Guesthouse - Accommodation Quote & Payment Details*

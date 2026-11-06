@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import time
 import subprocess
 
@@ -36,8 +37,9 @@ def auto_deploy():
     
     # 4. Commit to Git
     print("Committing changes to Git...")
+    commit_msg = sys.argv[1] if len(sys.argv) > 1 else 'fix: Finalize Paystack live key sync, quote merge accumulation, 3DS recovery & webhook fallback'
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', 'feat: Add Live Master Availability Calendar and 2-column manual booking modal with conflict prevention in Admin'], check=True)
+    subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
     subprocess.run(['git', 'push'], check=True)
     
     # 5. Deploy to Cloudflare

@@ -388,6 +388,16 @@ export async function onRequestPost(context) {
 
         // 4. Dispatch Automated Emails (Guest Confirmation & Owner Alert)
         const emailResults = await dispatchBookingEmails(finalBookingRecord, env);
+        if (emailResults && emailResults.sent && env && env.COOLCAT_KV) {
+            try {
+                let latestList = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+                const idx = latestList.findIndex(b => b.id === finalBookingRecord.id || (b.isParentBooking && b.id === finalBookingRecord.id));
+                if (idx >= 0) {
+                    latestList[idx].emailsDispatched = true;
+                    await env.COOLCAT_KV.put('bookings_list', JSON.stringify(latestList));
+                }
+            } catch (e) {}
+        }
 
         return new Response(JSON.stringify({
             success: true,
