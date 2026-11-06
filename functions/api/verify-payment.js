@@ -209,8 +209,9 @@ export async function onRequestPost(context) {
         // Point 3: Verify charged amount with Paystack gateway data
         if (paystackData && paystackData.amount !== undefined) {
             const verifiedAmountZar = Math.round(Number(paystackData.amount) / 100);
-            if (verifiedAmountZar < numPaid) {
-                if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+            // Apply a 1-rand tolerance threshold to prevent floating-point / 50-cent rounding rejections on percentage discounts and split deposits
+            if ((numPaid - verifiedAmountZar) > 1.00) {
+                if (isLiveSecretKey) {
                     return new Response(JSON.stringify({
                         success: false,
                         error: "Payment verification mismatch: Expected R" + numPaid.toLocaleString() + ", but Paystack transaction charged R" + verifiedAmountZar.toLocaleString() + "."
@@ -221,12 +222,16 @@ export async function onRequestPost(context) {
                 }
                 // In test or non-live mode, clamp numPaid to actual charged amount
                 numPaid = verifiedAmountZar;
+            } else {
+                // Within 1-rand tolerance (e.g. 50-cent discount rounding): adopt actual gateway charged amount
+                numPaid = verifiedAmountZar;
             }
         }
 
         const numBal = Number(balanceDue !== undefined ? balanceDue : Math.max(0, numTotal - numPaid));
         const bookingStatus = numBal > 0 ? 'deposit_paid' : (numPaid > 0 ? 'fully_paid' : 'not_paid');
 
+        let finalBookingRecord;
         const confirmedBooking = {
             id: bookingRef,
             guestName: guestName || 'Valued Guest',
@@ -301,10 +306,44 @@ export async function onRequestPost(context) {
                 createdAt: new Date().toISOString()
             };
 
-            // Check if parent record already exists (e.g. from webhook)
+            // Check if parent record already exists (e.g. from quote, webhook, or previous deposit)
             const parentIdx = existing.findIndex(b => b.id === bookingRef || b.id === rawRef || (b.isParentBooking && b.id === bookingRef));
             if (parentIdx >= 0) {
-                existing[parentIdx] = parentRecord;
+                const ex = existing[parentIdx];
+                const newAmountPaid = (Number(ex.amountPaid) || 0) + numPaid;
+                const tot = Number(ex.totalAmount) || numTotal || newAmountPaid;
+                const newBal = Math.max(0, tot - newAmountPaid);
+                const newStat = (newBal === 0) ? 'fully_paid' : (newAmountPaid > 0 ? 'deposit_paid' : 'not_paid');
+
+                existing[parentIdx] = {
+                    ...ex,
+                    totalAmount: tot,
+                    amountPaid: newAmountPaid,
+                    balanceDue: newBal,
+                    paystackAmount: (Number(ex.paystackAmount) || 0) + ((paystackData && paystackData.amount) ? (Number(paystackData.amount) / 100) : numPaid),
+                    status: newStat,
+                    paymentMethod: 'card',
+                    paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
+                    isRecordedPayment: true,
+                    isPaidPaystack: true,
+                    guestName: (ex.guestName && ex.guestName !== 'Valued Guest') ? ex.guestName : (guestName || parentRecord.guestName),
+                    guestEmail: ex.guestEmail || guestEmail || '',
+                    guestPhone: ex.guestPhone || formatPhoneNumber(guestPhone) || '',
+                    guestCount: ex.guestCount || parentRecord.guestCount,
+                    arrivalTime: ex.arrivalTime || parentRecord.arrivalTime,
+                    specialRequests: ex.specialRequests || parentRecord.specialRequests,
+                    referralCode: ex.referralCode || parentRecord.referralCode,
+                    roomId: ex.roomId || parentRecord.roomId,
+                    roomName: ex.roomName || parentRecord.roomName,
+                    checkIn: ex.checkIn || parentRecord.checkIn,
+                    checkOut: ex.checkOut || parentRecord.checkOut,
+                    nights: ex.nights || parentRecord.nights,
+                    stays: (ex.stays && ex.stays.length > 0) ? ex.stays : parentRecord.stays,
+                    totalStays: (ex.stays && ex.stays.length > 0) ? ex.stays.length : parentRecord.totalStays,
+                    createdAt: ex.createdAt || parentRecord.createdAt,
+                    updatedAt: new Date().toISOString()
+                };
+                finalBookingRecord = existing[parentIdx];
             } else {
                 existing.push(parentRecord);
             }
@@ -343,13 +382,17 @@ export async function onRequestPost(context) {
             await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
         }
 
+        if (!finalBookingRecord) {
+            finalBookingRecord = confirmedBooking;
+        }
+
         // 4. Dispatch Automated Emails (Guest Confirmation & Owner Alert)
-        const emailResults = await dispatchBookingEmails(confirmedBooking, env);
+        const emailResults = await dispatchBookingEmails(finalBookingRecord, env);
 
         return new Response(JSON.stringify({
             success: true,
             message: "Payment verified and booking confirmed.",
-            booking: confirmedBooking,
+            booking: finalBookingRecord,
             emailDelivery: emailResults
         }), {
             headers: {
