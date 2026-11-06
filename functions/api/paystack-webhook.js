@@ -58,7 +58,7 @@ export async function onRequestPost(context) {
         const event = JSON.parse(bodyText);
 
         if (event && event.event === 'charge.success') {
-            const data = event.data;
+            const data = event.data || {};
             const rawRef = data.reference || '';
             const metadata = data.metadata || {};
 
