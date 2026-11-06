@@ -120,9 +120,9 @@ export async function onRequestPost(context) {
             const isAllRooms = (metaRoomId === 'all') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'all'));
             const parentRoomId = isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : (metaRoomId || 'multiple'));
             const defaultDisplayRoomName = isAllRooms
-                ? 'All 4 Rooms (Entire Property)'
-                : (staysList.length === 1 ? (staysList[0].roomName || 'Single Room') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'All 4 Rooms (Entire Property)'));
-            const finalRoomName = metadata.room_name && !metadata.room_name.includes('3 Suites') ? metadata.room_name : defaultDisplayRoomName;
+                ? 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'
+                : (staysList.length === 1 ? (staysList[0].roomName || 'Single Room') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'));
+            const finalRoomName = metadata.room_name || defaultDisplayRoomName;
             // Derive amounts and status from payment data (totalAmount/balanceDue/status were undefined - fixed)
             const totalAmountMeta = Number(metadata.total_amount || 0);
             const amountPaidMeta = amountInZar;

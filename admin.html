@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793965769.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1793966368.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -2522,6 +2522,14 @@
                                 <label>Paystack Webhook Endpoint (Copy into Paystack Dashboard)</label>
                                 <input type="text" class="adm-input" value="https://cool-cat.co.za/api/paystack-webhook" readonly style="background: #F8FAFC; color: #334155;">
                             </div>
+                            <div class="adm-form-group" id="resendStatusBox" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px;">
+                                <div style="font-weight: 700; color: #1E293B; margin-bottom: 3px; font-size: 0.85rem;" id="resendStatusTitle">
+                                    ✉️ Automated Email Notifications (Resend)
+                                </div>
+                                <div style="font-size: 0.78rem; color: #64748B; line-height: 1.35;" id="resendStatusDesc">
+                                    Checking email dispatch status...
+                                </div>
+                            </div>
                             <div class="adm-form-group">
                                 <label>Guest Wi-Fi Network Name</label>
                                 <input type="text" id="wifiNetwork" class="adm-input" value="Gouws">
@@ -3353,6 +3361,26 @@
                 if (config.paystackMode) {
                     const modeEl = document.getElementById('paystackModeSelect');
                     if (modeEl) modeEl.value = config.paystackMode;
+                }
+                const resendBox = document.getElementById('resendStatusBox');
+                const resendTitle = document.getElementById('resendStatusTitle');
+                const resendDesc = document.getElementById('resendStatusDesc');
+                if (resendBox && resendTitle && resendDesc) {
+                    if (config.resendEmailConfigured) {
+                        resendBox.style.background = '#ECFDF5';
+                        resendBox.style.borderColor = '#A7F3D0';
+                        resendTitle.style.color = '#065F46';
+                        resendTitle.innerHTML = '🟢 Automated Confirmation Emails Active';
+                        resendDesc.style.color = '#047857';
+                        resendDesc.innerHTML = 'Guest booking confirmations and host alerts are automatically dispatched via Resend.';
+                    } else {
+                        resendBox.style.background = '#FFFBEB';
+                        resendBox.style.borderColor = '#FCD34D';
+                        resendTitle.style.color = '#92400E';
+                        resendTitle.innerHTML = '⚠️ Automated Emails Pending Configuration';
+                        resendDesc.style.color = '#B45309';
+                        resendDesc.innerHTML = 'To send automated confirmation emails to guests and host, add <code>RESEND_API_KEY</code> into Cloudflare Pages dashboard Environment Variables.';
+                    }
                 }
                 const fields = [
                     'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',
@@ -4772,7 +4800,7 @@
                 if (isBooked || isBlocked) {
                     if (adminCalRoomId === 'all') {
                         const avail = getAdminDateAvailability(dateStr);
-                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 4 rooms</span><br>`;
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of ${avail.total} Suites</span><br>`;
                         avail.bookedRooms.forEach(br => {
                             tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
                         });
@@ -5222,13 +5250,13 @@
                 if (isBooked || isBlocked) {
                     if (roomId === 'all') {
                         const avail = getAdminDateAvailability(dateStr);
-                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 4 rooms</span><br>`;
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of ${avail.total} Suites</span><br>`;
                         avail.bookedRooms.forEach(br => {
                             tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
                         });
                     } else if (roomId === 'three-rooms') {
                         const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
-                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of 3 rooms</span><br>`;
+                        tooltipContent += `<span style="color:#FCA5A5;">Occupied: ${avail.bookedCount} of ${avail.total} Suites (3 Bedrooms)</span><br>`;
                         avail.bookedRooms.forEach(br => {
                             tooltipContent += `&bull; ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: <strong>${br.booking.guestName}</strong> (#${br.booking.id})<br>`;
                         });

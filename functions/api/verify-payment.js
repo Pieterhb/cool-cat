@@ -269,7 +269,7 @@ export async function onRequestPost(context) {
             // isAllRooms only when someone booked the 'All Rooms' option (not 4 individual rooms on separate dates)
             const isAllRooms = staysList.some(s => s.roomId === 'all');
             const displayRoomName = isAllRooms
-                ? 'All 4 Rooms (Entire Property)'
+                ? 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'
                 : staysList.length === 1
                     ? staysList[0].roomName
                     : `${staysList.length} Reserved Stays`;

@@ -130,6 +130,9 @@ export async function onRequestGet(context) {
         config.paystackSecretConfigured = Boolean(paystackSecret);
         config.paystackKeysAligned = isLivePublic ? isLiveSecret : (!paystackSecret || !isLiveSecret);
 
+        const resendApiKey = (env && env.RESEND_API_KEY) ? String(env.RESEND_API_KEY).trim() : '';
+        config.resendEmailConfigured = Boolean(resendApiKey);
+
         return new Response(JSON.stringify({ success: true, config }), { headers: CORS_HEADERS });
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message, config: DEFAULT_CONFIG }), {
