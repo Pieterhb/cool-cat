@@ -7,7 +7,24 @@ export async function onRequestPost(context) {
     try {
         const bodyText = await request.text();
         const signature = request.headers.get('x-paystack-signature');
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : null;
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+
+        let configuredPubKey = (env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : '';
+        if (env && env.COOLCAT_KV) {
+            try {
+                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+                if (cfg && cfg.paystack_public_key && String(cfg.paystack_public_key).trim()) {
+                    configuredPubKey = String(cfg.paystack_public_key).trim();
+                }
+            } catch(e) {}
+        }
+        const isLivePublicKey = configuredPubKey.startsWith('pk_live_');
+        if (isLivePublicKey && (!paystackSecret || !paystackSecret.startsWith('sk_live_'))) {
+            return new Response(JSON.stringify({ error: "Paystack live secret key not configured in environment" }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         // Verify HMAC SHA512 signature if secret key is configured
         if (paystackSecret) {

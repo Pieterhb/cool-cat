@@ -115,11 +115,20 @@ export async function onRequestGet(context) {
                 config = { ...DEFAULT_CONFIG, ...saved };
             }
         }
-        // Securely deliver Paystack Public Key from Cloudflare Environment Variables or config
-        const paystackPublicKey = (env && env.PAYSTACK_PUBLIC_KEY)
-            ? env.PAYSTACK_PUBLIC_KEY
-            : (config.paystack_public_key || 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407');
+        // Securely deliver Paystack Public Key: prefer explicit admin configured key from KV; fallback to env, then default test key
+        const paystackPublicKey = (config.paystack_public_key && String(config.paystack_public_key).trim())
+            ? String(config.paystack_public_key).trim()
+            : ((env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407');
         config.paystackPublicKey = paystackPublicKey;
+
+        // Health indicators for Paystack live transition & synchronization
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : '';
+        const isLivePublic = paystackPublicKey.startsWith('pk_live_');
+        const isLiveSecret = paystackSecret.startsWith('sk_live_');
+
+        config.paystackMode = isLivePublic ? 'live' : 'test';
+        config.paystackSecretConfigured = Boolean(paystackSecret);
+        config.paystackKeysAligned = isLivePublic ? isLiveSecret : (!paystackSecret || !isLiveSecret);
 
         return new Response(JSON.stringify({ success: true, config }), { headers: CORS_HEADERS });
     } catch (err) {

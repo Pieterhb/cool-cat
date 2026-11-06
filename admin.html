@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793964309.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1793964928.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3345,6 +3345,14 @@
                 if (config.pkg_discount_three !== undefined) {
                     const el = document.getElementById('pkg_discount_three');
                     if (el) el.value = config.pkg_discount_three;
+                }
+                if (config.paystack_public_key || config.paystackPublicKey) {
+                    const pubEl = document.getElementById('paystackPublicKey');
+                    if (pubEl) pubEl.value = config.paystack_public_key || config.paystackPublicKey;
+                }
+                if (config.paystackMode) {
+                    const modeEl = document.getElementById('paystackModeSelect');
+                    if (modeEl) modeEl.value = config.paystackMode;
                 }
                 const fields = [
                     'king_wd', 'king_we', 'santori_wd', 'santori_we', 'mykonos_wd', 'mykonos_we', 'deluxe_wd', 'deluxe_we',

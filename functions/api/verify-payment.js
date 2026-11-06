@@ -24,18 +24,49 @@ export async function onRequestPost(context) {
             specialRequests
         } = payload;
 
-        // 1. Verify with Paystack (supports live secret key and test mode fallback)
+        // 1. Verify with Paystack (strictly aligns live vs test keys)
         let paystackVerified = false;
         let paystackData = null;
 
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315';
+        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
         const txRefToVerify = (paystackRef || reference || '').trim().replace(/^#/, '');
 
-        if (txRefToVerify) {
+        // Resolve configured public key to determine expected gateway mode
+        let configuredPubKey = (env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : '';
+        if (env && env.COOLCAT_KV) {
+            try {
+                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+                if (cfg && cfg.paystack_public_key && String(cfg.paystack_public_key).trim()) {
+                    configuredPubKey = String(cfg.paystack_public_key).trim();
+                }
+            } catch(e) {}
+        }
+        if (!configuredPubKey) {
+            configuredPubKey = 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407';
+        }
+
+        const isLivePublicKey = configuredPubKey.startsWith('pk_live_');
+        const isLiveSecretKey = Boolean(paystackSecret && paystackSecret.startsWith('sk_live_'));
+
+        // Safeguard: Guard against live vs test key desynchronization
+        if (isLivePublicKey && !isLiveSecretKey) {
+            console.error("Paystack Gateway Configuration Mismatch: Public key is LIVE (pk_live_...) but PAYSTACK_SECRET_KEY in Cloudflare environment is not configured as sk_live_...");
+            return new Response(JSON.stringify({
+                success: false,
+                error: "Paystack Gateway Configuration Error: Server secret key (PAYSTACK_SECRET_KEY) is not configured for live processing. Please set sk_live_... in Cloudflare Pages environment variables."
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
+
+        const effectiveSecret = paystackSecret || (isLivePublicKey ? null : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315');
+
+        if (txRefToVerify && effectiveSecret) {
             try {
                 const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(txRefToVerify)}`, {
                     headers: {
-                        Authorization: `Bearer ${paystackSecret}`
+                        Authorization: `Bearer ${effectiveSecret}`
                     }
                 });
                 const data = await res.json();
@@ -44,7 +75,7 @@ export async function onRequestPost(context) {
                     paystackData = data.data;
                 } else {
                     // With live key, reject unverified transactions strictly
-                    if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+                    if (isLiveSecretKey) {
                         return new Response(JSON.stringify({
                             success: false,
                             error: `Paystack payment verification failed: ${data?.message || 'Transaction not verified'}`
@@ -59,7 +90,7 @@ export async function onRequestPost(context) {
                 }
             } catch (pErr) {
                 console.error("Paystack verification warning:", pErr);
-                if (paystackSecret && paystackSecret.startsWith('sk_live_')) {
+                if (isLiveSecretKey) {
                     return new Response(JSON.stringify({
                         success: false,
                         error: `Unable to verify payment with Paystack gateway: ${pErr.message}`
