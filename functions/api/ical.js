@@ -34,11 +34,13 @@ export async function onRequestGet(context) {
             // For a specific room (e.g. king-arthur, santori, deluxe-suite):
             // Check which parent bookings already have a dedicated calendar block for this room
             const childParentIds = new Set(
-                uncancelled.filter(b => b.roomId === requestedRoom && b.isCalendarBlock).map(b => b.parentBookingId)
+                uncancelled.filter(b => b.roomId === requestedRoom && b.isCalendarBlock).map(b => b.parentBookingId).filter(Boolean)
             );
 
             activeBookings = uncancelled.filter(b => {
-                // Direct match for this room
+                // If this is a parent booking and a dedicated calendar block exists for it, exclude parent to prevent duplicate VEVENT
+                if (!b.isCalendarBlock && childParentIds.has(b.id)) return false;
+                // Direct calendar block or standalone booking for this room
                 if (b.roomId === requestedRoom) return true;
                 // If it's a booking for 'all' rooms that doesn't have a separate child block for this room
                 if (b.roomId === 'all' && !b.isCalendarBlock && !childParentIds.has(b.id)) return true;
@@ -66,22 +68,28 @@ export async function onRequestGet(context) {
             `X-WR-CALNAME:Cool-Cat - ${requestedRoom.toUpperCase()}`
         ];
 
+        const seenEvents = new Set();
         activeBookings.forEach((b, idx) => {
             const dtStart = formatIcalDate(b.checkIn);
             const dtEnd = formatIcalDate(b.checkOut);
+            if (!dtStart || !dtEnd) return;
+
+            const roomKey = b.roomId || requestedRoom;
+            const eventKey = `${roomKey}_${dtStart}_${dtEnd}`;
+            if (seenEvents.has(eventKey)) return;
+            seenEvents.add(eventKey);
+
             const uid = `booking-${b.id || idx}@cool-cat.co.za`;
 
-            if (dtStart && dtEnd) {
-                ics.push('BEGIN:VEVENT');
-                ics.push(`UID:${uid}`);
-                ics.push(`DTSTAMP:${now}`);
-                ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
-                ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
-                ics.push(`SUMMARY:Reserved (${b.roomName || b.roomId || 'Cool-Cat Room'})`);
-                ics.push(`DESCRIPTION:Booking Ref #${b.id || idx} - Cool-Cat`);
-                ics.push('STATUS:CONFIRMED');
-                ics.push('END:VEVENT');
-            }
+            ics.push('BEGIN:VEVENT');
+            ics.push(`UID:${uid}`);
+            ics.push(`DTSTAMP:${now}`);
+            ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
+            ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
+            ics.push(`SUMMARY:Reserved (${b.roomName || b.roomId || 'Cool-Cat Room'})`);
+            ics.push(`DESCRIPTION:Booking Ref #${b.id || idx} - Cool-Cat`);
+            ics.push('STATUS:CONFIRMED');
+            ics.push('END:VEVENT');
         });
 
         ics.push('END:VCALENDAR');

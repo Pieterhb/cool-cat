@@ -116,7 +116,11 @@ export async function onRequestPost(context) {
 
             const calculatedNights = (staysList && staysList.length > 0)
                 ? staysList.reduce((sum, s) => sum + (Number(s.nights) || 0), 0)
-                : Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)) || 1);
+                : (() => {
+                    const [cInY, cInM, cInD] = String(checkIn || '').split('T')[0].split('-').map(Number);
+                    const [cOutY, cOutM, cOutD] = String(checkOut || '').split('T')[0].split('-').map(Number);
+                    return (cInY && cOutY) ? Math.max(1, Math.round((Date.UTC(cOutY, cOutM - 1, cOutD) - Date.UTC(cInY, cInM - 1, cInD)) / 86400000)) : 1;
+                })();
 
             // Save confirmed booking to KV if available
             if (env && env.COOLCAT_KV) {

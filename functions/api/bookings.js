@@ -219,7 +219,9 @@ export async function onRequestPost(context) {
                 finalStatus = 'not_paid';
             }
         }
-        const nightsCount = payload.nights || Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
+        const [cInY, cInM, cInD] = String(checkIn || '').split('T')[0].split('-').map(Number);
+        const [cOutY, cOutM, cOutD] = String(checkOut || '').split('T')[0].split('-').map(Number);
+        const nightsCount = payload.nights || (cInY && cOutY ? Math.max(1, Math.round((Date.UTC(cOutY, cOutM - 1, cOutD) - Date.UTC(cInY, cInM - 1, cInD)) / 86400000)) : 1);
 
         const newBooking = {
             id: bookingRef,

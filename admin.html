@@ -3036,6 +3036,17 @@
             return _nativeFetch.call(this, input, init);
         };
 
+        // Utility: Format Date object to local YYYY-MM-DD string
+        function formatDateStr(date) {
+            if (!date) return '';
+            const d = (date instanceof Date) ? date : new Date(date);
+            if (isNaN(d.getTime())) return '';
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
         // Live bookings – loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
         // Recorded marketer commission payout batches – loaded from Cloudflare KV via /api/settings
@@ -3369,14 +3380,13 @@
                     b.roomName = 'All Rooms (4 Rooms)';
                 }
 
-                // 3. De-duplicate identical numeric references if a duplicate ghost exists without proper guest name
-                const numMatch = (b.id || '').match(/\d{5,6}/);
-                if (numMatch) {
-                    const numKey = numMatch[0];
-                    if (seenNumericKeys.has(numKey)) {
+                // 3. De-duplicate identical references if a duplicate ghost exists without proper guest name
+                const cleanId = (b.parentBookingId || b.id || '').trim();
+                if (cleanId) {
+                    if (seenNumericKeys.has(cleanId)) {
                         return false;
                     }
-                    seenNumericKeys.add(numKey);
+                    seenNumericKeys.add(cleanId);
                 }
 
                 return true;
@@ -3405,7 +3415,7 @@
 
         function calculateKpis() {
             const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
+            const todayStr = formatDateStr(today);
 
             let revToday = 0;
             let rev7Days = 0;
@@ -3446,12 +3456,13 @@
 
                 if (bPaid > 0 && b.status !== 'cancelled') {
                     revYtd += bPaid;
-                    if (diffDays <= 0 || (b.createdAt && b.createdAt.startsWith(todayStr))) revToday += bPaid;
-                    if (diffDays <= 7) rev7Days += bPaid;
-                    if (diffDays <= 14) rev14Days += bPaid;
-                    if (diffDays <= 30) rev30Days += bPaid;
-                    if (diffDays <= 90) rev3Months += bPaid;
-                    if (diffDays <= 180) rev6Months += bPaid;
+                    const isToday = (b.createdAt && b.createdAt.startsWith(todayStr)) || (diffDays === 0);
+                    if (isToday) revToday += bPaid;
+                    if (diffDays >= 0 && diffDays <= 7) rev7Days += bPaid;
+                    if (diffDays >= 0 && diffDays <= 14) rev14Days += bPaid;
+                    if (diffDays >= 0 && diffDays <= 30) rev30Days += bPaid;
+                    if (diffDays >= 0 && diffDays <= 90) rev3Months += bPaid;
+                    if (diffDays >= 0 && diffDays <= 180) rev6Months += bPaid;
 
                     // Direct Cash/EFT vs Paystack Gateway Calculation
                     let paystackPortion = 0;
@@ -3521,7 +3532,7 @@
         }
 
         function renderOperationsToday() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = formatDateStr(new Date());
             const checkinsList = document.getElementById('todayCheckinsList');
             const checkinsCount = document.getElementById('todayCheckinsCount');
             const checkoutsList = document.getElementById('todayCheckoutsList');
@@ -5866,7 +5877,7 @@ We look forward to hosting you at Cool-Cat!`;
             const panel = document.getElementById('guestAlertsPanel');
             if (!panel) return;
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = formatDateStr(new Date());
             const todayLabel = new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
             // Use display bookings so we only see parent/consolidated records
@@ -5937,7 +5948,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function sendCleanerWhatsApp() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = formatDateStr(new Date());
             const roomKeys = [
                 { id: 'king-arthur', name: 'Suite 1 (👑 King Arthur Suite)' },
                 { id: 'santori', name: 'Suite 2 (🌊 Santori Suite - Room A)' },
@@ -6191,7 +6202,7 @@ We look forward to hosting you at Cool-Cat!`;
 
         function getLiveReferrals() {
             const list = [];
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = formatDateStr(new Date());
             const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
 
             (ADMIN_BOOKINGS || []).forEach(b => {
@@ -6413,7 +6424,7 @@ We look forward to hosting you at Cool-Cat!`;
             if (dueEl) dueEl.textContent = `R${totalCommission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
             const dateInput = document.getElementById('mktPayoutDate');
-            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            if (dateInput) dateInput.value = formatDateStr(new Date());
 
             const amtInput = document.getElementById('mktPayoutAmount');
             if (amtInput) amtInput.value = totalCommission > 0 ? totalCommission.toFixed(2) : '0.00';

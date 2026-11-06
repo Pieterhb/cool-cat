@@ -3067,6 +3067,10 @@
                 let isBooked = false;
                 let priceText = '';
                 let availPillHtml = '';
+                let currentRoom = ROOMS.find(r => r.id === selectedRoomId) || null;
+                let otherStaysOnDate = [];
+                let totalOccupiedOnDate = 0;
+                let freeRoomsLeft = ROOMS.length;
 
                 if (selectedRoomId === 'all') {
                     const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
@@ -3125,7 +3129,7 @@
                     }
 
                 } else {
-                    const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
+                    currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
                     const isBookedOtherStay = selectedStays.some(s => {
                         if (s === stayForDate) return false;
@@ -3137,13 +3141,13 @@
                     isBooked = (isBookedInDB || isBookedOtherStay);
 
                     // How many other rooms are in cart on this date?
-                    const otherStaysOnDate = selectedStays.filter(s =>
+                    otherStaysOnDate = selectedStays.filter(s =>
                         s.roomId !== selectedRoomId && s.roomId !== 'all' && s.roomId !== 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                     );
-                    const totalOccupiedOnDate = ROOMS.filter(r =>
+                    totalOccupiedOnDate = ROOMS.filter(r =>
                         isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(r.id))) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
                     ).length;
-                    const freeRoomsLeft = ROOMS.length - totalOccupiedOnDate;
+                    freeRoomsLeft = ROOMS.length - totalOccupiedOnDate;
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
@@ -3223,11 +3227,13 @@
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked – no rooms available</span>`;
                         }
                     }
-                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && otherStaysOnDate.length > 0) {
                     const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
-                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of ${ROOMS.length} Free)`;
-                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
-                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of ${ROOMS.length} Rooms Free)`;
+                    const rName = currentRoom ? currentRoom.name : 'Room';
+                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${rName} Available (${freeRoomsLeft} of ${ROOMS.length} Free)`;
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
+                    const rName = currentRoom ? currentRoom.name : 'Room';
+                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${rName} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of ${ROOMS.length} Rooms Free)`;
                 } else {
                     const activePkgPct = (selectedRoomId === 'all')
                         ? (Number(SITE_CONFIG && SITE_CONFIG.pkg_discount_four) || 0)
@@ -3784,11 +3790,11 @@
             // Normalize earliestCheckIn to local midnight so DST/timezone offsets
             // don't cause Math.floor to round a 3-day gap to 8+ days.
             const earliestCheckInRaw = selectedStays.reduce((min, s) => {
-                const cDate = (s.checkIn instanceof Date) ? s.checkIn : new Date(s.checkIn);
+                const cDate = parseLocalDate(s.checkIn);
                 return cDate < min ? cDate : min;
-            }, (selectedStays[0].checkIn instanceof Date) ? selectedStays[0].checkIn : new Date(selectedStays[0].checkIn));
+            }, parseLocalDate(selectedStays[0].checkIn));
 
-            const earliestCheckIn = new Date(earliestCheckInRaw);
+            const earliestCheckIn = parseLocalDate(earliestCheckInRaw);
             earliestCheckIn.setHours(0, 0, 0, 0); // normalise to midnight local time
 
             // Use Math.floor (conservative): 7.9 days is still ≤ 7 full days away.
@@ -4983,9 +4989,24 @@
             }
         }
 
+        function parseLocalDate(date) {
+            if (!date) return new Date();
+            if (date instanceof Date) return date;
+            if (typeof date === 'string') {
+                const parts = date.trim().split('T')[0].split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    return new Date(y, m, d);
+                }
+            }
+            return new Date(date);
+        }
+
         function formatFriendlyDate(date) {
             if (!date) return '';
-            const d = (date instanceof Date) ? date : new Date(date);
+            const d = parseLocalDate(date);
             if (isNaN(d.getTime())) return '';
             return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
         }
