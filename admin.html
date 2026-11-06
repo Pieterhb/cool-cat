@@ -1723,16 +1723,72 @@
                                                 </span>
                                             </div>
                                         </th>
-                                        <th>Guest</th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Guest</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="guest" data-dir="asc" onclick="sortMasterBookings('guest', 'asc')" title="Sort A to Z">▲</span>
+                                                    <span class="sort-arrow" data-col="guest" data-dir="desc" onclick="sortMasterBookings('guest', 'desc')" title="Sort Z to A">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Contact</th>
-                                        <th>Room</th>
-                                        <th>Check-In</th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Room</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="room" data-dir="asc" onclick="sortMasterBookings('room', 'asc')" title="Sort Room A to Z">▲</span>
+                                                    <span class="sort-arrow" data-col="room" data-dir="desc" onclick="sortMasterBookings('room', 'desc')" title="Sort Room Z to A">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Check-In</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="checkIn" data-dir="asc" onclick="sortMasterBookings('checkIn', 'asc')" title="Sort Earliest">▲</span>
+                                                    <span class="sort-arrow" data-col="checkIn" data-dir="desc" onclick="sortMasterBookings('checkIn', 'desc')" title="Sort Latest">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Check-Out</th>
                                         <th>Nights</th>
-                                        <th>Total</th>
-                                        <th>Paid</th>
-                                        <th>Balance</th>
-                                        <th>Status</th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Total</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="total" data-dir="asc" onclick="sortMasterBookings('total', 'asc')" title="Lowest Total">▲</span>
+                                                    <span class="sort-arrow" data-col="total" data-dir="desc" onclick="sortMasterBookings('total', 'desc')" title="Highest Total">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Paid</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="paid" data-dir="asc" onclick="sortMasterBookings('paid', 'asc')" title="Lowest Paid">▲</span>
+                                                    <span class="sort-arrow" data-col="paid" data-dir="desc" onclick="sortMasterBookings('paid', 'desc')" title="Highest Paid">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Balance</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="balance" data-dir="asc" onclick="sortMasterBookings('balance', 'asc')" title="Lowest Balance">▲</span>
+                                                    <span class="sort-arrow" data-col="balance" data-dir="desc" onclick="sortMasterBookings('balance', 'desc')" title="Highest Balance">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div style="display: inline-flex; align-items: center;">
+                                                <span>Status</span>
+                                                <span class="sort-arrows">
+                                                    <span class="sort-arrow" data-col="status" data-dir="asc" onclick="sortMasterBookings('status', 'asc')" title="Sort Status A to Z">▲</span>
+                                                    <span class="sort-arrow" data-col="status" data-dir="desc" onclick="sortMasterBookings('status', 'desc')" title="Sort Status Z to A">▼</span>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -3047,6 +3103,19 @@
             return `${y}-${m}-${day}`;
         }
 
+        // Utility: Format telephone number with South African country code (27) for WhatsApp links
+        function formatWhatsAppPhone(phone) {
+            if (!phone) return '';
+            let digits = String(phone).replace(/[^0-9]/g, '');
+            if (digits.startsWith('00')) {
+                digits = digits.slice(2);
+            }
+            if (digits.startsWith('0') && digits.length === 10) {
+                digits = '27' + digits.slice(1);
+            }
+            return digits;
+        }
+
         // Live bookings – loaded from Cloudflare KV via /api/bookings on dashboard init
         let ADMIN_BOOKINGS = [];
         // Recorded marketer commission payout batches – loaded from Cloudflare KV via /api/settings
@@ -3447,8 +3516,15 @@
                 const bPaid = Number(b.amountPaid || 0);
                 const bBal = Number(b.balanceDue || 0);
                 const bTotal = Number(b.totalAmount || 0);
-                const bCreated = new Date(b.createdAt || b.checkIn || today);
-                const diffDays = Math.round((today - bCreated) / msInDay);
+                
+                let bCreatedDate = null;
+                if (b.createdAt) {
+                    bCreatedDate = new Date(b.createdAt);
+                } else if (b.checkIn) {
+                    const cInDate = new Date(b.checkIn + 'T00:00:00');
+                    bCreatedDate = cInDate <= today ? cInDate : null;
+                }
+                const diffDays = bCreatedDate ? Math.round((today - bCreatedDate) / msInDay) : -1;
 
                 if (bBal > 0 && b.status !== 'cancelled') {
                     pendingTotal += bBal;
@@ -3708,20 +3784,34 @@
 
             // 2. Sort Master Bookings
             const sortedMaster = [...displayList].sort((a, b) => {
-                const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
-                const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
-                const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
-                const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
-
-                if (masterSortDirection === 'asc') {
-                    // Oldest to newest
-                    if (numA !== numB && numA > 0 && numB > 0) return numA - numB;
-                    return timeA - timeB;
+                let res = 0;
+                if (masterSortColumn === 'guest') {
+                    res = (a.guestName || '').localeCompare(b.guestName || '');
+                } else if (masterSortColumn === 'room') {
+                    res = (a.roomName || a.roomId || '').localeCompare(b.roomName || b.roomId || '');
+                } else if (masterSortColumn === 'checkIn') {
+                    res = (a.checkIn || '').localeCompare(b.checkIn || '');
+                } else if (masterSortColumn === 'checkOut') {
+                    res = (a.checkOut || '').localeCompare(b.checkOut || '');
+                } else if (masterSortColumn === 'nights') {
+                    res = (Number(a.nights) || 0) - (Number(b.nights) || 0);
+                } else if (masterSortColumn === 'total') {
+                    res = (Number(a.totalAmount) || 0) - (Number(b.totalAmount) || 0);
+                } else if (masterSortColumn === 'paid') {
+                    res = (Number(a.amountPaid) || 0) - (Number(b.amountPaid) || 0);
+                } else if (masterSortColumn === 'balance') {
+                    res = (Number(a.balanceDue) || 0) - (Number(b.balanceDue) || 0);
+                } else if (masterSortColumn === 'status') {
+                    res = (a.status || '').localeCompare(b.status || '');
                 } else {
-                    // Newest to oldest (default)
-                    if (numB !== numA && numA > 0 && numB > 0) return numB - numA;
-                    return timeB - timeA;
+                    const numA = parseInt((a.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const numB = parseInt((b.id || '').match(/\d+/)?.[0] || '0', 10);
+                    const timeA = new Date(a.createdAt || a.checkIn || 0).getTime();
+                    const timeB = new Date(b.createdAt || b.checkIn || 0).getTime();
+                    if (numA !== numB && numA > 0 && numB > 0) res = numA - numB;
+                    else res = timeA - timeB;
                 }
+                return masterSortDirection === 'asc' ? res : -res;
             });
 
             // Highlight active sort arrow for Master Bookings
@@ -3959,7 +4049,7 @@
                     <td>${shortRoomName(b.roomName || b.roomId)}</td>
                     <td style="font-weight: 700; color: ${Number(b.amountPaid || 0) > 0 ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
                     <td>
-                        <a href="https://wa.me/${(b.guestPhone||'').replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa">Chat WhatsApp</a>
+                        <a href="https://wa.me/${formatWhatsAppPhone(b.guestPhone)}" target="_blank" class="btn-sm btn-wa">Chat WhatsApp</a>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -5556,6 +5646,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 balanceDue: balanceDue,
                 status: status,
                 paymentMethod: paymentMethod,
+                paystackAmount: currentPayBooking.paystackAmount,
                 isPaidEft: (paymentMethod === 'eft' && amountPaid > 0)
             };
 
@@ -5605,6 +5696,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                         balanceDue: b.isCalendarBlock ? 0 : payload.balanceDue,
                         status: payload.status,
                         paymentMethod: payload.paymentMethod,
+                        paystackAmount: payload.paystackAmount !== undefined ? payload.paystackAmount : b.paystackAmount,
                         isPaidEft: payload.isPaidEft
                     };
                 }
@@ -5839,7 +5931,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function sendQuoteWhatsApp() {
-            const phone = (document.getElementById('shareGuestPhone').value || '').replace(/[^0-9]/g, '');
+            const phone = formatWhatsAppPhone(document.getElementById('shareGuestPhone').value);
             const text = document.getElementById('shareQuoteMessageText').value;
             if (!text) return;
             const url = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -6307,7 +6399,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function whatsappReferrer(phone, name, commission) {
-            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            const cleanPhone = formatWhatsAppPhone(phone);
             const msg = `*Cool-Cat - Referral Commission Ready!*%0A%0AHi ${encodeURIComponent(name)}, great news! Your referred guest has completed their stay at Cool-Cat in Strand.%0A%0AYour 10% commission of *R${commission}* is ready for payout. Please reply with your South African bank name, account number, and branch code for instant EFT transfer.%0A%0AThank you for partnering with Cool-Cat!`;
             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
         }
@@ -6322,7 +6414,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function sendGuestCheckinPass(guestName, roomName, phone) {
-            const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+            const cleanPhone = formatWhatsAppPhone(phone);
             const msg = `*Cool-Cat - Check-In Pass & Gate Details*%0A%0A` +
                 `Hi ${encodeURIComponent(guestName)}, we look forward to welcoming you to Cool-Cat today!%0A%0A` +
                 `🛏️ *Room:* ${encodeURIComponent(roomName)}%0A` +
@@ -6336,7 +6428,7 @@ We look forward to hosting you at Cool-Cat!`;
         }
 
         function sendGuestReviewRequest(guestName, phone) {
-            const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+            const cleanPhone = formatWhatsAppPhone(phone);
             const msg = `*Cool-Cat - Thank You for Staying With Us!*%0A%0A` +
                 `Hi ${encodeURIComponent(guestName)}, thank you for choosing Cool-Cat for your visit to Strand! We truly hope you had a relaxing and comfortable stay.%0A%0A` +
                 `If you enjoyed your time with us, would you mind taking 30 seconds to leave us a 5-star review on Google? It helps our small coastal guesthouse tremendously!%0A%0A` +

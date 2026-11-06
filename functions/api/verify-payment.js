@@ -256,6 +256,7 @@ export async function onRequestPost(context) {
                 totalAmount: numTotal,
                 amountPaid: numPaid,
                 balanceDue: numBal,
+                paystackAmount: (paystackData && paystackData.amount) ? (Number(paystackData.amount) / 100) : numPaid,
                 paymentMethod: 'card',
                 paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
                 isRecordedPayment: true,
