@@ -4547,7 +4547,7 @@
 
                 if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    if (avail.availableCount === 4) {
+                    if (avail.availableCount === avail.total) {
                         if (activeEventInfo) {
                             pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 4 Open</span>`;
                             dayCell.style.background = '#FFFBEB';
@@ -4760,7 +4760,7 @@
                     alert(`📋 Reservation Details:\n\nGuest/Reason: ${bookingDetails.guestName}\nRoom: ${bookingDetails.roomName || bookingDetails.roomId}\nStay: ${bookingDetails.checkIn} ➔ ${bookingDetails.checkOut} (${bookingDetails.nights || 1} Nights)\nPhone: ${bookingDetails.guestPhone || '-'}\nTotal: R${Number(bookingDetails.totalAmount || 0).toLocaleString()} (Paid: R${Number(bookingDetails.amountPaid || 0).toLocaleString()})\nStatus: ${bookingDetails.status}\nReference: #${bookingDetails.id}`);
                 } else if (adminCalRoomId === 'all') {
                     const avail = getAdminDateAvailability(dateStr);
-                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of 4 rooms occupied:\n`;
+                    let msg = `📅 Availability on ${dateStr}:\n\n${avail.bookedCount} of ${avail.total} suites occupied:\n`;
                     avail.bookedRooms.forEach(br => {
                         msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})\n`;
                     });
@@ -4972,7 +4972,7 @@
                     }
 
                     const avail = getAdminDateAvailability(dateStr);
-                    if (avail.availableCount === 4) {
+                    if (avail.availableCount === avail.total) {
                         if (activeEventInfo) {
                             pillHtml = `<span class="modal-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 4 Open</span>`;
                             dayCell.style.background = '#FFFBEB';
@@ -5157,6 +5157,27 @@
         }
 
         function handleModalMiniDayClick(dateStr, isBooked, isBlocked, bookingDetails) {
+            const clickedDate = new Date(dateStr + 'T00:00:00');
+
+            // If check-in date is already selected and admin clicked a subsequent date, check if valid check-out date (supports same-day turnover)
+            if (modalPendingCheckIn && clickedDate > modalPendingCheckIn) {
+                const roomId = document.getElementById('manRoomSelect').value;
+                const cInStr = formatDateStr(modalPendingCheckIn);
+                const cOutStr = dateStr;
+                const conflict = checkBookingConflicts(roomId, cInStr, cOutStr);
+                if (conflict.hasConflict) {
+                    alert(`⚠️ Selected range (${cInStr} to ${cOutStr}) overlaps with an existing booking. Please pick open dates.`);
+                    modalPendingCheckIn = null;
+                    renderModalMiniCalendar();
+                    return;
+                }
+                document.getElementById('manCheckOut').value = dateStr;
+                modalPendingCheckIn = null;
+                validateModalDates();
+                renderModalMiniCalendar();
+                return;
+            }
+
             if (isBooked || isBlocked) {
                 if (bookingDetails) {
                     alert(`📋 Reservation Details:
@@ -5172,7 +5193,7 @@ Reference: #${bookingDetails.id}`);
                         const avail = getAdminDateAvailability(dateStr);
                         let msg = `📅 Availability on ${dateStr}:
 
-${avail.bookedCount} of 4 rooms occupied:
+${avail.bookedCount} of ${avail.total} suites occupied:
 `;
                         avail.bookedRooms.forEach(br => {
                             msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})
@@ -5183,7 +5204,7 @@ ${avail.bookedCount} of 4 rooms occupied:
                         const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
                         let msg = `📅 Availability on ${dateStr} for Bottom Rooms (3 Bedrooms):
 
-${avail.bookedCount} of 3 rooms occupied:
+${avail.bookedCount} of ${avail.total} suites occupied:
 `;
                         avail.bookedRooms.forEach(br => {
                             msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId}: ${br.booking.guestName} (#${br.booking.id})
@@ -5195,31 +5216,9 @@ ${avail.bookedCount} of 3 rooms occupied:
                 return;
             }
 
-            const clickedDate = new Date(dateStr + 'T00:00:00');
-            if (!modalPendingCheckIn) {
-                modalPendingCheckIn = clickedDate;
-                document.getElementById('manCheckIn').value = dateStr;
-                document.getElementById('manCheckOut').value = '';
-            } else {
-                if (clickedDate <= modalPendingCheckIn) {
-                    modalPendingCheckIn = clickedDate;
-                    document.getElementById('manCheckIn').value = dateStr;
-                    document.getElementById('manCheckOut').value = '';
-                } else {
-                    const roomId = document.getElementById('manRoomSelect').value;
-                    const cInStr = formatDateStr(modalPendingCheckIn);
-                    const cOutStr = dateStr;
-                    const conflict = checkBookingConflicts(roomId, cInStr, cOutStr);
-                    if (conflict.hasConflict) {
-                        alert(`⚠️ Selected range (${cInStr} to ${cOutStr}) overlaps with an existing booking. Please pick open dates.`);
-                        modalPendingCheckIn = null;
-                        renderModalMiniCalendar();
-                        return;
-                    }
-                    document.getElementById('manCheckOut').value = dateStr;
-                    modalPendingCheckIn = null;
-                }
-            }
+            modalPendingCheckIn = clickedDate;
+            document.getElementById('manCheckIn').value = dateStr;
+            document.getElementById('manCheckOut').value = '';
             validateModalDates();
             renderModalMiniCalendar();
         }
@@ -5411,7 +5410,11 @@ ${avail.bookedCount} of 3 rooms occupied:
             try {
                 const res = await fetch('/api/bookings', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify(newB)
                 });
                 if (res.ok) {
@@ -5548,7 +5551,11 @@ ${avail.bookedCount} of 3 rooms occupied:
             try {
                 const res = await fetch('/api/bookings', {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
@@ -5662,7 +5669,11 @@ ${avail.bookedCount} of 3 rooms occupied:
             try {
                 const res = await fetch('/api/bookings', {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {

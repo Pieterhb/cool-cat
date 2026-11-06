@@ -5279,6 +5279,17 @@
                     currency: 'ZAR',
                     ref: paystackRef,
                     metadata: {
+                        booking_ref: activeQuotePay.ref,
+                        guest_name: activeQuotePay.name,
+                        phone: phone,
+                        email: email,
+                        room_id: activeQuotePay.room,
+                        room_name: activeQuotePay.roomName,
+                        check_in: activeQuotePay.checkIn,
+                        check_out: activeQuotePay.checkOut,
+                        total_amount: activeQuotePay.totalAmount,
+                        payment_type: activeQuotePay.chosenType,
+                        is_quote_payment: true,
                         custom_fields: [
                             { display_name: "Booking Ref", variable_name: "booking_ref", value: activeQuotePay.ref },
                             { display_name: "Guest Name", variable_name: "guest_name", value: activeQuotePay.name },
@@ -5293,15 +5304,23 @@
                         const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
 
                         try {
-                            await fetch('/api/bookings', {
-                                method: 'PUT',
+                            await fetch('/api/verify-payment', {
+                                method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    id: activeQuotePay.ref,
+                                    reference: activeQuotePay.ref,
+                                    paystackRef: (response && response.reference) ? response.reference : paystackRef,
+                                    guestName: activeQuotePay.name,
+                                    guestEmail: email,
+                                    guestPhone: phone,
+                                    roomId: activeQuotePay.room,
+                                    roomName: activeQuotePay.roomName,
+                                    checkIn: activeQuotePay.checkIn,
+                                    checkOut: activeQuotePay.checkOut,
+                                    totalAmount: total,
                                     amountPaid: paid,
                                     balanceDue: bal,
-                                    status: newStatus,
-                                    paymentMethod: 'card'
+                                    isQuotePayment: true
                                 })
                             });
                         } catch (err) {
@@ -5309,7 +5328,9 @@
                         }
 
                         closeQuotePayModal();
-                        alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
+                        alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!
+
+Your confirmation receipt has been issued.`);
                         window.location.href = '/book';
                     },
                     onClose: function() {

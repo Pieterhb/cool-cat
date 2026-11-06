@@ -463,6 +463,18 @@ export async function onRequestDelete(context) {
 export async function onRequestPut(context) {
     const { request, env } = context;
 
+    // Layer 2: Verify Admin Secret Key for updating booking state
+    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '';
+
+    if (!expectedKey || token !== expectedKey) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+    }
+
     try {
         const payload = await request.json();
         const { id, status, amountPaid, balanceDue, paymentMethod, isPaidEft } = payload;

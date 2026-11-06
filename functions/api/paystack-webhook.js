@@ -10,7 +10,22 @@ export async function onRequestPost(context) {
         const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? env.PAYSTACK_SECRET_KEY : null;
 
         // Verify HMAC SHA512 signature if secret key is configured
-        if (paystackSecret && signature) {
+        if (paystackSecret) {
+            if (!signature) {
+                return new Response(JSON.stringify({ error: "Missing x-paystack-signature header" }), {
+                    status: 401,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
+            const hexMatches = signature.match(/.{1,2}/g);
+            if (!hexMatches || hexMatches.length !== 64) {
+                return new Response(JSON.stringify({ error: "Invalid Paystack webhook signature format" }), {
+                    status: 401,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
             const encoder = new TextEncoder();
             const key = await crypto.subtle.importKey(
                 'raw',
@@ -22,7 +37,7 @@ export async function onRequestPost(context) {
 
             // Convert signature hex to Uint8Array
             const sigBytes = new Uint8Array(
-                signature.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+                hexMatches.map(byte => parseInt(byte, 16))
             );
 
             const isValid = await crypto.subtle.verify(
@@ -46,11 +61,34 @@ export async function onRequestPost(context) {
             const data = event.data;
             const rawRef = data.reference || '';
             const metadata = data.metadata || {};
-            const cleanBookingRef = metadata.booking_ref || String(rawRef).replace(/_\d{5,}$/, '').trim();
+
+            // Extract booking reference from top-level metadata, custom_fields, or payment reference
+            let bookingRefMeta = metadata.booking_ref || '';
+            if (!bookingRefMeta && Array.isArray(metadata.custom_fields)) {
+                const cf = metadata.custom_fields.find(f => f.variable_name === 'booking_ref');
+                if (cf && cf.value) bookingRefMeta = cf.value;
+            }
+            if (!bookingRefMeta && String(rawRef).startsWith('PAY_')) {
+                bookingRefMeta = String(rawRef).replace(/^PAY_/, '').replace(/_\d{3,}$/, '');
+            }
+
+            const cleanBookingRef = (bookingRefMeta || String(rawRef).replace(/_\d{5,}$/, '')).trim();
             const amountInZar = Number(data.amount) / 100;
-            const customerEmail = data.customer ? data.customer.email : '';
-            const guestName = metadata.guest_name || 'Guest';
-            const phone = metadata.phone || '';
+            const customerEmail = data.customer ? data.customer.email : (metadata.email || '');
+
+            let guestName = metadata.guest_name || '';
+            if (!guestName && Array.isArray(metadata.custom_fields)) {
+                const cf = metadata.custom_fields.find(f => f.variable_name === 'guest_name');
+                if (cf && cf.value) guestName = cf.value;
+            }
+            if (!guestName) guestName = 'Guest';
+
+            let phone = metadata.phone || '';
+            if (!phone && Array.isArray(metadata.custom_fields)) {
+                const cf = metadata.custom_fields.find(f => f.variable_name === 'phone');
+                if (cf && cf.value) phone = cf.value;
+            }
+
             const checkIn = metadata.check_in || '';
             const checkOut = metadata.check_out || '';
             let staysList = [];
@@ -110,10 +148,28 @@ export async function onRequestPost(context) {
 
                 const foundIndex = existing.findIndex(b => b.id === cleanBookingRef || b.id === rawRef || b.paystackRef === rawRef);
                 if (foundIndex >= 0) {
+                    const ex = existing[foundIndex];
+                    const newAmountPaid = (Number(ex.amountPaid) || 0) + amountInZar;
+                    const tot = Number(ex.totalAmount) || totalAmountMeta || amountInZar;
+                    const newBal = Math.max(0, tot - newAmountPaid);
+                    const newStat = (newBal === 0) ? 'fully_paid' : 'deposit_paid';
                     existing[foundIndex] = {
-                        ...existing[foundIndex],
-                        ...parentRecord,
-                        createdAt: existing[foundIndex].createdAt || parentRecord.createdAt
+                        ...ex,
+                        totalAmount: tot,
+                        amountPaid: newAmountPaid,
+                        balanceDue: newBal,
+                        status: newStat,
+                        paymentMethod: 'card',
+                        paystackRef: rawRef,
+                        isRecordedPayment: true,
+                        isPaidPaystack: true,
+                        guestEmail: ex.guestEmail || customerEmail,
+                        guestPhone: ex.guestPhone || phone,
+                        checkIn: ex.checkIn || checkIn,
+                        checkOut: ex.checkOut || checkOut,
+                        roomId: ex.roomId || parentRoomId,
+                        roomName: ex.roomName || finalRoomName,
+                        createdAt: ex.createdAt || parentRecord.createdAt
                     };
                 } else {
                     existing.push(parentRecord);
@@ -231,4 +287,3 @@ export async function onRequestOptions() {
         }
     });
 }
-
