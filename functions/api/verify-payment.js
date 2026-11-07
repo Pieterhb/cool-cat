@@ -238,9 +238,7 @@ export async function onRequestPost(context) {
             guestEmail: guestEmail || '',
             guestPhone: formatPhoneNumber(guestPhone) || '',
             guestCount: Number(payload.guestCount) || 2,
-            includeBreakfast: !!payload.includeBreakfast,
-            breakfastCount: Number(payload.breakfastCount) || 0,
-            stays: staysList,
+                        stays: staysList,
             totalStays: staysList.length,
             roomId: staysList[0].roomId,
             roomName: staysList.length === 1 ? staysList[0].roomName : `${staysList.length} Reserved Stays`,
@@ -287,8 +285,6 @@ export async function onRequestPost(context) {
                 guestEmail: guestEmail || '',
                 guestPhone: formatPhoneNumber(guestPhone) || '',
                 guestCount: Number(payload.guestCount) || 2,
-                includeBreakfast: !!payload.includeBreakfast,
-                breakfastCount: Number(payload.breakfastCount) || 0,
                 totalAmount: numTotal,
                 amountPaid: numPaid,
                 balanceDue: numBal,
@@ -435,6 +431,16 @@ export async function onRequestOptions() {
 // Helper to generate and send emails via Resend or Cloudflare Mail API
 async function dispatchBookingEmails(booking, env) {
     const resendApiKey = (env && env.RESEND_API_KEY) ? env.RESEND_API_KEY : null;
+
+    let wifiNet = (env && env.WIFI_NETWORK) ? env.WIFI_NETWORK : 'Gouws';
+    let wifiPass = (env && env.WIFI_PASSWORD) ? env.WIFI_PASSWORD : 'Available upon check-in';
+    if (env && env.COOLCAT_KV) {
+        try {
+            const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+            if (cfg && cfg.wifi_network) wifiNet = cfg.wifi_network;
+            if (cfg && cfg.wifi_password) wifiPass = cfg.wifi_password;
+        } catch(e) {}
+    }
     const cleanRef = (booking.id || '').replace(/^#/, '');
 
     const staysRowsHtml = (booking.stays && Array.isArray(booking.stays)) ? booking.stays.map(s => `
@@ -466,7 +472,7 @@ async function dispatchBookingEmails(booking, env) {
                 ${staysRowsHtml}
             </div>
             <p style="margin: 4px 0;">👥 <strong>Total Guests Staying:</strong> ${booking.guestCount || 2} Guests</p>
-            ${booking.includeBreakfast && booking.breakfastCount > 0 ? `<p style="margin: 4px 0; color: #166534;">🍳 <strong>Daily Breakfast:</strong> ${booking.breakfastCount} of ${booking.guestCount || 2} Guests (${booking.nights} Nights @ R120/person/day = R${Number(booking.breakfastCount * booking.nights * 120).toLocaleString()})</p>` : ''}
+            
             <p style="margin: 4px 0;">💰 <strong>Total Stay:</strong> R${Number(booking.totalAmount).toLocaleString()}</p>
             <p style="margin: 4px 0; color: #166534;">💳 <strong>Amount Paid:</strong> R${Number(booking.amountPaid).toLocaleString()}</p>
             ${booking.balanceDue > 0 ? `<p style="margin: 4px 0; color: #991b1b; font-weight: bold;">⏳ Balance Due at Check-In: R${Number(booking.balanceDue).toLocaleString()}</p>` : `<p style="margin: 4px 0; color: #166534;">🎉 100% Fully Paid</p>`}
@@ -474,7 +480,7 @@ async function dispatchBookingEmails(booking, env) {
 
           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin: 0 0 10px; color: #166534; font-size: 16px;">🏠 Check-In & Access Details:</h3>
-            <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> | Pass: <code>004eda35aef</code></p>
+            <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>${wifiNet}</code> | Pass: <code>${wifiPass}</code></p>
             <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool-Cat, Strand, Western Cape</p>
             <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
             <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (072 889 4840)</p>
@@ -503,7 +509,7 @@ async function dispatchBookingEmails(booking, env) {
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="mailto:${booking.guestEmail}">${booking.guestEmail}</a></td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>WhatsApp/Phone:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;"><a href="https://wa.me/${booking.guestPhone.replace(/[^0-9]/g, '')}">${booking.guestPhone}</a></td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Guests Staying:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.guestCount || 2} Guests</td></tr>
-          <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Breakfast Package:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.includeBreakfast && booking.breakfastCount > 0 ? `🍳 ${booking.breakfastCount} of ${booking.guestCount || 2} Guests Daily (R${Number(booking.breakfastCount * booking.nights * 120).toLocaleString()})` : 'No breakfast'}</td></tr>
+          
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Stays Booked:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${staysRowsHtml}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Arrival Time:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.arrivalTime}</td></tr>
           <tr><td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>Special Requests:</strong></td><td style="padding: 6px; border-bottom: 1px solid #eee;">${booking.specialRequests || 'None'}</td></tr>

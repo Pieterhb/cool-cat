@@ -2005,7 +2005,7 @@
                                 <div id="recapDepositSubtext" style="font-size: 0.8rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
                             </div>
                         </div>
-                        <!-- Per-stay cards (each with breakfast section) rendered by updateStep2Recap() -->
+                        <!-- Per-stay cards rendered by updateStep2Recap() -->
                         <div id="recapStaysList" style="display: flex; flex-direction: column; gap: 0;"></div>
                         <!-- Edit / Back button -->
                         <div style="margin-top: 0.75rem; text-align: right;">
@@ -2067,7 +2067,7 @@
                                 <label class="form-label" for="guestSpecialRequests">
                                     Special Requests / Dietary Needs (Optional)
                                 </label>
-                                <textarea id="guestSpecialRequests" class="form-textarea" rows="2" placeholder="e.g. Twin bed setup, anniversary trip, vegetarian breakfast..."></textarea>
+                                <textarea id="guestSpecialRequests" class="form-textarea" rows="2" placeholder="e.g. Twin bed setup, anniversary trip, early check-in..."></textarea>
                             </div>
 
                         </div>
@@ -2370,7 +2370,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>Cool Cat Holiday Accommodation</h3>
-                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                    <p>Your premium holiday accommodation in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
                 </div>
                 <div class="footer-col">
                     <h3>Contact Us</h3>
@@ -2548,9 +2548,7 @@
         let calculatedDepositDue = 0;
         let calculatedBalanceDue = 0;
         let totalNightsCount = 0;
-        let includeBreakfast = false;
         let selectedGuestCount = 0;
-        let selectedBreakfastCount = 0;
         let userManuallyChangedGuestCount = false;
         let activeReferralCode = '';
 
@@ -3541,8 +3539,6 @@
                 discountSavings: (originalSubtotal - subtotal),
                 maxGuests: stayMaxGuests,
                 guestCount: stayGuestCount,
-                includeBreakfast: false,
-                breakfastCount: stayGuestCount
             };
 
             selectedStays.push(newStay);
@@ -3739,14 +3735,7 @@
                 nightsBadge.style.background = '#DCFCE7';
             }
 
-            // Pricing calculation using per-stay breakfast data
-            let totalBreakfastCost = 0;
-            selectedStays.forEach(stay => {
-                if (stay.includeBreakfast && stay.breakfastCount > 0) {
-                    totalBreakfastCost += stay.breakfastCount * stay.nights * 120;
-                }
-            });
-            let grandTotal = staysSubtotal + totalBreakfastCost;
+            let grandTotal = staysSubtotal;
 
             let breakdownHtml = '';
             if (totalPackageSavings > 0) {
@@ -3773,14 +3762,7 @@
                 `;
             }
 
-            if (totalBreakfastCost > 0) {
-                breakdownHtml += `
-                    <li style="color: #166534; font-weight: 600;">
-                        <span>🍳 Breakfast Packages (all stays)</span>
-                        <span>+R${totalBreakfastCost.toLocaleString()}</span>
-                    </li>
-                `;
-            }
+
 
             if (activeReferralCode) {
                 const discountAmount = Math.round(grandTotal * 0.05);
@@ -3917,14 +3899,6 @@
             return selectedGuestCount;
         }
 
-        function getCurrentBreakfastGuests() {
-            const totalG = getCurrentGuests();
-            if (!selectedBreakfastCount || selectedBreakfastCount > totalG) {
-                selectedBreakfastCount = totalG;
-            }
-            return selectedBreakfastCount;
-        }
-
         function handleSidebarGuestCountChange() {
             const select = document.getElementById('sidebarGuestCount');
             if (select && select.value) {
@@ -3932,22 +3906,6 @@
                 userManuallyChangedGuestCount = true;
                 updateSummarySidebar();
             }
-        }
-
-        function toggleStayBreakfast(stayId) {
-            // Temporarily deactivated: breakfast packages currently not offered
-            return;
-        }
-
-        function handleStayBreakfastCountChange(stayId) {
-            const stay = selectedStays.find(s => s.id === stayId);
-            if (!stay) return;
-            const sel = document.getElementById('bfCount_' + stayId);
-            if (sel) {
-                stay.breakfastCount = parseInt(sel.value) || 1;
-            }
-            updateStep2Recap();
-            updateSummarySidebar();
         }
 
         function updateStep2Recap() {
@@ -3961,25 +3919,10 @@
 
             recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
 
-            // Build per-stay cards with individual breakfast toggle + guest count
+            // Build per-stay cards with room details + guest count
             if (recapStayCardsContainer) {
                 let cardsHtml = '';
                 selectedStays.forEach((s, idx) => {
-                    const stayBfTotal = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
-                    const stayTotalWithBf = s.subtotal + stayBfTotal;
-
-                    // Build breakfast guest count options
-                    let bfOptions = '';
-                    for (let i = 1; i <= s.guestCount; i++) {
-                        const label = i === s.guestCount
-                            ? `${i} Person${i > 1 ? 's' : ''} (All ${s.guestCount} guests)`
-                            : `${i} Person${i > 1 ? 's' : ''}`;
-                        const sel = (i === (s.breakfastCount || s.guestCount)) ? 'selected' : '';
-                        bfOptions += `<option value="${i}" ${sel}>${label}</option>`;
-                    }
-
-                    const bfVisible = s.includeBreakfast ? 'flex' : 'none';
-
                     cardsHtml += `
                         <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem;">
                             <!-- Stay header -->
@@ -3993,47 +3936,14 @@
                             <div style="font-size: 0.81rem; color: #0284C7; font-weight: 600; margin-bottom: 0.3rem;">
                                 👥 ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} arriving (max ${s.maxGuests})
                             </div>
-                            <div style="font-size: 0.84rem; color: #1E293B; font-weight: 700; margin-bottom: 0.5rem;">
-                                🏨 Room Cost: R${s.subtotal.toLocaleString()} ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; margin-left: 6px; border: 1px solid #86EFAC;">${s.pkgDiscount}% Discount Applied</span>` : ''}
-                            </div>
-
-                            <!-- Breakfast toggle for this stay (Temporarily Deactivated) -->
-                            <div style="display: none; background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem; opacity: 0.75;">
-                                <label style="display: flex; align-items: flex-start; gap: 0.55rem; cursor: not-allowed; margin: 0;">
-                                    <input type="checkbox" id="bfChk_${s.id}" disabled style="margin-top: 3px; flex-shrink: 0; cursor: not-allowed;">
-                                    <div>
-                                        <strong style="font-size: 0.88rem; color: #1E293B;">🍳 Add Daily Breakfast Package</strong><br>
-                                        <span style="font-size: 0.78rem; color: #334155;">Farm-fresh breakfast (+R120 per guest / night) &mdash; Estimated for ${s.guestCount} guest${s.guestCount > 1 ? 's' : ''}: R${(s.guestCount * s.nights * 120).toLocaleString()} total</span>
-                                    </div>
-                                </label>
-
-                                <!-- Breakfast guest count selector (visible when checked) -->
-                                <div id="bfBox_${s.id}" style="display: ${bfVisible}; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px dashed #CBD5E1;">
-                                    <label for="bfCount_${s.id}" style="font-size: 0.82rem; font-weight: 700; color: #1E293B; margin: 0; white-space: nowrap;">
-                                        How many guests want breakfast?
-                                    </label>
-                                    <select id="bfCount_${s.id}" style="padding: 0.35rem 0.55rem; border: 1.5px solid #0F52BA; border-radius: 7px; font-size: 0.84rem; font-weight: 700; min-width: 130px;" onchange="handleStayBreakfastCountChange('${s.id}')">
-                                        ${bfOptions}
-                                    </select>
-                                </div>
-
-                                ${s.includeBreakfast ? `<div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-top: 0.4rem;">✓ Breakfast: ${s.breakfastCount} × ${s.nights}N × R120 = <strong>+R${stayBfTotal.toLocaleString()}</strong></div>` : ''}
-                            </div>
-
-                            <!-- Stay total including breakfast -->
-                            <div style="text-align: right; font-size: 0.9rem; font-weight: 800; color: #0F52BA; margin-top: 0.5rem;">
-                                Stay Total: R${stayTotalWithBf.toLocaleString()}
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px dashed #CBD5E1;">
+                                <span style="font-size: 0.84rem; color: #64748B;">Room Rate:</span>
+                                <strong style="font-size: 0.95rem; color: #0F52BA;">R${s.subtotal.toLocaleString()} ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; margin-left: 6px; border: 1px solid #86EFAC;">${s.pkgDiscount}% Package Discount</span>` : ''}</strong>
                             </div>
                         </div>
                     `;
                 });
                 recapStayCardsContainer.innerHTML = cardsHtml;
-
-                // After rendering HTML, show/hide breakfast selectors correctly
-                selectedStays.forEach(s => {
-                    const bfBox = document.getElementById('bfBox_' + s.id);
-                    if (bfBox) bfBox.style.display = s.includeBreakfast ? 'flex' : 'none';
-                });
             }
 
             if (recapTotalAmount) {
@@ -4316,6 +4226,12 @@
                 return;
             }
 
+            const submitBtn = document.getElementById('btnPaystackSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>🔒</span> Initializing Payment Gateway...';
+            }
+
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
@@ -4343,9 +4259,7 @@
                 checkOutStr: s.checkOutStr || s.checkOut,
                 nights: s.nights,
                 guestCount: s.guestCount,
-                subtotal: s.subtotal,
-                includeBreakfast: !!s.includeBreakfast,
-                breakfastCount: s.breakfastCount || 0
+                subtotal: s.subtotal
             })));
 
             if (typeof PaystackPop !== 'undefined') {
@@ -4380,6 +4294,11 @@
                         completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
                     },
                     onClose: function() {
+                        const submitBtn = document.getElementById('btnPaystackSubmit');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                        }
                         showToast("Payment window closed.");
                     }
                 });
@@ -4415,10 +4334,6 @@
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests, txRef = '') {
             const cleanRef = formatRefId(refNumber, selectedStays[0]?.roomId);
 
-            // Compile per-stay totals from per-stay breakfast data
-            const totalBreakfastCost = selectedStays.reduce((sum, s) => {
-                return sum + (s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0);
-            }, 0);
             const totalGuestCount = selectedStays.reduce((max, s) => Math.max(max, s.guestCount), 0);
 
             const isSingleStay = selectedStays.length === 1;
@@ -4441,10 +4356,9 @@
                 roomName: primaryRoomName,
                 stays: selectedStays,
                 totalStays: selectedStays.length,
+                nights: totalNightsCount,
                 totalNights: totalNightsCount,
                 guestCount: totalGuestCount,
-                includeBreakfast: selectedStays.some(s => s.includeBreakfast),
-                breakfastCost: totalBreakfastCost,
                 totalAmount: calculatedGrandTotal,
                 amountPaid: calculatedDepositDue,
                 balanceDue: calculatedBalanceDue,
@@ -4526,23 +4440,14 @@
                 document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
             }
 
-            // Render list of reserved stays in receipt – per-stay with breakfast
+            // Render list of reserved stays in receipt
             const confStaysList = document.getElementById('confStaysList');
             let confHtml = selectedStays.map(s => {
-                const bfCost = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
-                const stayTotal = s.subtotal + bfCost;
-                let bfLine = '';
-                if (s.includeBreakfast) {
-                    bfLine = `<div style="margin-top: 0.3rem; padding: 0.3rem 0.5rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 6px; font-size: 0.82rem; color: #166534;">
-                        🍳 Breakfast: ${s.breakfastCount} of ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} × ${s.nights}N @ R120 = <strong>+R${bfCost.toLocaleString()}</strong>
-                    </div>`;
-                }
                 return `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem; margin-bottom: 0.5rem;">
                     <strong>${s.roomIcon} ${s.roomName}</strong><br>
                     <span>📅 Check-in: ${formatFriendlyDate(s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
                     <span>👥 ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} arriving</span><br>
-                    ${bfLine}
-                    <div style="font-weight: 700; color: #0F52BA; margin-top: 0.3rem;">Stay Total: R${stayTotal.toLocaleString()}</div>
+                    <div style="font-weight: 700; color: #0F52BA; margin-top: 0.3rem;">Stay Rate: R${s.subtotal.toLocaleString()}</div>
                 </div>`;
             }).join('');
 
@@ -4969,9 +4874,7 @@
             selectedGuestCount = roomMax;
             userManuallyChangedGuestCount = false;
 
-            if (selectedBreakfastCount > selectedGuestCount) {
-                selectedBreakfastCount = selectedGuestCount;
-            }
+
 
             renderCalendar();
             updateSummarySidebar();

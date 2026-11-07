@@ -63,7 +63,7 @@ def generate():
         page_content = page_content.replace('{{faq_question}}', loc.get('faq_question', f"How far is Cool-Cat from {loc['landmark']}?"))
         page_content = page_content.replace('{{faq_answer}}', loc.get('faq_answer', f"{loc['landmark']} is located approximately {loc['distance_km']} from Cool-Cat in Strand."))
         page_content = page_content.replace('{{related_html}}', related_html)
-        page_content = page_content.replace('{{image_url}}', loc.get('image_url', '../1. Dining Breakfast.jpg'))
+        page_content = page_content.replace('{{image_url}}', loc.get('image_url', '../1. Ocean.jpg'))
         page_content = page_content.replace('{{image_alt}}', loc.get('image_alt', f"{loc['landmark']} – near Cool-Cat Strand B&B"))
         
         # Update CSS path
@@ -164,7 +164,7 @@ def generate():
           "url": "https://cool-cat.co.za/explore",
           "publisher": {{
             "@type": "LodgingBusiness",
-            "@id": "https://cool-cat.co.za/#bedandbreakfast",
+            "@id": "https://cool-cat.co.za/#lodging",
             "name": "Cool-Cat",
             "url": "https://cool-cat.co.za/"
           }}
@@ -287,7 +287,7 @@ def generate():
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>Cool Cat Holiday Accommodation</h3>
-                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                    <p>Your premium holiday accommodation in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
                 </div>
                 <div class="footer-col">
                     <h3>Contact Us</h3>

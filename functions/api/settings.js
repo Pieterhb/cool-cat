@@ -181,7 +181,8 @@ export async function onRequestPost(context) {
             'event_surge_name',
             'event_king_start', 'event_king_end', 'event_santori_start', 'event_santori_end',
             'event_mykonos_start', 'event_mykonos_end', 'event_deluxe_start', 'event_deluxe_end',
-            'paystack_public_key'
+            'paystack_public_key',
+            'wifi_network', 'wifi_password'
         ];
 
         const update = {};

@@ -330,6 +330,16 @@ async function dispatchBookingEmails(booking, env) {
     const resendApiKey = (env && env.RESEND_API_KEY) ? env.RESEND_API_KEY : null;
     if (!resendApiKey) return { sent: false, note: "No RESEND_API_KEY configured" };
 
+    let wifiNet = (env && env.WIFI_NETWORK) ? env.WIFI_NETWORK : 'Gouws';
+    let wifiPass = (env && env.WIFI_PASSWORD) ? env.WIFI_PASSWORD : 'Available upon check-in';
+    if (env && env.COOLCAT_KV) {
+        try {
+            const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+            if (cfg && cfg.wifi_network) wifiNet = cfg.wifi_network;
+            if (cfg && cfg.wifi_password) wifiPass = cfg.wifi_password;
+        } catch(e) {}
+    }
+
     const cleanRef = (booking.id || '').replace(/^#/, '');
     const staysRowsHtml = (booking.stays && Array.isArray(booking.stays)) ? booking.stays.map(s => `
         <div style="padding: 8px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px;">
@@ -364,7 +374,7 @@ async function dispatchBookingEmails(booking, env) {
           </div>
           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin: 0 0 10px; color: #166534; font-size: 16px;">🏠 Check-In & Access Details:</h3>
-            <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> | Pass: <code>004eda35aef</code></p>
+            <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>${wifiNet}</code> | Pass: <code>${wifiPass}</code></p>
             <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool-Cat, Strand, Western Cape</p>
             <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
             <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (072 889 4840)</p>

@@ -4104,7 +4104,7 @@
                     <div class="ops-item">
                         <div>
                             <strong>${b.guestName}</strong> (${b.roomName || b.roomId})<br>
-                            <span style="font-size: 0.78rem; color: #334155;">Arrival: ${b.arrivalTime || '14:00 – 16:00'} &bull; ${b.nights || 1}N &bull; ${b.guestCount || 2} Guests${b.includeBreakfast && b.breakfastCount > 0 ? ` &bull; 🍳 ${b.breakfastCount} Breakfasts` : ''}</span>
+                            <span style="font-size: 0.78rem; color: #334155;">Arrival: ${b.arrivalTime || '14:00 – 16:00'} &bull; ${b.nights || 1}N &bull; ${b.guestCount || 2} Guests</span>
                         </div>
                         <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
                             ${b.balanceDue > 0 ? `<span style="color: #991B1B; font-weight: 700; font-size: 0.82rem;">Collect R${Number(b.balanceDue).toLocaleString()}</span>` : `<span style="color: #166534; font-weight: 700; font-size: 0.82rem;">Paid in Full ✓</span>`}
@@ -4222,14 +4222,13 @@
                         statusLabel = 'NOT PAID';
                     }
 
-                    const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
-                    const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
+                                        const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
 
                     const rRow = document.createElement('tr');
                     rRow.innerHTML = `
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
                         <td>${b.guestName}</td>
-                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}${staysTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${staysTag}</td>
                         <td>
                             <span style="font-weight: 600; color: #1E293B; white-space: nowrap;">${b.checkIn}${b.checkOut ? ` &rarr; ${b.checkOut}` : ''}</span>
                             <span style="display: inline-block; font-size: 0.75rem; color: #334155; background: #F1F5F9; padding: 1px 5px; border-radius: 4px; margin-left: 3px; font-weight: 600;">${b.nights || 1}N</span>
@@ -4316,8 +4315,7 @@
                         statusLabel = 'NOT PAID';
                     }
 
-                    const breakfastTag = (b.includeBreakfast && b.breakfastCount > 0) ? `<span style="display:inline-block; font-size: 0.72rem; background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-top: 2px;">🍳 ${b.breakfastCount} Bkfst</span>` : '';
-                    const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
+                                        const staysTag = (b.stays && Array.isArray(b.stays) && b.stays.length > 1) ? `<div style="font-size: 0.72rem; color: #4338CA; background: #EEF2FF; border-radius: 4px; padding: 2px 5px; margin-top: 2px; max-width: 220px;" title="${b.stays.map(s => `${s.roomName || s.roomId}: ${s.checkInStr || s.checkIn} to ${s.checkOutStr || s.checkOut}`).join(' | ')}">🗓️ ${b.stays.length} Stays Reserved</div>` : '';
 
                     const isCancelled = (b.status === 'cancelled');
                     const mRow = document.createElement('tr');
@@ -4341,7 +4339,7 @@
                         <td><strong>#${formatRefId(b.id, b.roomId)}</strong></td>
                         <td>${b.guestName}</td>
                         <td><a href="tel:${b.guestPhone}" style="color: var(--adm-primary); font-weight: 600;">${b.guestPhone || '-'}</a></td>
-                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${breakfastTag}${staysTag}</td>
+                        <td>${shortRoomName(b.roomName || b.roomId)}<br>${staysTag}</td>
                         <td>${b.checkIn}</td>
                         <td>${b.checkOut}</td>
                         <td>${b.nights || 1}</td>

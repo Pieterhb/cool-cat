@@ -1,3 +1,7 @@
+# Default Catch-all Rule for HTML Pages
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 # HTML / Page Routes: Ensure book and admin routes always fetch fresh
 /book
   Cache-Control: no-cache, no-store, must-revalidate
@@ -7,8 +11,6 @@
   Cache-Control: no-cache, no-store, must-revalidate
 /admin.html
   Cache-Control: no-cache, no-store, must-revalidate
-/*
-  Cache-Control: public, max-age=0, must-revalidate
 
 # Static Assets: Long-term immutable caching for performance and Core Web Vitals
 /*.css

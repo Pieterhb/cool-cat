@@ -5,7 +5,7 @@
     "landmark": "Busamed Paardevlei Private Hospital",
     "distance_km": "4.2 km",
     "driving_time": "6 minutes",
-    "travel_tip": "Ideal for medical visitors needing a peaceful, quiet night's rest with full continental breakfast included.",
+    "travel_tip": "Ideal for medical visitors needing a peaceful, quiet night's rest with comfortable self-catering amenities and peaceful surroundings.",
     "intro_text": "Need comfortable, quiet lodging close to Busamed Paardevlei Hospital? Cool-Cat offers restful rooms, secure parking, and warm hospitality just a 6-minute drive away.",
     "category": "Medical Facilities",
     "route_directions": "Head northeast via Broadway Boulevard (R44) and turn into the Paardevlei Precinct on Gardner Williams Avenue.",
@@ -13,7 +13,7 @@
       "Top-tier medical facility offering cardiology, oncology, orthopaedics, and robotic surgery.",
       "Only 6 minutes (4.2 km) away, avoiding heavy highway commuter traffic.",
       "Quiet, stress-free residential coastal setting just 250m from Strand Beach.",
-      "Complimentary daily Continental Breakfast with fresh fruit, yoghurt, and hot beverages."
+      "Complimentary Coffee & Tea Station with comfortable suites and high-speed Wi-Fi."
     ],
     "recommended_room": "Santori Double Room or King Arthur Room",
     "best_for": "Patients' families, visiting medical specialists, and recovery stopovers",
@@ -34,7 +34,7 @@
     "landmark": "Strand Golf Club",
     "distance_km": "2.1 km",
     "driving_time": "4 minutes",
-    "travel_tip": "Store your golf bags safely in our secure facility and enjoy an early Sunrise Breakfast before teeing off.",
+    "travel_tip": "Store your golf bags safely in our secure facility and enjoy a fresh morning coffee before teeing off.",
     "intro_text": "Planning a golf weekend in the Helderberg area? Cool-Cat is located just 4 minutes from Strand Golf Club, offering premium comfort within 250m of Strand Beach.",
     "category": "Golf Courses",
     "route_directions": "Drive along Beach Road towards Beach Road/Golf Club Rd, turning right into the clubhouse entrance.",
@@ -42,7 +42,7 @@
       "Championship 18-hole, par 72 coastal parkland golf course with sea breezes.",
       "Pro shop, driving range, and clubhouse restaurant overlooking the greens.",
       "Under 5 minutes from Cool-Cat with secure off-street vehicle and gear parking.",
-      "Nutritious breakfast options to fuel a full morning on the fairways."
+      "Comfortable beds and tranquil surroundings to rest before a morning on the fairways."
     ],
     "recommended_room": "King Arthur Room (Luxury King Bed with garden view)",
     "best_for": "Golf enthusiasts, weekend sports travelers, and couples",
@@ -179,7 +179,7 @@
     "landmark": "Helderberg Nature Reserve",
     "distance_km": "10.0 km",
     "driving_time": "16 minutes",
-    "travel_tip": "Pack comfortable hiking shoes and enjoy a hearty breakfast with us before exploring the stunning mountain trails.",
+    "travel_tip": "Pack comfortable hiking shoes and enjoy a relaxing morning before exploring the stunning mountain trails.",
     "intro_text": "Nature enthusiasts love staying at Cool-Cat when visiting the Helderberg Nature Reserve. Enjoy the best of both worlds: majestic mountain hikes by day and ocean sounds by night.",
     "category": "Nature & Hiking",
     "route_directions": "Take Broadway Blvd into Somerset West, follow Main Road east, and ascend Verster Avenue up the slopes of the Helderberg.",
@@ -295,7 +295,7 @@
     "landmark": "Somerset West Business District",
     "distance_km": "6.5 km",
     "driving_time": "10 minutes",
-    "travel_tip": "We offer fast, reliable Wi-Fi and early breakfasts for corporate travelers needing a productive start to the day.",
+    "travel_tip": "We offer fast, reliable Wi-Fi and tranquil workspaces for corporate travelers needing a productive start to the day.",
     "intro_text": "Traveling for work? Cool-Cat provides peaceful, premium accommodation just minutes from the Somerset West Business District, offering a tranquil retreat after a busy day.",
     "category": "Shopping & Essentials",
     "route_directions": "Drive northeast via Broadway Boulevard (R44) or Main Road directly into Somerset West CBD.",
@@ -303,7 +303,7 @@
       "High-speed fiber Wi-Fi throughout all rooms and shared workspaces.",
       "Desk space and comfortable seating for laptops and virtual calls.",
       "Quiet, tranquil residential setting away from busy downtown noise.",
-      "Flexible breakfast service and same-day laundry facilities available."
+      "Flexible check-in options and tranquil workspaces available."
     ],
     "recommended_room": "Santori Double Room (Cozy, quiet, and fully equipped)",
     "best_for": "Corporate executives, solo consultants, and government delegates",
@@ -448,7 +448,7 @@
       "Massive white coastal sand dunes ideal for sandboarding and dramatic ocean photography.",
       "Popular surf casting and shoreline fishing destination for local anglers.",
       "Convenient 15-minute coastal drive to Cool-Cat's safe, gated facilities.",
-      "Warm hot showers, comfortable beds, and full breakfast to start your morning."
+      "Warm hot showers, comfortable beds, and coffee facilities to start your morning."
     ],
     "recommended_room": "Santori Double Room or King Arthur Room",
     "best_for": "Anglers, sandboarders, landscape photographers, and explorers",
@@ -534,13 +534,13 @@
     "highlights": [
       "Convenient 10-minute drive to Helderberg Hospital and nearby specialist medical suites.",
       "Calm, quiet seaside residential area promoting rest and recovery.",
-      "Complimentary daily Continental Breakfast with fresh fruit, yoghurt, and hot tea/coffee.",
+      "Complimentary Coffee & Tea Station with comfortable suites and fast Wi-Fi.",
       "Free high-speed Wi-Fi to keep in touch with loved ones and colleagues."
     ],
     "recommended_room": "Santori Double Room or King Arthur Room",
     "best_for": "Medical visitors, nurses, doctors, and patient family members",
     "faq_question": "Is Cool-Cat accessible for guests visiting hospitals early in the morning?",
-    "faq_answer": "Yes, we provide flexible arrangements and early Continental Breakfast options upon request for medical visitors.",
+    "faq_answer": "Yes, we provide flexible check-in arrangements and quiet, comfortable rooms upon request for medical visitors.",
     "related_slugs": [
       "busamed-paardevlei-hospital",
       "somerset-west-business-district",
@@ -585,7 +585,7 @@
     "landmark": "Clarence Drive Scenic Route",
     "distance_km": "9.0 km",
     "driving_time": "12 minutes (to start of route)",
-    "travel_tip": "Regarded as one of the most beautiful coastal drives in the world! Start your road trip fresh after our Signature Breakfast.",
+    "travel_tip": "Regarded as one of the most beautiful coastal drives in the world! Start your road trip fresh and well-rested from Cool-Cat.",
     "intro_text": "Embarking on the famous Clarence Drive? Cool-Cat in Strand is the perfect starting point for your coastal road trip, offering a premium night's rest before you hit the road.",
     "category": "Nature & Hiking",
     "route_directions": "Follow Beach Road south through Gordon's Bay; past the harbor, the road becomes the legendary R44 Clarence Drive.",
@@ -650,7 +650,7 @@
     "highlights": [
       "Secure off-street parking and locked indoor bicycle storage.",
       "Immediate access to world-class coastal cycling routes including Clarence Drive and R44.",
-      "Nutritious, energizing breakfast options tailored for athletic performance.",
+      "Secure bicycle storage and peaceful rooms tailored for athletic rest and performance.",
       "Deep relaxation massage chair available at Cool-Cat to assist muscle recovery."
     ],
     "recommended_room": "King Arthur Room (Luxury king bed for athletic rest)",
@@ -709,7 +709,7 @@
       "UNESCO Biosphere Reserve with the highest concentration of floral biodiversity on the planet.",
       "Palmiet River white-water tubing, swimming holes, and tranquil fynbos hiking trails.",
       "Spectacular approach via the coastal cliffs of Clarence Drive.",
-      "Return to Cool-Cat for hot showers, comfortable beds, and full breakfast."
+      "Return to Cool-Cat for hot showers, comfortable beds, and relaxing coastal hospitality."
     ],
     "recommended_room": "Cool-Cat Deluxe Suite or King Arthur Room",
     "best_for": "Botanists, eco-tourists, serious hikers, and nature lovers",
