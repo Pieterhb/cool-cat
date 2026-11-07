@@ -1284,6 +1284,7 @@
         }
 
         .test-sandbox-card {
+            display: none; /* Hidden by default; dynamically shown only if Paystack test public key (pk_test_) is active */
             background: #FEF3C7;
             border: 1px solid #FCD34D;
             border-radius: 12px;
@@ -2012,8 +2013,8 @@
                         </div>
                     </div>
 
-                    <!-- Test Mode Helper -->
-                    <div class="test-sandbox-card">
+                    <!-- Test Mode Helper (Hidden by default; dynamically shown only if pk_test_ is detected) -->
+                    <div class="test-sandbox-card" id="paystackTestModeBanner">
                         <strong>🧪 Paystack Test Mode Active:</strong> You can test this booking without real money. Use Test Card: <span class="test-card-tag">4084 0840 8408 4084</span> | Exp: <span class="test-card-tag">12/28</span> | CVV: <span class="test-card-tag">408</span>
                     </div>
 
@@ -2500,6 +2501,21 @@
                     if (saved.we !== undefined && Number(saved.we) > 0) room.baseWeekend  = Number(saved.we);
                 }
             });
+            updatePaystackModeUI();
+        }
+
+        function updatePaystackModeUI() {
+            const banner = document.getElementById('paystackTestModeBanner');
+            if (!banner) return;
+            const pubKey = (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? String(SITE_CONFIG.paystackPublicKey).trim() : '';
+            const isLive = pubKey.startsWith('pk_live_') || (SITE_CONFIG && SITE_CONFIG.paystackMode === 'live');
+            if (isLive) {
+                banner.style.display = 'none';
+            } else if (pubKey.startsWith('pk_test_') || (SITE_CONFIG && SITE_CONFIG.paystackMode === 'test')) {
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
         }
 
         // Apply any cached rate overrides from localStorage immediately
@@ -2572,6 +2588,7 @@
                         if (!pendingCheckIn) renderCalendar();
                         updateSummarySidebar();
                         updateBannerRoomInfo();
+                        updatePaystackModeUI();
                     }
                 }
             } catch (e) {
@@ -5097,6 +5114,7 @@
             switchRoom(initialRoom);
             loadLiveBookings();
             loadSiteSettings();
+            updatePaystackModeUI();
 
             // Auto-detect referral link from URL
             const ref = urlParams.get('ref') || urlParams.get('promo');

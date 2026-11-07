@@ -1396,6 +1396,233 @@
             border: 1px solid #FCD34D;
             color: #92400E;
         }
+    
+        /* ========================================================= */
+        /* SECURE ADMIN LOGIN GATE STYLES (Owner & Marketer Only)    */
+        /* ========================================================= */
+        .admin-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #07111E 0%, #0A192F 50%, #0D213F 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            z-index: 999999;
+            overflow-y: auto;
+        }
+
+        .admin-login-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.4rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: loginCardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes loginCardFadeIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .admin-login-brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .admin-login-brand img {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 3px solid #0F52BA;
+            box-shadow: 0 4px 15px rgba(15, 82, 186, 0.25);
+            margin-bottom: 0.8rem;
+        }
+
+        .admin-login-brand h2 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0A192F;
+            margin: 0 0 0.35rem;
+            letter-spacing: -0.02em;
+        }
+
+        .admin-login-brand p {
+            color: #64748B;
+            font-size: 0.86rem;
+            margin: 0;
+        }
+
+        .login-field {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .login-field label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .login-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.75rem 0.95rem;
+            font-size: 0.95rem;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 10px;
+            background: #F8FAFC;
+            color: #0F172A;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #0F52BA;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(15, 82, 186, 0.15);
+        }
+
+        .btn-toggle-pwd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.05rem;
+            color: #64748B;
+            padding: 4px;
+        }
+
+        .login-hint {
+            display: block;
+            font-size: 0.75rem;
+            color: #64748B;
+            margin-top: 0.35rem;
+            line-height: 1.4;
+        }
+
+        .login-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.4rem;
+            font-size: 0.83rem;
+        }
+
+        .login-remember {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .login-remember input {
+            cursor: pointer;
+            accent-color: #0F52BA;
+        }
+
+        .login-error-badge {
+            background: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            color: #991B1B;
+            border-radius: 8px;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: shakeError 0.35s ease;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .btn-login-submit {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #0F52BA 0%, #0A3A85 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(15, 82, 186, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login-submit:hover {
+            background: linear-gradient(135deg, #0D47A1 0%, #082D6A 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(15, 82, 186, 0.45);
+        }
+
+        .login-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 1rem;
+        }
+
+        .login-back-link {
+            font-size: 0.82rem;
+            color: #64748B;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .login-back-link:hover {
+            color: #0F52BA;
+            text-decoration: underline;
+        }
+
+        .sidebar-role-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            margin-top: 0.35rem;
+            letter-spacing: 0.03em;
+        }
+        .sidebar-role-pill.role-owner {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FCD34D;
+        }
+        .sidebar-role-pill.role-marketer {
+            background: #EDE9FE;
+            color: #6B21A8;
+            border: 1px solid #DDD6FE;
+        }
+
     </style>
 </head>
 <body>
@@ -1403,13 +1630,68 @@
     <!-- ========================================================= -->
     <!-- ADMIN DASHBOARD SHELL                                     -->
     <!-- ========================================================= -->
-    <div class="admin-layout" id="adminDashboard">
+    <!-- ========================================================= -->
+    <!-- SECURE ADMIN LOGIN GATE (Owner & Marketer Only)           -->
+    <!-- ========================================================= -->
+    <div id="adminLoginGate" class="admin-login-overlay" style="display: flex;">
+        <div class="admin-login-card">
+            <div class="admin-login-brand">
+                <img src="Logo.png?v=3" alt="Cool Cat Logo">
+                <h2>Cool-Cat Management Portal</h2>
+                <p>Restricted access for approved personnel only.</p>
+            </div>
+            
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div class="login-field">
+                    <label for="adminAccountSelect">Authorized Account</label>
+                    <select id="adminAccountSelect" class="login-input" required onchange="handleAccountChange(this.value)">
+                        <option value="owner">👑 Owner / Host (Michele &amp; Corrie)</option>
+                        <option value="marketer">📈 Marketing Partner</option>
+                    </select>
+                </div>
+
+                <div class="login-field">
+                    <label for="adminPasswordInput" id="adminPasswordLabel">Security Passkey / Admin Secret Key</label>
+                    <div style="position: relative;">
+                        <input type="password" id="adminPasswordInput" class="login-input" placeholder="Enter security passkey" required autocomplete="current-password" autofocus>
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()" title="Show/Hide passkey">👁️</button>
+                    </div>
+                    <span class="login-hint" id="loginHintText">Enter your assigned administration passkey.</span>
+                </div>
+
+                <div class="login-options">
+                    <label class="login-remember">
+                        <input type="checkbox" id="adminRememberMe" checked>
+                        <span>Remember me on this secure device</span>
+                    </label>
+                </div>
+
+                <div id="loginErrorMessage" class="login-error-badge" style="display: none;"></div>
+
+                <button type="submit" class="btn-login-submit" id="loginSubmitBtn">
+                    <span>🔒</span> Sign In to Portal
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <a href="/" class="login-back-link">← Return to Cool-Cat Public Website</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ADMIN DASHBOARD SHELL (Hidden until authenticated)        -->
+    <!-- ========================================================= -->
+    <div class="admin-layout" id="adminDashboard" style="display: none;">
 
         <!-- Left Sidebar Navigation -->
         <aside class="admin-sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <img src="Logo.png?v=3" alt="Cool Cat Logo">
-                <span style="font-size: 0.95rem; font-weight: 800;">COOL CAT ADMIN</span>
+            <div class="sidebar-brand" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <img src="Logo.png?v=3" alt="Cool Cat Logo">
+                    <span style="font-size: 0.95rem; font-weight: 800;">COOL CAT ADMIN</span>
+                </div>
+                <span id="sidebarRolePill" class="sidebar-role-pill role-owner">👑 Owner / Host</span>
             </div>
 
             <ul class="sidebar-menu">
@@ -1443,8 +1725,9 @@
             </ul>
 
             <div style="padding: 1rem 1.4rem; border-top: 1px solid rgba(255,255,255,0.08);">
-                <button onclick="adminLogout()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #334155; padding: 0.45rem 0.8rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease;">
-                    <span>🚪</span> Log Out
+                <div id="sidebarUserEmail" style="font-size: 0.76rem; color: #94A3B8; margin-bottom: 0.5rem; text-align: center; word-break: break-all;">Account: Owner / Host</div>
+                <button onclick="adminLogout()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #E2E8F0; padding: 0.45rem 0.8rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease;">
+                    <span>🚪</span> Sign Out
                 </button>
             </div>
         </aside>
@@ -3057,23 +3340,14 @@
     <!-- ========================================================= -->
     <script>
         // =========================================================
-        // SECURITY SHIELD: Admin Key & Global Request Interceptor
+        // SECURITY SHIELD: Role-Based Admin Auth & Request Interceptor
         // =========================================================
         function getAdminKey() {
-            let key = localStorage.getItem('coolcat_admin_key') || sessionStorage.getItem('coolcat_admin_key');
-            if (!key) {
-                key = prompt('🔒 Admin Access Required\nPlease enter your Admin API Key:');
-                if (key && key.trim()) {
-                    key = key.trim();
-                    try {
-                        localStorage.setItem('coolcat_admin_key', key);
-                        sessionStorage.setItem('coolcat_admin_key', key);
-                    } catch(e) {}
-                } else {
-                    key = '';
-                }
-            }
-            return key || '';
+            return sessionStorage.getItem('coolcat_admin_key') || localStorage.getItem('coolcat_admin_key') || '';
+        }
+
+        function getAdminRole() {
+            return sessionStorage.getItem('coolcat_admin_role') || localStorage.getItem('coolcat_admin_role') || 'owner';
         }
 
         // Automatic security header injector for all admin API requests
@@ -3083,22 +3357,160 @@
             const urlStr = typeof input === 'string' ? input : (input && input.url ? input.url : '');
             if (urlStr && (urlStr.includes('/api/bookings') || urlStr.includes('/api/settings'))) {
                 const key = getAdminKey();
-                if (!init.headers) {
-                    init.headers = {};
-                }
-                if (init.headers instanceof Headers) {
-                    if (!init.headers.has('Authorization')) init.headers.set('Authorization', 'Bearer ' + key);
-                    if (!init.headers.has('X-Admin-Key')) init.headers.set('X-Admin-Key', key);
-                } else if (Array.isArray(init.headers)) {
-                    init.headers.push(['Authorization', 'Bearer ' + key]);
-                    init.headers.push(['X-Admin-Key', key]);
-                } else {
-                    if (!init.headers['Authorization']) init.headers['Authorization'] = 'Bearer ' + key;
-                    if (!init.headers['X-Admin-Key']) init.headers['X-Admin-Key'] = key;
+                if (key) {
+                    if (!init.headers) {
+                        init.headers = {};
+                    }
+                    if (init.headers instanceof Headers) {
+                        if (!init.headers.has('Authorization')) init.headers.set('Authorization', 'Bearer ' + key);
+                        if (!init.headers.has('X-Admin-Key')) init.headers.set('X-Admin-Key', key);
+                    } else if (Array.isArray(init.headers)) {
+                        init.headers.push(['Authorization', 'Bearer ' + key]);
+                        init.headers.push(['X-Admin-Key', key]);
+                    } else {
+                        if (!init.headers['Authorization']) init.headers['Authorization'] = 'Bearer ' + key;
+                        if (!init.headers['X-Admin-Key']) init.headers['X-Admin-Key'] = key;
+                    }
                 }
             }
             return _nativeFetch.call(this, input, init);
         };
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('adminPasswordInput');
+            if (pwd) {
+                pwd.type = (pwd.type === 'password') ? 'text' : 'password';
+            }
+        }
+
+        function handleAccountChange(account) {
+            const label = document.getElementById('adminPasswordLabel');
+            const hint = document.getElementById('loginHintText');
+            if (account === 'marketer') {
+                if (label) label.textContent = 'Marketer Security Passkey';
+                if (hint) hint.textContent = 'Authorized access for Marketing Partner analytics & commission ledger.';
+            } else {
+                if (label) label.textContent = 'Security Passkey / Admin Secret Key';
+                if (hint) hint.textContent = 'Authorized access for Owner / Host property management.';
+            }
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const errBox = document.getElementById('loginErrorMessage');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            if (errBox) errBox.style.display = 'none';
+
+            const account = document.getElementById('adminAccountSelect').value;
+            const passkey = document.getElementById('adminPasswordInput').value.trim();
+            const rememberMe = document.getElementById('adminRememberMe').checked;
+
+            if (!passkey) {
+                if (errBox) {
+                    errBox.textContent = 'Please enter your security passkey.';
+                    errBox.style.display = 'flex';
+                }
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>⏳</span> Verifying Access...';
+            }
+
+            // Client & Server Passkey Verification
+            const validOwnerKeys = ['2026coolcat', 'coolcat2026'];
+            const validMarketerKeys = ['marketer2026', 'coolcat_mkt_2026', '2026coolcat'];
+
+            let isAuthorized = false;
+            if (account === 'owner') {
+                if (validOwnerKeys.includes(passkey)) isAuthorized = true;
+            } else if (account === 'marketer') {
+                if (validMarketerKeys.includes(passkey)) isAuthorized = true;
+            }
+
+            // Live server ping verification
+            try {
+                const testRes = await fetch('/api/bookings', {
+                    headers: {
+                        'Authorization': 'Bearer ' + passkey,
+                        'X-Admin-Key': passkey
+                    }
+                });
+                if (testRes.ok) {
+                    isAuthorized = true;
+                }
+            } catch(e) {
+                // If network offline but matched approved key, allow through
+            }
+
+            if (!isAuthorized) {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>🔒</span> Sign In to Portal';
+                }
+                if (errBox) {
+                    errBox.textContent = '⛔ Access Denied: Invalid security passkey for this account.';
+                    errBox.style.display = 'flex';
+                }
+                return;
+            }
+
+            // Authentication succeeded! Store session
+            try {
+                sessionStorage.setItem('coolcat_admin_logged_in', 'true');
+                sessionStorage.setItem('coolcat_admin_session', '1');
+                sessionStorage.setItem('coolcat_admin_key', passkey);
+                sessionStorage.setItem('coolcat_admin_role', account);
+
+                if (rememberMe) {
+                    localStorage.setItem('coolcat_admin_logged_in', 'true');
+                    localStorage.setItem('coolcat_admin_session', '1');
+                    localStorage.setItem('coolcat_admin_key', passkey);
+                    localStorage.setItem('coolcat_admin_role', account);
+                } else {
+                    localStorage.removeItem('coolcat_admin_logged_in');
+                    localStorage.removeItem('coolcat_admin_session');
+                    localStorage.removeItem('coolcat_admin_key');
+                    localStorage.removeItem('coolcat_admin_role');
+                }
+            } catch(e) {}
+
+            applyAdminRoleUI(account);
+
+            // Display dashboard & hide login gate
+            const gate = document.getElementById('adminLoginGate');
+            const dash = document.getElementById('adminDashboard');
+            if (gate) gate.style.display = 'none';
+            if (dash) dash.style.display = 'flex';
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>🔒</span> Sign In to Portal';
+            }
+
+            initDashboard();
+        }
+
+        function applyAdminRoleUI(role) {
+            role = role || getAdminRole();
+            const pill = document.getElementById('sidebarRolePill');
+            const emailEl = document.getElementById('sidebarUserEmail');
+
+            if (role === 'marketer') {
+                if (pill) {
+                    pill.className = 'sidebar-role-pill role-marketer';
+                    pill.textContent = '📈 Marketing Partner';
+                }
+                if (emailEl) emailEl.textContent = 'Account: Marketer (Affiliate)';
+            } else {
+                if (pill) {
+                    pill.className = 'sidebar-role-pill role-owner';
+                    pill.textContent = '👑 Owner / Host';
+                }
+                if (emailEl) emailEl.textContent = 'Account: Michele & Corrie (Owner)';
+            }
+        }
 
         // Utility: Format Date object to local YYYY-MM-DD string
         function formatDateStr(date) {
@@ -3129,19 +3541,32 @@
         // Recorded marketer commission payout batches – loaded from Cloudflare KV via /api/settings
         let ADMIN_MARKETER_PAYOUTS = [];
 
-        // Auto-initialize dashboard directly on page load
+        // Check authentication state on page load
         document.addEventListener('DOMContentLoaded', () => {
-            // Mark that admin has logged in – public pages read this to show the ADMIN button
-            try {
-                localStorage.setItem('coolcat_admin_logged_in', 'true');
-                sessionStorage.setItem('coolcat_admin_logged_in', 'true');
-                localStorage.setItem('coolcat_admin_session', '1');
-                sessionStorage.setItem('coolcat_admin_session', '1');
-            } catch(e) {}
-            initDashboard();
+            checkAdminAuth();
         });
 
-        // Admin Log Out – clears session flags and redirects
+        function checkAdminAuth() {
+            const key = getAdminKey();
+            const isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true' || localStorage.getItem('coolcat_admin_logged_in') === 'true');
+
+            const gate = document.getElementById('adminLoginGate');
+            const dash = document.getElementById('adminDashboard');
+
+            if (isLoggedIn && key) {
+                // Verified session active -> unhide dashboard
+                if (gate) gate.style.display = 'none';
+                if (dash) dash.style.display = 'flex';
+                applyAdminRoleUI();
+                initDashboard();
+            } else {
+                // Unauthenticated visitor -> enforce Login Gate, keep dashboard hidden
+                if (dash) dash.style.display = 'none';
+                if (gate) gate.style.display = 'flex';
+            }
+        }
+
+        // Admin Log Out – clears session flags and resets to Login Gate
         function adminLogout() {
             try {
                 localStorage.removeItem('coolcat_admin_logged_in');
@@ -3150,8 +3575,16 @@
                 sessionStorage.removeItem('coolcat_admin_session');
                 localStorage.removeItem('coolcat_admin_key');
                 sessionStorage.removeItem('coolcat_admin_key');
+                localStorage.removeItem('coolcat_admin_role');
+                sessionStorage.removeItem('coolcat_admin_role');
+                localStorage.removeItem('coolcat_marketer_payouts');
             } catch(e) {}
-            window.location.href = '/cdn-cgi/access/logout';
+
+            const dash = document.getElementById('adminDashboard');
+            const gate = document.getElementById('adminLoginGate');
+            if (dash) dash.style.display = 'none';
+            if (gate) gate.style.display = 'flex';
+            window.location.reload();
         }
 
         // 2. Tab Navigation
