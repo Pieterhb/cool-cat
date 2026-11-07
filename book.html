@@ -4079,6 +4079,12 @@
         }
 
         function goToStep1() {
+            isPaymentSubmitting = false;
+            const submitBtn = document.getElementById('btnPaystackSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+            }
             try {
                 const s1 = document.getElementById('step1View');
                 const s2 = document.getElementById('step2View');
@@ -4206,8 +4212,16 @@
         // ==========================================
         // PAYSTACK CHECKOUT & SERVER VERIFICATION
         // ==========================================
+        let isPaymentSubmitting = false;
+
         function handleProceedToPayment(e) {
             e.preventDefault();
+
+            // Strict double-submit guard
+            if (isPaymentSubmitting) {
+                console.warn("Payment initiation already in progress. Ignoring duplicate click.");
+                return;
+            }
 
             if (selectedStays.length === 0) {
                 showToast("No active stays selected.");
@@ -4226,6 +4240,7 @@
                 return;
             }
 
+            isPaymentSubmitting = true;
             const submitBtn = document.getElementById('btnPaystackSubmit');
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -4262,72 +4277,89 @@
                 subtotal: s.subtotal
             })));
 
-            if (typeof PaystackPop !== 'undefined') {
-                const handler = PaystackPop.setup({
-                    key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
-                    email: email,
-                    amount: amountInCents,
-                    currency: 'ZAR',
-                    ref: paystackUniqueTxRef,
-                    metadata: {
-                        booking_ref: generatedBookingRef,
-                        guest_name: fullName,
+            try {
+                if (typeof PaystackPop !== 'undefined') {
+                    const handler = PaystackPop.setup({
+                        key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                         email: email,
-                        phone: cleanPhone,
-                        room_id: primaryRoomId,
-                        room_name: primaryRoomName,
-                        check_in: selectedStays[0]?.checkInStr || '',
-                        check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
-                        total_amount: calculatedGrandTotal,
-                        amount_paid: calculatedDepositDue,
-                        balance_due: calculatedBalanceDue,
-                        stays_json: staysJson,
-                        custom_fields: [
-                            { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
-                            { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
-                            { display_name: "Phone Number", variable_name: "phone", value: cleanPhone },
-                            { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
-                            { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
-                        ]
-                    },
-                    callback: function(response) {
-                        completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
-                    },
-                    onClose: function() {
-                        const submitBtn = document.getElementById('btnPaystackSubmit');
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                        amount: amountInCents,
+                        currency: 'ZAR',
+                        ref: paystackUniqueTxRef,
+                        metadata: {
+                            booking_ref: generatedBookingRef,
+                            guest_name: fullName,
+                            email: email,
+                            phone: cleanPhone,
+                            room_id: primaryRoomId,
+                            room_name: primaryRoomName,
+                            check_in: selectedStays[0]?.checkInStr || '',
+                            check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
+                            total_amount: calculatedGrandTotal,
+                            amount_paid: calculatedDepositDue,
+                            balance_due: calculatedBalanceDue,
+                            stays_json: staysJson,
+                            custom_fields: [
+                                { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
+                                { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
+                                { display_name: "Phone Number", variable_name: "phone", value: cleanPhone },
+                                { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
+                                { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
+                            ]
+                        },
+                        callback: function(response) {
+                            if (submitBtn) {
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = '<span>⏳</span> Finalizing Booking...';
+                            }
+                            completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
+                        },
+                        onClose: function() {
+                            isPaymentSubmitting = false;
+                            const submitBtn = document.getElementById('btnPaystackSubmit');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                            }
+                            showToast("Payment window closed.");
                         }
-                        showToast("Payment window closed.");
+                    });
+
+                    // Save pending booking to sessionStorage in case Paystack redirects (mobile/3DS)
+                    try {
+                        sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
+                            bookingRef: generatedBookingRef,
+                            fullName: fullName,
+                            email: email,
+                            phone: cleanPhone,
+                            arrivalTime: arrivalTime,
+                            specialRequests: specialRequests,
+                            paystackTxRef: paystackUniqueTxRef,
+                            stays: selectedStays,
+                            grandTotal: calculatedGrandTotal,
+                            depositDue: calculatedDepositDue,
+                            balanceDue: calculatedBalanceDue,
+                            guestCount: selectedGuestCount,
+                            nights: totalNightsCount,
+                            totalNights: totalNightsCount,
+                            referralCode: activeReferralCode || ''
+                        }));
+                    } catch (e) {
+                        console.warn("Could not save pending booking to sessionStorage:", e);
                     }
-                });
 
-                // Save pending booking to sessionStorage in case Paystack redirects (mobile/3DS)
-                try {
-                    sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
-                        bookingRef: generatedBookingRef,
-                        fullName: fullName,
-                        email: email,
-                        phone: cleanPhone,
-                        arrivalTime: arrivalTime,
-                        specialRequests: specialRequests,
-                        paystackTxRef: paystackUniqueTxRef,
-                        stays: selectedStays,
-                        grandTotal: calculatedGrandTotal,
-                        depositDue: calculatedDepositDue,
-                        balanceDue: calculatedBalanceDue,
-                        guestCount: selectedGuestCount,
-                        nights: totalNightsCount,
-                        referralCode: activeReferralCode || ''
-                    }));
-                } catch (e) {
-                    console.warn("Could not save pending booking to sessionStorage:", e);
+                    handler.openIframe();
+                } else {
+                    completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
                 }
-
-                handler.openIframe();
-            } else {
-                completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
+            } catch (err) {
+                console.error("Paystack launch error:", err);
+                isPaymentSubmitting = false;
+                const submitBtn = document.getElementById('btnPaystackSubmit');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                }
+                showToast("Failed to initialize payment gateway. Please try again.");
             }
         }
 
@@ -4495,6 +4527,7 @@
             document.getElementById('wizStep3').classList.add('completed');
             document.getElementById('circle3').textContent = '✓';
 
+            isPaymentSubmitting = false;
             window.scrollTo({ top: 120, behavior: 'smooth' });
             showToast("🎉 Booking secured! Confirmation email dispatched.");
         }
@@ -5055,6 +5088,8 @@
                                     roomName: pending.roomName,
                                     checkIn: pending.checkIn,
                                     checkOut: pending.checkOut,
+                                    nights: pending.nights || pending.totalNights || 1,
+                                    totalNights: pending.totalNights || pending.nights || 1,
                                     totalAmount: pending.grandTotal,
                                     amountPaid: pending.depositDue,
                                     balanceDue: pending.balanceDue,
@@ -5248,13 +5283,24 @@
             if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
         }
 
+        let isQuotePaymentSubmitting = false;
+
         function processQuotePaystackPayment() {
+            if (isQuotePaymentSubmitting) return;
+
             const email = (document.getElementById('qpEmail').value || '').trim();
             const phone = formatPhoneNumber((document.getElementById('qpPhone').value || '').trim());
 
             if (!email || !email.includes('@')) {
                 alert("Please enter a valid email address for your payment receipt.");
                 return;
+            }
+
+            isQuotePaymentSubmitting = true;
+            const qpBtn = document.getElementById('qpPaystackBtn');
+            if (qpBtn) {
+                qpBtn.disabled = true;
+                qpBtn.innerHTML = '<span>🔒</span> Initializing Paystack...';
             }
 
             const amountInCents = activeQuotePay.chosenAmount * 100;
@@ -5306,6 +5352,8 @@
                                     roomName: activeQuotePay.roomName,
                                     checkIn: activeQuotePay.checkIn,
                                     checkOut: activeQuotePay.checkOut,
+                                    nights: activeQuotePay.nights || 1,
+                                    totalNights: activeQuotePay.nights || 1,
                                     totalAmount: total,
                                     amountPaid: paid,
                                     balanceDue: bal,
@@ -5323,6 +5371,12 @@ Your confirmation receipt has been issued.`);
                         window.location.href = '/book';
                     },
                     onClose: function() {
+                        isQuotePaymentSubmitting = false;
+                        const qpBtn = document.getElementById('qpPaystackBtn');
+                        if (qpBtn) {
+                            qpBtn.disabled = false;
+                            selectQuotePayOption(activeQuotePay.chosenType);
+                        }
                         showToast("Payment window closed.");
                     }
                 });

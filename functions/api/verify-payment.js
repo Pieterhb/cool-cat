@@ -17,6 +17,7 @@ export async function onRequestPost(context) {
             checkIn,
             checkOut,
             nights,
+            totalNights,
             totalAmount,
             amountPaid,
             balanceDue,
@@ -173,6 +174,8 @@ export async function onRequestPost(context) {
             existingForSeq = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
         }
 
+        const resolvedNights = Number(nights || totalNights || payload.nights || payload.totalNights || (payload.stays && Array.isArray(payload.stays) && payload.stays.reduce((sum, s) => sum + (Number(s.nights) || 0), 0)) || 1);
+
         const staysList = (payload.stays && Array.isArray(payload.stays) && payload.stays.length > 0) ? payload.stays : [{
             roomId: roomId || 'king-arthur',
             roomName: roomName || 'King Arthur Suite',
@@ -180,7 +183,7 @@ export async function onRequestPost(context) {
             checkOut: checkOut,
             checkInStr: checkIn,
             checkOutStr: checkOut,
-            nights: nights || 1,
+            nights: resolvedNights,
             subtotal: totalAmount || 0
         }];
 
@@ -244,7 +247,7 @@ export async function onRequestPost(context) {
             roomName: staysList.length === 1 ? staysList[0].roomName : `${staysList.length} Reserved Stays`,
             checkIn: staysList[0].checkInStr || staysList[0].checkIn,
             checkOut: staysList[staysList.length - 1].checkOutStr || staysList[staysList.length - 1].checkOut,
-            nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
+            nights: resolvedNights,
             arrivalTime: arrivalTime || '14:00 - 16:00',
             specialRequests: specialRequests || '',
             referralCode: payload.referralCode || '',
@@ -280,7 +283,7 @@ export async function onRequestPost(context) {
                 roomName: displayRoomName,
                 checkIn: staysList[0].checkInStr || staysList[0].checkIn,
                 checkOut: staysList[staysList.length - 1].checkOutStr || staysList[staysList.length - 1].checkOut,
-                nights: nights || staysList.reduce((sum, s) => sum + (s.nights || 0), 0),
+                nights: resolvedNights,
                 guestName: guestName || 'Valued Guest',
                 guestEmail: guestEmail || '',
                 guestPhone: formatPhoneNumber(guestPhone) || '',
@@ -333,7 +336,7 @@ export async function onRequestPost(context) {
                     roomName: ex.roomName || parentRecord.roomName,
                     checkIn: ex.checkIn || parentRecord.checkIn,
                     checkOut: ex.checkOut || parentRecord.checkOut,
-                    nights: ex.nights || parentRecord.nights,
+                    nights: ex.nights || resolvedNights,
                     stays: (ex.stays && ex.stays.length > 0) ? ex.stays : parentRecord.stays,
                     totalStays: (ex.stays && ex.stays.length > 0) ? ex.stays.length : parentRecord.totalStays,
                     createdAt: ex.createdAt || parentRecord.createdAt,

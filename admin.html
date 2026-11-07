@@ -3343,7 +3343,7 @@
         // SECURITY SHIELD: Role-Based Admin Auth & Request Interceptor
         // =========================================================
         function getAdminKey() {
-            return sessionStorage.getItem('coolcat_admin_key') || localStorage.getItem('coolcat_admin_key') || '';
+            return sessionStorage.getItem('coolcat_admin_key') || '';
         }
 
         function getAdminRole() {
@@ -3466,8 +3466,8 @@
                 if (rememberMe) {
                     localStorage.setItem('coolcat_admin_logged_in', 'true');
                     localStorage.setItem('coolcat_admin_session', '1');
-                    localStorage.setItem('coolcat_admin_key', passkey);
                     localStorage.setItem('coolcat_admin_role', account);
+                    localStorage.removeItem('coolcat_admin_key');
                 } else {
                     localStorage.removeItem('coolcat_admin_logged_in');
                     localStorage.removeItem('coolcat_admin_session');
@@ -3547,8 +3547,15 @@
         });
 
         function checkAdminAuth() {
+            // Auto-clean any legacy raw secret key stored in localStorage
+            try { localStorage.removeItem('coolcat_admin_key'); } catch(e) {}
             const key = getAdminKey();
-            const isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true' || localStorage.getItem('coolcat_admin_logged_in') === 'true');
+            const isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true');
+            const rememberedRole = localStorage.getItem('coolcat_admin_role');
+            if (rememberedRole) {
+                const sel = document.getElementById('adminAccountSelect');
+                if (sel) { sel.value = rememberedRole; handleAccountChange(rememberedRole); }
+            }
 
             const gate = document.getElementById('adminLoginGate');
             const dash = document.getElementById('adminDashboard');
