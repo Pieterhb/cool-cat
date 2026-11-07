@@ -378,7 +378,7 @@ async function dispatchBookingEmails(booking, env) {
             <h3 style="margin: 0 0 10px; color: #166534; font-size: 16px;">🏠 Check-In & Access Details:</h3>
             <p style="margin: 4px 0;">📶 <strong>Free Wi-Fi:</strong> Network: <code>${wifiNet}</code> | Pass: <code>${wifiPass}</code></p>
             <p style="margin: 4px 0;">📍 <strong>Address:</strong> Cool-Cat, Strand, Western Cape</p>
-            <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
+            <p style="margin: 4px 0;">🗺️ <strong>Directions:</strong> <a href="https://www.google.com/maps/search/?api=1&query=Cool+Cat+Holiday+Accommodation+Strand" style="color: #0f52ba; font-weight: bold;">Open Google Maps Directions</a></p>
             <p style="margin: 4px 0;">📱 <strong>Host:</strong> Michele Rossouw (072 889 4840)</p>
           </div>
           <div style="font-size: 13px; color: #64748b; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
