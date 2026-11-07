@@ -29,7 +29,15 @@ export async function onRequestPost(context) {
         let paystackVerified = false;
         let paystackData = null;
 
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        if (!paystackSecret && env && env.COOLCAT_KV) {
+            try {
+                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+                if (cfg && cfg.paystack_secret_key && String(cfg.paystack_secret_key).trim()) {
+                    paystackSecret = String(cfg.paystack_secret_key).trim();
+                }
+            } catch(e) {}
+        }
         const txRefToVerify = (paystackRef || reference || '').trim().replace(/^#/, '');
 
         // Resolve configured public key to determine expected gateway mode
@@ -61,7 +69,7 @@ export async function onRequestPost(context) {
             });
         }
 
-        const effectiveSecret = paystackSecret || (isLivePublicKey ? null : 'sk_test_40067fbb064905a9a1e33127111e043eeaee7315');
+        const effectiveSecret = paystackSecret || null;
 
         if (txRefToVerify && effectiveSecret) {
             try {

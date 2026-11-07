@@ -258,10 +258,8 @@ export async function onRequestPost(context) {
             createdAt: new Date().toISOString()
         };
 
-        // If Cloudflare KV is available, save
+        // If Cloudflare KV is available, save (re-use existing bookings list already fetched)
         if (env && env.COOLCAT_KV) {
-            let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-            
             // If booking all rooms or packages, store calendar blocks
             if (roomId === 'all') {
                 existing.push(newBooking);
