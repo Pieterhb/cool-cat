@@ -52,8 +52,12 @@ export async function onRequestGet(context) {
         const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
         const token = authHeader.replace(/^Bearer\s+/i, '').trim();
         const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
+        const isOwnerToken = Boolean(
+            (expectedKey && token && token === expectedKey) ||
+            (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
+        );
         const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-        const isAdmin = Boolean((expectedKey && token && token === expectedKey) || isMarketerToken);
+        const isAdmin = Boolean(isOwnerToken || isMarketerToken);
 
         // Sanitize bookings for public calendars: hide customer names, phones, emails, and financial details
         const responseBookings = isAdmin ? allBookings : allBookings.map(b => ({
@@ -76,7 +80,9 @@ export async function onRequestGet(context) {
         return new Response(JSON.stringify({
             success: true,
             bookings: responseBookings,
-            nextSequence: nextSequence
+            nextSequence: nextSequence,
+            authenticated: isAdmin,
+            role: isOwnerToken ? 'owner' : (isMarketerToken ? 'marketer' : null)
         }), {
             headers: {
                 'Content-Type': 'application/json',

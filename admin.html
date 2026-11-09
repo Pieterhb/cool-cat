@@ -3429,7 +3429,7 @@
                 if (validMarketerKeys.includes(passkey)) isAuthorized = true;
             }
 
-            // Live server ping verification
+            // Live server authentication verification
             try {
                 const testRes = await fetch('/api/bookings', {
                     headers: {
@@ -3438,10 +3438,21 @@
                     }
                 });
                 if (testRes.ok) {
-                    isAuthorized = true;
+                    const testData = await testRes.json();
+                    if (testData && testData.authenticated === true) {
+                        if (account === 'owner' && testData.role === 'owner') {
+                            isAuthorized = true;
+                        } else if (account === 'marketer' && (testData.role === 'marketer' || testData.role === 'owner')) {
+                            isAuthorized = true;
+                        } else {
+                            isAuthorized = false;
+                        }
+                    } else if (testData && testData.authenticated === false) {
+                        isAuthorized = false;
+                    }
                 }
             } catch(e) {
-                // If network offline but matched approved key, allow through
+                // If network offline but matched client-approved fallback key, allow through
             }
 
             if (!isAuthorized) {

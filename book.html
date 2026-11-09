@@ -5165,12 +5165,12 @@
             const payRef = urlParams.get('payRef');
             if (!payRef) return;
 
-            const total = Number(urlParams.get('amt') || 0);
-            const dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
-            const name = urlParams.get('name') || 'Valued Guest';
-            const room = urlParams.get('room') || 'all';
-            const cIn = urlParams.get('in') || '';
-            const cOut = urlParams.get('out') || '';
+            let total = Number(urlParams.get('amt') || 0);
+            let dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
+            let name = urlParams.get('name') || 'Valued Guest';
+            let room = urlParams.get('room') || 'all';
+            let cIn = urlParams.get('in') || '';
+            let cOut = urlParams.get('out') || '';
 
             const roomNames = {
                 'all': 'Four Rooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)',
