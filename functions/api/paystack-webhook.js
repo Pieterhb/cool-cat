@@ -160,6 +160,7 @@ export async function onRequestPost(context) {
                     paystackAmount: amountInZar,
                     paymentMethod: 'card',
                     paystackRef: rawRef,
+                    processedPaystackRefs: [rawRef],
                     isRecordedPayment: true,
                     isPaidPaystack: true,
                     stays: (staysList && staysList.length > 0) ? staysList : undefined,
@@ -171,19 +172,26 @@ export async function onRequestPost(context) {
                 const foundIndex = existing.findIndex(b => b.id === cleanBookingRef || b.id === rawRef || b.paystackRef === rawRef);
                 if (foundIndex >= 0) {
                     const ex = existing[foundIndex];
-                    const newAmountPaid = (Number(ex.amountPaid) || 0) + amountInZar;
+                    const existingRefs = Array.isArray(ex.processedPaystackRefs) ? ex.processedPaystackRefs : (ex.paystackRef ? [ex.paystackRef] : []);
+                    const alreadyProcessed = existingRefs.includes(rawRef);
+
+                    const newAmountPaid = alreadyProcessed ? (Number(ex.amountPaid) || amountInZar) : ((Number(ex.amountPaid) || 0) + amountInZar);
                     const tot = Number(ex.totalAmount) || totalAmountMeta || amountInZar;
                     const newBal = Math.max(0, tot - newAmountPaid);
                     const newStat = (newBal === 0) ? 'fully_paid' : 'deposit_paid';
+                    const newPaystackAmount = alreadyProcessed ? (Number(ex.paystackAmount) || amountInZar) : ((Number(ex.paystackAmount) || 0) + amountInZar);
+                    const updatedRefs = alreadyProcessed ? existingRefs : [...existingRefs, rawRef];
+
                     existing[foundIndex] = {
                         ...ex,
                         totalAmount: tot,
                         amountPaid: newAmountPaid,
                         balanceDue: newBal,
-                        paystackAmount: (Number(ex.paystackAmount) || 0) + amountInZar,
+                        paystackAmount: newPaystackAmount,
                         status: newStat,
                         paymentMethod: 'card',
                         paystackRef: rawRef,
+                        processedPaystackRefs: updatedRefs,
                         isRecordedPayment: true,
                         isPaidPaystack: true,
                         guestEmail: ex.guestEmail || customerEmail,

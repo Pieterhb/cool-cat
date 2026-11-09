@@ -283,6 +283,7 @@ export async function onRequestPost(context) {
                     ? staysList[0].roomName
                     : `${staysList.length} Reserved Stays`;
 
+            const currentTxRef = txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef;
             const parentRecord = {
                 id: bookingRef,
                 parentBookingId: null,
@@ -301,7 +302,8 @@ export async function onRequestPost(context) {
                 balanceDue: numBal,
                 paystackAmount: (paystackData && paystackData.amount) ? (Number(paystackData.amount) / 100) : numPaid,
                 paymentMethod: 'card',
-                paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
+                paystackRef: currentTxRef,
+                processedPaystackRefs: [currentTxRef],
                 isRecordedPayment: true,
                 isPaidPaystack: true,
                 stays: staysList,
@@ -317,20 +319,28 @@ export async function onRequestPost(context) {
             const parentIdx = existing.findIndex(b => b.id === bookingRef || b.id === rawRef || (b.isParentBooking && b.id === bookingRef));
             if (parentIdx >= 0) {
                 const ex = existing[parentIdx];
-                const newAmountPaid = (Number(ex.amountPaid) || 0) + numPaid;
+                const existingRefs = Array.isArray(ex.processedPaystackRefs) ? ex.processedPaystackRefs : (ex.paystackRef ? [ex.paystackRef] : []);
+                const alreadyProcessed = existingRefs.includes(currentTxRef);
+
+                const newAmountPaid = alreadyProcessed ? (Number(ex.amountPaid) || numPaid) : ((Number(ex.amountPaid) || 0) + numPaid);
                 const tot = Number(ex.totalAmount) || numTotal || newAmountPaid;
                 const newBal = Math.max(0, tot - newAmountPaid);
                 const newStat = (newBal === 0) ? 'fully_paid' : (newAmountPaid > 0 ? 'deposit_paid' : 'not_paid');
+
+                const paystackCharged = (paystackData && paystackData.amount) ? (Number(paystackData.amount) / 100) : numPaid;
+                const newPaystackAmount = alreadyProcessed ? (Number(ex.paystackAmount) || paystackCharged) : ((Number(ex.paystackAmount) || 0) + paystackCharged);
+                const updatedRefs = alreadyProcessed ? existingRefs : [...existingRefs, currentTxRef];
 
                 existing[parentIdx] = {
                     ...ex,
                     totalAmount: tot,
                     amountPaid: newAmountPaid,
                     balanceDue: newBal,
-                    paystackAmount: (Number(ex.paystackAmount) || 0) + ((paystackData && paystackData.amount) ? (Number(paystackData.amount) / 100) : numPaid),
+                    paystackAmount: newPaystackAmount,
                     status: newStat,
                     paymentMethod: 'card',
-                    paystackRef: txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef,
+                    paystackRef: currentTxRef,
+                    processedPaystackRefs: updatedRefs,
                     isRecordedPayment: true,
                     isPaidPaystack: true,
                     guestName: (ex.guestName && ex.guestName !== 'Valued Guest') ? ex.guestName : (guestName || parentRecord.guestName),

@@ -6034,7 +6034,14 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
         let currentPayBooking = null;
 
         function openPaymentModal(bookingId) {
-            const b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId || bk.parentBookingId === bookingId);
+            let b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId && !bk.isCalendarBlock);
+            if (!b) {
+                const child = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
+                if (child && child.parentBookingId) {
+                    b = ADMIN_BOOKINGS.find(bk => bk.id === child.parentBookingId && !bk.isCalendarBlock);
+                }
+            }
+            if (!b) b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
             if (!b) return;
             currentPayBooking = b;
             const cleanRef = formatRefId(b.id, b.roomId);
@@ -6145,29 +6152,29 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     },
                     body: JSON.stringify(payload)
                 });
-                if (res.ok) {
-                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
-                    if (data && data.bookings && Array.isArray(data.bookings)) {
-                        ADMIN_BOOKINGS = data.bookings;
-                    } else {
-                        updateLocalBookingPayment(bookingId, payload);
-                    }
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                if (data && data.bookings && Array.isArray(data.bookings)) {
+                    ADMIN_BOOKINGS = data.bookings;
                 } else {
                     updateLocalBookingPayment(bookingId, payload);
                 }
+
+                calculateKpis();
+                renderBookingsTables();
+                renderOperationsToday();
+                renderFinancesTable();
+                renderGuestsTable();
+                renderAdminCalendar();
+                closePaymentModal();
+                alert(`✅ Payment status for #${formatRefId(bookingId)} updated successfully to ${status === 'fully_paid' ? '100% PAID' : (status === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
             } catch (err) {
                 console.error("Save payment error:", err);
-                updateLocalBookingPayment(bookingId, payload);
+                alert(`⚠️ Payment update failed: ${err.message}\n\nThe payment change was NOT saved to the cloud database. Please verify your connection or Admin Key and try again.`);
             }
-
-            calculateKpis();
-            renderBookingsTables();
-            renderOperationsToday();
-            renderFinancesTable();
-            renderGuestsTable();
-            renderAdminCalendar();
-            closePaymentModal();
-            alert(`✅ Payment status for #${formatRefId(bookingId)} updated successfully to ${status === 'fully_paid' ? '100% PAID' : (status === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
         }
 
         function updateLocalBookingPayment(id, payload) {
@@ -6202,28 +6209,28 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                         'X-Admin-Key': getAdminKey()
                     }
                 });
-                if (res.ok) {
-                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
-                    if (data && data.bookings && Array.isArray(data.bookings)) {
-                        ADMIN_BOOKINGS = data.bookings;
-                    } else {
-                        updateLocalBookingStatus(id, 'cancelled');
-                    }
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                if (data && data.bookings && Array.isArray(data.bookings)) {
+                    ADMIN_BOOKINGS = data.bookings;
                 } else {
                     updateLocalBookingStatus(id, 'cancelled');
                 }
+
+                calculateKpis();
+                renderBookingsTables();
+                renderOperationsToday();
+                renderFinancesTable();
+                renderGuestsTable();
+                renderAdminCalendar();
+                alert(`✅ Booking #${formatRefId(id)} has been soft-cancelled.\nThe room dates are now OPEN and available on the calendar!`);
             } catch (err) {
                 console.error("Soft cancel error:", err);
-                updateLocalBookingStatus(id, 'cancelled');
+                alert(`⚠️ Cancellation failed: ${err.message}\n\nThe booking was NOT cancelled in the cloud database. Please check your connection or Admin Key and try again.`);
             }
-
-            calculateKpis();
-            renderBookingsTables();
-            renderOperationsToday();
-            renderFinancesTable();
-            renderGuestsTable();
-            renderAdminCalendar();
-            alert(`✅ Booking #${formatRefId(id)} has been soft-cancelled.\nThe room dates are now OPEN and available on the calendar!`);
         }
 
         async function restoreBooking(id) {
@@ -6264,28 +6271,28 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     },
                     body: JSON.stringify(payload)
                 });
-                if (res.ok) {
-                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
-                    if (data && data.bookings && Array.isArray(data.bookings)) {
-                        ADMIN_BOOKINGS = data.bookings;
-                    } else {
-                        updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
-                    }
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
+                if (data && data.bookings && Array.isArray(data.bookings)) {
+                    ADMIN_BOOKINGS = data.bookings;
                 } else {
                     updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
                 }
+
+                calculateKpis();
+                renderBookingsTables();
+                renderOperationsToday();
+                renderFinancesTable();
+                renderGuestsTable();
+                renderAdminCalendar();
+                alert(`✅ Booking #${formatRefId(id)} restored successfully to ${restoredStatus === 'fully_paid' ? '100% PAID' : (restoredStatus === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
             } catch (err) {
                 console.error("Restore booking error:", err);
-                updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
+                alert(`⚠️ Restore failed: ${err.message}\n\nThe booking status was NOT updated in the cloud database. Please check your connection or Admin Key and try again.`);
             }
-
-            calculateKpis();
-            renderBookingsTables();
-            renderOperationsToday();
-            renderFinancesTable();
-            renderGuestsTable();
-            renderAdminCalendar();
-            alert(`✅ Booking #${formatRefId(id)} restored successfully to ${restoredStatus === 'fully_paid' ? '100% PAID' : (restoredStatus === 'deposit_paid' ? 'DEPOSIT PAID' : 'NOT PAID')}!`);
         }
 
         async function wipeBookingPermanently(id) {
@@ -6339,7 +6346,14 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
         // SHARE QUOTE & HYBRID PAYMENT GENERATOR
         // ==========================================
         function shareBookingQuote(bookingId) {
-            const b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId || bk.parentBookingId === bookingId);
+            let b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId && !bk.isCalendarBlock);
+            if (!b) {
+                const child = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
+                if (child && child.parentBookingId) {
+                    b = ADMIN_BOOKINGS.find(bk => bk.id === child.parentBookingId && !bk.isCalendarBlock);
+                }
+            }
+            if (!b) b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
             if (!b) return;
 
             const total = Number(b.totalAmount || 0);
@@ -7046,9 +7060,13 @@ We look forward to hosting you at Cool-Cat!`;
             const bookingIds = unsettled.map(u => u.id);
             const bookingRefs = unsettled.map(u => u.cleanRef);
 
-            // Generate next Batch ID
-            const batchSeq = 1001 + (ADMIN_MARKETER_PAYOUTS || []).length;
-            const batchId = `BATCH-${batchSeq}`;
+            // Generate next Batch ID (monotonically increasing to prevent duplicate IDs on deletion)
+            const maxSeq = (ADMIN_MARKETER_PAYOUTS || []).reduce((max, b) => {
+                const match = String(b.id || '').match(/BATCH-(\d+)/);
+                const num = match ? parseInt(match[1], 10) : 0;
+                return Math.max(max, num);
+            }, 1000);
+            const batchId = `BATCH-${maxSeq + 1}`;
 
             const newBatch = {
                 id: batchId,
