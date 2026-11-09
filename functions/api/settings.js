@@ -209,6 +209,9 @@ export async function onRequestPost(context) {
         if (Array.isArray(payload.marketer_payouts)) {
             update.marketer_payouts = payload.marketer_payouts;
         }
+        if (payload.referral_payouts && typeof payload.referral_payouts === 'object') {
+            update.referral_payouts = payload.referral_payouts;
+        }
         allowedNumeric.forEach(key => {
             if (payload[key] !== undefined) {
                 update[key] = Number(payload[key]);
@@ -221,7 +224,11 @@ export async function onRequestPost(context) {
         });
         allowedString.forEach(key => {
             if (payload[key] !== undefined) {
-                update[key] = String(payload[key]).trim().replace(/\//g, '-');
+                if (key === 'wifi_password' || key === 'wifi_network' || key === 'paystack_public_key') {
+                    update[key] = String(payload[key]).trim();
+                } else {
+                    update[key] = String(payload[key]).trim().replace(/\//g, '-');
+                }
             }
         });
 

@@ -3343,7 +3343,7 @@
         // SECURITY SHIELD: Role-Based Admin Auth & Request Interceptor
         // =========================================================
         function getAdminKey() {
-            return sessionStorage.getItem('coolcat_admin_key') || '';
+            return sessionStorage.getItem('coolcat_admin_key') || localStorage.getItem('coolcat_admin_key') || '';
         }
 
         function getAdminRole() {
@@ -3465,7 +3465,7 @@
                     localStorage.setItem('coolcat_admin_logged_in', 'true');
                     localStorage.setItem('coolcat_admin_session', '1');
                     localStorage.setItem('coolcat_admin_role', account);
-                    localStorage.removeItem('coolcat_admin_key');
+                    localStorage.setItem('coolcat_admin_key', passkey);
                 } else {
                     localStorage.removeItem('coolcat_admin_logged_in');
                     localStorage.removeItem('coolcat_admin_session');
@@ -3545,11 +3545,23 @@
         });
 
         function checkAdminAuth() {
-            // Auto-clean any legacy raw secret key stored in localStorage
-            try { localStorage.removeItem('coolcat_admin_key'); } catch(e) {}
-            const key = getAdminKey();
-            const isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true');
-            const rememberedRole = localStorage.getItem('coolcat_admin_role');
+            let key = getAdminKey();
+            let isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true');
+            if (!isLoggedIn && localStorage.getItem('coolcat_admin_logged_in') === 'true') {
+                const locKey = localStorage.getItem('coolcat_admin_key');
+                if (locKey) {
+                    isLoggedIn = true;
+                    key = locKey;
+                    try {
+                        sessionStorage.setItem('coolcat_admin_logged_in', 'true');
+                        sessionStorage.setItem('coolcat_admin_session', '1');
+                        sessionStorage.setItem('coolcat_admin_key', locKey);
+                        const role = localStorage.getItem('coolcat_admin_role') || 'owner';
+                        sessionStorage.setItem('coolcat_admin_role', role);
+                    } catch(e) {}
+                }
+            }
+            const rememberedRole = localStorage.getItem('coolcat_admin_role') || sessionStorage.getItem('coolcat_admin_role');
             if (rememberedRole) {
                 const sel = document.getElementById('adminAccountSelect');
                 if (sel) { sel.value = rememberedRole; handleAccountChange(rememberedRole); }
@@ -3647,11 +3659,19 @@
         // 3. Render Dashboard Tables & Data
         async function initDashboard() {
             try {
-                const res = await fetch('/api/bookings');
+                const res = await fetch('/api/bookings', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.bookings && Array.isArray(data.bookings)) {
                         ADMIN_BOOKINGS = data.bookings;
+                    }
+                    if (data && data.nextSequence) {
+                        window._serverNextSeq = data.nextSequence;
                     }
                 }
             } catch (e) {
@@ -3800,6 +3820,17 @@
                     const modeEl = document.getElementById('paystackModeSelect');
                     if (modeEl) modeEl.value = config.paystackMode;
                 }
+                if (config.wifi_network) {
+                    const wifiNetEl = document.getElementById('wifiNetwork');
+                    if (wifiNetEl) wifiNetEl.value = config.wifi_network;
+                }
+                if (config.wifi_password) {
+                    const wifiPassEl = document.getElementById('wifiPassword');
+                    if (wifiPassEl) wifiPassEl.value = config.wifi_password;
+                }
+                if (config.referral_payouts && typeof config.referral_payouts === 'object') {
+                    try { localStorage.setItem('cc_referral_payouts', JSON.stringify(config.referral_payouts)); } catch(e) {}
+                }
                 const resendBox = document.getElementById('resendStatusBox');
                 const resendTitle = document.getElementById('resendStatusTitle');
                 const resendDesc = document.getElementById('resendStatusDesc');
@@ -3944,11 +3975,10 @@
                         status: 'not_paid'
                     };
                 }
-                // Cancelled manual bookings always show R0
+                // Cancelled bookings have no balance due, but retain actual amountPaid for audit
                 if (b.status === 'cancelled') {
                     return {
                         ...b,
-                        amountPaid: 0,
                         balanceDue: 0
                     };
                 }
@@ -3998,15 +4028,23 @@
                     const cInDate = new Date(b.checkIn + 'T00:00:00');
                     bCreatedDate = cInDate <= today ? cInDate : null;
                 }
-                const diffDays = bCreatedDate ? Math.round((today - bCreatedDate) / msInDay) : -1;
+                let diffDays = -1;
+                if (bCreatedDate) {
+                    const dToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    const dCreated = new Date(bCreatedDate.getFullYear(), bCreatedDate.getMonth(), bCreatedDate.getDate());
+                    diffDays = Math.round((dToday - dCreated) / msInDay);
+                }
 
                 if (bBal > 0 && b.status !== 'cancelled') {
                     pendingTotal += bBal;
                 }
 
                 if (bPaid > 0 && b.status !== 'cancelled') {
-                    revYtd += bPaid;
-                    const isToday = (b.createdAt && b.createdAt.startsWith(todayStr)) || (diffDays === 0);
+                    if (bCreatedDate && bCreatedDate.getFullYear() === today.getFullYear()) {
+                        revYtd += bPaid;
+                    }
+                    const bCreatedStr = bCreatedDate ? formatDateStr(bCreatedDate) : '';
+                    const isToday = (bCreatedStr === todayStr);
                     if (isToday) revToday += bPaid;
                     if (diffDays >= 0 && diffDays <= 7) rev7Days += bPaid;
                     if (diffDays >= 0 && diffDays <= 14) rev14Days += bPaid;
@@ -4081,6 +4119,11 @@
             if (elMktSettled) elMktSettled.textContent = `R${totalMarketerSettled.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
+        function escJsStr(s) {
+            if (!s) return '';
+            return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
         function renderOperationsToday() {
             const todayStr = formatDateStr(new Date());
             const checkinsList = document.getElementById('todayCheckinsList');
@@ -4113,7 +4156,7 @@
                         </div>
                         <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
                             ${b.balanceDue > 0 ? `<span style="color: #991B1B; font-weight: 700; font-size: 0.82rem;">Collect R${Number(b.balanceDue).toLocaleString()}</span>` : `<span style="color: #166534; font-weight: 700; font-size: 0.82rem;">Paid in Full ✓</span>`}
-                            <button class="btn-sm btn-wa" onclick="sendGuestCheckinPass('${b.guestName}', '${b.roomName || b.roomId}', '${b.guestPhone || ''}')">📲 Check-In Pass</button>
+                            <button class="btn-sm btn-wa" onclick="sendGuestCheckinPass('${escJsStr(b.guestName)}', '${escJsStr(b.roomName || b.roomId)}', '${escJsStr(b.guestPhone || '')}')">📲 Check-In Pass</button>
                         </div>
                     </div>
                 `).join('');
@@ -4139,7 +4182,7 @@
                             </div>
                             <div style="text-align: right; display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end;">
                                 <span style="color: #0369A1; font-weight: 700; font-size: 0.82rem;">Departure Clean 🧹</span>
-                                <button class="btn-sm btn-wa" onclick="sendGuestReviewRequest('${b.guestName}', '${b.guestPhone || ''}')">⭐ Request Review</button>
+                                <button class="btn-sm btn-wa" onclick="sendGuestReviewRequest('${escJsStr(b.guestName)}', '${escJsStr(b.guestPhone || '')}')">⭐ Request Review</button>
                             </div>
                         </div>
                     `).join('');
@@ -4602,6 +4645,9 @@
                     }
                 }
             });
+            if (window._serverNextSeq && window._serverNextSeq > maxSeq) {
+                maxSeq = window._serverNextSeq - 1;
+            }
             const nextSeq = maxSeq + 1;
             return `CCH-${nextSeq}`;
         }
@@ -4785,20 +4831,17 @@
 
             if (roomId === 'all') {
                 const individualRooms = ['king-arthur', 'santori', 'deluxe-suite'];
-                return individualRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
+                const sum = individualRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
+                const discFour = Math.max(0, Math.min(100, Number(ratesCfg.pkg_discount_four) || 0));
+                return (discFour > 0) ? Math.round(sum * (1 - discFour / 100)) : sum;
             } else if (roomId === 'three-rooms') {
                 const threeRooms = ['king-arthur', 'santori'];
-                return threeRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
+                const sum = threeRooms.reduce((acc, rId) => acc + getSingleRoomNightPrice(rId), 0);
+                const discThree = Math.max(0, Math.min(100, Number(ratesCfg.pkg_discount_three) || 0));
+                return (discThree > 0) ? Math.round(sum * (1 - discThree / 100)) : sum;
             } else {
                 return getSingleRoomNightPrice(roomId);
             }
-        }
-
-        function formatDateStr(date) {
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
         }
 
         function isBookingBlockingRoomOnDate(b, roomId, dateStr) {
@@ -5997,6 +6040,9 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     } else {
                         ADMIN_BOOKINGS.unshift(newB);
                     }
+                    if (data && data.nextSequence) {
+                        window._serverNextSeq = data.nextSequence;
+                    }
                 } else {
                     ADMIN_BOOKINGS.unshift(newB);
                 }
@@ -6149,6 +6195,9 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 } else {
                     updateLocalBookingPayment(bookingId, payload);
                 }
+                if (data && data.nextSequence) {
+                    window._serverNextSeq = data.nextSequence;
+                }
 
                 calculateKpis();
                 renderBookingsTables();
@@ -6205,6 +6254,9 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     ADMIN_BOOKINGS = data.bookings;
                 } else {
                     updateLocalBookingStatus(id, 'cancelled');
+                }
+                if (data && data.nextSequence) {
+                    window._serverNextSeq = data.nextSequence;
                 }
 
                 calculateKpis();
@@ -6267,6 +6319,9 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     ADMIN_BOOKINGS = data.bookings;
                 } else {
                     updateLocalBookingStatus(id, restoredStatus, Math.max(0, total - paid));
+                }
+                if (data && data.nextSequence) {
+                    window._serverNextSeq = data.nextSequence;
                 }
 
                 calculateKpis();
@@ -6431,11 +6486,19 @@ We look forward to hosting you at Cool-Cat!`;
                 btn.style.pointerEvents = 'none';
             }
             try {
-                const res = await fetch('/api/bookings');
+                const res = await fetch('/api/bookings', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.bookings && Array.isArray(data.bookings)) {
                         ADMIN_BOOKINGS = data.bookings;
+                    }
+                    if (data && data.nextSequence) {
+                        window._serverNextSeq = data.nextSequence;
                     }
                 }
             } catch (e) {
@@ -6803,8 +6866,8 @@ We look forward to hosting you at Cool-Cat!`;
                     id: b.id,
                     code: refCode,
                     partnerName: refCode,
-                    partnerPhone: b.guestPhone || '',
-                    partnerEmail: b.guestEmail || '',
+                    partnerPhone: b.referralPhone || b.affiliatePhone || '',
+                    partnerEmail: b.referralEmail || b.affiliateEmail || '',
                     guestName: b.guestName || 'Referred Guest',
                     stayDates: `${b.checkIn} ➔ ${b.checkOut || ''}`,
                     bookingTotal: total,
@@ -6876,10 +6939,23 @@ We look forward to hosting you at Cool-Cat!`;
             if (elRefReady) elRefReady.textContent = `R${readyTotal.toLocaleString()}`;
         }
 
-        function markReferralPaid(refId) {
+        async function markReferralPaid(refId) {
             const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
             storedPayouts[refId] = { paidAt: new Date().toISOString() };
             localStorage.setItem('cc_referral_payouts', JSON.stringify(storedPayouts));
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
+                    body: JSON.stringify({ referral_payouts: storedPayouts })
+                });
+            } catch(e) {
+                console.error('Failed to sync referral payout to cloud settings:', e);
+            }
             renderReferralsTable();
             alert(`✅ Commission marked as Paid via EFT!`);
         }
@@ -6887,7 +6963,11 @@ We look forward to hosting you at Cool-Cat!`;
         function whatsappReferrer(phone, name, commission) {
             const cleanPhone = formatWhatsAppPhone(phone);
             const msg = `*Cool-Cat - Referral Commission Ready!*%0A%0AHi ${encodeURIComponent(name)}, great news! Your referred guest has completed their stay at Cool-Cat in Strand.%0A%0AYour 10% commission of *R${commission}* is ready for payout. Please reply with your South African bank name, account number, and branch code for instant EFT transfer.%0A%0AThank you for partnering with Cool-Cat!`;
-            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+            if (cleanPhone) {
+                window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+            } else {
+                window.open(`https://wa.me/?text=${msg}`, '_blank');
+            }
         }
 
         function copyIcalUrl(elemId) {
@@ -6901,13 +6981,15 @@ We look forward to hosting you at Cool-Cat!`;
 
         function sendGuestCheckinPass(guestName, roomName, phone) {
             const cleanPhone = formatWhatsAppPhone(phone);
+            const wifiNet = document.getElementById('wifiNetwork')?.value || 'Gouws';
+            const wifiPass = document.getElementById('wifiPassword')?.value || '004eda35aef';
             const msg = `*Cool-Cat - Check-In Pass & Gate Details*%0A%0A` +
                 `Hi ${encodeURIComponent(guestName)}, we look forward to welcoming you to Cool-Cat today!%0A%0A` +
                 `🛏️ *Room:* ${encodeURIComponent(roomName)}%0A` +
                 `⏰ *Check-In Time:* From 14:00 onwards%0A` +
                 `📍 *Google Maps Pin:* https://maps.app.goo.gl/CoolCatStrand%0A` +
                 `🔑 *Intercom / Gate Access:* 4821%23 (Press bell at main gate)%0A` +
-                `📶 *Fast Wi-Fi:* Network: *Gouws* | Password: *004eda35aef*%0A` +
+                `📶 *Fast Wi-Fi:* Network: *${encodeURIComponent(wifiNet)}* | Password: *${encodeURIComponent(wifiPass)}*%0A` +
                 `⚡ *Solar Backup:* 24/7 Power (No loadshedding!)%0A%0A` +
                 `Host Michele Rossouw: 072 889 4840%0ASafe travels!`;
             window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
@@ -7654,7 +7736,7 @@ We look forward to hosting you at Cool-Cat!`;
             localStorage.setItem('coolcat_system_settings', JSON.stringify(systemConfig));
             localStorage.setItem('coolcat_paystack_mode', mode);
 
-            // Save public key to Cloudflare KV so all visitors receive it
+            // Save public key and wifi settings to Cloudflare KV so all visitors receive it
             try {
                 await fetch('/api/settings', {
                     method: 'POST',
@@ -7663,7 +7745,11 @@ We look forward to hosting you at Cool-Cat!`;
                         'Authorization': 'Bearer ' + getAdminKey(),
                         'X-Admin-Key': getAdminKey()
                     },
-                    body: JSON.stringify({ paystack_public_key: pubKey })
+                    body: JSON.stringify({
+                        paystack_public_key: pubKey,
+                        wifi_network: wifiNet,
+                        wifi_password: wifiPass
+                    })
                 });
             } catch(e) {}
 
@@ -7756,11 +7842,19 @@ We look forward to hosting you at Cool-Cat!`;
                 if (data.success) {
                     alert(`✅ ${data.message}\n\n${data.purgedCount > 0 ? `${data.purgedCount} ghost record(s) were permanently removed.` : 'Database was already clean – no orphaned records found.'}`);
                     // Reload bookings from server and re-render
-                    const bookingsRes = await fetch('/api/bookings');
+                    const bookingsRes = await fetch('/api/bookings', {
+                        headers: {
+                            'Authorization': 'Bearer ' + getAdminKey(),
+                            'X-Admin-Key': getAdminKey()
+                        }
+                    });
                     if (bookingsRes.ok) {
                         const bookingsData = await bookingsRes.json();
                         if (bookingsData && bookingsData.bookings) {
                             ADMIN_BOOKINGS = bookingsData.bookings;
+                        }
+                        if (bookingsData && bookingsData.nextSequence) {
+                            window._serverNextSeq = bookingsData.nextSequence;
                         }
                     }
                     calculateKpis();
@@ -7786,7 +7880,7 @@ We look forward to hosting you at Cool-Cat!`;
                 return;
             }
             // Second confirmation for safety
-            if (!confirm('⛔ FINAL CONFIRMATION\n\nYou are about to wipe ALL bookings from the live database.\n\nType "DELETE" in the next prompt to confirm.')) {
+            if (!confirm('⛔ FINAL CONFIRMATION\n\nYou are about to wipe ALL bookings from the live database.\n\nPlease enter the Admin Secret Key in the next prompt to confirm.')) {
                 return;
             }
             const enteredKey = prompt('🔒 ENTER ADMIN SECRET KEY\n\nPlease enter the Admin Secret Key to authorize resetting the database:');
@@ -7807,7 +7901,9 @@ We look forward to hosting you at Cool-Cat!`;
                 if (data.success) {
                     ADMIN_BOOKINGS = [];
                     ADMIN_MARKETER_PAYOUTS = [];
+                    window._serverNextSeq = 10001;
                     try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify([])); } catch(e) {}
+                    try { localStorage.removeItem('cc_referral_payouts'); } catch(e) {}
                     try {
                         fetch('/api/settings', {
                             method: 'POST',
@@ -7816,7 +7912,7 @@ We look forward to hosting you at Cool-Cat!`;
                                 'Authorization': 'Bearer ' + enteredKey.trim(),
                                 'X-Admin-Key': enteredKey.trim()
                             },
-                            body: JSON.stringify({ marketer_payouts: [] })
+                            body: JSON.stringify({ marketer_payouts: [], referral_payouts: {} })
                         });
                     } catch(e) {}
                     calculateKpis();
