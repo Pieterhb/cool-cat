@@ -141,15 +141,35 @@ export async function onRequestGet(context) {
     }
 }
 
+// Helper: Verify Admin / Marketer Authorization via Cloudflare Environment Variables
+function verifyAuth(request, env) {
+    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!token) return { isAuthorized: false, role: null };
+
+    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '2026coolcat';
+    const isOwner = Boolean(
+        (expectedOwnerKey && token === expectedOwnerKey) ||
+        (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
+    );
+
+    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : 'marketer2026';
+    const isMarketer = Boolean(
+        (expectedMarketerKey && token === expectedMarketerKey) ||
+        (!env?.MARKETER_API_KEY && (token === 'marketer2026' || token === 'coolcat_mkt_2026'))
+    );
+
+    if (isOwner) return { isAuthorized: true, role: 'owner' };
+    if (isMarketer) return { isAuthorized: true, role: 'marketer' };
+    return { isAuthorized: false, role: null };
+}
+
 export async function onRequestPost(context) {
     const { request, env } = context;
 
     // Layer 2: Verify Admin Secret Key for updating site settings & tariffs
-    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
-    const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-    if (!((expectedKey && token === expectedKey) || isMarketerToken)) {
+    const auth = verifyAuth(request, env);
+    if (!auth.isAuthorized) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
             status: 401,
             headers: CORS_HEADERS

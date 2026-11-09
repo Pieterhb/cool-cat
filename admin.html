@@ -3418,18 +3418,9 @@
                 submitBtn.innerHTML = '<span>⏳</span> Verifying Access...';
             }
 
-            // Client & Server Passkey Verification
-            const validOwnerKeys = ['2026coolcat', 'coolcat2026'];
-            const validMarketerKeys = ['marketer2026', 'coolcat_mkt_2026', '2026coolcat'];
-
             let isAuthorized = false;
-            if (account === 'owner') {
-                if (validOwnerKeys.includes(passkey)) isAuthorized = true;
-            } else if (account === 'marketer') {
-                if (validMarketerKeys.includes(passkey)) isAuthorized = true;
-            }
 
-            // Live server authentication verification
+            // Strict Server-Side Authentication (Cloudflare Protected - zero passwords in page source)
             try {
                 const testRes = await fetch('/api/bookings', {
                     headers: {
@@ -3444,15 +3435,11 @@
                             isAuthorized = true;
                         } else if (account === 'marketer' && (testData.role === 'marketer' || testData.role === 'owner')) {
                             isAuthorized = true;
-                        } else {
-                            isAuthorized = false;
                         }
-                    } else if (testData && testData.authenticated === false) {
-                        isAuthorized = false;
                     }
                 }
             } catch(e) {
-                // If network offline but matched client-approved fallback key, allow through
+                console.error("Server authentication check failed:", e);
             }
 
             if (!isAuthorized) {
@@ -7694,9 +7681,6 @@ We look forward to hosting you at Cool-Cat!`;
                     }
                     if (cfg.paystack_public_key && document.getElementById('paystackPublicKey')) {
                         document.getElementById('paystackPublicKey').value = cfg.paystack_public_key;
-                    }
-                    if (cfg.paystack_secret_key && document.getElementById('paystackSecretKey')) {
-                        document.getElementById('paystackSecretKey').value = cfg.paystack_secret_key;
                     }
                     if (cfg.wifi_network && document.getElementById('wifiNetwork')) {
                         document.getElementById('wifiNetwork').value = cfg.wifi_network;

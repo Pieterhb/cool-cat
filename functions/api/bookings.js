@@ -1,6 +1,29 @@
 // Cloudflare Pages Function: /api/bookings
 // Handles GET (retrieve active bookings), POST (create/block booking), DELETE (cancel booking), and PUT (update status)
 
+// Helper: Verify Admin / Marketer Authorization via Cloudflare Environment Variables
+function verifyAuth(request, env) {
+    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!token) return { isAuthorized: false, role: null };
+
+    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '2026coolcat';
+    const isOwner = Boolean(
+        (expectedOwnerKey && token === expectedOwnerKey) ||
+        (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
+    );
+
+    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : 'marketer2026';
+    const isMarketer = Boolean(
+        (expectedMarketerKey && token === expectedMarketerKey) ||
+        (!env?.MARKETER_API_KEY && (token === 'marketer2026' || token === 'coolcat_mkt_2026'))
+    );
+
+    if (isOwner) return { isAuthorized: true, role: 'owner' };
+    if (isMarketer) return { isAuthorized: true, role: 'marketer' };
+    return { isAuthorized: false, role: null };
+}
+
 export async function onRequestGet(context) {
     const { request, env } = context;
 
@@ -49,15 +72,8 @@ export async function onRequestGet(context) {
         });
 
         // Layer 3: Security & Privacy Check - Authenticated Admin vs Public Visitor
-        const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
-        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-        const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
-        const isOwnerToken = Boolean(
-            (expectedKey && token && token === expectedKey) ||
-            (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
-        );
-        const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-        const isAdmin = Boolean(isOwnerToken || isMarketerToken);
+        const auth = verifyAuth(request, env);
+        const isAdmin = auth.isAuthorized;
 
         // Sanitize bookings for public calendars: hide customer names, phones, emails, and financial details
         const responseBookings = isAdmin ? allBookings : allBookings.map(b => ({
@@ -81,8 +97,8 @@ export async function onRequestGet(context) {
             success: true,
             bookings: responseBookings,
             nextSequence: nextSequence,
-            authenticated: isAdmin,
-            role: isOwnerToken ? 'owner' : (isMarketerToken ? 'marketer' : null)
+            authenticated: auth.isAuthorized,
+            role: auth.role
         }), {
             headers: {
                 'Content-Type': 'application/json',
@@ -173,11 +189,8 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     // Layer 2: Verify Admin Secret Key for creating manual bookings/blocks
-    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
-    const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-    if (!((expectedKey && token === expectedKey) || isMarketerToken)) {
+    const auth = verifyAuth(request, env);
+    if (!auth.isAuthorized) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
             status: 401,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
@@ -342,11 +355,8 @@ export async function onRequestDelete(context) {
     const url = new URL(request.url);
 
     // Layer 2: Verify Admin Secret Key for any DELETE action
-    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
-    const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-    if (!((expectedKey && token === expectedKey) || isMarketerToken)) {
+    const auth = verifyAuth(request, env);
+    if (!auth.isAuthorized) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
             status: 401,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
@@ -483,11 +493,8 @@ export async function onRequestPut(context) {
     const { request, env } = context;
 
     // Layer 2: Verify Admin Secret Key for updating booking state
-    const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const expectedKey = (env && env.ADMIN_API_KEY) ? env.ADMIN_API_KEY : '2026coolcat';
-    const isMarketerToken = (token === 'marketer2026' || token === 'coolcat_mkt_2026');
-    if (!((expectedKey && token === expectedKey) || isMarketerToken)) {
+    const auth = verifyAuth(request, env);
+    if (!auth.isAuthorized) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Invalid or missing Admin Secret Key." }), {
             status: 401,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
