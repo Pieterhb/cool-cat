@@ -7,7 +7,15 @@ export async function onRequestPost(context) {
     try {
         const bodyText = await request.text();
         const signature = request.headers.get('x-paystack-signature');
-        const paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        if (!paystackSecret && env && env.COOLCAT_KV) {
+            try {
+                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+                if (cfg && cfg.paystack_secret_key && String(cfg.paystack_secret_key).trim()) {
+                    paystackSecret = String(cfg.paystack_secret_key).trim();
+                }
+            } catch(e) {}
+        }
 
         let configuredPubKey = (env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : '';
         if (env && env.COOLCAT_KV) {

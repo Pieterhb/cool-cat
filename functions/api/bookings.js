@@ -367,14 +367,30 @@ export async function onRequestDelete(context) {
 
     // Layer 1: Reset all bookings - strictly locked in live mode
     if (action === 'reset_all') {
-        const isLive = Boolean(
-            (env && env.PAYSTACK_SECRET_KEY && env.PAYSTACK_SECRET_KEY.startsWith('sk_live_')) ||
-            (env && env.ENVIRONMENT === 'production')
-        );
-        if (isLive) {
+        if (auth.role !== 'owner') {
             return new Response(JSON.stringify({
                 success: false,
-                error: "Action Locked: Resetting the database is permanently disabled in live production mode."
+                error: "Unauthorized: Only the property owner can reset test bookings."
+            }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
+
+        let isLivePaystack = Boolean(env && env.PAYSTACK_SECRET_KEY && env.PAYSTACK_SECRET_KEY.startsWith('sk_live_'));
+        if (!isLivePaystack && env && env.COOLCAT_KV) {
+            try {
+                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
+                if (cfg && (cfg.paystack_secret_key?.startsWith('sk_live_') || cfg.paystack_public_key?.startsWith('pk_live_') || cfg.paystack_mode === 'live')) {
+                    isLivePaystack = true;
+                }
+            } catch(e) {}
+        }
+
+        if (isLivePaystack) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: "Action Locked: Resetting the database is permanently disabled in live production mode with active live Paystack keys."
             }), {
                 status: 403,
                 headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }

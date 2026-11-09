@@ -4488,7 +4488,7 @@
             // Wire dynamic WhatsApp button
             const waBtn = document.getElementById('confWhatsAppBtn');
             if (waBtn) {
-                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${cleanRef}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
+                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!\n\n*Booking Ref:* #${cleanRef}\n*Guest:* ${name}\n*Arrival Window:* ${arrivalTime}\n\nLooking forward to our stay in Strand!`);
                 waBtn.href = `https://wa.me/27728894840?text=${waText}`;
             }
 
@@ -4992,7 +4992,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Reviews Modal Wiring
             const reviewsBtn = document.getElementById('reviewsBtn');
             const reviewsModal = document.getElementById('reviewsModal');
@@ -5075,27 +5075,31 @@
                             history.replaceState({}, document.title, window.location.pathname);
                             sessionStorage.removeItem('coolcat_pending_booking');
 
-                            fetch('/api/verify-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    reference: pending.bookingRef,
-                                    paystackRef: paystackReturnRef,
-                                    guestName: pending.fullName,
-                                    guestEmail: pending.email,
-                                    guestPhone: pending.phone,
-                                    roomId: pending.roomId,
-                                    roomName: pending.roomName,
-                                    checkIn: pending.checkIn,
-                                    checkOut: pending.checkOut,
-                                    nights: pending.nights || pending.totalNights || 1,
-                                    totalNights: pending.totalNights || pending.nights || 1,
-                                    totalAmount: pending.grandTotal,
-                                    amountPaid: pending.depositDue,
-                                    balanceDue: pending.balanceDue,
-                                    isQuotePayment: true
-                                })
-                            }).catch(err => console.error("Payment sync notice:", err));
+                            try {
+                                await fetch('/api/verify-payment', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        reference: pending.bookingRef,
+                                        paystackRef: paystackReturnRef,
+                                        guestName: pending.fullName,
+                                        guestEmail: pending.email,
+                                        guestPhone: pending.phone,
+                                        roomId: pending.roomId,
+                                        roomName: pending.roomName,
+                                        checkIn: pending.checkIn,
+                                        checkOut: pending.checkOut,
+                                        nights: pending.nights || pending.totalNights || 1,
+                                        totalNights: pending.totalNights || pending.nights || 1,
+                                        totalAmount: pending.grandTotal,
+                                        amountPaid: pending.depositDue,
+                                        balanceDue: pending.balanceDue,
+                                        isQuotePayment: true
+                                    })
+                                });
+                            } catch (err) {
+                                console.error("Payment sync notice:", err);
+                            }
 
                             alert(`🎉 Payment of R${Number(pending.depositDue).toLocaleString()} received successfully for booking #${pending.bookingRef}!\n\nYour confirmation receipt has been issued.`);
                             window.location.href = '/book';

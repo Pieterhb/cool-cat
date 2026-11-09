@@ -26,10 +26,49 @@ export async function onRequestGet(context) {
         let activeBookings = [];
         if (requestedRoom === 'all') {
             // For the entire property calendar:
-            // Include all primary bookings (!b.isCalendarBlock).
-            // If an orphaned calendar block exists with no parent in the list, include it.
-            const parentIds = new Set(uncancelled.filter(b => !b.isCalendarBlock).map(b => b.id));
-            activeBookings = uncancelled.filter(b => !b.isCalendarBlock || !parentIds.has(b.parentBookingId));
+            // Multi-stay bookings (different rooms or non-contiguous dates) have a parent booking spanning
+            // the full range from earliest check-in to latest check-out. To avoid over-blocking unoccupied
+            // gap days on external platforms, export the individual stay records or child blocks instead of the outer span.
+            const multiStayParentIds = new Set(
+                uncancelled
+                    .filter(b => !b.isCalendarBlock && (b.totalStays > 1 || b.roomId === 'multiple' || (Array.isArray(b.stays) && b.stays.length > 1)))
+                    .map(b => b.id)
+            );
+
+            const multiStayChildBlocks = uncancelled.filter(b => b.isCalendarBlock && multiStayParentIds.has(b.parentBookingId));
+            const multiStayParentsWithChildren = new Set(multiStayChildBlocks.map(b => b.parentBookingId));
+            const allParentIds = new Set(uncancelled.filter(b => !b.isCalendarBlock).map(b => b.id));
+
+            uncancelled.forEach(b => {
+                if (!b.isCalendarBlock) {
+                    if (multiStayParentIds.has(b.id)) {
+                        // If multi-stay parent has no child calendar blocks in KV, expand b.stays array
+                        if (!multiStayParentsWithChildren.has(b.id) && Array.isArray(b.stays) && b.stays.length > 0) {
+                            b.stays.forEach((s, sIdx) => {
+                                const cIn = s.checkInStr || s.checkIn;
+                                const cOut = s.checkOutStr || s.checkOut;
+                                if (cIn && cOut) {
+                                    activeBookings.push({
+                                        id: `${b.id}_${sIdx + 1}`,
+                                        roomId: s.roomId || b.roomId,
+                                        roomName: s.roomName || b.roomName,
+                                        checkIn: cIn,
+                                        checkOut: cOut,
+                                        status: b.status
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        activeBookings.push(b);
+                    }
+                } else {
+                    // Include child blocks for multi-stay bookings, or orphaned blocks with no parent in DB
+                    if (multiStayParentIds.has(b.parentBookingId) || !allParentIds.has(b.parentBookingId)) {
+                        activeBookings.push(b);
+                    }
+                }
+            });
         } else {
             // For a specific room (e.g. king-arthur, santori, deluxe-suite):
             // Check which parent bookings already have a dedicated calendar block for this room
