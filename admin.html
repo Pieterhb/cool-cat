@@ -6990,23 +6990,31 @@ We look forward to hosting you at Cool-Cat!`;
 
         async function markReferralPaid(refId) {
             const storedPayouts = JSON.parse(localStorage.getItem('cc_referral_payouts') || '{}');
-            storedPayouts[refId] = { paidAt: new Date().toISOString() };
-            localStorage.setItem('cc_referral_payouts', JSON.stringify(storedPayouts));
+            const pendingPayouts = { ...storedPayouts, [refId]: { paidAt: new Date().toISOString() } };
+
             try {
-                await fetch('/api/settings', {
+                const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + getAdminKey(),
                         'X-Admin-Key': getAdminKey()
                     },
-                    body: JSON.stringify({ referral_payouts: storedPayouts })
+                    body: JSON.stringify({ referral_payouts: pendingPayouts })
                 });
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+
+                localStorage.setItem('cc_referral_payouts', JSON.stringify(pendingPayouts));
+                renderReferralsTable();
+                alert(`✅ Commission marked as Paid via EFT and saved to cloud!`);
             } catch(e) {
                 console.error('Failed to sync referral payout to cloud settings:', e);
+                alert(`⚠️ Failed to mark referral as paid: ${e.message}\n\nPlease check your internet connection or Admin Key and try again.`);
             }
-            renderReferralsTable();
-            alert(`✅ Commission marked as Paid via EFT!`);
         }
 
         function whatsappReferrer(phone, name, commission) {

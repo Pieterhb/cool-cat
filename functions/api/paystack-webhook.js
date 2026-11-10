@@ -7,24 +7,21 @@ export async function onRequestPost(context) {
     try {
         const bodyText = await request.text();
         const signature = request.headers.get('x-paystack-signature');
-        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
-        if (!paystackSecret && env && env.COOLCAT_KV) {
+        let siteConfig = null;
+        if (env && env.COOLCAT_KV) {
             try {
-                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
-                if (cfg && cfg.paystack_secret_key && String(cfg.paystack_secret_key).trim()) {
-                    paystackSecret = String(cfg.paystack_secret_key).trim();
-                }
+                siteConfig = await env.COOLCAT_KV.get('site_config', { type: 'json' });
             } catch(e) {}
         }
 
+        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        if (!paystackSecret && siteConfig && siteConfig.paystack_secret_key && String(siteConfig.paystack_secret_key).trim()) {
+            paystackSecret = String(siteConfig.paystack_secret_key).trim();
+        }
+
         let configuredPubKey = (env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : '';
-        if (env && env.COOLCAT_KV) {
-            try {
-                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
-                if (cfg && cfg.paystack_public_key && String(cfg.paystack_public_key).trim()) {
-                    configuredPubKey = String(cfg.paystack_public_key).trim();
-                }
-            } catch(e) {}
+        if (siteConfig && siteConfig.paystack_public_key && String(siteConfig.paystack_public_key).trim()) {
+            configuredPubKey = String(siteConfig.paystack_public_key).trim();
         }
         const isLivePublicKey = configuredPubKey.startsWith('pk_live_');
         if (isLivePublicKey && (!paystackSecret || !paystackSecret.startsWith('sk_live_'))) {

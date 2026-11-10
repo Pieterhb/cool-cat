@@ -105,7 +105,8 @@ const DEFAULT_CONFIG = {
 };
 
 export async function onRequestGet(context) {
-    const { env } = context;
+    const { request, env } = context;
+    const auth = verifyAuth(request, env);
     try {
         let config = { ...DEFAULT_CONFIG };
         if (env && env.COOLCAT_KV) {
@@ -135,7 +136,7 @@ export async function onRequestGet(context) {
         return new Response(JSON.stringify({ success: true, config }), { headers: CORS_HEADERS });
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message, config: DEFAULT_CONFIG }), {
-            status: 200,
+            status: auth.isAuthorized ? 500 : 200,
             headers: CORS_HEADERS
         });
     }

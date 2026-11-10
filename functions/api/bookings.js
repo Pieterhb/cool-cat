@@ -29,6 +29,7 @@ export async function onRequestGet(context) {
 
     // Initial bookings (empty by default; populated via live bookings & admin in Cloudflare KV)
     const defaultBookings = [];
+    const auth = verifyAuth(request, env);
 
     try {
         let storedBookings = [];
@@ -72,7 +73,6 @@ export async function onRequestGet(context) {
         });
 
         // Layer 3: Security & Privacy Check - Authenticated Admin vs Public Visitor
-        const auth = verifyAuth(request, env);
         const isAdmin = auth.isAuthorized;
 
         // Sanitize bookings for public calendars: hide customer names, phones, emails, and financial details
@@ -112,7 +112,7 @@ export async function onRequestGet(context) {
             bookings: defaultBookings,
             nextSequence: 10001
         }), {
-            status: 200,
+            status: auth.isAuthorized ? 500 : 200,
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
@@ -204,7 +204,7 @@ export async function onRequestPost(context) {
         if (!roomId || !checkIn || !checkOut) {
             return new Response(JSON.stringify({ success: false, error: "Missing required booking fields (roomId, checkIn, checkOut)" }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
             });
         }
 
@@ -346,7 +346,7 @@ export async function onRequestPost(context) {
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 }
@@ -409,7 +409,7 @@ export async function onRequestDelete(context) {
         } catch (err) {
             return new Response(JSON.stringify({ success: false, error: err.message }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
             });
         }
     }
@@ -438,7 +438,7 @@ export async function onRequestDelete(context) {
         } catch (err) {
             return new Response(JSON.stringify({ success: false, error: err.message }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
             });
         }
     }
@@ -456,7 +456,7 @@ export async function onRequestDelete(context) {
     if (!id) {
         return new Response(JSON.stringify({ success: false, error: "Booking ID or action is required" }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 
@@ -501,7 +501,7 @@ export async function onRequestDelete(context) {
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 }
@@ -525,7 +525,7 @@ export async function onRequestPut(context) {
         if (!id) {
             return new Response(JSON.stringify({ success: false, error: "Booking ID is required" }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
             });
         }
 

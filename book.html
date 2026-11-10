@@ -4363,6 +4363,19 @@
                     }
 
                     handler.openIframe();
+
+                    // Timeout fallback: if iframe fails to render or browser blocks gateway, restore button after 45s
+                    setTimeout(() => {
+                        if (isPaymentSubmitting) {
+                            isPaymentSubmitting = false;
+                            const submitBtn = document.getElementById('btnPaystackSubmit');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                            }
+                            showToast("Payment gateway timed out. Please try again.");
+                        }
+                    }, 45000);
                 } else {
                     console.error("PaystackPop is not available on window.");
                     isPaymentSubmitting = false;
@@ -5095,10 +5108,9 @@
                         // If returning from mobile 3DS on a Quote payment:
                         if (pending.isQuotePayment) {
                             history.replaceState({}, document.title, window.location.pathname);
-                            sessionStorage.removeItem('coolcat_pending_booking');
 
                             try {
-                                await fetch('/api/verify-payment', {
+                                const vRes = await fetch('/api/verify-payment', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -5119,13 +5131,21 @@
                                         isQuotePayment: true
                                     })
                                 });
+
+                                if (!vRes.ok) {
+                                    const errData = await vRes.json().catch(() => ({}));
+                                    throw new Error(errData.error || `Payment verification returned status ${vRes.status}`);
+                                }
+
+                                sessionStorage.removeItem('coolcat_pending_booking');
+                                alert(`🎉 Payment of R${Number(pending.depositDue).toLocaleString()} received successfully for booking #${pending.bookingRef}!\n\nYour confirmation receipt has been issued.`);
+                                window.location.href = '/book';
+                                return;
                             } catch (err) {
                                 console.error("Payment sync notice:", err);
+                                alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${pending.bookingRef}.`);
+                                return;
                             }
-
-                            alert(`🎉 Payment of R${Number(pending.depositDue).toLocaleString()} received successfully for booking #${pending.bookingRef}!\n\nYour confirmation receipt has been issued.`);
-                            window.location.href = '/book';
-                            return;
                         }
 
                         if (Array.isArray(pending.stays) && pending.stays.length > 0) {
