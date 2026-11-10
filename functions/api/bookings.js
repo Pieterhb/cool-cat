@@ -222,7 +222,8 @@ export async function onRequestPost(context) {
         }
 
         let bookingRef = id || ref;
-        if (!bookingRef) {
+        const isCollision = bookingRef && existing.some(b => b.id === bookingRef && (b.isParentBooking || !b.isCalendarBlock));
+        if (!bookingRef || isCollision) {
             const nextSeq = await getNextSequenceNumber(env, existing);
             bookingRef = `CCH-${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);

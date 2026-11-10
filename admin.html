@@ -3544,7 +3544,7 @@
             checkAdminAuth();
         });
 
-        function checkAdminAuth() {
+        async function checkAdminAuth() {
             let key = getAdminKey();
             let isLoggedIn = (sessionStorage.getItem('coolcat_admin_logged_in') === 'true');
             if (!isLoggedIn && localStorage.getItem('coolcat_admin_logged_in') === 'true') {
@@ -3552,16 +3552,9 @@
                 if (locKey) {
                     isLoggedIn = true;
                     key = locKey;
-                    try {
-                        sessionStorage.setItem('coolcat_admin_logged_in', 'true');
-                        sessionStorage.setItem('coolcat_admin_session', '1');
-                        sessionStorage.setItem('coolcat_admin_key', locKey);
-                        const role = localStorage.getItem('coolcat_admin_role') || 'owner';
-                        sessionStorage.setItem('coolcat_admin_role', role);
-                    } catch(e) {}
                 }
             }
-            const rememberedRole = localStorage.getItem('coolcat_admin_role') || sessionStorage.getItem('coolcat_admin_role');
+            const rememberedRole = localStorage.getItem('coolcat_admin_role') || sessionStorage.getItem('coolcat_admin_role') || 'marketer';
             if (rememberedRole) {
                 const sel = document.getElementById('adminAccountSelect');
                 if (sel) { sel.value = rememberedRole; handleAccountChange(rememberedRole); }
@@ -3571,11 +3564,44 @@
             const dash = document.getElementById('adminDashboard');
 
             if (isLoggedIn && key) {
-                // Verified session active -> unhide dashboard
-                if (gate) gate.style.display = 'none';
-                if (dash) dash.style.display = 'flex';
-                applyAdminRoleUI();
-                initDashboard();
+                // Background verify key against server before unhiding dashboard
+                try {
+                    const testRes = await fetch('/api/bookings?_auth=check', {
+                        headers: {
+                            'Authorization': 'Bearer ' + key,
+                            'X-Admin-Key': key
+                        }
+                    });
+                    const testData = testRes.ok ? await testRes.json() : null;
+                    if (testData && testData.authenticated === true) {
+                        try {
+                            sessionStorage.setItem('coolcat_admin_logged_in', 'true');
+                            sessionStorage.setItem('coolcat_admin_session', '1');
+                            sessionStorage.setItem('coolcat_admin_key', key);
+                            const verifiedRole = testData.role || rememberedRole || 'marketer';
+                            sessionStorage.setItem('coolcat_admin_role', verifiedRole);
+                            localStorage.setItem('coolcat_admin_role', verifiedRole);
+                        } catch(e) {}
+
+                        if (gate) gate.style.display = 'none';
+                        if (dash) dash.style.display = 'flex';
+                        applyAdminRoleUI();
+                        initDashboard();
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Server auth check error:", e);
+                }
+
+                // If verification failed on server (e.g. key rotated or revoked): clear stale credentials and show login gate
+                adminLogout(false);
+                if (dash) dash.style.display = 'none';
+                if (gate) gate.style.display = 'flex';
+                const errBox = document.getElementById('loginErrorMessage');
+                if (errBox) {
+                    errBox.textContent = 'Saved session expired or key rotated. Please sign in again with your valid passkey.';
+                    errBox.style.display = 'flex';
+                }
             } else {
                 // Unauthenticated visitor -> enforce Login Gate, keep dashboard hidden
                 if (dash) dash.style.display = 'none';
@@ -3584,7 +3610,7 @@
         }
 
         // Admin Log Out – clears session flags and resets to Login Gate
-        function adminLogout() {
+        function adminLogout(shouldReload = true) {
             try {
                 localStorage.removeItem('coolcat_admin_logged_in');
                 sessionStorage.removeItem('coolcat_admin_logged_in');
@@ -3601,7 +3627,9 @@
             const gate = document.getElementById('adminLoginGate');
             if (dash) dash.style.display = 'none';
             if (gate) gate.style.display = 'flex';
-            window.location.reload();
+            if (shouldReload) {
+                window.location.reload();
+            }
         }
 
         // 2. Tab Navigation
@@ -5999,11 +6027,10 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 return;
             }
 
-            const bookingId = generateRefId(room);
             const nightsCount = Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
 
             const newB = {
-                id: bookingId,
+                // omit client-generated id so Cloudflare server sequence allocator assigns authentic sequential CCH-ID
                 parentBookingId: null,
                 isParentBooking: true,
                 isManual: true,
@@ -6033,22 +6060,34 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                     },
                     body: JSON.stringify(newB)
                 });
-                if (res.ok) {
-                    const data = await fetch('/api/bookings').then(r => r.json()).catch(() => null);
-                    if (data && data.bookings && Array.isArray(data.bookings)) {
-                        ADMIN_BOOKINGS = data.bookings;
-                    } else {
-                        ADMIN_BOOKINGS.unshift(newB);
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+
+                const postData = await res.json().catch(() => ({}));
+                const confirmedBooking = postData.booking || newB;
+
+                const data = await fetch('/api/bookings', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
                     }
-                    if (data && data.nextSequence) {
-                        window._serverNextSeq = data.nextSequence;
-                    }
+                }).then(r => r.json()).catch(() => null);
+
+                if (data && data.bookings && Array.isArray(data.bookings)) {
+                    ADMIN_BOOKINGS = data.bookings;
                 } else {
-                    ADMIN_BOOKINGS.unshift(newB);
+                    ADMIN_BOOKINGS.unshift(confirmedBooking);
+                }
+                if (data && data.nextSequence) {
+                    window._serverNextSeq = data.nextSequence;
                 }
             } catch (err) {
                 console.error("Save to KV error:", err);
-                ADMIN_BOOKINGS.unshift(newB);
+                alert(`⚠️ Failed to save booking to database: ${err.message}\n\nPlease check your internet connection or Admin Key and try again.`);
+                return;
             }
 
             calculateKpis();
@@ -6343,30 +6382,40 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             }
 
             try {
-                await fetch(`/api/bookings?id=${encodeURIComponent(id)}&hard=true`, {
+                const res = await fetch(`/api/bookings?id=${encodeURIComponent(id)}&hard=true`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + getAdminKey(),
                         'X-Admin-Key': getAdminKey()
                     }
                 });
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                const data = await res.json().catch(() => ({}));
+                if (data && data.success === false) {
+                    throw new Error(data.error || "Failed to wipe booking on server.");
+                }
+
+                const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
+                ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
+                    const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
+                    return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
+                });
+
+                calculateKpis();
+                renderBookingsTables();
+                renderOperationsToday();
+                renderFinancesTable();
+                renderGuestsTable();
+                renderAdminCalendar();
+                alert(`🗑️ Booking #${formatRefId(id)} permanently wiped from the database.`);
             } catch (err) {
                 console.error("Hard delete error:", err);
+                alert(`⚠️ Permanent wipe failed: ${err.message}\n\nThe booking was NOT removed from the cloud database. Please verify your connection or Admin Key and try again.`);
             }
-
-            const baseId = id.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
-            ADMIN_BOOKINGS = ADMIN_BOOKINGS.filter(b => {
-                const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
-                return b.id !== id && b.parentBookingId !== id && bBase !== baseId;
-            });
-
-            calculateKpis();
-            renderBookingsTables();
-            renderOperationsToday();
-            renderFinancesTable();
-            renderGuestsTable();
-            renderAdminCalendar();
-            alert(`🗑️ Booking #${formatRefId(id)} permanently wiped from the database.`);
         }
 
         function updateLocalBookingStatus(id, status, balanceDue = 0) {
@@ -7579,10 +7628,11 @@ We look forward to hosting you at Cool-Cat!`;
                 event_santori_end: document.getElementById('event_santori_end')?.value || '',
                 event_santori_rate: Number(document.getElementById('event_santori_rate')?.value) || 0,
 
-                event_mykonos_active: false,
-                event_mykonos_start: '',
-                event_mykonos_end: '',
-                event_mykonos_rate: 0,
+                // Mykonos (Santori Suite Room B) inherits event settings directly from Santori
+                event_mykonos_active: document.getElementById('event_santori_active')?.value === 'true',
+                event_mykonos_start: document.getElementById('event_santori_start')?.value || '',
+                event_mykonos_end: document.getElementById('event_santori_end')?.value || '',
+                event_mykonos_rate: Number(document.getElementById('event_santori_rate')?.value) || 0,
 
                 event_deluxe_active: document.getElementById('event_deluxe_active')?.value === 'true',
                 event_deluxe_start: document.getElementById('event_deluxe_start')?.value || '',
@@ -7600,10 +7650,11 @@ We look forward to hosting you at Cool-Cat!`;
                 special_santori_end: document.getElementById('special_santori_end')?.value || '',
                 special_santori_rate: Number(document.getElementById('special_santori_rate')?.value) || 0,
 
-                special_mykonos_active: false,
-                special_mykonos_start: '',
-                special_mykonos_end: '',
-                special_mykonos_rate: 0,
+                // Mykonos (Santori Suite Room B) inherits specials overrides directly from Santori
+                special_mykonos_active: document.getElementById('special_santori_active')?.value === 'true',
+                special_mykonos_start: document.getElementById('special_santori_start')?.value || '',
+                special_mykonos_end: document.getElementById('special_santori_end')?.value || '',
+                special_mykonos_rate: Number(document.getElementById('special_santori_rate')?.value) || 0,
 
                 special_deluxe_active: document.getElementById('special_deluxe_active')?.value === 'true',
                 special_deluxe_start: document.getElementById('special_deluxe_start')?.value || '',
