@@ -5231,15 +5231,15 @@
                     const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
                     if (avail.availableCount === 2) {
                         if (activeEventInfo) {
-                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 2 Suites (3 Beds) Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 3 Rooms Open</span>`;
                             dayCell.style.background = '#FFFBEB';
                             dayCell.style.borderColor = '#FCD34D';
                         } else if (activePromoInfo) {
-                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 2 Suites (3 Beds) Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 3 Rooms Open</span>`;
                             dayCell.style.background = '#FFF5F5';
                             dayCell.style.borderColor = '#FDA4AF';
                         } else {
-                            pillHtml = `<span class="adm-cal-avail-pill pill-open">2 Suites (3 Beds) Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill pill-open">3 Rooms Open</span>`;
                         }
                     } else if (avail.availableCount === 0) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-booked">Fully Booked</span>`;
@@ -5247,7 +5247,7 @@
                         monthBookedNights++;
                         dayCell.classList.add('booked-day');
                     } else {
-                        const label = avail.availableRooms.includes('santori') ? 'Santori Left (2 Beds)' : 'King Arthur Left (1 Bed)';
+                        const label = avail.availableRooms.includes('santori') ? 'Santori Left (2 Rooms)' : 'King Arthur Left (1 Room)';
                         pillHtml = `<span class="adm-cal-avail-pill pill-partial">${label}</span>`;
                         isBlocked = true;
                         monthBlockedNights++;
@@ -5410,14 +5410,14 @@
                     alert(msg);
                 } else if (adminCalRoomId === 'three-rooms') {
                     const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
-                    let bookedBeds = 0;
+                    let bookedRoomCount = 0;
                     avail.bookedRooms.forEach(br => {
-                        bookedBeds += (br.roomId === 'santori' ? 2 : 1);
+                        bookedRoomCount += (br.roomId === 'santori' ? 2 : 1);
                     });
-                    let msg = `📅 Availability on ${dateStr} for Bottom Rooms (2 Suites / 3 Bedrooms):\n\n${avail.bookedCount} of 2 suites (${bookedBeds} of 3 bedrooms) occupied:\n`;
+                    let msg = `📅 Availability on ${dateStr} for Bottom Rooms (3 Rooms total):\n\n${bookedRoomCount} of 3 rooms occupied:\n`;
                     avail.bookedRooms.forEach(br => {
-                        const beds = br.roomId === 'santori' ? '2 Bedrooms' : '1 Bedroom';
-                        msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId} (${beds}): ${br.booking.guestName} (#${br.booking.id})\n`;
+                        const rooms = br.roomId === 'santori' ? '2 Rooms' : '1 Room';
+                        msg += `• ${ADMIN_ROOM_NAMES[br.roomId] || br.roomId} (${rooms}): ${br.booking.guestName} (#${br.booking.id})\n`;
                     });
                     alert(msg);
                 }
