@@ -29,26 +29,23 @@ export async function onRequestPost(context) {
         let paystackVerified = false;
         let paystackData = null;
 
-        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
-        if (!paystackSecret && env && env.COOLCAT_KV) {
+        let siteConfig = null;
+        if (env && env.COOLCAT_KV) {
             try {
-                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
-                if (cfg && cfg.paystack_secret_key && String(cfg.paystack_secret_key).trim()) {
-                    paystackSecret = String(cfg.paystack_secret_key).trim();
-                }
+                siteConfig = await env.COOLCAT_KV.get('site_config', { type: 'json' });
             } catch(e) {}
+        }
+
+        let paystackSecret = (env && env.PAYSTACK_SECRET_KEY) ? String(env.PAYSTACK_SECRET_KEY).trim() : null;
+        if (!paystackSecret && siteConfig && siteConfig.paystack_secret_key && String(siteConfig.paystack_secret_key).trim()) {
+            paystackSecret = String(siteConfig.paystack_secret_key).trim();
         }
         const txRefToVerify = (paystackRef || reference || '').trim().replace(/^#/, '');
 
         // Resolve configured public key to determine expected gateway mode
         let configuredPubKey = (env && env.PAYSTACK_PUBLIC_KEY) ? String(env.PAYSTACK_PUBLIC_KEY).trim() : '';
-        if (env && env.COOLCAT_KV) {
-            try {
-                const cfg = await env.COOLCAT_KV.get('site_config', { type: 'json' });
-                if (cfg && cfg.paystack_public_key && String(cfg.paystack_public_key).trim()) {
-                    configuredPubKey = String(cfg.paystack_public_key).trim();
-                }
-            } catch(e) {}
+        if (siteConfig && siteConfig.paystack_public_key && String(siteConfig.paystack_public_key).trim()) {
+            configuredPubKey = String(siteConfig.paystack_public_key).trim();
         }
         if (!configuredPubKey) {
             configuredPubKey = 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407';
@@ -177,9 +174,9 @@ export async function onRequestPost(context) {
             }
         }
 
-        let existingForSeq = [];
+        let existing = [];
         if (env && env.COOLCAT_KV) {
-            existingForSeq = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+            existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
         }
 
         const resolvedNights = Number(nights || totalNights || payload.nights || payload.totalNights || (payload.stays && Array.isArray(payload.stays) && payload.stays.reduce((sum, s) => sum + (Number(s.nights) || 0), 0)) || 1);
@@ -201,7 +198,7 @@ export async function onRequestPost(context) {
         let bookingRef = rawRef.replace(/_\d{5,}$/, '');
 
         if (!bookingRef) {
-            const nextSeq = await getNextSequenceNumber(env, existingForSeq);
+            const nextSeq = await getNextSequenceNumber(env, existing);
             bookingRef = `CCH-${nextSeq}`;
             await updateSequenceNumber(env, nextSeq);
         } else {
@@ -272,8 +269,6 @@ export async function onRequestPost(context) {
 
         // 3. Save to Cloudflare KV storage if present
         if (env && env.COOLCAT_KV) {
-            let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-
             // Determine roomName and primary room for consolidated display
             // isAllRooms only when someone booked the 'All Rooms' option (not 4 individual rooms on separate dates)
             const isAllRooms = staysList.some(s => s.roomId === 'all');

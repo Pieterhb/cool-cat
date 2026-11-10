@@ -2801,9 +2801,16 @@
                 // Check stays array inside booking record (if present)
                 if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
                     return b.stays.some(s => {
-                        const blocksThisRoom = s.roomId === roomId
-                            || s.roomId === 'all'
-                            || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                        let blocksThisRoom = false;
+                        if (roomId === 'all') {
+                            blocksThisRoom = true; // Any active booking on this date blocks 'all' (entire property)
+                        } else if (roomId === 'three-rooms') {
+                            blocksThisRoom = (s.roomId === 'all' || s.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(s.roomId));
+                        } else {
+                            blocksThisRoom = (s.roomId === roomId
+                                || s.roomId === 'all'
+                                || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
+                        }
                         if (!blocksThisRoom) return false;
                         const cIn = s.checkInStr || s.checkIn;
                         const cOut = s.checkOutStr || s.checkOut;
@@ -2816,9 +2823,16 @@
                     return false;
                 }
 
-                const blocksThisRoom = b.roomId === roomId
-                    || b.roomId === 'all'
-                    || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                let blocksThisRoom = false;
+                if (roomId === 'all') {
+                    blocksThisRoom = true; // Any active booking on this date blocks 'all' (entire property)
+                } else if (roomId === 'three-rooms') {
+                    blocksThisRoom = (b.roomId === 'all' || b.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(b.roomId));
+                } else {
+                    blocksThisRoom = (b.roomId === roomId
+                        || b.roomId === 'all'
+                        || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
+                }
                 if (!blocksThisRoom) return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -2826,18 +2840,19 @@
 
         function isDateInSelectedStays(roomId, dateStr) {
             return selectedStays.some(s => {
+                let coversRoom = false;
                 if (roomId === 'all') {
-                    // Four Rooms tab only cares about its OWN 'all' stays
-                    return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    // Any stay in cart blocks the 'all' (entire property) tab on this date
+                    coversRoom = true;
+                } else if (roomId === 'three-rooms') {
+                    // Any 'all', 'three-rooms', or individual suite in THREE_ROOMS_SUBSET in cart blocks 'three-rooms'
+                    coversRoom = (s.roomId === 'all' || s.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(s.roomId));
+                } else {
+                    // Individual room: match this room's stays OR any 'all'/'three-rooms' stay that covers it
+                    coversRoom = (s.roomId === roomId
+                        || s.roomId === 'all'
+                        || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
                 }
-                if (roomId === 'three-rooms') {
-                    // Three Rooms tab only cares about its OWN 'three-rooms' stays
-                    return s.roomId === 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
-                }
-                // Individual room: match this room's stays OR any 'all'/'three-rooms' stay that covers it
-                const coversRoom = s.roomId === roomId
-                    || s.roomId === 'all'
-                    || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
                 if (!coversRoom) return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
@@ -4349,7 +4364,14 @@
 
                     handler.openIframe();
                 } else {
-                    completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
+                    console.error("PaystackPop is not available on window.");
+                    isPaymentSubmitting = false;
+                    const submitBtn = document.getElementById('btnPaystackSubmit');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                    }
+                    alert("⚠️ The secure payment gateway could not be loaded. Please disable any ad blockers, check your internet connection, or refresh the page to try again.");
                 }
             } catch (err) {
                 console.error("Paystack launch error:", err);
@@ -5048,7 +5070,7 @@
 
             populateMonthDropdown();
             switchRoom(initialRoom);
-            loadLiveBookings();
+            const liveBookingsPromise = loadLiveBookings();
             loadSiteSettings();
             updatePaystackModeUI();
 
@@ -5136,7 +5158,7 @@
             }
 
             // Auto-detect Direct Quote / Manual Payment Link (?payRef=MAN-...)
-            checkQuotePaymentUrl();
+            await checkQuotePaymentUrl(liveBookingsPromise);
 
             // Wire explicit click listener to Continue button
             const btnContinueEl = document.getElementById('btnContinue');
@@ -5164,10 +5186,17 @@
             chosenType: 'deposit'
         };
 
-        function checkQuotePaymentUrl() {
+        async function checkQuotePaymentUrl(liveBookingsPromise) {
             const urlParams = new URLSearchParams(window.location.search);
             const payRef = urlParams.get('payRef');
             if (!payRef) return;
+
+            // Wait for authentic live bookings to load to guarantee anti-tampering verification
+            if (liveBookingsPromise) {
+                try { await liveBookingsPromise; } catch(e) {}
+            } else if (!Array.isArray(MOCK_BOOKINGS) || MOCK_BOOKINGS.length === 0) {
+                try { await loadLiveBookings(); } catch(e) {}
+            }
 
             let total = Number(urlParams.get('amt') || 0);
             let dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
