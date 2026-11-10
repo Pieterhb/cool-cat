@@ -4032,9 +4032,27 @@
 
         function copyReferralLink() {
             const el = document.getElementById('generatedRefUrl');
-            el.select();
-            document.execCommand('copy');
-            showToast("Referral link copied to clipboard!");
+            const url = el ? el.value : '';
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url).then(function() {
+                    showToast("Referral link copied to clipboard!");
+                }).catch(function() {
+                    fallbackCopyReferralLink(el);
+                });
+            } else {
+                fallbackCopyReferralLink(el);
+            }
+        }
+
+        function fallbackCopyReferralLink(el) {
+            if (!el) return;
+            try {
+                el.select();
+                document.execCommand('copy');
+                showToast("Referral link copied to clipboard!");
+            } catch (err) {
+                showToast("Please copy the link manually.");
+            }
         }
 
         // ==========================================
