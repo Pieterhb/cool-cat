@@ -256,7 +256,12 @@ export async function onRequestPost(context) {
         }
 
         const numBal = Number(balanceDue !== undefined ? balanceDue : Math.max(0, numTotal - numPaid));
-        const bookingStatus = numBal > 0 ? 'deposit_paid' : (numPaid > 0 ? 'fully_paid' : 'not_paid');
+        let bookingStatus = 'not_paid';
+        if (numTotal > 0 && numPaid >= numTotal) {
+            bookingStatus = 'fully_paid';
+        } else if (numTotal > 0 && numPaid > 0) {
+            bookingStatus = 'deposit_paid';
+        }
 
         let finalBookingRecord;
         const confirmedBooking = {

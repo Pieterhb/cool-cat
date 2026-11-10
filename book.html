@@ -3245,7 +3245,7 @@
                         if (indivCartBlocking > 0) {
                             tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) in your cart – can't book Three Rooms on this date</span>`;
                         } else if (threeAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${threeAvail.availableCount} of 3 rooms free – can't book Three Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ One of the suites is already booked – Three Rooms requires both suites</span>`;
                         } else {
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked – no availability</span>`;
                         }
@@ -3328,7 +3328,7 @@
                                 if (indivCartBlocking > 0) {
                                     showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first.`);
                                 } else if (threeAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${threeAvail.availableCount} of 3 rooms are free on this date. Three Rooms requires all 3 to be available.`);
+                                    showToast("⚠️ One of the suites is already booked on this date. Three Rooms requires both King Arthur Suite & Santori Suite to be available.");
                                 } else {
                                     showToast("🚫 All 3 rooms fully booked on this date. Please select different dates.");
                                 }

@@ -132,7 +132,12 @@ export async function onRequestPost(context) {
             const totalAmountMeta = Number(metadata.total_amount || 0);
             const amountPaidMeta = amountInZar;
             const balanceDueMeta = Math.max(0, totalAmountMeta - amountPaidMeta);
-            const bookingStatus = balanceDueMeta > 0 ? 'deposit_paid' : (amountPaidMeta > 0 ? 'fully_paid' : 'not_paid');
+            let bookingStatus = 'not_paid';
+            if (totalAmountMeta > 0 && amountPaidMeta >= totalAmountMeta) {
+                bookingStatus = 'fully_paid';
+            } else if (totalAmountMeta > 0 && amountPaidMeta > 0) {
+                bookingStatus = 'deposit_paid';
+            }
 
             console.log(`Paystack Webhook Success: Ref ${cleanBookingRef} (tx: ${rawRef}) | R${amountInZar} | Customer: ${customerEmail}`);
 
@@ -183,7 +188,7 @@ export async function onRequestPost(context) {
                     const newAmountPaid = alreadyProcessed ? (Number(ex.amountPaid) || amountInZar) : ((Number(ex.amountPaid) || 0) + amountInZar);
                     const tot = Number(ex.totalAmount) || totalAmountMeta || amountInZar;
                     const newBal = Math.max(0, tot - newAmountPaid);
-                    const newStat = (newBal === 0) ? 'fully_paid' : 'deposit_paid';
+                    const newStat = (newBal === 0 && newAmountPaid > 0) ? 'fully_paid' : (newAmountPaid > 0 ? 'deposit_paid' : 'not_paid');
                     const newPaystackAmount = alreadyProcessed ? (Number(ex.paystackAmount) || amountInZar) : ((Number(ex.paystackAmount) || 0) + amountInZar);
                     const updatedRefs = alreadyProcessed ? existingRefs : [...existingRefs, rawRef];
 
