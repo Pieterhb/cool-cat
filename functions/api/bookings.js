@@ -368,10 +368,10 @@ export async function onRequestDelete(context) {
 
     // Layer 1: Reset all bookings - strictly locked in live mode
     if (action === 'reset_all') {
-        if (auth.role !== 'owner') {
+        if (auth.role !== 'owner' && auth.role !== 'marketer') {
             return new Response(JSON.stringify({
                 success: false,
-                error: "Unauthorized: Only the property owner can reset test bookings."
+                error: "Unauthorized: Only authorized admin accounts (owner/marketer) can reset test bookings."
             }), {
                 status: 403,
                 headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
@@ -416,6 +416,12 @@ export async function onRequestDelete(context) {
 
     // Action: Purge corrupted ghost records (missing check-in dates or orphaned test fragments)
     if (action === 'purge_ghosts') {
+        if (auth.role !== 'owner' && auth.role !== 'marketer') {
+            return new Response(JSON.stringify({ success: false, error: 'Forbidden: Owner or Marketer role required.' }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
         try {
             if (env && env.COOLCAT_KV) {
                 let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
@@ -445,6 +451,13 @@ export async function onRequestDelete(context) {
 
     let id = url.searchParams.get('id');
     const isHardDelete = (url.searchParams.get('hard') === 'true');
+
+    if (isHardDelete && auth.role !== 'owner' && auth.role !== 'marketer') {
+        return new Response(JSON.stringify({ success: false, error: 'Forbidden: Owner or Marketer role required for permanent deletion.' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+    }
 
     if (!id) {
         try {

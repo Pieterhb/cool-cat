@@ -236,6 +236,25 @@ export async function onRequestPost(context) {
             }
         }
 
+        // Anti-Tampering Check: For quote payments, enforce server-side pricing from existing database record
+        if (payload.isQuotePayment || payload.is_quote_payment) {
+            const matchedExisting = existing.find(b => b.id === bookingRef || b.id === rawRef || (b.isParentBooking && b.id === bookingRef));
+            if (matchedExisting && Number(matchedExisting.totalAmount) > 0) {
+                const dbTotal = Number(matchedExisting.totalAmount);
+                const dbBalance = Number(matchedExisting.balanceDue !== undefined ? matchedExisting.balanceDue : dbTotal);
+                const minRequired = Math.min(Math.round(dbTotal * 0.5), dbBalance > 0 ? dbBalance : dbTotal);
+                if (numPaid < (minRequired - 1.00)) {
+                    return new Response(JSON.stringify({
+                        success: false,
+                        error: `Quote payment anti-tampering violation: Expected minimum payment of R${minRequired.toLocaleString()} based on quote #${matchedExisting.id}, but transaction paid R${numPaid.toLocaleString()}.`
+                    }), {
+                        status: 400,
+                        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                    });
+                }
+            }
+        }
+
         const numBal = Number(balanceDue !== undefined ? balanceDue : Math.max(0, numTotal - numPaid));
         const bookingStatus = numBal > 0 ? 'deposit_paid' : (numPaid > 0 ? 'fully_paid' : 'not_paid');
 

@@ -7319,25 +7319,30 @@ We look forward to hosting you at Cool-Cat!`;
                 return;
             }
 
-            ADMIN_MARKETER_PAYOUTS = (ADMIN_MARKETER_PAYOUTS || []).filter(b => b.id !== batchId);
-
-            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
-
-            calculateKpis();
-            renderMarketerBatchesTable();
+            const updatedBatches = (ADMIN_MARKETER_PAYOUTS || []).filter(b => b.id !== batchId);
 
             try {
-                await fetch('/api/settings', {
+                const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + getAdminKey(),
                         'X-Admin-Key': getAdminKey()
                     },
-                    body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
+                    body: JSON.stringify({ marketer_payouts: updatedBatches })
                 });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                ADMIN_MARKETER_PAYOUTS = updatedBatches;
+                try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+                calculateKpis();
+                renderMarketerBatchesTable();
+                alert(`✅ Payout batch ${batchId} deleted successfully.`);
             } catch(err) {
                 console.error("Delete batch remote save error:", err);
+                alert(`⚠️ Could not delete payout batch: ${err.message}\n\nPlease check your connection or Admin Key.`);
             }
         }
 
@@ -7355,15 +7360,8 @@ We look forward to hosting you at Cool-Cat!`;
                 return;
             }
 
-            ADMIN_MARKETER_PAYOUTS = [];
-
-            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify([])); } catch(e) {}
-
-            calculateKpis();
-            renderMarketerBatchesTable();
-
             try {
-                await fetch('/api/settings', {
+                const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -7372,11 +7370,19 @@ We look forward to hosting you at Cool-Cat!`;
                     },
                     body: JSON.stringify({ marketer_payouts: [] })
                 });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                ADMIN_MARKETER_PAYOUTS = [];
+                try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify([])); } catch(e) {}
+                calculateKpis();
+                renderMarketerBatchesTable();
+                alert("✅ All marketer payout batches have been deleted.");
             } catch(err) {
                 console.error("Clear all batches remote save error:", err);
+                alert(`⚠️ Could not clear payout batches: ${err.message}\n\nPlease check your connection or Admin Key.`);
             }
-
-            alert("✅ All marketer payout batches have been deleted.");
         }
 
         async function toggleBatchStatus(batchId) {
@@ -7384,23 +7390,35 @@ We look forward to hosting you at Cool-Cat!`;
             if (!batch) return;
 
             const isCurrentlyConfirmed = (batch.status === 'confirmed');
-            batch.status = isCurrentlyConfirmed ? 'pending_confirmation' : 'confirmed';
+            const targetStatus = isCurrentlyConfirmed ? 'pending_confirmation' : 'confirmed';
 
-            try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
-            renderMarketerBatchesTable();
+            const updatedBatches = (ADMIN_MARKETER_PAYOUTS || []).map(b => {
+                if (b.id === batchId) {
+                    return { ...b, status: targetStatus };
+                }
+                return b;
+            });
 
             try {
-                await fetch('/api/settings', {
+                const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + getAdminKey(),
                         'X-Admin-Key': getAdminKey()
                     },
-                    body: JSON.stringify({ marketer_payouts: ADMIN_MARKETER_PAYOUTS })
+                    body: JSON.stringify({ marketer_payouts: updatedBatches })
                 });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+                ADMIN_MARKETER_PAYOUTS = updatedBatches;
+                try { localStorage.setItem('coolcat_marketer_payouts', JSON.stringify(ADMIN_MARKETER_PAYOUTS)); } catch(e) {}
+                renderMarketerBatchesTable();
             } catch(e) {
                 console.error("Save batch status error:", e);
+                alert(`⚠️ Could not update payout batch status: ${e.message}`);
             }
         }
 
@@ -7801,7 +7819,7 @@ We look forward to hosting you at Cool-Cat!`;
 
             // Save public key and wifi settings to Cloudflare KV so all visitors receive it
             try {
-                await fetch('/api/settings', {
+                const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -7814,10 +7832,20 @@ We look forward to hosting you at Cool-Cat!`;
                         wifi_password: wifiPass
                     })
                 });
-            } catch(e) {}
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
 
-            updateMaintenanceButtonsUI();
-            alert("✅ System settings & Paystack Public Key saved successfully to Cloudflare!");
+                localStorage.setItem('coolcat_system_settings', JSON.stringify(systemConfig));
+                localStorage.setItem('coolcat_paystack_mode', mode);
+
+                updateMaintenanceButtonsUI();
+                alert("✅ System settings & Paystack Public Key saved successfully to Cloudflare!");
+            } catch(e) {
+                console.error("Save system settings error:", e);
+                alert(`⚠️ Could not save settings to Cloudflare: ${e.message}\n\nPlease check your Admin Key or network connection.`);
+            }
         }
 
         function loadSavedSystemSettings() {

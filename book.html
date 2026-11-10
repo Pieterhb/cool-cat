@@ -4467,9 +4467,11 @@
                 } else {
                     const errData = await res.json().catch(() => ({}));
                     console.warn("Backend verification notice:", errData.error || res.statusText);
+                    alert(`⚠️ Reservation Notice:\n\nYour payment was received by Paystack (Ref: ${txRef || cleanRef}), but our booking system could not finalize your reservation in the cloud database (${errData.error || res.statusText}).\n\nPlease contact Michele (+27 72 889 4840) with reference #${cleanRef} so we can manually confirm your dates.`);
                 }
             } catch (err) {
                 console.log("Local sync notice:", err);
+                alert(`⚠️ Reservation Notice:\n\nYour payment was processed, but a network error occurred while communicating with our server (${err.message}).\n\nPlease contact Michele (+27 72 889 4840) with reference #${cleanRef} so we can manually confirm your dates.`);
             }
 
             // Update local state so calendar permanently marks rooms as booked
@@ -5410,7 +5412,7 @@
                         const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
 
                         try {
-                            await fetch('/api/verify-payment', {
+                            const res = await fetch('/api/verify-payment', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -5431,15 +5433,20 @@
                                     isQuotePayment: true
                                 })
                             });
+
+                            if (!res.ok) {
+                                const errData = await res.json().catch(() => ({}));
+                                throw new Error(errData.error || `Server verification failed with HTTP ${res.status}`);
+                            }
+
+                            closeQuotePayModal();
+                            alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
+                            window.location.href = '/book';
                         } catch (err) {
                             console.error("Payment sync error:", err);
+                            closeQuotePayModal();
+                            alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${activeQuotePay.ref}.`);
                         }
-
-                        closeQuotePayModal();
-                        alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!
-
-Your confirmation receipt has been issued.`);
-                        window.location.href = '/book';
                     },
                     onClose: function() {
                         isQuotePaymentSubmitting = false;
