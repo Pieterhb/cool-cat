@@ -3347,7 +3347,7 @@
         }
 
         function getAdminRole() {
-            return sessionStorage.getItem('coolcat_admin_role') || localStorage.getItem('coolcat_admin_role') || 'owner';
+            return sessionStorage.getItem('coolcat_admin_role') || localStorage.getItem('coolcat_admin_role') || 'marketer';
         }
 
         // Automatic security header injector for all admin API requests
@@ -3784,7 +3784,7 @@
             var endEl = document.getElementById('event_king_end');
             var startVal = startEl ? startEl.value : '';
             var endVal = endEl ? endEl.value : '';
-            ['santori', 'deluxe'].forEach(function(rk) {
+            ['santori', 'mykonos', 'deluxe'].forEach(function(rk) {
                 var s = document.getElementById('event_' + rk + '_start');
                 var e = document.getElementById('event_' + rk + '_end');
                 if (s) s.value = startVal;
@@ -5231,15 +5231,15 @@
                     const avail = getAdminDateAvailabilityForThreeRooms(dateStr);
                     if (avail.availableCount === 2) {
                         if (activeEventInfo) {
-                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 3 Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;">🏆 2 Suites Open</span>`;
                             dayCell.style.background = '#FFFBEB';
                             dayCell.style.borderColor = '#FCD34D';
                         } else if (activePromoInfo) {
-                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 3 Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill" style="background:#FFE4E6;color:#BE123C;border:1px solid #FDA4AF;">🔥 2 Suites Open</span>`;
                             dayCell.style.background = '#FFF5F5';
                             dayCell.style.borderColor = '#FDA4AF';
                         } else {
-                            pillHtml = `<span class="adm-cal-avail-pill pill-open">3 Open</span>`;
+                            pillHtml = `<span class="adm-cal-avail-pill pill-open">2 Suites Open</span>`;
                         }
                     } else if (avail.availableCount === 0) {
                         pillHtml = `<span class="adm-cal-avail-pill pill-booked">Fully Booked</span>`;
@@ -5247,8 +5247,8 @@
                         monthBookedNights++;
                         dayCell.classList.add('booked-day');
                     } else {
-                        const words = { 1: 'ONE ROOM LEFT', 2: 'TWO ROOMS LEFT' };
-                        const label = words[avail.availableCount] || `${avail.availableCount} ROOMS LEFT`;
+                        const words = { 1: '1 Suite Left' };
+                        const label = words[avail.availableCount] || `${avail.availableCount} Suites Left`;
                         pillHtml = `<span class="adm-cal-avail-pill pill-partial">${label}</span>`;
                         isBlocked = true;
                         monthBlockedNights++;

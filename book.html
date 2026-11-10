@@ -2629,7 +2629,7 @@
                     tier: 'low',
                     badgeClass: 'badge-low',
                     multiplier: 0.85,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'Winter value rate'
                 };
             }
@@ -2639,7 +2639,7 @@
                 tier: 'mid',
                 badgeClass: 'badge-mid',
                 multiplier: 1.00,
-                minStay: 2,
+                minStay: 1,
                 desc: 'Pleasant coastal weather rate'
             };
         }
@@ -4032,9 +4032,16 @@
 
         function copyReferralLink() {
             const el = document.getElementById('generatedRefUrl');
-            el.select();
-            document.execCommand('copy');
-            showToast("Referral link copied to clipboard!");
+            const url = el ? el.value : '';
+            if (navigator.clipboard && url) {
+                navigator.clipboard.writeText(url).then(function() {
+                    showToast("Referral link copied to clipboard!");
+                }).catch(function() {
+                    showToast("Could not copy link — please copy manually.");
+                });
+            } else {
+                showToast("Could not copy link — please copy manually.");
+            }
         }
 
         // ==========================================

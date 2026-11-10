@@ -416,6 +416,12 @@ export async function onRequestDelete(context) {
 
     // Action: Purge corrupted ghost records (missing check-in dates or orphaned test fragments)
     if (action === 'purge_ghosts') {
+        if (auth.role !== 'owner') {
+            return new Response(JSON.stringify({ success: false, error: 'Forbidden: owner role required.' }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
         try {
             if (env && env.COOLCAT_KV) {
                 let existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
@@ -445,6 +451,13 @@ export async function onRequestDelete(context) {
 
     let id = url.searchParams.get('id');
     const isHardDelete = (url.searchParams.get('hard') === 'true');
+
+    if (isHardDelete && auth.role !== 'owner') {
+        return new Response(JSON.stringify({ success: false, error: 'Forbidden: owner role required for permanent deletion.' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+    }
 
     if (!id) {
         try {
