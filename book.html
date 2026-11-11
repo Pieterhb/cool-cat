@@ -2361,7 +2361,7 @@
 
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
-        <span id="toastMessage">Minimum 2 nights required for Festive High Peak.</span>
+        <span id="toastMessage">Notification</span>
     </div>
 
     <!-- Footer -->
@@ -2607,8 +2607,8 @@
                     tier: 'festive',
                     badgeClass: 'badge-festive',
                     multiplier: 1.80,
-                    minStay: 2,
-                    desc: 'Peak summer holiday demand (Strict 2-night min)'
+                    minStay: 1,
+                    desc: 'Peak summer holiday demand'
                 };
             }
 
@@ -2618,7 +2618,7 @@
                     tier: 'peak',
                     badgeClass: 'badge-peak',
                     multiplier: 1.35,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'High demand holiday period'
                 };
             }
@@ -2629,7 +2629,7 @@
                     tier: 'low',
                     badgeClass: 'badge-low',
                     multiplier: 0.85,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'Winter value rate'
                 };
             }
@@ -2639,7 +2639,7 @@
                 tier: 'mid',
                 badgeClass: 'badge-mid',
                 multiplier: 1.00,
-                minStay: 2,
+                minStay: 1,
                 desc: 'Pleasant coastal weather rate'
             };
         }
@@ -3442,22 +3442,8 @@
             const checkOutDate = dateObj;
             const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
 
-            // REQUIREMENT: Minimum stay is 4 nights until 31 December 2026 (special period), then 2 nights thereafter.
-            const minNightsRequired = (checkInDate <= new Date('2026-12-31T23:59:59')) ? 4 : 2;
-            if (nights < minNightsRequired) {
-                if (minNightsRequired === 4) {
-                    showToast("⚠️ Minimum stay is 4 nights until 31 December 2026 (2 nights thereafter). Please select a check-out date at least 4 nights after check-in.");
-                } else {
-                    showToast("⚠️ Minimum stay is 2 nights. Please select a check-out date at least 2 nights after check-in.");
-                }
-                return;
-            }
-
-            const season = getSeasonInfo(checkInDate);
-            const effectiveMinStay = Math.max(minNightsRequired, season.minStay || 0);
-
-            if (nights < effectiveMinStay) {
-                showToast(`⚠️ ${season.name} requires a minimum stay of ${effectiveMinStay} nights.`);
+            if (nights < 1) {
+                showToast("⚠️ Please select a check-out date after your check-in date.");
                 return;
             }
 

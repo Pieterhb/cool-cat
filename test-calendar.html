@@ -1971,7 +1971,7 @@
 
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
-        <span id="toastMessage">Minimum 3 nights required for Festive High Peak.</span>
+        <span id="toastMessage">Notification</span>
     </div>
 
     <!-- Footer -->
@@ -2191,8 +2191,8 @@
                     tier: 'festive',
                     badgeClass: 'badge-festive',
                     multiplier: 1.80,
-                    minStay: 3,
-                    desc: 'Peak summer holiday demand (Strict 3-night min)'
+                    minStay: 1,
+                    desc: 'Peak summer holiday demand'
                 };
             }
 
@@ -2202,7 +2202,7 @@
                     tier: 'peak',
                     badgeClass: 'badge-peak',
                     multiplier: 1.35,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'High demand holiday period'
                 };
             }
@@ -2213,7 +2213,7 @@
                     tier: 'low',
                     badgeClass: 'badge-low',
                     multiplier: 0.85,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'Winter value rate'
                 };
             }
@@ -2223,7 +2223,7 @@
                 tier: 'mid',
                 badgeClass: 'badge-mid',
                 multiplier: 1.00,
-                minStay: 2,
+                minStay: 1,
                 desc: 'Pleasant coastal weather rate'
             };
         }
@@ -2541,8 +2541,8 @@
                 nights: nights,
                 allNightsOpen: allNightsOpen,
                 firstBlockedDate: firstBlockedDate,
-                isValidCheckout: allNightsOpen && nights >= 2,
-                isMinStayViolated: allNightsOpen && nights < 2,
+                isValidCheckout: allNightsOpen && nights >= 1,
+                isMinStayViolated: false,
                 isBlockedBeyondRange: !allNightsOpen
             };
         }
@@ -2909,15 +2909,7 @@
             const checkOutDate = dateObj;
             const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
 
-            // Enforce minimum 2-night stay silently (calendar just does nothing for 1 night)
-            if (nights < 2) { return; }
-
-            const season = getSeasonInfo(checkInDate);
-
-            if (season.minStay && nights < season.minStay) {
-                showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
-                return;
-            }
+            if (nights < 1) { return; }
 
             // Verify all nights in the stay range are available (prevent conflicts with DB bookings and cart stays)
             let d = new Date(checkInDate);
