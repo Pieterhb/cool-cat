@@ -2292,6 +2292,23 @@
                             </div>
                         </div>
 
+                        <!-- Customer Booking Cut-Off Date Window -->
+                        <div style="background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                            <div style="max-width: 680px;">
+                                <strong style="color: #166534; font-size: 1rem; display: flex; align-items: center; gap: 0.45rem;">
+                                    <span>📅 Customer Booking Cut-Off Date (Earliest Allowed Check-in):</span>
+                                    <span style="font-size: 0.72rem; background: #DCFCE7; color: #15803D; padding: 0.15rem 0.55rem; border-radius: 999px; font-weight: 700; border: 1px solid #BBF7D0;">CALENDAR LOCK</span>
+                                </strong>
+                                <span style="font-size: 0.82rem; color: #334155; display: block; margin-top: 0.25rem; line-height: 1.45;">
+                                    Controls the earliest check-in date customers can see and book on the public calendar. You can shift this cut-off forward or backward at any time. (Admin manual bookings remain completely unrestricted for specials, owner blocks, or private bookings).
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                                <label for="earliestBookingDateInput" style="font-size: 0.82rem; font-weight: 700; color: #166534;">Cut-off Date:</label>
+                                <input type="date" id="earliestBookingDateInput" class="adm-input" value="2027-02-01" style="font-weight: 700; color: #166534; background: white; padding: 0.45rem 0.8rem; border: 1.5px solid #86EFAC; border-radius: 8px; cursor: pointer; min-width: 150px;">
+                            </div>
+                        </div>
+
                         <!-- 0. ACTIVE SPECIALS & FLASH PROMOTIONS OVERRIDE -->
                         <div style="margin-bottom: 2rem; background: #FFF1F2; border: 1.5px solid #FDA4AF; border-radius: 12px; padding: 1.25rem;">
                             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;">
@@ -3830,6 +3847,10 @@
                 if (config.nextYearMarkupPct !== undefined) {
                     const el = document.getElementById('nextYearMarkupInput');
                     if (el) el.value = config.nextYearMarkupPct;
+                }
+                if (config.earliestBookingDate !== undefined) {
+                    const el = document.getElementById('earliestBookingDateInput');
+                    if (el) el.value = config.earliestBookingDate;
                 }
                 if (config.pkg_discount_four !== undefined) {
                     const el = document.getElementById('pkg_discount_four');
@@ -7603,8 +7624,10 @@ We look forward to hosting you at Cool-Cat!`;
             }
 
             const markup = Number(document.getElementById('nextYearMarkupInput').value) || 10;
+            const earliestBookingDate = document.getElementById('earliestBookingDateInput')?.value || '2027-02-01';
             const rates = {
                 nextYearMarkupPct: markup,
+                earliestBookingDate: earliestBookingDate,
                 // Mid Season (Base)
                 king_wd:    Number(document.getElementById('rate_king_wd').value)    || 950,
                 king_we:    Number(document.getElementById('rate_king_we').value)    || 1200,

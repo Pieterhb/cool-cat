@@ -2468,14 +2468,49 @@
 
         // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
         let SITE_CONFIG = {
+            earliestBookingDate: '2027-02-01',
             nextYearMarkupPct: 10,
             pkg_discount_four: 0,
             pkg_discount_three: 0
         };
 
+        const TODAY = new Date();
+        TODAY.setHours(0, 0, 0, 0);
+
+        function getEffectiveMinBookingDate() {
+            if (SITE_CONFIG && SITE_CONFIG.earliestBookingDate) {
+                const parts = String(SITE_CONFIG.earliestBookingDate).trim().split('-');
+                if (parts.length === 3) {
+                    const parsed = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    parsed.setHours(0, 0, 0, 0);
+                    if (!isNaN(parsed.getTime())) {
+                        return parsed > TODAY ? parsed : TODAY;
+                    }
+                }
+            }
+            const fallback = new Date(2027, 1, 1);
+            fallback.setHours(0, 0, 0, 0);
+            return fallback > TODAY ? fallback : TODAY;
+        }
+
+        function alignViewDateToMin() {
+            const minD = getEffectiveMinBookingDate();
+            const minMonth = new Date(minD.getFullYear(), minD.getMonth(), 1);
+            if (currentViewDate < minMonth) {
+                currentViewDate = minMonth;
+            }
+        }
+
         function applyConfigToRooms(cfg) {
             if (!cfg || typeof cfg !== 'object') return;
             SITE_CONFIG = { ...SITE_CONFIG, ...cfg };
+            if (cfg.earliestBookingDate !== undefined) {
+                SITE_CONFIG.earliestBookingDate = String(cfg.earliestBookingDate).trim();
+                alignViewDateToMin();
+                if (typeof populateMonthDropdown === 'function') {
+                    populateMonthDropdown();
+                }
+            }
             if (cfg.paystackPublicKey) {
                 SITE_CONFIG.paystackPublicKey = cfg.paystackPublicKey;
             }
@@ -2518,6 +2553,9 @@
             }
         }
 
+        const _initialMinDate = getEffectiveMinBookingDate();
+        let currentViewDate = new Date(_initialMinDate.getFullYear(), _initialMinDate.getMonth(), 1);
+
         // Apply any cached rate overrides from localStorage immediately
         try {
             const cachedCfg = JSON.parse(localStorage.getItem('coolcat_rates_config') || '{}');
@@ -2530,10 +2568,6 @@
         // ==========================================
         // 2. STATE MANAGEMENT
         // ==========================================
-        const TODAY = new Date();
-        TODAY.setHours(0, 0, 0, 0);
-
-        let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
         let selectedRoomId = 'all';
 
         // Multi-stay cart: Array of confirmed stays across all rooms
@@ -3035,7 +3069,9 @@
             const prevBtn = document.getElementById('prevMonthBtn');
             const nextBtn = document.getElementById('nextMonthBtn');
             
-            const isAtStart = (year === TODAY.getFullYear() && month <= TODAY.getMonth());
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            const isAtStart = (year < minMonthDate.getFullYear() || (year === minMonthDate.getFullYear() && month <= minMonthDate.getMonth()));
             const isAtEnd = (year >= 2027 && month >= 11);
             
             prevBtn.disabled = isAtStart;
@@ -3072,7 +3108,7 @@
                 dateObj.setHours(0, 0, 0, 0);
                 const dateStr = formatDateKey(dateObj);
 
-                const isPast = (dateObj < TODAY);
+                const isPast = (dateObj < minAllowedDate);
                 const isCurrentDay = (dateObj.getTime() === TODAY.getTime());
                 let avail;
                 if (selectedRoomId === 'all') {
@@ -3350,6 +3386,11 @@
         // 6. DATE SELECTION & MULTI-STAY CART LOGIC
         // ==========================================
         function handleDateClick(dateObj) {
+            const minAllowedDate = getEffectiveMinBookingDate();
+            if (dateObj < minAllowedDate) {
+                showToast(`⚠️ Bookings are only accepted from ${formatFriendlyDate(minAllowedDate)} onward.`);
+                return;
+            }
             const dateStr = formatDateKey(dateObj);
 
             // 1. If user clicked a date that is already part of a selected stay in cart, remove it
@@ -4247,6 +4288,14 @@
                 return;
             }
 
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minDateKey = formatDateKey(minAllowedDate);
+            const hasEarlyStay = selectedStays.some(s => (s.checkInStr || s.checkIn) < minDateKey);
+            if (hasEarlyStay) {
+                showToast(`⚠️ Bookings are only accepted from ${formatFriendlyDate(minAllowedDate)} onward.`);
+                return;
+            }
+
             const fullName = document.getElementById('guestFullName').value.trim();
             const email = document.getElementById('guestEmail').value.trim();
             const phone = document.getElementById('guestPhone').value.trim();
@@ -4955,25 +5004,39 @@
         }
 
         function changeMonth(delta) {
-            currentViewDate.setMonth(currentViewDate.getMonth() + delta);
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            const target = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth() + delta, 1);
+            if (delta < 0 && target < minMonthDate) {
+                return;
+            }
+            currentViewDate = target;
             renderCalendar();
         }
 
         function jumpToMonth(val) {
             const [y, m] = val.split('-').map(Number);
-            currentViewDate = new Date(y, m, 1);
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            let target = new Date(y, m, 1);
+            if (target < minMonthDate) target = minMonthDate;
+            currentViewDate = target;
             renderCalendar();
         }
 
         function populateMonthDropdown() {
             const select = document.getElementById('monthJumpSelect');
+            if (!select) return;
             select.innerHTML = '';
 
-            const startYear = TODAY.getFullYear();
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const startYear = minAllowedDate.getFullYear();
+            const startMonth = minAllowedDate.getMonth();
+            const endYear = Math.max(2027, startYear + 1);
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-            for (let y = startYear; y <= 2027; y++) {
-                const startM = (y === startYear) ? TODAY.getMonth() : 0;
+            for (let y = startYear; y <= endYear; y++) {
+                const startM = (y === startYear) ? startMonth : 0;
                 for (let m = startM; m < 12; m++) {
                     const opt = document.createElement('option');
                     opt.value = `${y}-${m}`;

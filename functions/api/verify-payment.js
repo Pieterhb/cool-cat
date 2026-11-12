@@ -255,6 +255,26 @@ export async function onRequestPost(context) {
             }
         }
 
+        // Customer Booking Cut-Off Date Validation (Configured in Admin Settings)
+        if (!payload.isQuotePayment && !payload.is_quote_payment) {
+            const earliestAllowed = (siteConfig && siteConfig.earliestBookingDate) ? String(siteConfig.earliestBookingDate).trim() : '2027-02-01';
+            if (earliestAllowed) {
+                const hasEarlyStay = resolvedStays.some(s => {
+                    const cIn = String(s.checkInStr || s.checkIn || '').split('T')[0];
+                    return cIn && cIn < earliestAllowed;
+                });
+                if (hasEarlyStay) {
+                    return new Response(JSON.stringify({
+                        success: false,
+                        error: `Online bookings are currently only accepted from ${earliestAllowed} onward.`
+                    }), {
+                        status: 400,
+                        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                    });
+                }
+            }
+        }
+
         const numBal = Number(balanceDue !== undefined ? balanceDue : Math.max(0, numTotal - numPaid));
         let bookingStatus = 'not_paid';
         if (numTotal > 0 && numPaid >= numTotal) {
