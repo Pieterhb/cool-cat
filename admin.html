@@ -1633,7 +1633,7 @@
     <!-- ========================================================= -->
     <!-- SECURE ADMIN LOGIN GATE (Owner & Marketer Only)           -->
     <!-- ========================================================= -->
-    <div id="adminLoginGate" class="admin-login-overlay" style="display: flex;">
+    <div id="adminLoginGate" class="admin-login-overlay" style="display: none;">
         <div class="admin-login-card">
             <div class="admin-login-brand">
                 <img src="Logo.png?v=3" alt="Cool Cat Logo">
@@ -3557,6 +3557,15 @@
 
         // Check authentication state on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Synchronous pre-check: if no saved session at all, show gate immediately
+            // so there is never a flash of the login screen for already-authenticated users.
+            const hasSession =
+                sessionStorage.getItem('coolcat_admin_logged_in') === 'true' ||
+                localStorage.getItem('coolcat_admin_logged_in') === 'true';
+            if (!hasSession) {
+                const gate = document.getElementById('adminLoginGate');
+                if (gate) gate.style.display = 'flex';
+            }
             checkAdminAuth();
         });
 
