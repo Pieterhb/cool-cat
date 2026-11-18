@@ -41,14 +41,19 @@
           "@type": "LodgingBusiness",
           "@id": "https://cool-cat.co.za/#lodging",
           "name": "Cool-Cat",
+          "alternateName": "Cool-Cat Holiday Accommodation",
           "url": "https://cool-cat.co.za/",
+          "logo": "https://cool-cat.co.za/Logo.png",
+          "image": "https://cool-cat.co.za/Cool%20Cat%20Banner.jpg",
           "description": "Premium holiday accommodation in Strand, Western Cape, just 250m from the beach. Looking for a quieter alternative to Gordon's Bay? Cool-Cat in Strand is just 12 minutes away, offering secure parking, premium rooms, and quick access to the harbor.",
           "telephone": "+27728894840",
           "email": "bookings@cool-cat.co.za",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Strand",
             "addressLocality": "Strand",
             "addressRegion": "Western Cape",
+            "postalCode": "7140",
             "addressCountry": "ZA"
           },
           "geo": {
@@ -64,12 +69,14 @@
             {"@type": "LocationFeatureSpecification", "name": "Coffee & Tea Facilities", "value": true},
             {"@type": "LocationFeatureSpecification", "name": "Secure Parking", "value": true},
             {"@type": "LocationFeatureSpecification", "name": "Beach Proximity (250m)", "value": true}
-          ],
-          "nearbyLocation": {
-            "@type": "TouristAttraction",
-            "name": "Gordon's Bay Harbor",
-            "description": "Gordon's Bay Harbor is located approximately 7.5 km (12 minutes) from Cool-Cat B&B in Strand."
-          }
+          ]
+        },
+        {
+          "@type": "TouristAttraction",
+          "@id": "https://cool-cat.co.za/explore/gordons-bay-harbor#attraction",
+          "name": "Gordon's Bay Harbor",
+          "description": "Gordon's Bay Harbor is located approximately 7.5 km (12 minutes) from Cool-Cat in Strand. Looking for a quieter alternative to Gordon's Bay? Cool-Cat in Strand is just 12 minutes away, offering secure parking, premium rooms, and quick access to the harbor.",
+          "url": "https://cool-cat.co.za/explore/gordons-bay-harbor"
         },
         {
           "@type": "FAQPage",

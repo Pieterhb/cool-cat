@@ -52,11 +52,52 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="Cool-Cat">
 
-    <!-- JSON-LD Structured Data: LodgingBusiness & WebSite -->
+    <!-- JSON-LD Structured Data: Organization, LodgingBusiness & WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://cool-cat.co.za/#organization",
+          "name": "Cool-Cat Holiday Accommodation",
+          "alternateName": "Cool-Cat",
+          "legalName": "Cool Cat Holiday Accommodation (Pty) Ltd",
+          "url": "https://cool-cat.co.za/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://cool-cat.co.za/Logo.png",
+            "width": "500",
+            "height": "502",
+            "caption": "Cool-Cat Holiday Accommodation"
+          },
+          "image": "https://cool-cat.co.za/Cool%20Cat%20Banner.jpg",
+          "description": "Premium holiday accommodation in Strand, Western Cape, South Africa. Located within 250m of Strand Beach with comfortable suites and modern amenities.",
+          "telephone": "+27728894840",
+          "email": "bookings@cool-cat.co.za",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Strand",
+            "addressLocality": "Strand",
+            "addressRegion": "Western Cape",
+            "postalCode": "7140",
+            "addressCountry": "ZA"
+          },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+27728894840",
+              "contactType": "reservations",
+              "email": "bookings@cool-cat.co.za",
+              "areaServed": "ZA",
+              "availableLanguage": ["English", "Afrikaans"]
+            }
+          ],
+          "sameAs": [
+            "https://www.facebook.com/people/COOL-CAT-BB/61592448388185/",
+            "https://g.page/r/CeLXe6MDyWarEBM/review"
+          ]
+        },
         {
           "@type": "LodgingBusiness",
           "@id": "https://cool-cat.co.za/#lodging",
@@ -74,8 +115,10 @@
           "email": "bookings@cool-cat.co.za",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Strand",
             "addressLocality": "Strand",
             "addressRegion": "Western Cape",
+            "postalCode": "7140",
             "addressCountry": "ZA"
           },
           "geo": {
@@ -90,6 +133,9 @@
           "checkoutTime": "10:00",
           "petsAllowed": false,
           "smokingAllowed": false,
+          "parentOrganization": {
+            "@id": "https://cool-cat.co.za/#organization"
+          },
           "amenityFeature": [
             {
               "@type": "LocationFeatureSpecification",
@@ -135,7 +181,7 @@
           "url": "https://cool-cat.co.za/",
           "name": "Cool-Cat",
           "publisher": {
-            "@id": "https://cool-cat.co.za/#lodging"
+            "@id": "https://cool-cat.co.za/#organization"
           }
         }
       ]

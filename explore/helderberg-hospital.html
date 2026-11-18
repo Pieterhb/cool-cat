@@ -41,14 +41,19 @@
           "@type": "LodgingBusiness",
           "@id": "https://cool-cat.co.za/#lodging",
           "name": "Cool-Cat",
+          "alternateName": "Cool-Cat Holiday Accommodation",
           "url": "https://cool-cat.co.za/",
+          "logo": "https://cool-cat.co.za/Logo.png",
+          "image": "https://cool-cat.co.za/Cool%20Cat%20Banner.jpg",
           "description": "Premium holiday accommodation in Strand, Western Cape, just 250m from the beach. Need to be close to Helderberg Hospital? Cool-Cat provides restful, secure, and supportive accommodation just a 10-minute drive away in Somerset West/Strand.",
           "telephone": "+27728894840",
           "email": "bookings@cool-cat.co.za",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Strand",
             "addressLocality": "Strand",
             "addressRegion": "Western Cape",
+            "postalCode": "7140",
             "addressCountry": "ZA"
           },
           "geo": {
@@ -64,12 +69,14 @@
             {"@type": "LocationFeatureSpecification", "name": "Coffee & Tea Facilities", "value": true},
             {"@type": "LocationFeatureSpecification", "name": "Secure Parking", "value": true},
             {"@type": "LocationFeatureSpecification", "name": "Beach Proximity (250m)", "value": true}
-          ],
-          "nearbyLocation": {
-            "@type": "TouristAttraction",
-            "name": "Helderberg Provincial Hospital",
-            "description": "Helderberg Provincial Hospital is located approximately 6.0 km (10 minutes) from Cool-Cat B&B in Strand."
-          }
+          ]
+        },
+        {
+          "@type": "TouristAttraction",
+          "@id": "https://cool-cat.co.za/explore/helderberg-hospital#attraction",
+          "name": "Helderberg Provincial Hospital",
+          "description": "Helderberg Provincial Hospital is located approximately 6.0 km (10 minutes) from Cool-Cat in Strand. Need to be close to Helderberg Hospital? Cool-Cat provides restful, secure, and supportive accommodation just a 10-minute drive away in Somerset West/Strand.",
+          "url": "https://cool-cat.co.za/explore/helderberg-hospital"
         },
         {
           "@type": "FAQPage",

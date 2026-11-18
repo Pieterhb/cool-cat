@@ -1,9 +1,25 @@
+# Allow all search engines and AI crawlers
 User-agent: *
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-Web
+User-agent: PerplexityBot
+User-agent: Amazonbot
+User-agent: Amzn-SearchBot
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Bytespider
+User-agent: Cohere-ai
 Allow: /
 Disallow: /cdn-cgi/
 Disallow: /admin
 Disallow: /admin.html
 Disallow: /signature.html
+Disallow: /pseo_template.html
 Disallow: /*backup*
 Disallow: /*.txt$
 Disallow: /data/

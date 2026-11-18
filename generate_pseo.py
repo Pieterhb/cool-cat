@@ -163,10 +163,11 @@ def generate():
           "description": "A curated directory of 30 top attractions, beaches, golf courses, hospitals, and wine estates near Cool-Cat in Strand, Western Cape.",
           "url": "https://cool-cat.co.za/explore",
           "publisher": {{
-            "@type": "LodgingBusiness",
-            "@id": "https://cool-cat.co.za/#lodging",
-            "name": "Cool-Cat",
-            "url": "https://cool-cat.co.za/"
+            "@type": "Organization",
+            "@id": "https://cool-cat.co.za/#organization",
+            "name": "Cool-Cat Holiday Accommodation",
+            "url": "https://cool-cat.co.za/",
+            "logo": "https://cool-cat.co.za/Logo.png"
           }}
         }},
         {{
