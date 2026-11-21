@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793967736.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795245172.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -227,6 +227,29 @@
         @media (max-width: 640px) {
             .admin-body {
                 padding: 1rem;
+            }
+            .admin-topbar {
+                flex-wrap: wrap;
+                gap: 0.6rem;
+                padding: 0.75rem 1rem;
+            }
+            .topbar-title-wrap {
+                max-width: calc(100% - 75px);
+            }
+            .topbar-title {
+                font-size: 1.15rem;
+            }
+            .topbar-actions {
+                flex-wrap: wrap;
+                gap: 0.45rem;
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .btn-adm-primary, .topbar-actions .btn-sm {
+                font-size: 0.76rem;
+                padding: 0.35rem 0.65rem;
+                white-space: normal;
+                line-height: 1.25;
             }
         }
 

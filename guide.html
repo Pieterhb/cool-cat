@@ -110,7 +110,7 @@
     }
     </script>
 
-    <link rel="stylesheet" href="styles-v1793967736.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795245172.css?v=1791468000">
     <style>
         .page-header {
             background: linear-gradient(rgba(10, 58, 133, 0.6), rgba(15, 82, 186, 0.7)), url('1. Ocean.jpg') center/cover;
@@ -185,6 +185,23 @@
             border-radius: 12px;
             padding: 1.2rem;
             margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 > div {
+                min-width: 0 !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .guide-section {
+                padding: 1.25rem 0.85rem !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+            }
+            .guide-section table th, .guide-section table td {
+                padding: 0.5rem 0.4rem !important;
+                font-size: 0.8rem !important;
+            }
         }
     </style>
 
@@ -286,7 +303,7 @@
             <div class="grid-2">
                 
                 <!-- Left Column: Local Exploring & Dining -->
-                <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; flex-direction: column; min-width: 0;">
                     <div class="guide-section">
                         <h3>🏖️ Walking Distance (Within 250m)</h3>
                         <ul class="custom-list">
@@ -329,7 +346,7 @@
                 </div>
 
                 <!-- Right Column: Lounge, Services & Transit -->
-                <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; flex-direction: column; min-width: 0;">
                     <div class="guide-section">
                         <h3>🎲 Lounge Games &amp; Leisure</h3>
                         <p class="text-light" style="margin-bottom: 0.8rem;">Unwind in the shared guest lounge with a great selection of classic games available for your enjoyment – free to use anytime!</p>

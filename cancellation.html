@@ -67,7 +67,7 @@
     </script>
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1793967736.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795245172.css?v=1791468000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -164,6 +164,28 @@
             color: var(--sapphire-blue-dark);
             font-weight: 700;
         }
+
+        @media (max-width: 480px) {
+            .policy-card {
+                padding: 1.1rem 0.85rem;
+            }
+            .table-responsive {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 1rem 0;
+                border-radius: 8px;
+                border: 1px solid #E2E8F0;
+            }
+            .legal-table {
+                font-size: 0.8rem;
+                margin: 0;
+                min-width: 320px;
+            }
+            .legal-table th, .legal-table td {
+                padding: 0.5rem 0.45rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -216,6 +238,7 @@
                 <p>
                     Under Section 17 of the South African <strong>Consumer Protection Act No. 68 of 2008 (CPA)</strong>, consumers have the right to cancel an advance reservation, subject to a reasonable cancellation charge that takes into account the nature of the accommodation, length of advance notice, and potential loss of booking opportunity. Our fair cancellation schedule is structured as follows:
                 </p>
+                <div class="table-responsive">
                 <table class="legal-table">
                     <thead>
                         <tr>
@@ -242,6 +265,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
                 <div class="highlight-box">
                     <strong>📅 Date Modifications &amp; Early Departures:</strong> Date changes are subject to room availability and seasonal tariff adjustments. In the event of early departure or curtailed stay, no refunds or credits will be issued for unused nights.
                 </div>
