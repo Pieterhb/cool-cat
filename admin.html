@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795351283.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795352262.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3328,6 +3328,19 @@
                     </span>
                 </div>
 
+                <!-- Quick Payment Preset Buttons -->
+                <div style="margin-bottom: 0.85rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">⚡ Quick Payment Shortcuts:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button type="button" class="btn-sm" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-weight: 700; padding: 0.45rem 0.5rem; cursor: pointer;" onclick="setEditModalPreset(0.5)">
+                            💰 50% Deposit (<span id="editPresetDeposit">R0</span>)
+                        </button>
+                        <button type="button" class="btn-sm" style="background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; font-weight: 700; padding: 0.45rem 0.5rem; cursor: pointer;" onclick="setEditModalPreset(1.0)">
+                            ✅ 100% Paid in Full (<span id="editPresetFull">R0</span>)
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Paid, Balance Due & Status -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
                     <div class="adm-form-group">
@@ -4487,7 +4500,7 @@
                         </td>
                         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
                         <td style="white-space: nowrap;">
-                            <button class="btn-sm" style="background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openEditBookingModal('${b.id}')" title="Edit booking price, guest details, or status">✏️ Edit</button>
+                            <button class="btn-sm btn-adm-primary" style="padding: 3px 8px; font-size: 0.75rem; margin-right: 4px; font-weight: 600;" onclick="openEditBookingModal('${b.id}')" title="Edit booking details, price, or record payment">✏️ Edit</button>
                             ${b.status === 'cancelled' 
                                 ? `<span style="font-size: 0.75rem; color: #334155;">Cancelled</span>` 
                                 : `<button class="btn-sm btn-wa" style="padding: 3px 6px; font-size: 0.75rem;" onclick="shareBookingQuote('${b.id}')" title="Share Quote & Link">📲 Quote</button>`
@@ -4574,8 +4587,7 @@
                         `;
                     } else {
                         actionsHtml = `
-                            <button class="btn-sm" style="background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openEditBookingModal('${b.id}')" title="Edit booking price, guest details, or status">✏️ Edit</button>
-                            <button class="btn-sm btn-adm-primary" style="padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openPaymentModal('${b.id}')" title="Record or update payment (EFT / Paystack)">💳 Pay</button>
+                            <button class="btn-sm btn-adm-primary" style="padding: 3px 8px; font-size: 0.75rem; margin-right: 4px; font-weight: 600;" onclick="openEditBookingModal('${b.id}')" title="Edit booking details, price, or record payment">✏️ Edit</button>
                             <button class="btn-sm btn-wa" style="padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="shareBookingQuote('${b.id}')" title="Send WhatsApp quote with Paystack Online Link & Bank EFT details">📲 Quote</button>
                             <button class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 3px 6px; font-size: 0.75rem;" onclick="cancelBooking('${b.id}')" title="Soft-cancel booking and free dates on calendar">Cancel</button>
                         `;
@@ -6434,78 +6446,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
         let currentPayBooking = null;
 
         function openPaymentModal(bookingId) {
-            let b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId && !bk.isCalendarBlock);
-            if (!b) {
-                const child = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
-                if (child && child.parentBookingId) {
-                    b = ADMIN_BOOKINGS.find(bk => bk.id === child.parentBookingId && !bk.isCalendarBlock);
-                }
-            }
-            if (!b) b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
-            if (!b) return;
-            currentPayBooking = b;
-            const cleanRef = formatRefId(b.id, b.roomId);
-
-            document.getElementById('payBookingId').value = b.id;
-            document.getElementById('payModalSubtitle').textContent = `Update payment status for #${cleanRef}`;
-            document.getElementById('payModalGuestName').textContent = b.guestName || 'Guest';
-            document.getElementById('payModalRoomStay').textContent = `${b.roomName || b.roomId} (${b.checkIn} ➔ ${b.checkOut})`;
-            
-            const total = Number(b.totalAmount || 0);
-            const paid = Number(b.amountPaid || 0);
-            const balance = Number(b.balanceDue !== undefined ? b.balanceDue : (total - paid));
-
-            const children = ADMIN_BOOKINGS.filter(bk => bk.parentBookingId === b.id);
-            const policy = getBookingPaymentPolicy(total, b.checkIn, [...(b.stays || []), ...children]);
-
-            document.getElementById('payModalTotalAmount').textContent = `R${total.toLocaleString()}`;
-            document.getElementById('payModalPresetDeposit').textContent = `R${(Math.round(total * 0.5)).toLocaleString()}`;
-            document.getElementById('payModalPresetFull').textContent = `R${total.toLocaleString()}`;
-
-            const policyBadge = document.getElementById('payModalPolicyBadge');
-            if (policyBadge) {
-                policyBadge.style.display = 'block';
-                if (!policy.is50PercentDeposit) {
-                    policyBadge.style.background = '#FEF3C7';
-                    policyBadge.style.color = '#92400E';
-                    policyBadge.style.border = '1px solid #FCD34D';
-                    const reason = policy.daysUntilCheckIn <= 7 ? 'arrival within 7 days' : 'total under R1,000';
-                    policyBadge.innerHTML = `⚠️ <strong>Policy Requirement:</strong> 100% full payment upfront required (${reason}).`;
-                } else {
-                    policyBadge.style.background = '#EFF6FF';
-                    policyBadge.style.color = '#1E40AF';
-                    policyBadge.style.border = '1px solid #BFDBFE';
-                    policyBadge.innerHTML = `ℹ️ <strong>Policy Requirement:</strong> 50% deposit (R${policy.requiredUpfront.toLocaleString()}) upfront; balance due before arrival.`;
-                }
-            }
-
-            const curStatusEl = document.getElementById('payModalCurrentStatus');
-            if (curStatusEl) {
-                if (b.status === 'fully_paid' || b.status === 'confirmed' || (paid > 0 && balance === 0)) {
-                    curStatusEl.className = 'status-pill status-confirmed';
-                    curStatusEl.textContent = '100% PAID';
-                } else if (b.status === 'deposit_paid' || (paid > 0 && balance > 0)) {
-                    curStatusEl.className = 'status-pill status-deposit';
-                    curStatusEl.textContent = 'DEPOSIT PAID';
-                } else {
-                    curStatusEl.className = 'status-pill status-unpaid';
-                    curStatusEl.textContent = 'NOT PAID';
-                }
-            }
-
-            document.getElementById('payModalAmountPaid').value = paid;
-            document.getElementById('payModalBalanceDue').value = balance;
-            document.getElementById('payModalMethod').value = b.paymentMethod || (b.paystackRef ? 'card' : 'eft');
-
-            const statusSel = document.getElementById('payModalStatusSelect');
-            if (statusSel) {
-                if (paid >= total && total > 0) statusSel.value = 'fully_paid';
-                else if (paid > 0) statusSel.value = 'deposit_paid';
-                else statusSel.value = 'not_paid';
-            }
-
-            const modal = document.getElementById('recordPaymentModal');
-            if (modal) modal.style.display = 'flex';
+            openEditBookingModal(bookingId);
         }
 
         function closePaymentModal() {
@@ -6730,6 +6671,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 calcBtn.textContent = stdPrice > 0 ? `💡 Auto-Calculate Standard Price (R${stdPrice.toLocaleString()})` : `💡 Auto-Calculate Standard Price`;
             }
 
+            updateEditPresetLabels();
             const modal = document.getElementById('editBookingModal');
             if (modal) modal.style.display = 'flex';
         }
@@ -6746,11 +6688,28 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             onEditPriceOrPaidChange();
         }
 
+        function setEditModalPreset(factor) {
+            const tot = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
+            const amt = Math.round(tot * factor);
+            document.getElementById('editAmountPaid').value = amt;
+            onEditPriceOrPaidChange();
+        }
+
+        function updateEditPresetLabels() {
+            const tot = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
+            const dep50 = Math.round(tot * 0.5);
+            const el50 = document.getElementById('editPresetDeposit');
+            const el100 = document.getElementById('editPresetFull');
+            if (el50) el50.textContent = `R${dep50.toLocaleString()}`;
+            if (el100) el100.textContent = `R${tot.toLocaleString()}`;
+        }
+
         function onEditPriceOrPaidChange() {
             const tot = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
             const paid = Math.max(0, Number(document.getElementById('editAmountPaid').value) || 0);
             const bal = Math.max(0, tot - paid);
             document.getElementById('editBalanceDue').value = bal;
+            updateEditPresetLabels();
 
             const statusSel = document.getElementById('editStatusSelect');
             if (statusSel && statusSel.value !== 'blocked' && statusSel.value !== 'cancelled') {
