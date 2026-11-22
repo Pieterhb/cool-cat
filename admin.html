@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795340146.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795345827.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3083,7 +3083,7 @@
                         <!-- Populated dynamically by JS -->
                     </div>
 
-                    <div class="modal-cal-tip" style="margin-top: 0.65rem; font-size: 0.76rem; color: #475569; text-align: center; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 0.4rem;">
+                    <div class="modal-cal-tip" id="modalCalTip" style="margin-top: 0.65rem; font-size: 0.76rem; color: #475569; text-align: center; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 0.4rem;">
                         💡 <em>Click any open date to set Check-In, then click second date for Check-Out. Selected dates auto-fill the form.</em>
                     </div>
 
@@ -5137,7 +5137,6 @@
         }
 
         function changeAdminCalMonth(delta) {
-            adminCalPendingCheckIn = null;
             adminCalViewDate.setMonth(adminCalViewDate.getMonth() + delta);
             renderAdminCalendar();
         }
@@ -5150,7 +5149,6 @@
 
         function jumpAdminCalSelect(val) {
             if (!val) return;
-            adminCalPendingCheckIn = null;
             const parts = val.split('-');
             adminCalViewDate = new Date(Number(parts[0]), Number(parts[1]), 1);
             renderAdminCalendar();
@@ -5487,17 +5485,35 @@
         function handleAdminCalDayClick(dateStr, isBooked, isBlocked, bookingDetails) {
             const clickedDate = new Date(dateStr + 'T00:00:00');
 
-            // If admin has an active pending check-in and clicked a date after it, check if this is a valid check-out date
-            if (adminCalPendingCheckIn && clickedDate > adminCalPendingCheckIn) {
+            // If admin has an active pending check-in:
+            if (adminCalPendingCheckIn) {
+                if (clickedDate.getTime() === adminCalPendingCheckIn.getTime()) {
+                    // Clicked the exact same date: cancel pending selection
+                    adminCalPendingCheckIn = null;
+                    renderAdminCalendar();
+                    return;
+                }
+                if (clickedDate < adminCalPendingCheckIn) {
+                    // Clicked an earlier date: move check-in to this earlier date
+                    adminCalPendingCheckIn = clickedDate;
+                    renderAdminCalendar();
+                    return;
+                }
+
+                // clickedDate > adminCalPendingCheckIn: this is the CHECK-OUT date!
                 const checkInStr = formatDateStr(adminCalPendingCheckIn);
                 const checkOutStr = dateStr;
                 const conflict = checkBookingConflicts(adminCalRoomId, checkInStr, checkOutStr);
-                if (!conflict.hasConflict) {
+                if (conflict.hasConflict) {
+                    alert(`⚠️ Selected range (${checkInStr} to ${checkOutStr}) overlaps with an existing booking. Please pick open dates.`);
                     adminCalPendingCheckIn = null;
                     renderAdminCalendar();
-                    openManualBookingModal(adminCalRoomId, checkInStr, checkOutStr);
                     return;
                 }
+                adminCalPendingCheckIn = null;
+                renderAdminCalendar();
+                openManualBookingModal(adminCalRoomId, checkInStr, checkOutStr);
+                return;
             }
 
             if (isBooked || isBlocked) {
@@ -5526,28 +5542,8 @@
                 return;
             }
 
-            if (!adminCalPendingCheckIn) {
-                adminCalPendingCheckIn = clickedDate;
-                renderAdminCalendar();
-            } else {
-                if (clickedDate <= adminCalPendingCheckIn) {
-                    adminCalPendingCheckIn = clickedDate;
-                    renderAdminCalendar();
-                } else {
-                    const checkInStr = formatDateStr(adminCalPendingCheckIn);
-                    const checkOutStr = dateStr;
-                    const conflict = checkBookingConflicts(adminCalRoomId, checkInStr, checkOutStr);
-                    if (conflict.hasConflict) {
-                        alert(`⚠️ Selected range (${checkInStr} to ${checkOutStr}) overlaps with an existing booking. Please pick open dates.`);
-                        adminCalPendingCheckIn = null;
-                        renderAdminCalendar();
-                        return;
-                    }
-                    adminCalPendingCheckIn = null;
-                    renderAdminCalendar();
-                    openManualBookingModal(adminCalRoomId, checkInStr, checkOutStr);
-                }
-            }
+            adminCalPendingCheckIn = clickedDate;
+            renderAdminCalendar();
         }
 
         // ==========================================
@@ -5587,8 +5583,12 @@
 
             modalPendingCheckIn = null;
             const cIn = document.getElementById('manCheckIn').value;
+            const cOut = document.getElementById('manCheckOut').value;
             if (cIn) {
                 modalMiniViewDate = new Date(cIn + 'T00:00:00');
+                if (!cOut) {
+                    modalPendingCheckIn = new Date(cIn + 'T00:00:00');
+                }
             } else {
                 modalMiniViewDate = new Date(adminCalViewDate || new Date());
             }
@@ -5598,6 +5598,7 @@
         }
 
         function closeManualBookingModal() {
+            modalPendingCheckIn = null;
             document.getElementById('manualBookingModal').style.display = 'none';
         }
 
@@ -5617,14 +5618,12 @@
 
         function jumpModalMiniMonthSelect(val) {
             if (!val) return;
-            modalPendingCheckIn = null;
             const parts = val.split('-');
             modalMiniViewDate = new Date(Number(parts[0]), Number(parts[1]), 1);
             renderModalMiniCalendar();
         }
 
         function changeModalMiniMonth(delta) {
-            modalPendingCheckIn = null;
             modalMiniViewDate.setMonth(modalMiniViewDate.getMonth() + delta);
             renderModalMiniCalendar();
         }
@@ -5904,15 +5903,62 @@
 
                 grid.appendChild(dayCell);
             }
+
+            // Update mini-calendar tip / status banner
+            const tipEl = document.getElementById('modalCalTip');
+            if (tipEl) {
+                const pending = modalPendingCheckIn || (checkInVal && !checkOutVal ? new Date(checkInVal + 'T00:00:00') : null);
+                if (pending) {
+                    const pDateStr = formatDateStr(pending);
+                    tipEl.style.background = '#FEF3C7';
+                    tipEl.style.borderColor = '#FCD34D';
+                    tipEl.style.color = '#92400E';
+                    tipEl.innerHTML = `📍 <strong>Check-In: ${pDateStr}</strong>. Click any date after this (browse next month if needed) to set Check-Out.`;
+                } else if (checkInVal && checkOutVal) {
+                    tipEl.style.background = '#ECFDF5';
+                    tipEl.style.borderColor = '#A7F3D0';
+                    tipEl.style.color = '#065F46';
+                    tipEl.innerHTML = `✓ <strong>Selected: ${checkInVal} ➔ ${checkOutVal}</strong>. Fill in reason or guest details on the right and save.`;
+                } else {
+                    tipEl.style.background = '#EFF6FF';
+                    tipEl.style.borderColor = '#BFDBFE';
+                    tipEl.style.color = '#475569';
+                    tipEl.innerHTML = `💡 <em>Click any open date to set Check-In, then click second date for Check-Out. Selected dates auto-fill the form.</em>`;
+                }
+            }
         }
 
         function handleModalMiniDayClick(dateStr, isBooked, isBlocked, bookingDetails) {
             const clickedDate = new Date(dateStr + 'T00:00:00');
+            const cInVal = document.getElementById('manCheckIn').value;
+            const cOutVal = document.getElementById('manCheckOut').value;
+            const effectivePendingCheckIn = modalPendingCheckIn || (cInVal && !cOutVal ? new Date(cInVal + 'T00:00:00') : null);
 
-            // If check-in date is already selected and admin clicked a subsequent date, check if valid check-out date (supports same-day turnover)
-            if (modalPendingCheckIn && clickedDate > modalPendingCheckIn) {
+            // If a check-in is currently pending:
+            if (effectivePendingCheckIn) {
+                if (clickedDate.getTime() === effectivePendingCheckIn.getTime()) {
+                    // Clicked the exact same check-in date: deselect/cancel
+                    modalPendingCheckIn = null;
+                    document.getElementById('manCheckIn').value = '';
+                    document.getElementById('manCheckOut').value = '';
+                    validateModalDates();
+                    renderModalMiniCalendar();
+                    return;
+                }
+
+                if (clickedDate < effectivePendingCheckIn) {
+                    // Clicked an earlier date: move check-in to this earlier date
+                    modalPendingCheckIn = clickedDate;
+                    document.getElementById('manCheckIn').value = dateStr;
+                    document.getElementById('manCheckOut').value = '';
+                    validateModalDates();
+                    renderModalMiniCalendar();
+                    return;
+                }
+
+                // clickedDate > effectivePendingCheckIn: this is the CHECK-OUT date!
                 const roomId = document.getElementById('manRoomSelect').value;
-                const cInStr = formatDateStr(modalPendingCheckIn);
+                const cInStr = formatDateStr(effectivePendingCheckIn);
                 const cOutStr = dateStr;
                 const conflict = checkBookingConflicts(roomId, cInStr, cOutStr);
                 if (conflict.hasConflict) {
@@ -5921,6 +5967,7 @@
                     renderModalMiniCalendar();
                     return;
                 }
+                document.getElementById('manCheckIn').value = cInStr;
                 document.getElementById('manCheckOut').value = dateStr;
                 modalPendingCheckIn = null;
                 validateModalDates();
@@ -6103,6 +6150,12 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
 
         function onModalDateChange() {
             const cIn = document.getElementById('manCheckIn').value;
+            const cOut = document.getElementById('manCheckOut').value;
+            if (cIn && !cOut) {
+                modalPendingCheckIn = new Date(cIn + 'T00:00:00');
+            } else {
+                modalPendingCheckIn = null;
+            }
             if (cIn) {
                 modalMiniViewDate = new Date(cIn + 'T00:00:00');
             }
