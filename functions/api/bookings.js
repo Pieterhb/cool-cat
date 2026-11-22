@@ -535,7 +535,7 @@ export async function onRequestPut(context) {
 
     try {
         const payload = await request.json();
-        const { id, status, amountPaid, balanceDue, paymentMethod, isPaidEft, paystackAmount } = payload;
+        const { id, status, totalAmount, amountPaid, balanceDue, paymentMethod, isPaidEft, paystackAmount, guestName, guestPhone, notes } = payload;
 
         if (!id) {
             return new Response(JSON.stringify({ success: false, error: "Booking ID is required" }), {
@@ -554,25 +554,48 @@ export async function onRequestPut(context) {
                 const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
                 if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     updated = true;
+                    const newTotal = totalAmount !== undefined ? Number(totalAmount) : (b.totalAmount !== undefined ? Number(b.totalAmount) : 0);
+                    const newAmountPaid = amountPaid !== undefined ? Number(amountPaid) : Number(b.amountPaid || 0);
+                    const newBalanceDue = balanceDue !== undefined ? Number(balanceDue) : Math.max(0, newTotal - newAmountPaid);
+                    
+                    let newStatus = status || b.status;
+                    if (!status) {
+                        if (newTotal > 0 && newAmountPaid >= newTotal) {
+                            newStatus = 'paid';
+                        } else if (newAmountPaid > 0 && newBalanceDue > 0) {
+                            newStatus = 'deposit_paid';
+                        } else if (newTotal > 0 && newAmountPaid === 0 && b.status !== 'blocked' && b.status !== 'cancelled') {
+                            newStatus = 'not_paid';
+                        }
+                    }
+
                     if (b.isCalendarBlock) {
                         return {
                             ...b,
-                            status: status || b.status
+                            status: newStatus,
+                            guestName: guestName !== undefined ? guestName : b.guestName,
+                            guestPhone: guestPhone !== undefined ? guestPhone : b.guestPhone,
+                            totalAmount: newTotal,
+                            amountPaid: newAmountPaid,
+                            balanceDue: newBalanceDue,
+                            notes: notes !== undefined ? notes : b.notes
                         };
                     }
-                    const newAmountPaid = amountPaid !== undefined ? Number(amountPaid) : b.amountPaid;
-                    // Mark isRecordedPayment=true when a real payment amount is recorded so the GET sanitizer
-                    // knows NOT to zero out this booking's payment data on next load
+
                     const wasPaymentRecorded = newAmountPaid > 0;
                     return {
                         ...b,
-                        status: status || b.status,
+                        status: newStatus,
+                        guestName: guestName !== undefined ? guestName : b.guestName,
+                        guestPhone: guestPhone !== undefined ? guestPhone : b.guestPhone,
+                        totalAmount: newTotal,
                         amountPaid: newAmountPaid,
-                        balanceDue: balanceDue !== undefined ? Number(balanceDue) : b.balanceDue,
+                        balanceDue: newBalanceDue,
                         paymentMethod: paymentMethod !== undefined ? paymentMethod : b.paymentMethod,
                         paystackAmount: paystackAmount !== undefined ? Number(paystackAmount) : b.paystackAmount,
                         isPaidEft: isPaidEft !== undefined ? isPaidEft : b.isPaidEft,
-                        isRecordedPayment: wasPaymentRecorded ? true : (b.isRecordedPayment || false)
+                        isRecordedPayment: wasPaymentRecorded ? true : (b.isRecordedPayment || false),
+                        notes: notes !== undefined ? notes : b.notes
                     };
                 }
                 return b;

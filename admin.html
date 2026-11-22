@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795345827.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795347542.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3268,6 +3268,113 @@
     </div>
 
     <!-- ========================================================= -->
+    <!-- MODAL: EDIT BOOKING / UPDATE PRICE & DETAILS              -->
+    <!-- ========================================================= -->
+    <div class="adm-modal-overlay" id="editBookingModal" style="display:none;" onclick="if(event.target===this) closeEditBookingModal()">
+        <div class="adm-modal-card" style="max-width: 580px;">
+            <div class="adm-modal-header" style="background: #EFF6FF; border-bottom: 1.5px solid #BFDBFE;">
+                <div>
+                    <h3 class="adm-modal-title" style="font-size: 1.15rem; color: #1E40AF;">✏️ Edit Booking / Update Price</h3>
+                    <span class="adm-modal-subtitle" id="editModalSubtitle" style="color: #3B82F6;">Update booking details, total price, guest info &amp; status</span>
+                </div>
+                <button class="adm-modal-close" onclick="closeEditBookingModal()">&times;</button>
+            </div>
+
+            <form id="editBookingForm" onsubmit="handleSaveEditBooking(event)" style="padding: 1.25rem;">
+                <input type="hidden" id="editBookingId">
+
+                <!-- Room & Stay Details Card -->
+                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                        <span style="color:#64748B;">Room / Suite:</span>
+                        <strong id="editModalRoomName" style="color:#1E293B;">-</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#64748B;">Stay Dates:</span>
+                        <span id="editModalStayDates" style="font-weight:600; color:#1E293B;">-</span>
+                    </div>
+                </div>
+
+                <!-- Guest Name & Phone -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Name / Reason</label>
+                        <input type="text" id="editGuestName" class="adm-input" required placeholder="e.g. Piet (Phone Booking)">
+                    </div>
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Phone (Optional)</label>
+                        <input type="text" id="editGuestPhone" class="adm-input" placeholder="082 123 4567">
+                    </div>
+                </div>
+
+                <!-- Total Amount & Quick Auto-Calculate -->
+                <div style="background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.4rem;">
+                        <label style="font-size: 0.82rem; font-weight: 800; color: #92400E; margin: 0;">💰 Total Stay Amount (ZAR)</label>
+                        <button type="button" class="btn-sm" style="background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; font-size: 0.75rem; padding: 0.2rem 0.5rem; font-weight: 700; cursor: pointer;" onclick="applyEditCalculatedPrice()" id="editAutoCalcBtn">
+                            💡 Auto-Calculate Standard Price
+                        </button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-weight: 800; color: #92400E; font-size: 1.1rem;">R</span>
+                        <input type="number" id="editTotalAmount" class="adm-input" min="0" step="1" required style="font-size: 1.05rem; font-weight: 800; color: #92400E; background: white;" oninput="onEditPriceOrPaidChange()">
+                    </div>
+                    <span style="font-size: 0.74rem; color: #78350F; margin-top: 0.35rem; display: block;" id="editPriceHelpText">
+                        Enter any agreed rate or click Auto-Calculate to set standard seasonal pricing.
+                    </span>
+                </div>
+
+                <!-- Paid, Balance Due & Status -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Amount Paid (ZAR)</label>
+                        <input type="number" id="editAmountPaid" class="adm-input" min="0" step="1" value="0" oninput="onEditPriceOrPaidChange()">
+                    </div>
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Remaining Balance Due (ZAR)</label>
+                        <input type="number" id="editBalanceDue" class="adm-input" min="0" step="1" readonly style="background: #F1F5F9; font-weight: 700;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Booking Status</label>
+                        <select id="editStatusSelect" class="adm-input">
+                            <option value="not_paid">🔴 NOT PAID (Pending)</option>
+                            <option value="deposit_paid">🟡 Deposit Paid</option>
+                            <option value="fully_paid">🟢 100% Fully Paid</option>
+                            <option value="blocked">🔒 Admin Block / Maintenance</option>
+                            <option value="cancelled">⚪ Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Payment Method</label>
+                        <select id="editPaymentMethod" class="adm-input">
+                            <option value="pending">Pending</option>
+                            <option value="eft">Bank EFT</option>
+                            <option value="card">Card / Paystack</option>
+                            <option value="cash">Cash on Arrival</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="adm-form-group" style="margin-bottom: 1.25rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Internal Notes / Special Requests (Optional)</label>
+                    <input type="text" id="editNotes" class="adm-input" placeholder="e.g. Late check-in 19:00, baby cot required">
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-sm" style="background: #F1F5F9; color: #334155;" onclick="closeEditBookingModal()">Cancel</button>
+                    <div style="display: flex; gap: 0.6rem;">
+                        <button type="submit" class="btn-adm-primary" id="editSaveBtn">💾 Save Changes</button>
+                        <button type="button" class="btn-sm btn-wa" style="font-size: 0.85rem;" onclick="saveAndOpenQuote()">📲 Save &amp; WhatsApp Quote</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
     <!-- HYBRID PAYMENT: SHARE QUOTE & PAY LINK MODAL              -->
     <!-- ========================================================= -->
     <div class="adm-modal-overlay" id="shareQuoteModal" style="display:none;" onclick="if(event.target===this) closeShareQuoteModal()">
@@ -3300,12 +3407,22 @@
                     </div>
                 </div>
 
+                <!-- Zero Amount Warning Banner -->
+                <div id="shareZeroAmountWarning" style="display:none; background: #FEF2F2; border: 1.5px solid #F87171; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.82rem; color: #991B1B;">
+                    <div style="font-weight: 800; margin-bottom: 0.25rem;">⚠️ Total Stay Amount is currently R0:</div>
+                    <div style="margin-bottom: 0.45rem;">The quote and online payment link currently say R0. Click below to add the price before sending to your client.</div>
+                    <button type="button" class="btn-sm" style="background: #DC2626; color: white; border: none; padding: 0.3rem 0.75rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; cursor: pointer;" onclick="closeShareQuoteModal(); openEditBookingModal(document.getElementById('shareBookingId').value)">✏️ Edit Booking &amp; Set Price Now</button>
+                </div>
+
                 <!-- Message Preview Box -->
                 <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;">Message Text Preview (WhatsApp / Email / SMS):</label>
                 <textarea id="shareQuoteMessageText" class="adm-input" rows="10" style="font-family:monospace; font-size:0.8rem; line-height:1.4; resize:vertical; margin-bottom:1rem;"></textarea>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; flex-wrap:wrap;">
-                    <button type="button" class="btn-sm" style="background:#F1F5F9; color: #334155;" onclick="copyQuoteToClipboard()">📋 Copy to Clipboard</button>
+                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                        <button type="button" class="btn-sm" style="background:#F1F5F9; color: #334155;" onclick="copyQuoteToClipboard()">📋 Copy</button>
+                        <button type="button" class="btn-sm" style="background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE;" onclick="closeShareQuoteModal(); openEditBookingModal(document.getElementById('shareBookingId').value)">✏️ Edit Price</button>
+                    </div>
                     <div style="display:flex; gap:0.6rem;">
                         <button type="button" class="btn-sm" style="background:#F1F5F9; color: #334155;" onclick="closeShareQuoteModal()">Close</button>
                         <button type="button" class="btn-sm btn-wa" style="font-size:0.85rem;" onclick="sendQuoteWhatsApp()">📲 Send via WhatsApp</button>
@@ -4369,6 +4486,7 @@
                         </td>
                         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
                         <td style="white-space: nowrap;">
+                            <button class="btn-sm" style="background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openEditBookingModal('${b.id}')" title="Edit booking price, guest details, or status">✏️ Edit</button>
                             ${b.status === 'cancelled' 
                                 ? `<span style="font-size: 0.75rem; color: #334155;">Cancelled</span>` 
                                 : `<button class="btn-sm btn-wa" style="padding: 3px 6px; font-size: 0.75rem;" onclick="shareBookingQuote('${b.id}')" title="Share Quote & Link">📲 Quote</button>`
@@ -4458,6 +4576,7 @@
                         `;
                     } else {
                         actionsHtml = `
+                            <button class="btn-sm" style="background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openEditBookingModal('${b.id}')" title="Edit booking price, guest details, or status">✏️ Edit</button>
                             <button class="btn-sm btn-adm-primary" style="padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openPaymentModal('${b.id}')" title="Record or update payment (EFT / Paystack)">💳 Pay</button>
                             <button class="btn-sm btn-wa" style="padding: 3px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="shareBookingQuote('${b.id}')" title="Send WhatsApp quote with Paystack Online Link & Bank EFT details">📲 Quote</button>
                             <button class="btn-sm" style="background: #FEE2E2; color: #991B1B; padding: 3px 6px; font-size: 0.75rem;" onclick="cancelBooking('${b.id}')" title="Soft-cancel booking and free dates on calendar">Cancel</button>
@@ -6456,6 +6575,194 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             });
         }
 
+        // ==========================================
+        // EDIT BOOKING / UPDATE PRICE & DETAILS
+        // ==========================================
+        let currentEditBooking = null;
+
+        function openEditBookingModal(bookingId) {
+            let b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId && !bk.isCalendarBlock);
+            if (!b) {
+                const child = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
+                if (child && child.parentBookingId) {
+                    b = ADMIN_BOOKINGS.find(bk => bk.id === child.parentBookingId && !bk.isCalendarBlock);
+                }
+            }
+            if (!b) b = ADMIN_BOOKINGS.find(bk => bk.id === bookingId);
+            if (!b) return;
+
+            currentEditBooking = b;
+            const cleanRef = formatRefId(b.id, b.roomId);
+
+            document.getElementById('editBookingId').value = b.id;
+            document.getElementById('editModalSubtitle').textContent = `Modify price, guest details, notes, or payment status for #${cleanRef}`;
+            document.getElementById('editModalRoomName').textContent = b.roomName || ADMIN_ROOM_NAMES[b.roomId] || b.roomId;
+            document.getElementById('editModalStayDates').textContent = `${b.checkIn} ➔ ${b.checkOut} (${b.nights || 1} Night${(b.nights || 1) > 1 ? 's' : ''})`;
+            document.getElementById('editGuestName').value = b.guestName || '';
+            document.getElementById('editGuestPhone').value = b.guestPhone || '';
+
+            const total = Number(b.totalAmount || 0);
+            const paid = Number(b.amountPaid || 0);
+            const balance = Number(b.balanceDue !== undefined ? b.balanceDue : Math.max(0, total - paid));
+
+            document.getElementById('editTotalAmount').value = total;
+            document.getElementById('editAmountPaid').value = paid;
+            document.getElementById('editBalanceDue').value = balance;
+            document.getElementById('editStatusSelect').value = b.status || 'not_paid';
+            document.getElementById('editPaymentMethod').value = b.paymentMethod || (b.paystackRef ? 'card' : (paid > 0 ? 'eft' : 'pending'));
+            document.getElementById('editNotes').value = b.notes || '';
+
+            // Calculate standard seasonal price based on room & stay dates
+            let stdPrice = 0;
+            try {
+                const cIn = new Date(b.checkIn + 'T00:00:00');
+                const cOut = new Date(b.checkOut + 'T00:00:00');
+                let curr = new Date(cIn);
+                while (curr < cOut) {
+                    stdPrice += calculateAdminNightPrice(b.roomId, curr);
+                    curr.setDate(curr.getDate() + 1);
+                }
+            } catch (err) {
+                console.error("Standard price calc error:", err);
+            }
+            currentEditBooking._suggestedPrice = stdPrice;
+
+            const calcBtn = document.getElementById('editAutoCalcBtn');
+            if (calcBtn) {
+                calcBtn.textContent = stdPrice > 0 ? `💡 Auto-Calculate Standard Price (R${stdPrice.toLocaleString()})` : `💡 Auto-Calculate Standard Price`;
+            }
+
+            const modal = document.getElementById('editBookingModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeEditBookingModal() {
+            const modal = document.getElementById('editBookingModal');
+            if (modal) modal.style.display = 'none';
+            currentEditBooking = null;
+        }
+
+        function applyEditCalculatedPrice() {
+            if (!currentEditBooking || !currentEditBooking._suggestedPrice) return;
+            document.getElementById('editTotalAmount').value = currentEditBooking._suggestedPrice;
+            onEditPriceOrPaidChange();
+        }
+
+        function onEditPriceOrPaidChange() {
+            const tot = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
+            const paid = Math.max(0, Number(document.getElementById('editAmountPaid').value) || 0);
+            const bal = Math.max(0, tot - paid);
+            document.getElementById('editBalanceDue').value = bal;
+
+            const statusSel = document.getElementById('editStatusSelect');
+            if (statusSel && statusSel.value !== 'blocked' && statusSel.value !== 'cancelled') {
+                if (tot > 0 && paid >= tot) {
+                    statusSel.value = 'fully_paid';
+                } else if (paid > 0) {
+                    statusSel.value = 'deposit_paid';
+                } else {
+                    statusSel.value = 'not_paid';
+                }
+            }
+        }
+
+        async function handleSaveEditBooking(e, thenOpenQuote = false) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (!currentEditBooking) return;
+
+            const bookingId = document.getElementById('editBookingId').value;
+            const guestName = document.getElementById('editGuestName').value.trim();
+            const guestPhone = document.getElementById('editGuestPhone').value.trim();
+            const totalAmount = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
+            const amountPaid = Math.max(0, Number(document.getElementById('editAmountPaid').value) || 0);
+            const balanceDue = Math.max(0, totalAmount - amountPaid);
+            const status = document.getElementById('editStatusSelect').value;
+            const paymentMethod = document.getElementById('editPaymentMethod').value;
+            const notes = document.getElementById('editNotes').value.trim();
+
+            const saveBtn = document.getElementById('editSaveBtn');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = '⏳ Saving...';
+            }
+
+            const payload = {
+                id: bookingId,
+                guestName,
+                guestPhone,
+                totalAmount,
+                amountPaid,
+                balanceDue,
+                status,
+                paymentMethod,
+                notes,
+                isPaidEft: (paymentMethod === 'eft' && amountPaid > 0)
+            };
+
+            try {
+                const res = await fetch('/api/bookings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAdminKey(),
+                        'X-Admin-Key': getAdminKey()
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with HTTP ${res.status}`);
+                }
+
+                // Update in-memory bookings
+                const baseId = bookingId.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
+                ADMIN_BOOKINGS = ADMIN_BOOKINGS.map(b => {
+                    const bBase = (b.parentBookingId || b.id).replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/, '');
+                    if (b.id === bookingId || b.parentBookingId === bookingId || bBase === baseId) {
+                        return {
+                            ...b,
+                            guestName: guestName || b.guestName,
+                            guestPhone: guestPhone || b.guestPhone,
+                            totalAmount: (b.isParentBooking || !b.parentBookingId) ? totalAmount : b.totalAmount,
+                            amountPaid: amountPaid,
+                            balanceDue: balanceDue,
+                            status: status,
+                            paymentMethod: paymentMethod,
+                            notes: notes
+                        };
+                    }
+                    return b;
+                });
+
+                calculateKpis();
+                renderBookingsTables();
+                renderOperationsToday();
+                renderFinancesTable();
+                renderGuestsTable();
+                renderAdminCalendar();
+
+                closeEditBookingModal();
+
+                if (thenOpenQuote) {
+                    shareBookingQuote(bookingId);
+                } else {
+                    alert(`✅ Booking #${formatRefId(bookingId)} updated successfully!\nTotal: R${totalAmount.toLocaleString()} · Balance: R${balanceDue.toLocaleString()}`);
+                }
+            } catch (err) {
+                console.error("Save edit booking error:", err);
+                alert(`⚠️ Update failed: ${err.message}\n\nPlease check your internet connection or Admin Key and try again.`);
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '💾 Save Changes';
+                }
+            }
+        }
+
+        function saveAndOpenQuote() {
+            handleSaveEditBooking(new Event('submit'), true);
+        }
+
         async function cancelBooking(id) {
             if (!confirm(`Are you sure you want to cancel booking #${formatRefId(id)}?\n\nThis will instantly free the dates on the availability calendar so new guests can book, while keeping the cancelled reservation on record with a 'CANCELLED' status.`)) {
                 return;
@@ -6670,6 +6977,11 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             if (labelEl) labelEl.textContent = summaryLabel;
             document.getElementById('shareAmountSummary').textContent = summaryText;
             document.getElementById('shareModalSubtitle').textContent = `Quote for #${cleanRef} (${guestName})`;
+
+            const zeroWarning = document.getElementById('shareZeroAmountWarning');
+            if (zeroWarning) {
+                zeroWarning.style.display = (total === 0) ? 'block' : 'none';
+            }
 
             // Generate direct booking & quick pay link
             const origin = window.location.origin || 'https://cool-cat.co.za';
