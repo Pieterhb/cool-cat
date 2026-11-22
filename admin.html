@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795354540.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795356701.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3163,14 +3163,19 @@
 
                         <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.8rem; margin-bottom: 0.8rem;">
                             <div class="adm-form-group">
-                                <label>Total Price (ZAR)</label>
-                                <input type="number" id="manTotalAmount" class="adm-input" placeholder="0" value="0">
-                            </div>
-                            <div class="adm-form-group">
                                 <label>Guest Phone (Optional)</label>
                                 <input type="tel" id="manGuestPhone" class="adm-input" placeholder="082 123 4567">
                             </div>
-                            <div id="suggestedPriceHelper" style="grid-column: 1 / -1; font-size: 0.78rem; color: #0A3A85; font-weight: 600; cursor: pointer; margin-top: -0.35rem; white-space: nowrap; display: none;" onclick="applySuggestedPrice()">
+                            <div class="adm-form-group">
+                                <label>Guest Email (Optional)</label>
+                                <input type="email" id="manGuestEmail" class="adm-input" placeholder="e.g. piet@gmail.com">
+                            </div>
+                        </div>
+
+                        <div class="adm-form-group" style="margin-bottom: 0.8rem;">
+                            <label>Total Price (ZAR)</label>
+                            <input type="number" id="manTotalAmount" class="adm-input" placeholder="0" value="0">
+                            <div id="suggestedPriceHelper" style="font-size: 0.78rem; color: #0A3A85; font-weight: 600; cursor: pointer; margin-top: 0.35rem; white-space: nowrap; display: none;" onclick="applySuggestedPrice()">
                                 💡 Apply suggested total: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 700;"></span>
                             </div>
                         </div>
@@ -3299,15 +3304,19 @@
                     </div>
                 </div>
 
-                <!-- Guest Name & Phone -->
+                <!-- Guest Name, Phone & Email -->
+                <div class="adm-form-group" style="margin-bottom: 0.75rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Name / Reason</label>
+                    <input type="text" id="editGuestName" class="adm-input" required placeholder="e.g. Piet (Phone Booking)">
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-                    <div class="adm-form-group">
-                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Name / Reason</label>
-                        <input type="text" id="editGuestName" class="adm-input" required placeholder="e.g. Piet (Phone Booking)">
-                    </div>
                     <div class="adm-form-group">
                         <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Phone (Optional)</label>
                         <input type="text" id="editGuestPhone" class="adm-input" placeholder="082 123 4567">
+                    </div>
+                    <div class="adm-form-group">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Guest Email (Optional)</label>
+                        <input type="email" id="editGuestEmail" class="adm-input" placeholder="e.g. piet@gmail.com">
                     </div>
                 </div>
 
@@ -5753,6 +5762,8 @@
             if (nameEl) nameEl.value = '';
             const phoneEl = document.getElementById('manGuestPhone');
             if (phoneEl) phoneEl.value = '';
+            const emailEl = document.getElementById('manGuestEmail');
+            if (emailEl) emailEl.value = '';
             const totalEl = document.getElementById('manTotalAmount');
             if (totalEl) totalEl.value = '0';
 
@@ -6345,6 +6356,8 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             const checkOut = document.getElementById('manCheckOut').value;
             const guestName = document.getElementById('manGuestName').value;
             const phone = formatPhoneNumber(document.getElementById('manGuestPhone').value);
+            const emailInput = document.getElementById('manGuestEmail');
+            const guestEmail = emailInput ? emailInput.value.trim() : '';
             const total = Number(document.getElementById('manTotalAmount').value) || 0;
 
             if (!checkIn || !checkOut) {
@@ -6373,7 +6386,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 isParentBooking: true,
                 isManual: true,
                 guestName: guestName || (total > 0 ? 'Direct Guest' : 'Room Block / Maintenance'),
-                guestEmail: 'direct@cool-cat.co.za',
+                guestEmail: guestEmail || 'direct@cool-cat.co.za',
                 guestPhone: phone || '+27728894840',
                 roomId: room,
                 roomName: ADMIN_ROOM_NAMES[room] || room,
@@ -6626,6 +6639,10 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             document.getElementById('editModalStayDates').textContent = `${b.checkIn} ➔ ${b.checkOut} (${b.nights || 1} Night${(b.nights || 1) > 1 ? 's' : ''})`;
             document.getElementById('editGuestName').value = b.guestName || '';
             document.getElementById('editGuestPhone').value = b.guestPhone || '';
+            const editEmailEl = document.getElementById('editGuestEmail');
+            if (editEmailEl) {
+                editEmailEl.value = (b.guestEmail && b.guestEmail !== 'direct@cool-cat.co.za') ? b.guestEmail : '';
+            }
 
             const total = Number(b.totalAmount || 0);
             const paid = Number(b.amountPaid || 0);
@@ -6772,6 +6789,8 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             const bookingId = document.getElementById('editBookingId').value;
             const guestName = document.getElementById('editGuestName').value.trim();
             const guestPhone = document.getElementById('editGuestPhone').value.trim();
+            const guestEmailInput = document.getElementById('editGuestEmail');
+            const guestEmail = guestEmailInput ? guestEmailInput.value.trim() : '';
             let totalAmount = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
             const amountPaid = Math.max(0, Number(document.getElementById('editAmountPaid').value) || 0);
             const balInput = document.getElementById('editBalanceDue');
@@ -6800,6 +6819,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 id: bookingId,
                 guestName,
                 guestPhone,
+                guestEmail: guestEmail || (currentEditBooking && currentEditBooking.guestEmail ? currentEditBooking.guestEmail : 'direct@cool-cat.co.za'),
                 totalAmount,
                 amountPaid,
                 balanceDue,
@@ -6833,6 +6853,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                             ...b,
                             guestName: guestName || b.guestName,
                             guestPhone: guestPhone || b.guestPhone,
+                            guestEmail: guestEmail || b.guestEmail || 'direct@cool-cat.co.za',
                             totalAmount: (b.isParentBooking || !b.parentBookingId) ? totalAmount : b.totalAmount,
                             amountPaid: amountPaid,
                             balanceDue: balanceDue,

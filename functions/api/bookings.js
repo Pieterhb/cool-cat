@@ -535,7 +535,7 @@ export async function onRequestPut(context) {
 
     try {
         const payload = await request.json();
-        const { id, status, totalAmount, amountPaid, balanceDue, paymentMethod, isPaidEft, paystackAmount, guestName, guestPhone, notes } = payload;
+        const { id, status, totalAmount, amountPaid, balanceDue, paymentMethod, isPaidEft, paystackAmount, guestName, guestPhone, guestEmail, notes } = payload;
 
         if (!id) {
             return new Response(JSON.stringify({ success: false, error: "Booking ID is required" }), {
@@ -575,6 +575,7 @@ export async function onRequestPut(context) {
                             status: newStatus,
                             guestName: guestName !== undefined ? guestName : b.guestName,
                             guestPhone: guestPhone !== undefined ? guestPhone : b.guestPhone,
+                            guestEmail: guestEmail !== undefined ? guestEmail : b.guestEmail,
                             totalAmount: newTotal,
                             amountPaid: newAmountPaid,
                             balanceDue: newBalanceDue,
@@ -588,6 +589,7 @@ export async function onRequestPut(context) {
                         status: newStatus,
                         guestName: guestName !== undefined ? guestName : b.guestName,
                         guestPhone: guestPhone !== undefined ? guestPhone : b.guestPhone,
+                        guestEmail: guestEmail !== undefined ? guestEmail : b.guestEmail,
                         totalAmount: newTotal,
                         amountPaid: newAmountPaid,
                         balanceDue: newBalanceDue,
