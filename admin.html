@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795352262.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795354540.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -7497,15 +7497,34 @@ We look forward to hosting you at Cool-Cat!`;
 
             const guestMap = new Map();
             listToExport.forEach(b => {
-                const key = (b.guestEmail || b.guestName || '').toLowerCase().trim();
-                if (!key) return;
+                const guestName = (b.guestName || '').trim();
+                if (!guestName && !b.guestEmail && !b.guestPhone) return;
+
+                const rawEmail = (b.guestEmail || '').trim();
+                const isInternalEmail = !rawEmail || rawEmail.toLowerCase().includes('cool-cat.co.za');
+                const cleanPhone = (b.guestPhone || '').replace(/\D/g, '');
+                const cleanName = guestName.toLowerCase();
+
+                let key = '';
+                if (!isInternalEmail && rawEmail) {
+                    key = 'email:' + rawEmail.toLowerCase();
+                } else if (cleanName && cleanPhone) {
+                    key = 'name_phone:' + cleanName + '_' + cleanPhone;
+                } else if (cleanName) {
+                    key = 'name:' + cleanName;
+                } else if (cleanPhone) {
+                    key = 'phone:' + cleanPhone;
+                } else {
+                    key = 'id:' + b.id;
+                }
+
                 const paid = Number(b.amountPaid || 0);
                 if (!guestMap.has(key)) {
                     guestMap.set(key, {
-                        name: b.guestName,
-                        email: b.guestEmail || '',
+                        name: guestName || 'Guest',
+                        email: rawEmail || '',
                         phone: b.guestPhone || '',
-                        lastRoom: b.roomName || b.roomId,
+                        lastRoom: b.roomName || b.roomId || '',
                         totalSpent: paid,
                         bookingCount: 1
                     });
@@ -7513,8 +7532,10 @@ We look forward to hosting you at Cool-Cat!`;
                     const existing = guestMap.get(key);
                     existing.totalSpent += paid;
                     existing.bookingCount += 1;
-                    if (!existing.phone && b.guestPhone) existing.phone = b.guestPhone;
-                    if (!existing.email && b.guestEmail) existing.email = b.guestEmail;
+                    if (!existing.name || existing.name === 'Guest') existing.name = guestName;
+                    if ((!existing.phone || existing.phone === '-') && b.guestPhone) existing.phone = b.guestPhone;
+                    if ((!existing.email || existing.email.includes('cool-cat.co.za')) && rawEmail && !isInternalEmail) existing.email = rawEmail;
+                    if (b.roomName || b.roomId) existing.lastRoom = b.roomName || b.roomId;
                 }
             });
 
