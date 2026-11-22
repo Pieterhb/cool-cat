@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795347542.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795349718.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -2213,8 +2213,9 @@
                                         <th>Customer</th>
                                         <th>Room</th>
                                         <th>Gateway Method</th>
-                                        <th>Amount (ZAR)</th>
-                                        <th>Gateway Status</th>
+                                        <th>Amount Paid (ZAR)</th>
+                                        <th>Outstanding / Balance</th>
+                                        <th>Settlement Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="financesTbody">
@@ -3237,8 +3238,11 @@
                 </div>
 
                 <div class="adm-form-group" style="margin-bottom: 0.8rem;">
-                    <label>Remaining Balance Due (ZAR)</label>
-                    <input type="number" step="any" id="payModalBalanceDue" class="adm-input" readonly style="background: #F8FAFC; color: #334155;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.2rem;">
+                        <label style="margin: 0;">Remaining Balance Due (ZAR)</label>
+                        <button type="button" class="btn-sm" style="background:#ECFDF5; border:1px solid #A7F3D0; color:#065F46; font-size:0.72rem; padding:1px 6px; font-weight:700; cursor:pointer;" onclick="setPayModalBalanceZero()" title="Set balance to R0 and mark 100% fully settled">Set R0 (Fully Settled)</button>
+                    </div>
+                    <input type="number" step="any" id="payModalBalanceDue" class="adm-input" style="font-weight: 700; background: white;" oninput="updatePayModalBalanceDueChange()">
                 </div>
 
                 <div class="adm-form-group" style="margin-bottom: 0.8rem;">
@@ -3331,8 +3335,11 @@
                         <input type="number" id="editAmountPaid" class="adm-input" min="0" step="1" value="0" oninput="onEditPriceOrPaidChange()">
                     </div>
                     <div class="adm-form-group">
-                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Remaining Balance Due (ZAR)</label>
-                        <input type="number" id="editBalanceDue" class="adm-input" min="0" step="1" readonly style="background: #F1F5F9; font-weight: 700;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.2rem;">
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin: 0;">Remaining Balance Due (ZAR)</label>
+                            <button type="button" class="btn-sm" style="background:#ECFDF5; border:1px solid #A7F3D0; color:#065F46; font-size:0.72rem; padding:1px 6px; font-weight:700; cursor:pointer;" onclick="setBalanceDueZero()" title="Set balance to R0 and mark booking 100% fully settled">Set R0 (Fully Settled)</button>
+                        </div>
+                        <input type="number" id="editBalanceDue" class="adm-input" min="0" step="1" style="font-weight: 700; background: white;" oninput="onEditBalanceDueChange()">
                     </div>
                 </div>
 
@@ -4662,11 +4669,39 @@
             }
 
             listToRender.forEach(b => {
-                const isPaid = Number(b.amountPaid || 0) > 0;
+                const total = Number(b.totalAmount || 0);
+                const paid = Number(b.amountPaid || 0);
+                const balance = Number(b.balanceDue !== undefined ? b.balanceDue : Math.max(0, total - paid));
+                const isPaid = paid > 0;
+                const isCancelled = (b.status === 'cancelled');
+                const isFullyPaid = !isCancelled && ((paid >= total && total > 0) || (isPaid && balance === 0));
+                const isDeposit = !isCancelled && (isPaid && balance > 0);
                 const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
                 const methodLabel = isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending';
-                const statusClass = isPaid ? 'status-confirmed' : 'status-unpaid';
-                const statusLabel = isPaid ? (isEft ? 'Settled (EFT)' : 'Settled (Success)') : 'NOT PAID';
+                
+                let statusClass = 'status-unpaid';
+                let statusLabel = 'NOT PAID';
+                if (isCancelled) {
+                    statusClass = '';
+                    statusLabel = 'CANCELLED';
+                } else if (isFullyPaid) {
+                    statusClass = 'status-confirmed';
+                    statusLabel = isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)';
+                } else if (isDeposit) {
+                    statusClass = 'status-deposit';
+                    statusLabel = `DEPOSIT (R${balance.toLocaleString()} DUE)`;
+                }
+
+                let balanceHtml = '';
+                if (isCancelled) {
+                    balanceHtml = `<span style="color:#64748B;">R0 (Cancelled)</span>`;
+                } else if (isDeposit) {
+                    balanceHtml = `<span style="color:#DC2626; font-weight:700; background:#FEF2F2; padding:2px 7px; border-radius:4px; border:1px solid #FECACA; white-space:nowrap;">R${balance.toLocaleString()} Due</span>`;
+                } else if (isFullyPaid) {
+                    balanceHtml = `<span style="color:#166534; font-weight:600;">R0 (Settled)</span>`;
+                } else {
+                    balanceHtml = `<span style="color:#B91C1C; font-weight:700;">R${total.toLocaleString()} Due</span>`;
+                }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -4675,7 +4710,8 @@
                     <td>${b.guestName} (${b.guestEmail || 'direct@cool-cat.co.za'})</td>
                     <td>${shortRoomName(b.roomName || b.roomId)}</td>
                     <td><span style="font-weight: 600;">${methodLabel}</span></td>
-                    <td style="font-weight: 700; color: ${isPaid ? '#166534' : '#64748B'};">R${Number(b.amountPaid || 0).toLocaleString()}</td>
+                    <td style="font-weight: 700; color: ${isPaid ? '#166534' : '#64748B'};">R${paid.toLocaleString()}</td>
+                    <td>${balanceHtml}</td>
                     <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
                 `;
                 tbody.appendChild(row);
@@ -6497,19 +6533,59 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             }
         }
 
+        function setPayModalBalanceZero() {
+            if (!currentPayBooking) return;
+            const paid = Number(document.getElementById('payModalAmountPaid').value) || 0;
+            const balInput = document.getElementById('payModalBalanceDue');
+            if (balInput) balInput.value = 0;
+
+            const statusSel = document.getElementById('payModalStatusSelect');
+            if (statusSel) {
+                if (paid > 0) statusSel.value = 'fully_paid';
+            }
+        }
+
+        function updatePayModalBalanceDueChange() {
+            if (!currentPayBooking) return;
+            const paid = Number(document.getElementById('payModalAmountPaid').value) || 0;
+            const balInput = document.getElementById('payModalBalanceDue');
+            const bal = Math.max(0, Number(balInput ? balInput.value : 0) || 0);
+
+            const statusSel = document.getElementById('payModalStatusSelect');
+            if (statusSel) {
+                if (bal === 0 && paid > 0) {
+                    statusSel.value = 'fully_paid';
+                } else if (paid > 0 && bal > 0) {
+                    statusSel.value = 'deposit_paid';
+                } else if (paid === 0) {
+                    statusSel.value = 'not_paid';
+                }
+            }
+        }
+
         async function handleSavePayment(e) {
             e.preventDefault();
             if (!currentPayBooking) return;
 
             const bookingId = document.getElementById('payBookingId').value;
-            const total = Number(currentPayBooking.totalAmount || 0);
+            let total = Number(currentPayBooking.totalAmount || 0);
             const amountPaid = Number(document.getElementById('payModalAmountPaid').value) || 0;
-            const balanceDue = Math.max(0, total - amountPaid);
-            const status = document.getElementById('payModalStatusSelect').value;
+            const balInput = document.getElementById('payModalBalanceDue');
+            let balanceDue = balInput ? Math.max(0, Number(balInput.value) || 0) : Math.max(0, total - amountPaid);
+            let status = document.getElementById('payModalStatusSelect').value;
             const paymentMethod = document.getElementById('payModalMethod').value;
+
+            // If owner set balance to 0 and some amount was paid, adjust totalAmount to equal amountPaid
+            if (balanceDue === 0 && amountPaid > 0 && total > amountPaid) {
+                total = amountPaid;
+                status = 'fully_paid';
+            } else if (amountPaid + balanceDue !== total && (amountPaid > 0 || balanceDue > 0)) {
+                total = amountPaid + balanceDue;
+            }
 
             const payload = {
                 id: bookingId,
+                totalAmount: total,
                 amountPaid: amountPaid,
                 balanceDue: balanceDue,
                 status: status,
@@ -6563,6 +6639,7 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 if (b.id === id || b.parentBookingId === id || bBase === baseId) {
                     return {
                         ...b,
+                        totalAmount: payload.totalAmount !== undefined ? payload.totalAmount : b.totalAmount,
                         amountPaid: b.isCalendarBlock ? 0 : payload.amountPaid,
                         balanceDue: b.isCalendarBlock ? 0 : payload.balanceDue,
                         status: payload.status,
@@ -6666,6 +6743,48 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             }
         }
 
+        function setBalanceDueZero() {
+            const paidInput = document.getElementById('editAmountPaid');
+            const balInput = document.getElementById('editBalanceDue');
+            const totInput = document.getElementById('editTotalAmount');
+            const statusSel = document.getElementById('editStatusSelect');
+
+            const paid = Math.max(0, Number(paidInput ? paidInput.value : 0) || 0);
+            if (balInput) balInput.value = 0;
+            if (paid > 0 && totInput) {
+                totInput.value = paid;
+            }
+            if (statusSel && statusSel.value !== 'blocked' && statusSel.value !== 'cancelled') {
+                if (paid > 0) {
+                    statusSel.value = 'fully_paid';
+                }
+            }
+        }
+
+        function onEditBalanceDueChange() {
+            const paidInput = document.getElementById('editAmountPaid');
+            const balInput = document.getElementById('editBalanceDue');
+            const totInput = document.getElementById('editTotalAmount');
+            const statusSel = document.getElementById('editStatusSelect');
+
+            const paid = Math.max(0, Number(paidInput ? paidInput.value : 0) || 0);
+            const bal = Math.max(0, Number(balInput ? balInput.value : 0) || 0);
+
+            if (totInput) {
+                totInput.value = paid + bal;
+            }
+
+            if (statusSel && statusSel.value !== 'blocked' && statusSel.value !== 'cancelled') {
+                if (bal === 0 && paid > 0) {
+                    statusSel.value = 'fully_paid';
+                } else if (paid > 0 && bal > 0) {
+                    statusSel.value = 'deposit_paid';
+                } else if (paid === 0) {
+                    statusSel.value = 'not_paid';
+                }
+            }
+        }
+
         async function handleSaveEditBooking(e, thenOpenQuote = false) {
             if (e && e.preventDefault) e.preventDefault();
             if (!currentEditBooking) return;
@@ -6673,12 +6792,23 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             const bookingId = document.getElementById('editBookingId').value;
             const guestName = document.getElementById('editGuestName').value.trim();
             const guestPhone = document.getElementById('editGuestPhone').value.trim();
-            const totalAmount = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
+            let totalAmount = Math.max(0, Number(document.getElementById('editTotalAmount').value) || 0);
             const amountPaid = Math.max(0, Number(document.getElementById('editAmountPaid').value) || 0);
-            const balanceDue = Math.max(0, totalAmount - amountPaid);
-            const status = document.getElementById('editStatusSelect').value;
+            const balInput = document.getElementById('editBalanceDue');
+            let balanceDue = balInput ? Math.max(0, Number(balInput.value) || 0) : Math.max(0, totalAmount - amountPaid);
+            let status = document.getElementById('editStatusSelect').value;
             const paymentMethod = document.getElementById('editPaymentMethod').value;
             const notes = document.getElementById('editNotes').value.trim();
+
+            // If owner set balance to 0 and some amount was paid, adjust totalAmount to equal amountPaid
+            if (balanceDue === 0 && amountPaid > 0 && totalAmount > amountPaid) {
+                totalAmount = amountPaid;
+                if (status !== 'blocked' && status !== 'cancelled') {
+                    status = 'fully_paid';
+                }
+            } else if (amountPaid + balanceDue !== totalAmount && (amountPaid > 0 || balanceDue > 0)) {
+                totalAmount = amountPaid + balanceDue;
+            }
 
             const saveBtn = document.getElementById('editSaveBtn');
             if (saveBtn) {
@@ -7312,11 +7442,23 @@ We look forward to hosting you at Cool-Cat!`;
             });
 
             const rows = [
-                ["Transaction ID", "Date", "Guest Name", "Guest Email", "Room", "Gateway Method", "Amount ZAR", "Gateway Status"]
+                ["Transaction ID", "Date", "Guest Name", "Guest Email", "Room", "Gateway Method", "Amount Paid ZAR", "Outstanding Balance ZAR", "Settlement Status"]
             ];
             listToExport.forEach(b => {
-                const isPaid = Number(b.amountPaid || 0) > 0;
+                const total = Number(b.totalAmount || 0);
+                const paid = Number(b.amountPaid || 0);
+                const balance = Number(b.balanceDue !== undefined ? b.balanceDue : Math.max(0, total - paid));
+                const isPaid = paid > 0;
+                const isCancelled = (b.status === 'cancelled');
+                const isFullyPaid = !isCancelled && ((paid >= total && total > 0) || (isPaid && balance === 0));
+                const isDeposit = !isCancelled && (isPaid && balance > 0);
                 const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
+                
+                let statusLabel = 'NOT PAID';
+                if (isCancelled) statusLabel = 'CANCELLED';
+                else if (isFullyPaid) statusLabel = isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)';
+                else if (isDeposit) statusLabel = `DEPOSIT (R${balance.toLocaleString()} DUE)`;
+
                 rows.push([
                     'PAY_' + formatRefId(b.id, b.roomId),
                     b.createdAt ? b.createdAt.split('T')[0] : (b.checkIn || ''),
@@ -7324,8 +7466,9 @@ We look forward to hosting you at Cool-Cat!`;
                     b.guestEmail || 'direct@cool-cat.co.za',
                     b.roomName || b.roomId,
                     isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending',
-                    Number(b.amountPaid || 0),
-                    isPaid ? (isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)') : 'NOT PAID'
+                    paid,
+                    isCancelled ? 0 : balance,
+                    statusLabel
                 ]);
             });
             downloadXLSX(rows, "cool-cat-financials-tax.xlsx", "Financials");
