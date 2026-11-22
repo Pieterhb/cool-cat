@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795349718.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795351283.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3347,20 +3347,17 @@
                     <div class="adm-form-group">
                         <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Booking Status</label>
                         <select id="editStatusSelect" class="adm-input">
-                            <option value="not_paid">🔴 NOT PAID (Pending)</option>
+                            <option value="not_paid">🔴 NOT PAID</option>
                             <option value="deposit_paid">🟡 Deposit Paid</option>
                             <option value="fully_paid">🟢 100% Fully Paid</option>
-                            <option value="blocked">🔒 Admin Block / Maintenance</option>
-                            <option value="cancelled">⚪ Cancelled</option>
                         </select>
                     </div>
                     <div class="adm-form-group">
                         <label style="font-size: 0.8rem; font-weight: 700; color: #334155;">Payment Method</label>
                         <select id="editPaymentMethod" class="adm-input">
-                            <option value="pending">Pending</option>
-                            <option value="eft">Bank EFT</option>
-                            <option value="card">Card / Paystack</option>
-                            <option value="cash">Cash on Arrival</option>
+                            <option value="eft">🏦 Bank EFT</option>
+                            <option value="card">💳 Card / Paystack</option>
+                            <option value="cash">💵 Cash on Arrival</option>
                         </select>
                     </div>
                 </div>
@@ -4461,16 +4458,13 @@
                     if (b.status === 'cancelled') {
                         statusClass = 'status-cancelled';
                         statusLabel = 'Cancelled';
-                    } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
-                        statusClass = 'status-unpaid';
-                        statusLabel = 'NOT PAID';
+                    } else if (b.status === 'fully_paid' || b.status === 'confirmed' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-confirmed';
+                        statusLabel = '100% Paid';
                     } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
                         statusClass = 'status-deposit';
                         statusLabel = 'Deposit Paid';
-                    } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
-                        statusClass = 'status-confirmed';
-                        statusLabel = '100% Paid';
-                    } else if (b.status === 'blocked') {
+                    } else {
                         statusClass = 'status-unpaid';
                         statusLabel = 'NOT PAID';
                     }
@@ -4555,16 +4549,13 @@
                     if (b.status === 'cancelled') {
                         statusClass = 'status-cancelled';
                         statusLabel = 'Cancelled';
-                    } else if (b.status === 'not_paid' || b.status === 'unpaid' || (Number(b.amountPaid || 0) === 0 && (Number(b.totalAmount || 0) > 0 || b.isManual || (b.id && b.id.startsWith('MAN-')) || b.status === 'blocked'))) {
-                        statusClass = 'status-unpaid';
-                        statusLabel = 'NOT PAID';
+                    } else if (b.status === 'fully_paid' || b.status === 'confirmed' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
+                        statusClass = 'status-confirmed';
+                        statusLabel = '100% Paid';
                     } else if (b.status === 'deposit_paid' || (Number(b.balanceDue || 0) > 0 && Number(b.amountPaid || 0) > 0)) {
                         statusClass = 'status-deposit';
                         statusLabel = 'Deposit Paid';
-                    } else if (b.status === 'confirmed' || b.status === 'fully_paid' || (Number(b.balanceDue || 0) === 0 && Number(b.amountPaid || 0) > 0)) {
-                        statusClass = 'status-confirmed';
-                        statusLabel = '100% Paid';
-                    } else if (b.status === 'blocked') {
+                    } else {
                         statusClass = 'status-unpaid';
                         statusLabel = 'NOT PAID';
                     }
@@ -4674,10 +4665,21 @@
                 const balance = Number(b.balanceDue !== undefined ? b.balanceDue : Math.max(0, total - paid));
                 const isPaid = paid > 0;
                 const isCancelled = (b.status === 'cancelled');
-                const isFullyPaid = !isCancelled && ((paid >= total && total > 0) || (isPaid && balance === 0));
-                const isDeposit = !isCancelled && (isPaid && balance > 0);
-                const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
-                const methodLabel = isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending';
+                const isFullyPaid = !isCancelled && ((b.status === 'fully_paid' || b.status === 'confirmed') || (paid >= total && total > 0) || (isPaid && balance === 0));
+                const isDeposit = !isCancelled && !isFullyPaid && (b.status === 'deposit_paid' || (isPaid && balance > 0));
+
+                let methodLabel = 'Direct EFT';
+                if (b.paymentMethod === 'cash') {
+                    methodLabel = 'Cash on Arrival';
+                } else if (b.paymentMethod === 'card' || b.paystackRef || b.isPaidPaystack) {
+                    methodLabel = 'Card / Paystack';
+                } else if (b.paymentMethod === 'eft' || b.isPaidEft) {
+                    methodLabel = 'Direct EFT';
+                } else if (isPaid) {
+                    methodLabel = 'Direct EFT';
+                } else {
+                    methodLabel = 'Direct EFT';
+                }
                 
                 let statusClass = 'status-unpaid';
                 let statusLabel = 'NOT PAID';
@@ -4686,7 +4688,13 @@
                     statusLabel = 'CANCELLED';
                 } else if (isFullyPaid) {
                     statusClass = 'status-confirmed';
-                    statusLabel = isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)';
+                    if (b.paymentMethod === 'cash') {
+                        statusLabel = 'SETTLED (CASH)';
+                    } else if (b.paymentMethod === 'card' || (b.paystackRef && !b.isPaidEft)) {
+                        statusLabel = 'SETTLED (SUCCESS)';
+                    } else {
+                        statusLabel = 'SETTLED (EFT)';
+                    }
                 } else if (isDeposit) {
                     statusClass = 'status-deposit';
                     statusLabel = `DEPOSIT (R${balance.toLocaleString()} DUE)`;
@@ -6685,8 +6693,21 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             document.getElementById('editTotalAmount').value = total;
             document.getElementById('editAmountPaid').value = paid;
             document.getElementById('editBalanceDue').value = balance;
-            document.getElementById('editStatusSelect').value = b.status || 'not_paid';
-            document.getElementById('editPaymentMethod').value = b.paymentMethod || (b.paystackRef ? 'card' : (paid > 0 ? 'eft' : 'pending'));
+            let currentStatus = b.status || 'not_paid';
+            if (currentStatus === 'confirmed') currentStatus = 'fully_paid';
+            if (currentStatus !== 'not_paid' && currentStatus !== 'deposit_paid' && currentStatus !== 'fully_paid') {
+                if (paid >= total && total > 0) currentStatus = 'fully_paid';
+                else if (paid > 0) currentStatus = 'deposit_paid';
+                else currentStatus = 'not_paid';
+            }
+            document.getElementById('editStatusSelect').value = currentStatus;
+
+            let currentMethod = b.paymentMethod || '';
+            if (currentMethod !== 'eft' && currentMethod !== 'card' && currentMethod !== 'cash') {
+                if (b.paystackRef || b.isPaidPaystack) currentMethod = 'card';
+                else currentMethod = 'eft';
+            }
+            document.getElementById('editPaymentMethod').value = currentMethod;
             document.getElementById('editNotes').value = b.notes || '';
 
             // Calculate standard seasonal price based on room & stay dates
@@ -7450,14 +7471,32 @@ We look forward to hosting you at Cool-Cat!`;
                 const balance = Number(b.balanceDue !== undefined ? b.balanceDue : Math.max(0, total - paid));
                 const isPaid = paid > 0;
                 const isCancelled = (b.status === 'cancelled');
-                const isFullyPaid = !isCancelled && ((paid >= total && total > 0) || (isPaid && balance === 0));
-                const isDeposit = !isCancelled && (isPaid && balance > 0);
-                const isEft = b.paymentMethod === 'eft' || b.isPaidEft;
+                const isFullyPaid = !isCancelled && ((b.status === 'fully_paid' || b.status === 'confirmed') || (paid >= total && total > 0) || (isPaid && balance === 0));
+                const isDeposit = !isCancelled && !isFullyPaid && (b.status === 'deposit_paid' || (isPaid && balance > 0));
+
+                let methodLabel = 'Direct EFT';
+                if (b.paymentMethod === 'cash') {
+                    methodLabel = 'Cash on Arrival';
+                } else if (b.paymentMethod === 'card' || b.paystackRef || b.isPaidPaystack) {
+                    methodLabel = 'Card / Paystack';
+                } else if (b.paymentMethod === 'eft' || b.isPaidEft) {
+                    methodLabel = 'Direct EFT';
+                } else if (isPaid) {
+                    methodLabel = 'Direct EFT';
+                } else {
+                    methodLabel = 'Direct EFT';
+                }
                 
                 let statusLabel = 'NOT PAID';
-                if (isCancelled) statusLabel = 'CANCELLED';
-                else if (isFullyPaid) statusLabel = isEft ? 'SETTLED (EFT)' : 'SETTLED (SUCCESS)';
-                else if (isDeposit) statusLabel = `DEPOSIT (R${balance.toLocaleString()} DUE)`;
+                if (isCancelled) {
+                    statusLabel = 'CANCELLED';
+                } else if (isFullyPaid) {
+                    if (b.paymentMethod === 'cash') statusLabel = 'SETTLED (CASH)';
+                    else if (b.paymentMethod === 'card' || (b.paystackRef && !b.isPaidEft)) statusLabel = 'SETTLED (SUCCESS)';
+                    else statusLabel = 'SETTLED (EFT)';
+                } else if (isDeposit) {
+                    statusLabel = `DEPOSIT (R${balance.toLocaleString()} DUE)`;
+                }
 
                 rows.push([
                     'PAY_' + formatRefId(b.id, b.roomId),
@@ -7465,7 +7504,7 @@ We look forward to hosting you at Cool-Cat!`;
                     b.guestName,
                     b.guestEmail || 'direct@cool-cat.co.za',
                     b.roomName || b.roomId,
-                    isPaid ? (isEft ? 'Direct EFT' : 'Card / Paystack') : 'Manual / Pending',
+                    methodLabel,
                     paid,
                     isCancelled ? 0 : balance,
                     statusLabel
