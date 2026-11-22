@@ -272,6 +272,8 @@ export async function onRequestPost(context) {
             totalAmount: numTotal,
             amountPaid: numPaid,
             balanceDue: numBalance,
+            depositDue: payload.depositDue !== undefined ? payload.depositDue : (numPaid > 0 ? numPaid : numTotal),
+            is50PercentDeposit: payload.is50PercentDeposit !== undefined ? payload.is50PercentDeposit : null,
             paymentMethod: paymentMethod || (numPaid > 0 ? 'Card / Paystack' : 'pending'),
             referralCode: payload.referralCode || '',
             status: finalStatus,

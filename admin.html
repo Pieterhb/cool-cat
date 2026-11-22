@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795245172.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795337295.css?v=1791468000">
 
     <!-- SheetJS for proper .xlsx Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -3170,7 +3170,7 @@
                                 <input type="tel" id="manGuestPhone" class="adm-input" placeholder="082 123 4567">
                             </div>
                             <div id="suggestedPriceHelper" style="grid-column: 1 / -1; font-size: 0.78rem; color: #0A3A85; font-weight: 600; cursor: pointer; margin-top: -0.35rem; white-space: nowrap; display: none;" onclick="applySuggestedPrice()">
-                                💡 Apply suggested: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 700; color: #0A3A85;">(50% amount)</span>
+                                💡 Apply suggested total: R<span id="suggestedPriceVal">0</span> <span id="suggestedDepositRule" style="font-weight: 700;"></span>
                             </div>
                         </div>
 
@@ -3217,6 +3217,7 @@
                         <span style="color: #334155;">Current Status:</span>
                         <span id="payModalCurrentStatus" class="status-pill status-unpaid">NOT PAID</span>
                     </div>
+                    <div id="payModalPolicyBadge" style="font-size: 0.78rem; font-weight: 700; margin-top: 0.45rem; padding: 0.4rem 0.6rem; border-radius: 6px; display: none;"></div>
                 </div>
 
                 <!-- Quick Preset Buttons -->
@@ -3294,7 +3295,7 @@
                         <span id="shareRoomStay" style="font-weight:600;">-</span>
                     </div>
                     <div style="display:flex; justify-content:space-between;">
-                        <span style="color: #334155;">Total Quote / 50% Deposit:</span>
+                        <span style="color: #334155;" id="shareAmountSummaryLabel">Total Quote / Deposit:</span>
                         <strong id="shareAmountSummary" style="color:var(--adm-primary);">-</strong>
                     </div>
                 </div>
@@ -4696,6 +4697,55 @@
             return '+27' + raw;
         }
 
+        function parseLocalDateAdmin(date) {
+            if (!date) return new Date();
+            if (date instanceof Date) return date;
+            if (typeof date === 'string') {
+                const parts = date.trim().split('T')[0].split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    return new Date(y, m, d);
+                }
+            }
+            return new Date(date);
+        }
+
+        // Official Cool-Cat FAQ Payment Policy Engine
+        // 1. Single stay booked > 7 days in advance AND total > R1,000 -> 50% deposit upfront
+        // 2. Short / last-minute stays (arrival within 7 days OR total <= R1,000) -> 100% full payment upfront
+        // 3. Multi-stay/mixed dates -> closest check-in date to today governs the entire order
+        function getBookingPaymentPolicy(totalAmount, checkInStr, staysOrChildren) {
+            const total = Number(totalAmount || 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let earliestDateStr = checkInStr || '';
+            if (Array.isArray(staysOrChildren)) {
+                staysOrChildren.forEach(s => {
+                    if (s && s.checkIn && (!earliestDateStr || s.checkIn < earliestDateStr)) {
+                        earliestDateStr = s.checkIn;
+                    }
+                });
+            }
+
+            const cIn = parseLocalDateAdmin(earliestDateStr);
+            cIn.setHours(0, 0, 0, 0);
+            const daysUntilCheckIn = Math.floor((cIn - today) / (1000 * 60 * 60 * 24));
+
+            const is50PercentDeposit = (total > 1000 && daysUntilCheckIn > 7);
+            const requiredUpfront = is50PercentDeposit ? Math.round(total * 0.5) : total;
+
+            return {
+                is50PercentDeposit,
+                requiredUpfront,
+                daysUntilCheckIn,
+                earliestDateStr,
+                total
+            };
+        }
+
         function formatRefId(id, roomId) {
             if (!id) return '';
             let clean = String(id).trim();
@@ -5977,16 +6027,19 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
 
             // Determine if 50% deposit or 100% full payment applies based on app payment rules:
             // Standard rule: > 7 days in advance AND total > R1,000 -> 50% deposit, otherwise 100% full payment
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const cInDate = new Date(checkIn);
-            cInDate.setHours(0, 0, 0, 0);
-            const daysUntilCheckIn = Math.floor((cInDate - today) / (1000 * 60 * 60 * 24));
-            const is50PercentDeposit = (calculatedTotal > 1000 && daysUntilCheckIn > 7);
+            const policy = getBookingPaymentPolicy(calculatedTotal, checkInStr);
+            const is50PercentDeposit = policy.is50PercentDeposit;
 
             const ruleEl = document.getElementById('suggestedDepositRule');
             if (ruleEl) {
-                ruleEl.textContent = is50PercentDeposit ? '(50% amount)' : '(100% amount)';
+                if (is50PercentDeposit) {
+                    ruleEl.textContent = `· (Policy: 50% deposit / R${policy.requiredUpfront.toLocaleString()} upfront to secure)`;
+                    ruleEl.style.color = '#0A3A85';
+                } else {
+                    const reason = policy.daysUntilCheckIn <= 7 ? 'arrival within 7 days' : 'total under R1,000';
+                    ruleEl.textContent = `· (Policy: 100% upfront · ${reason})`;
+                    ruleEl.style.color = '#B45309';
+                }
             }
 
             if (priceVal) priceVal.textContent = calculatedTotal.toLocaleString();
@@ -6083,7 +6136,8 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 return;
             }
 
-            const nightsCount = Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)));
+            const nightsCount = Math.max(1, Math.round((new Date(checkOut + 'T00:00:00') - new Date(checkIn + 'T00:00:00')) / (1000 * 60 * 60 * 24)));
+            const policy = getBookingPaymentPolicy(total, checkIn);
 
             const newB = {
                 // omit client-generated id so Cloudflare server sequence allocator assigns authentic sequential CCH-ID
@@ -6101,6 +6155,8 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
                 totalAmount: total,
                 amountPaid: 0, // Client has not paid yet!
                 balanceDue: total, // Entire amount is due
+                depositDue: policy.requiredUpfront,
+                is50PercentDeposit: policy.is50PercentDeposit,
                 paymentMethod: 'pending',
                 status: 'not_paid', // NOT PAID!
                 createdAt: new Date().toISOString()
@@ -6183,9 +6239,29 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
             const paid = Number(b.amountPaid || 0);
             const balance = Number(b.balanceDue !== undefined ? b.balanceDue : (total - paid));
 
+            const children = ADMIN_BOOKINGS.filter(bk => bk.parentBookingId === b.id);
+            const policy = getBookingPaymentPolicy(total, b.checkIn, [...(b.stays || []), ...children]);
+
             document.getElementById('payModalTotalAmount').textContent = `R${total.toLocaleString()}`;
             document.getElementById('payModalPresetDeposit').textContent = `R${(Math.round(total * 0.5)).toLocaleString()}`;
             document.getElementById('payModalPresetFull').textContent = `R${total.toLocaleString()}`;
+
+            const policyBadge = document.getElementById('payModalPolicyBadge');
+            if (policyBadge) {
+                policyBadge.style.display = 'block';
+                if (!policy.is50PercentDeposit) {
+                    policyBadge.style.background = '#FEF3C7';
+                    policyBadge.style.color = '#92400E';
+                    policyBadge.style.border = '1px solid #FCD34D';
+                    const reason = policy.daysUntilCheckIn <= 7 ? 'arrival within 7 days' : 'total under R1,000';
+                    policyBadge.innerHTML = `⚠️ <strong>Policy Requirement:</strong> 100% full payment upfront required (${reason}).`;
+                } else {
+                    policyBadge.style.background = '#EFF6FF';
+                    policyBadge.style.color = '#1E40AF';
+                    policyBadge.style.border = '1px solid #BFDBFE';
+                    policyBadge.innerHTML = `ℹ️ <strong>Policy Requirement:</strong> 50% deposit (R${policy.requiredUpfront.toLocaleString()}) upfront; balance due before arrival.`;
+                }
+            }
 
             const curStatusEl = document.getElementById('payModalCurrentStatus');
             if (curStatusEl) {
@@ -6505,22 +6581,71 @@ ${avail.bookedCount} of ${avail.total} suites occupied:
 
             const total = Number(b.totalAmount || 0);
             const paid = Number(b.amountPaid || 0);
-            const deposit = Math.round(total * 0.5);
+            const balanceDue = Number(b.balanceDue !== undefined ? b.balanceDue : (total - paid));
             const guestName = b.guestName || 'Valued Guest';
             const roomName = b.roomName || ADMIN_ROOM_NAMES[b.roomId] || b.roomId;
             const guestPhone = b.guestPhone || '';
             const cleanRef = formatRefId(b.id, b.roomId);
 
+            // Find all associated stays or children to find earliest check-in date
+            const children = ADMIN_BOOKINGS.filter(bk => bk.parentBookingId === b.id);
+            const policy = getBookingPaymentPolicy(total, b.checkIn, [...(b.stays || []), ...children]);
+            const is50 = policy.is50PercentDeposit;
+            const hasExistingPaid = (paid > 0 && balanceDue > 0);
+
+            // Determine upfront/payable amount
+            let payableAmount = policy.requiredUpfront;
+            let summaryText = '';
+            let summaryLabel = is50 ? 'Total Quote / 50% Deposit:' : 'Total Quote / 100% Upfront:';
+
+            if (hasExistingPaid) {
+                payableAmount = balanceDue;
+                summaryLabel = 'Remaining Balance Due:';
+                summaryText = `R${balanceDue.toLocaleString()} (Total: R${total.toLocaleString()} | Paid: R${paid.toLocaleString()})`;
+            } else if (is50) {
+                summaryText = `Total: R${total.toLocaleString()} (50% Deposit: R${payableAmount.toLocaleString()})`;
+            } else {
+                const reason = policy.daysUntilCheckIn <= 7 ? 'Booked within 7 days of arrival' : 'Stay total under R1,000';
+                summaryText = `Total: R${total.toLocaleString()} (100% Full Payment Required · ${reason})`;
+            }
+
             document.getElementById('shareBookingId').value = b.id;
             document.getElementById('shareGuestPhone').value = guestPhone;
             document.getElementById('shareGuestName').textContent = guestName;
             document.getElementById('shareRoomStay').textContent = `${roomName} (${b.checkIn} ➔ ${b.checkOut} • ${b.nights || 1}N)`;
-            document.getElementById('shareAmountSummary').textContent = `Total: R${total.toLocaleString()} (50% Deposit: R${deposit.toLocaleString()})`;
+            const labelEl = document.getElementById('shareAmountSummaryLabel');
+            if (labelEl) labelEl.textContent = summaryLabel;
+            document.getElementById('shareAmountSummary').textContent = summaryText;
             document.getElementById('shareModalSubtitle').textContent = `Quote for #${cleanRef} (${guestName})`;
 
             // Generate direct booking & quick pay link
             const origin = window.location.origin || 'https://cool-cat.co.za';
-            const payUrl = `${origin}/book?payRef=${encodeURIComponent(cleanRef)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${deposit}&name=${encodeURIComponent(guestName)}`;
+            const payUrl = `${origin}/book?payRef=${encodeURIComponent(cleanRef)}&room=${encodeURIComponent(b.roomId || 'all')}&in=${encodeURIComponent(b.checkIn || '')}&out=${encodeURIComponent(b.checkOut || '')}&amt=${total}&dep=${payableAmount}&name=${encodeURIComponent(guestName)}`;
+
+            let depositRowText = '';
+            let opt1Help = '';
+            let opt2Amount = '';
+
+            if (hasExistingPaid) {
+                depositRowText = `💰 *Total Stay Amount:* R${total.toLocaleString()}
+✅ *Amount Already Paid:* R${paid.toLocaleString()}
+🔒 *Remaining Balance Due:* R${balanceDue.toLocaleString()}`;
+                opt1Help = `Click here to securely pay your remaining balance of R${balanceDue.toLocaleString()}:`;
+                opt2Amount = `*Amount to Transfer:* R${balanceDue.toLocaleString()} (Remaining Balance)`;
+            } else if (is50) {
+                depositRowText = `💰 *Total Amount:* R${total.toLocaleString()}
+🔒 *50% Deposit to Secure:* R${payableAmount.toLocaleString()}
+*(Remaining 50% balance of R${(total - payableAmount).toLocaleString()} is due 3 days before arrival or upon check-in)*`;
+                opt1Help = `Click here to securely pay your 50% deposit (R${payableAmount.toLocaleString()}) or full amount:`;
+                opt2Amount = `*Amount to Transfer:* R${payableAmount.toLocaleString()} (50% Deposit) or R${total.toLocaleString()} (Full Payment)`;
+            } else {
+                const reasonMsg = policy.daysUntilCheckIn <= 7 ? 'Booking within 7 days of arrival' : 'Stay value under R1,000';
+                depositRowText = `💰 *Total Amount:* R${total.toLocaleString()}
+🔒 *100% Full Payment to Secure:* R${total.toLocaleString()}
+*(${reasonMsg} – 100% payment required upfront per policy)*`;
+                opt1Help = `Click here to securely pay your full payment (R${total.toLocaleString()}):`;
+                opt2Amount = `*Amount to Transfer:* R${total.toLocaleString()} (100% Full Payment Upfront)`;
+            }
 
             const msgText = 
 `*Cool-Cat Guesthouse - Accommodation Quote & Payment Details*
@@ -6533,13 +6658,12 @@ Thank you for your enquiry to stay at Cool-Cat in Strand, Western Cape! Here are
 📅 *Check-In:* ${b.checkIn} (from 14:00)
 📅 *Check-Out:* ${b.checkOut} (by 10:00)
 🌙 *Duration:* ${b.nights || 1} Night(s)
-💰 *Total Amount:* R${total.toLocaleString()}
-🔒 *50% Deposit to Secure:* R${deposit.toLocaleString()}
+${depositRowText}
 📌 *Booking Reference:* #${cleanRef}
 
 ----------------------------------------
 💳 *OPTION 1: Instant Card / Apple Pay / EFT (Online Paystack)*
-Click here to securely pay your 50% deposit (R${deposit.toLocaleString()}) or full amount:
+${opt1Help}
 ${payUrl}
 
 ----------------------------------------
@@ -6548,6 +6672,7 @@ ${payUrl}
 *Account Name:* P H Botes
 *Account Number:* 1485601132
 *Branch Code:* 470010
+${opt2Amount}
 *Reference:* ${cleanRef} ${guestName}
 *(Please WhatsApp Proof of Payment to 072 889 4840 once done)*
 

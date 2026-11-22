@@ -67,7 +67,7 @@
     </script>
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="styles-v1795245172.css?v=1791468000">
+    <link rel="stylesheet" href="styles-v1795337295.css?v=1791468000">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -2492,8 +2492,8 @@
             </div>
 
             <!-- Payment Amount Selection -->
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;">Select Amount to Pay Today:</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:1.2rem;">
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;" id="qpSelectAmountLabel">Select Amount to Pay Today:</label>
+            <div id="qpPaymentButtonsContainer" style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:1rem;">
                 <button type="button" class="btn-sm" id="qpBtnDeposit" style="background:#EEF2FF; color:var(--sapphire-blue); border:2px solid var(--sapphire-blue); padding:0.7rem 0.5rem; border-radius:8px; font-weight:700; cursor:pointer;" onclick="selectQuotePayOption('deposit')">
                     50% Deposit<br><span id="qpDepositAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
                 </button>
@@ -2501,6 +2501,7 @@
                     100% Full Amount<br><span id="qpFullAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
                 </button>
             </div>
+            <div id="qpPolicyNotice" style="display:none; border-radius:8px; padding:0.6rem 0.85rem; margin-bottom:1rem; font-size:0.8rem; line-height:1.45;"></div>
 
             <!-- Guest Contact for Receipt -->
             <div style="margin-bottom: 0.8rem;">
@@ -5463,7 +5464,7 @@
             }
 
             let total = Number(urlParams.get('amt') || 0);
-            let dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
+            let depParam = Number(urlParams.get('dep') || 0);
             let name = urlParams.get('name') || 'Valued Guest';
             let room = urlParams.get('room') || 'all';
             let cIn = urlParams.get('in') || '';
@@ -5480,13 +5481,12 @@
             const cleanPayRef = formatRefId(payRef, room);
 
             // Anti-Tampering Check: Cross-reference with authentic database bookings if loaded
+            let dbMatch = null;
             if (Array.isArray(MOCK_BOOKINGS) && MOCK_BOOKINGS.length > 0) {
-                const dbMatch = MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
+                dbMatch = MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
                 if (dbMatch) {
                     if (Number(dbMatch.totalAmount) > 0) {
                         total = Number(dbMatch.totalAmount);
-                        const balance = Number(dbMatch.balanceDue);
-                        dep = (balance > 0 && balance <= total) ? balance : Math.round(total * 0.5);
                     }
                     if (dbMatch.guestName && dbMatch.guestName !== 'Valued Guest') name = dbMatch.guestName;
                     if (dbMatch.roomId) room = dbMatch.roomId;
@@ -5494,6 +5494,35 @@
                     if (dbMatch.checkOut) cOut = dbMatch.checkOut;
                 }
             }
+
+            // Calculate earliest check-in date across stays
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let earliestCheckInStr = cIn;
+            if (dbMatch && dbMatch.stays && Array.isArray(dbMatch.stays)) {
+                dbMatch.stays.forEach(s => {
+                    if (s.checkIn && (!earliestCheckInStr || s.checkIn < earliestCheckInStr)) {
+                        earliestCheckInStr = s.checkIn;
+                    }
+                });
+            }
+
+            const cInDate = parseLocalDate(earliestCheckInStr);
+            cInDate.setHours(0, 0, 0, 0);
+            const daysUntilCheckIn = Math.floor((cInDate - today) / (1000 * 60 * 60 * 24));
+
+            // FAQ Rules:
+            // 1. > 7 days in advance AND total > R1,000 -> 50% deposit allowed
+            // 2. <= 7 days in advance OR total <= R1,000 -> 100% full payment required
+            const is50PercentAllowed = (total > 1000 && daysUntilCheckIn > 7);
+            const calcDeposit = is50PercentAllowed ? Math.round(total * 0.5) : total;
+
+            const dbPaid = Number(dbMatch?.amountPaid || 0);
+            const dbBalance = Number(dbMatch?.balanceDue !== undefined ? dbMatch.balanceDue : (total - dbPaid));
+            const hasExistingPartialPayment = (dbPaid > 0 && dbBalance > 0 && dbBalance < total);
+
+            const depAmount = hasExistingPartialPayment ? dbBalance : calcDeposit;
 
             activeQuotePay = {
                 ref: cleanPayRef,
@@ -5503,9 +5532,11 @@
                 checkOut: cOut,
                 name: name,
                 totalAmount: total,
-                depositAmount: dep,
-                chosenAmount: dep,
-                chosenType: 'deposit'
+                depositAmount: depAmount,
+                chosenAmount: is50PercentAllowed && !hasExistingPartialPayment ? depAmount : (hasExistingPartialPayment ? dbBalance : total),
+                chosenType: is50PercentAllowed && !hasExistingPartialPayment ? 'deposit' : 'full',
+                is50PercentAllowed: is50PercentAllowed,
+                hasExistingPartialPayment: hasExistingPartialPayment
             };
 
             const refEl = document.getElementById('qpBookingRef');
@@ -5519,9 +5550,9 @@
             const totEl = document.getElementById('qpTotalAmount');
             if (totEl) totEl.textContent = `R${total.toLocaleString()}`;
             const depEl = document.getElementById('qpDepositAmount');
-            if (depEl) depEl.textContent = `R${dep.toLocaleString()}`;
+            if (depEl) depEl.textContent = `R${depAmount.toLocaleString()}`;
             const fullEl = document.getElementById('qpFullAmount');
-            if (fullEl) fullEl.textContent = `R${total.toLocaleString()}`;
+            if (fullEl) fullEl.textContent = hasExistingPartialPayment ? `R${dbBalance.toLocaleString()}` : `R${total.toLocaleString()}`;
             const eftRef = document.getElementById('qpEftRefText');
             if (eftRef) eftRef.textContent = `${cleanPayRef} ${name}`;
 
@@ -5529,7 +5560,65 @@
             const waBtn = document.getElementById('qpEftWaBtn');
             if (waBtn) waBtn.href = `https://wa.me/27728894840?text=${encodeURIComponent(waMsg)}`;
 
-            selectQuotePayOption('deposit');
+            const btnDep = document.getElementById('qpBtnDeposit');
+            const btnFull = document.getElementById('qpBtnFull');
+            const btnContainer = document.getElementById('qpPaymentButtonsContainer');
+            const noticeEl = document.getElementById('qpPolicyNotice');
+
+            if (hasExistingPartialPayment) {
+                if (btnDep) btnDep.style.display = 'none';
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `Remaining Balance Due<br><span style="font-size:1.05rem; font-weight:800;">R${dbBalance.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#EFF6FF';
+                    noticeEl.style.border = '1px solid #BFDBFE';
+                    noticeEl.style.color = '#1E40AF';
+                    noticeEl.innerHTML = `ℹ️ <strong>Remaining Balance:</strong> Initial payment of R${dbPaid.toLocaleString()} was received. The remaining balance of R${dbBalance.toLocaleString()} is due now.`;
+                }
+                selectQuotePayOption('full');
+            } else if (!is50PercentAllowed) {
+                // 100% full payment required upfront
+                if (btnDep) btnDep.style.display = 'none';
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `100% Full Payment Required<br><span style="font-size:1.05rem; font-weight:800;">R${total.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    const reason = daysUntilCheckIn <= 7 
+                        ? 'For stays booked within 7 days of arrival, 100% payment is required upfront to secure your reservation.'
+                        : 'For stays valued at R1,000 or less, 100% payment is required upfront to secure your reservation.';
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#FEF3C7';
+                    noticeEl.style.border = '1px solid #FCD34D';
+                    noticeEl.style.color = '#92400E';
+                    noticeEl.innerHTML = `🔒 <strong>Payment Policy Notice:</strong> ${reason}`;
+                }
+                selectQuotePayOption('full');
+            } else {
+                // 50% deposit allowed
+                if (btnDep) {
+                    btnDep.style.display = 'block';
+                    btnDep.innerHTML = `50% Deposit<br><span id="qpDepositAmount" style="font-size:1.05rem; font-weight:800;">R${calcDeposit.toLocaleString()}</span>`;
+                }
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr 1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `100% Full Amount<br><span id="qpFullAmount" style="font-size:1.05rem; font-weight:800;">R${total.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#EFF6FF';
+                    noticeEl.style.border = '1px solid #BFDBFE';
+                    noticeEl.style.color = '#1E40AF';
+                    noticeEl.innerHTML = `💡 <strong>50% Deposit to Secure:</strong> Pay R${calcDeposit.toLocaleString()} now to secure your stay. Remaining 50% balance (R${(total - calcDeposit).toLocaleString()}) is due 3 days before arrival or at check-in.`;
+                }
+                selectQuotePayOption('deposit');
+            }
 
             const modal = document.getElementById('quotePayModal');
             if (modal) modal.style.display = 'flex';
@@ -5546,7 +5635,7 @@
             const btnFull = document.getElementById('qpBtnFull');
             const payBtn = document.getElementById('qpPaystackBtn');
 
-            if (type === 'deposit') {
+            if (type === 'deposit' && activeQuotePay.is50PercentAllowed && !activeQuotePay.hasExistingPartialPayment) {
                 activeQuotePay.chosenAmount = activeQuotePay.depositAmount;
                 if (btnDep) {
                     btnDep.style.background = '#EEF2FF';
@@ -5560,7 +5649,8 @@
                 }
                 if (payBtn) payBtn.innerHTML = `🔒 Pay 50% Deposit (R${activeQuotePay.depositAmount.toLocaleString()}) via Paystack`;
             } else {
-                activeQuotePay.chosenAmount = activeQuotePay.totalAmount;
+                activeQuotePay.chosenType = 'full';
+                activeQuotePay.chosenAmount = activeQuotePay.hasExistingPartialPayment ? activeQuotePay.depositAmount : activeQuotePay.totalAmount;
                 if (btnFull) {
                     btnFull.style.background = '#EEF2FF';
                     btnFull.style.color = 'var(--sapphire-blue)';
@@ -5571,7 +5661,8 @@
                     btnDep.style.color = '#475569';
                     btnDep.style.borderColor = 'transparent';
                 }
-                if (payBtn) payBtn.innerHTML = `🔒 Pay 100% Full (R${activeQuotePay.totalAmount.toLocaleString()}) via Paystack`;
+                const fullLabel = activeQuotePay.hasExistingPartialPayment ? 'Remaining Balance' : '100% Full';
+                if (payBtn) payBtn.innerHTML = `🔒 Pay ${fullLabel} (R${activeQuotePay.chosenAmount.toLocaleString()}) via Paystack`;
             }
         }
 
