@@ -257,9 +257,9 @@ export async function onRequestPost(context) {
 
         // Customer Booking Cut-Off Date Validation (Configured in Admin Settings)
         if (!payload.isQuotePayment && !payload.is_quote_payment) {
-            const earliestAllowed = (siteConfig && siteConfig.earliestBookingDate) ? String(siteConfig.earliestBookingDate).trim() : '2027-02-01';
+            const earliestAllowed = (siteConfig && siteConfig.earliestBookingDate) ? String(siteConfig.earliestBookingDate).trim() : '';
             if (earliestAllowed) {
-                const hasEarlyStay = resolvedStays.some(s => {
+                const hasEarlyStay = staysList.some(s => {
                     const cIn = String(s.checkInStr || s.checkIn || '').split('T')[0];
                     return cIn && cIn < earliestAllowed;
                 });
