@@ -4158,7 +4158,10 @@
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px dashed #CBD5E1;">
                                 <span style="font-size: 0.84rem; color: #64748B;">Room Rate:</span>
-                                <strong style="font-size: 0.95rem; color: #0F52BA;">R${s.subtotal.toLocaleString()} ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; margin-left: 6px; border: 1px solid #86EFAC;">${s.pkgDiscount}% Package Discount</span>` : ''}</strong>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; border: 1px solid #86EFAC; white-space: nowrap;">${s.pkgDiscount}% Package Discount</span>` : ''}
+                                    <strong style="font-size: 0.95rem; color: #0F52BA; text-align: right;">R${s.subtotal.toLocaleString()}</strong>
+                                </div>
                             </div>
                         </div>
                     `;
