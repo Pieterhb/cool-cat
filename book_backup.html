@@ -8,6 +8,64 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://cool-cat.co.za/book">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="Cool-Cat">
+    <meta property="og:title" content="Book Online &amp; Check Live Availability | Cool-Cat Strand">
+    <meta property="og:description" content="Check live room availability, book direct and pay securely via Paystack for Cool-Cat in Strand, Western Cape.">
+    <meta property="og:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Cool-Cat Strand Beach Accommodation">
+    <meta property="og:url" content="https://cool-cat.co.za/book">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_ZA">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Book Online &amp; Check Live Availability | Cool-Cat Strand">
+    <meta name="twitter:description" content="Check live room availability, book direct and pay securely via Paystack for Cool-Cat in Strand, Western Cape.">
+    <meta name="twitter:image" content="https://cool-cat.co.za/Cool%20Cat%20Banner.jpg">
+
+    <!-- JSON-LD: WebPage + BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "https://cool-cat.co.za/book",
+          "name": "Book Online & Check Live Availability | Cool-Cat Strand",
+          "description": "Check live room availability, book direct and pay securely via Paystack for Cool-Cat in Strand, Western Cape.",
+          "url": "https://cool-cat.co.za/book",
+          "publisher": {
+            "@type": "Organization",
+            "@id": "https://cool-cat.co.za/#organization",
+            "name": "Cool-Cat Holiday Accommodation",
+            "url": "https://cool-cat.co.za/",
+            "logo": "https://cool-cat.co.za/Logo.png"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://cool-cat.co.za/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Book Online",
+              "item": "https://cool-cat.co.za/book"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
     <!-- Main CSS -->
     <link rel="stylesheet" href="styles-v1795356701.css?v=1791468000">
 
@@ -17,8 +75,8 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="Cool-Cat">
 
-    <!-- Paystack Official Inline Script -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <!-- Paystack Official Inline Script (deferred for non-render-blocking performance) -->
+    <script src="https://js.paystack.co/v1/inline.js" defer></script>
 
     <style>
         :root {
@@ -1093,16 +1151,17 @@
         }
 
         .recap-bar {
-            background: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%);
-            border: 1px solid #C7D2FE;
+            background: #F0F7FF;
+            border: 1.5px solid #BFDBFE;
             border-radius: 12px;
-            padding: 1rem 1.4rem;
-            margin-bottom: 2rem;
+            padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .recap-title {
@@ -1284,6 +1343,7 @@
         }
 
         .test-sandbox-card {
+            display: none; /* Hidden by default; dynamically shown only if Paystack test public key (pk_test_) is active */
             background: #FEF3C7;
             border: 1px solid #FCD34D;
             border-radius: 12px;
@@ -1670,6 +1730,122 @@
                 font-size: 1rem !important;
             }
         }
+
+        /* Cellphone 9:16 Screens (<= 480px) Responsive Optimization */
+        @media (max-width: 480px) {
+            .calendar-card {
+                padding: 0.75rem 0.45rem !important;
+                border-radius: 14px !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .calendar-layout {
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
+            .room-tabs-wrapper, .room-tabs {
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
+            .room-tabs-row {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                flex-wrap: wrap !important;
+                gap: 0.4rem !important;
+            }
+            .room-tab-btn {
+                white-space: normal !important;
+                font-size: 0.78rem !important;
+                padding: 0.45rem 0.55rem !important;
+                line-height: 1.25 !important;
+                text-align: center !important;
+                max-width: 100% !important;
+            }
+            .room-tab-btn span {
+                white-space: normal !important;
+                word-break: normal !important;
+            }
+            .cal-grid-header, .cal-grid {
+                gap: 3px !important;
+                min-width: 0 !important;
+            }
+            .cal-weekday {
+                font-size: 0.65rem !important;
+                padding: 0.2rem 0 !important;
+                letter-spacing: 0 !important;
+            }
+            .cal-day {
+                min-height: 52px !important;
+                padding: 2px 2px !important;
+                border-radius: 6px !important;
+            }
+            .cal-day-top {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 1px !important;
+            }
+            .cal-day-num {
+                font-size: 0.75rem !important;
+                line-height: 1 !important;
+            }
+            .cal-avail-pill {
+                font-size: 0.50rem !important;
+                padding: 1px 2px !important;
+                line-height: 1 !important;
+                letter-spacing: 0 !important;
+                border-radius: 2px !important;
+            }
+            .cal-price-tag {
+                font-size: 0.58rem !important;
+                line-height: 1.1 !important;
+                margin-top: 2px !important;
+                text-align: right !important;
+            }
+            .selected-room-info {
+                padding: 0.65rem 0.75rem !important;
+                font-size: 0.85rem !important;
+            }
+            .banner-status-badge {
+                font-size: 0.72rem !important;
+                padding: 2px 6px !important;
+            }
+            #bannerRoomName {
+                font-size: 0.95rem !important;
+                word-break: normal !important;
+            }
+            #bannerRoomSpecs {
+                font-size: 0.78rem !important;
+                word-break: normal !important;
+            }
+            .calendar-header {
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+                align-items: center !important;
+            }
+            .season-legend-card, .summary-card {
+                padding: 0.9rem !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .legend-grid {
+                gap: 0.4rem !important;
+            }
+            .legend-item {
+                font-size: 0.78rem !important;
+            }
+            .step2-card {
+                padding: 1rem 0.75rem !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .form-input {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1723,9 +1899,9 @@
                     <span>Select Dates &amp; Room</span>
                 </div>
                 <div class="step-divider"></div>
-                <div class="wizard-step" id="wizStep2" onclick="if(selectedStays && selectedStays.length > 0) goToStep2();" style="cursor: pointer;" title="Step 2: Guest Details & Breakfast">
+                <div class="wizard-step" id="wizStep2" onclick="if(selectedStays && selectedStays.length > 0) goToStep2();" style="cursor: pointer;" title="Step 2: Guest Details">
                     <span class="step-circle" id="circle2">2</span>
-                    <span>Guest Details &amp; Breakfast</span>
+                    <span>Guest Details</span>
                 </div>
                 <div class="step-divider"></div>
                 <div class="wizard-step" id="wizStep3" title="Step 3: Pay via Paystack">
@@ -1749,33 +1925,29 @@
                                 <span>🛏️ PICK YOUR COOL-CAT ROOM:</span>
                             </div>
                             <div class="room-tabs" id="roomTabs">
-                                <!-- Row 1: Four Rooms (formerly All Rooms) -->
+                                <!-- Row 1: Four Rooms -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="all" onclick="switchRoom('all')">
-                                        <span>🏨 FOUR ROOMS (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                        <span>🏨 FOUR ROOMS (King Arthur Suite, Santori Suite, Deluxe Suite)</span>
                                         <span class="room-tab-badge" id="badge_all">0</span>
                                     </button>
                                 </div>
-                                <!-- Row 2: Three Rooms – fully active -->
+                                <!-- Row 2: Three Rooms -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="three-rooms" onclick="switchRoom('three-rooms')">
-                                        <span>🏠 THREE ROOMS (King Arthur, Santori, Mykonos)</span>
+                                        <span>🏠 THREE ROOMS (King Arthur Suite &amp; Santori Suite)</span>
                                         <span class="room-tab-badge" id="badge_three-rooms">0</span>
                                     </button>
                                 </div>
-                                <!-- Row 3: Individual room buttons -->
+                                <!-- Row 3: Individual suite buttons -->
                                 <div class="room-tabs-row">
                                     <button class="room-tab-btn" data-room="king-arthur" onclick="switchRoom('king-arthur')">
-                                        <span>👑 King Arthur</span>
+                                        <span>👑 King Arthur Suite</span>
                                         <span class="room-tab-badge" id="badge_king-arthur">0</span>
                                     </button>
                                     <button class="room-tab-btn" data-room="santori" onclick="switchRoom('santori')">
-                                        <span>🌊 Santori</span>
+                                        <span>🌊 Santori Suite</span>
                                         <span class="room-tab-badge" id="badge_santori">0</span>
-                                    </button>
-                                    <button class="room-tab-btn" data-room="mykonos" onclick="switchRoom('mykonos')">
-                                        <span>🏛️ Mykonos</span>
-                                        <span class="room-tab-badge" id="badge_mykonos">0</span>
                                     </button>
                                     <button class="room-tab-btn" data-room="deluxe-suite" onclick="switchRoom('deluxe-suite')">
                                         <span>✨ Deluxe Suite</span>
@@ -1790,7 +1962,7 @@
                             <div class="room-meta">
                                 <span class="banner-status-badge badge-mid" id="bannerStatusBadge">🟡 MID SEASON</span>
                                 <strong id="bannerRoomName">All 4 Rooms (Entire Property)</strong>
-                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)</span>
+                                <span id="bannerRoomSpecs">Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)</span>
                             </div>
                             <div class="room-rate-tag" id="bannerRoomRate">
                                 From R2,650 to R3,400 / night
@@ -1849,7 +2021,7 @@
                                 <div class="legend-item">
                                     <span class="legend-dot dot-mid"></span>
                                     <div>
-                                        <strong>🟡 Mid Season (Sep–Nov, Feb–Apr)</strong><br>
+                                        <strong>🟡 Mid Season (Sep–Nov, Jan 11–Apr)</strong><br>
                                         Pleasant weather &amp; standard base rates
                                     </div>
                                 </div>
@@ -1998,26 +2170,26 @@
                 <div class="step2-card">
 
                     <!-- Stay Recap Banner -->
-                    <div class="recap-bar" style="background: #F0F7FF; border: 1.5px solid #BFDBFE; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
-                        <!-- Title row -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark);">1 Reserved Stay</div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 0.75rem; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
-                                <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
-                                <div id="recapDepositSubtext" style="font-size: 0.8rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
-                            </div>
+                    <div class="recap-bar">
+                        <!-- 1. Grand Total (Centered) -->
+                        <div style="text-align: center; margin-bottom: 0.85rem; width: 100%;">
+                            <div style="font-size: 0.75rem; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
+                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.45rem; color: var(--sapphire-blue-dark); margin: 0.15rem 0;" id="recapTotalAmount">Total: R0</div>
+                            <div id="recapDepositSubtext" style="font-size: 0.82rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
                         </div>
-                        <!-- Per-stay cards (each with breakfast section) rendered by updateStep2Recap() -->
-                        <div id="recapStaysList" style="display: flex; flex-direction: column; gap: 0;"></div>
-                        <!-- Edit / Back button -->
-                        <div style="margin-top: 0.75rem; text-align: right;">
-                            <button type="button" class="btn-edit-dates" onclick="goToStep1()" style="margin-top: 0;">✏️ Edit Dates / Rooms</button>
+
+                        <!-- 2. Reserved Stays Count & Edit Dates / Rooms Button (Centered) -->
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; width: 100%;">
+                            <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark); text-align: center;">1 Reserved Stay</div>
+                            <button type="button" class="btn-edit-dates" onclick="goToStep1()" style="margin: 0;">✏️ Edit Dates / Rooms</button>
                         </div>
+
+                        <!-- 3. Per-Stay Booking Windows / Cards (Centered) -->
+                        <div id="recapStaysList" style="max-width: 520px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 0;"></div>
                     </div>
 
-                    <!-- Test Mode Helper -->
-                    <div class="test-sandbox-card">
+                    <!-- Test Mode Helper (Hidden by default; dynamically shown only if pk_test_ is detected) -->
+                    <div class="test-sandbox-card" id="paystackTestModeBanner">
                         <strong>🧪 Paystack Test Mode Active:</strong> You can test this booking without real money. Use Test Card: <span class="test-card-tag">4084 0840 8408 4084</span> | Exp: <span class="test-card-tag">12/28</span> | CVV: <span class="test-card-tag">408</span>
                     </div>
 
@@ -2048,7 +2220,7 @@
                                 </label>
                                 <div class="phone-wrapper">
                                     <span class="phone-prefix">🇿🇦 +27</span>
-                                    <input type="tel" id="guestPhone" class="form-input" placeholder="82 123 4567" required>
+                                    <input type="tel" id="guestPhone" class="form-input" placeholder="82 123 4567 (or +international)" required>
                                 </div>
                             </div>
 
@@ -2070,7 +2242,7 @@
                                 <label class="form-label" for="guestSpecialRequests">
                                     Special Requests / Dietary Needs (Optional)
                                 </label>
-                                <textarea id="guestSpecialRequests" class="form-textarea" rows="2" placeholder="e.g. Twin bed setup, anniversary trip, vegetarian breakfast..."></textarea>
+                                <textarea id="guestSpecialRequests" class="form-textarea" rows="2" placeholder="e.g. Twin bed setup, anniversary trip, early check-in..."></textarea>
                             </div>
 
                         </div>
@@ -2163,8 +2335,8 @@
                         </div>
                         <div class="access-item">🕒 <strong>Check-In Time:</strong> 14:00 to 19:00 (Please inform us if arriving later)</div>
                         <div class="access-item">🕚 <strong>Check-Out Time:</strong> 10:00 AM</div>
-                        <div class="access-item">📶 <strong>Free Wi-Fi:</strong> Network: <code>Gouws</code> &bull; Password: <code>004eda35aef</code></div>
-                        <div class="access-item">📍 <strong>Location:</strong> Strand, Western Cape &bull; <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
+                        <div class="access-item">📶 <strong>Free Wi-Fi:</strong> High-speed optical fiber across all suites (credentials in confirmation receipt &amp; house guide)</div>
+                        <div class="access-item">📍 <strong>Location:</strong> Strand, Western Cape &bull; <a href="https://www.google.com/maps/search/?api=1&query=Cool+Cat+Holiday+Accommodation+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
                         <div class="access-item">📱 <strong>Host Contact:</strong> Enquiries (<a href="tel:0728894840" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">072 889 4840</a>)</div>
                     </div>
 
@@ -2175,9 +2347,9 @@
                                 📲 WhatsApp Michele (Host)
                             </a>
                             <a href="/guide" target="_blank" class="btn btn-conf-action" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
-                                📖 View Guest Guide &amp; Menus
+                                📖 View Guest Guide &amp; House Info
                             </a>
-                            <a href="https://maps.google.com/?q=Cool+Cat+B%26B+Strand" target="_blank" class="btn btn-conf-action" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Cool+Cat+Holiday+Accommodation+Strand" target="_blank" class="btn btn-conf-action" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
                                 🗺️ Google Maps Directions
                             </a>
                         </div>
@@ -2298,7 +2470,7 @@
             <div style="font-size: 2rem; text-align: center; margin-bottom: 0.3rem;">💳</div>
             <h2 style="color: var(--sapphire-blue-dark); text-align: center; margin-bottom: 0.3rem; font-size: 1.35rem;">Secure Reservation Payment</h2>
             <p style="font-size: 0.85rem; color: #334155; text-align: center; margin-bottom: 1.2rem;">
-                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#SAN-10001</strong>
+                Booking Reference: <strong id="qpBookingRef" style="color: var(--sapphire-blue);">#CCH-10001</strong>
             </p>
 
             <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
@@ -2321,8 +2493,8 @@
             </div>
 
             <!-- Payment Amount Selection -->
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;">Select Amount to Pay Today:</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:1.2rem;">
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; margin-bottom:0.4rem; display:block;" id="qpSelectAmountLabel">Select Amount to Pay Today:</label>
+            <div id="qpPaymentButtonsContainer" style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:1rem;">
                 <button type="button" class="btn-sm" id="qpBtnDeposit" style="background:#EEF2FF; color:var(--sapphire-blue); border:2px solid var(--sapphire-blue); padding:0.7rem 0.5rem; border-radius:8px; font-weight:700; cursor:pointer;" onclick="selectQuotePayOption('deposit')">
                     50% Deposit<br><span id="qpDepositAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
                 </button>
@@ -2330,6 +2502,7 @@
                     100% Full Amount<br><span id="qpFullAmount" style="font-size:1.05rem; font-weight:800;">R0</span>
                 </button>
             </div>
+            <div id="qpPolicyNotice" style="display:none; border-radius:8px; padding:0.6rem 0.85rem; margin-bottom:1rem; font-size:0.8rem; line-height:1.45;"></div>
 
             <!-- Guest Contact for Receipt -->
             <div style="margin-bottom: 0.8rem;">
@@ -2356,7 +2529,7 @@
                     Account Type: <strong>Current Account</strong><br>
                     Account Number: <strong>1055771581</strong><br>
                     Branch Code: <strong>450105</strong><br>
-                    Reference: <strong id="qpEftRefText">SAN-10001</strong><br>
+                    Reference: <strong id="qpEftRefText">CCH-10001</strong><br>
                     <a href="#" id="qpEftWaBtn" target="_blank" class="btn-sm btn-wa" style="display:inline-block; margin-top:0.6rem; text-decoration:none;">📲 Send Proof of Payment on WhatsApp</a>
                 </div>
             </div>
@@ -2365,7 +2538,7 @@
 
     <!-- Toast Notification Popup -->
     <div class="cal-toast" id="calToast">
-        <span id="toastMessage">Minimum 2 nights required for Festive High Peak.</span>
+        <span id="toastMessage">Notification</span>
     </div>
 
     <!-- Footer -->
@@ -2374,7 +2547,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>Cool Cat Holiday Accommodation</h3>
-                    <p>Your premium bed and breakfast experience in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
+                    <p>Your premium holiday accommodation in the beautiful coastal town of Strand, Western Cape, South Africa.</p>
                 </div>
                 <div class="footer-col">
                     <h3>Contact Us</h3>
@@ -2436,7 +2609,7 @@
         const ROOMS = [
             {
                 id: 'king-arthur',
-                name: 'King Arthur Room',
+                name: 'King Arthur Suite',
                 specs: 'Regal King Bed · Own Bathroom · Sleeps 2',
                 baseWeekday: 950,
                 baseWeekend: 1200,
@@ -2445,21 +2618,12 @@
             },
             {
                 id: 'santori',
-                name: 'Santori Room',
-                specs: 'Cosy Double Bed · Shared Bathroom · Sleeps 2',
+                name: 'Santori Suite',
+                specs: 'Two Private Separate Bedrooms (2 Double Beds) · Sleeps up to 4',
                 baseWeekday: 850,
                 baseWeekend: 1100,
-                maxGuests: 2,
+                maxGuests: 4,
                 icon: '🌊'
-            },
-            {
-                id: 'mykonos',
-                name: 'Mykonos Room',
-                specs: 'Two Single Beds (Double) · Shared Bathroom · Sleeps 2',
-                baseWeekday: 850,
-                baseWeekend: 1100,
-                maxGuests: 2,
-                icon: '🏛️'
             },
             {
                 id: 'deluxe-suite',
@@ -2472,23 +2636,62 @@
             }
         ];
 
-        // All 4 room IDs - used when expanding an "all" stay into individual room bookings
-        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+        // All bookable suite IDs for Four Rooms
+        const ALL_ROOMS_SUBSET = ['king-arthur', 'santori', 'deluxe-suite'];
 
-        // 3-room subset (excludes Deluxe Suite) - used for "three-rooms" combined booking
-        const THREE_ROOMS_SUBSET = ['king-arthur', 'santori', 'mykonos'];
+        // 3-room subset (King Arthur Suite + Santori Suite [2 rooms] = 3 bedrooms)
+        const THREE_ROOMS_SUBSET = ['king-arthur', 'santori'];
         const THREE_ROOMS = ROOMS.filter(r => THREE_ROOMS_SUBSET.includes(r.id));
 
         // Global Site Settings from Cloudflare KV (Markup %, Base Rates, Seasonal Rates & Specials)
         let SITE_CONFIG = {
+            earliestBookingDate: '2027-02-01',
             nextYearMarkupPct: 10,
             pkg_discount_four: 0,
             pkg_discount_three: 0
         };
 
+        const TODAY = new Date();
+        TODAY.setHours(0, 0, 0, 0);
+
+        function getEffectiveMinBookingDate() {
+            if (SITE_CONFIG && SITE_CONFIG.earliestBookingDate) {
+                const parts = String(SITE_CONFIG.earliestBookingDate).trim().split('-');
+                if (parts.length === 3) {
+                    const parsed = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    parsed.setHours(0, 0, 0, 0);
+                    if (!isNaN(parsed.getTime())) {
+                        return parsed > TODAY ? parsed : TODAY;
+                    }
+                }
+            }
+            const fallback = new Date(2027, 1, 1);
+            fallback.setHours(0, 0, 0, 0);
+            return fallback > TODAY ? fallback : TODAY;
+        }
+
+        function alignViewDateToMin() {
+            const minD = getEffectiveMinBookingDate();
+            const minMonth = new Date(minD.getFullYear(), minD.getMonth(), 1);
+            // Always snap the view to the cut-off month so the calendar opens
+            // on the first bookable month regardless of whether the owner moved
+            // the cut-off forward or backward in admin.
+            currentViewDate = minMonth;
+        }
+
         function applyConfigToRooms(cfg) {
             if (!cfg || typeof cfg !== 'object') return;
             SITE_CONFIG = { ...SITE_CONFIG, ...cfg };
+            if (cfg.earliestBookingDate !== undefined) {
+                SITE_CONFIG.earliestBookingDate = String(cfg.earliestBookingDate).trim();
+                alignViewDateToMin();
+                if (typeof populateMonthDropdown === 'function') {
+                    populateMonthDropdown();
+                }
+            }
+            if (cfg.paystackPublicKey) {
+                SITE_CONFIG.paystackPublicKey = cfg.paystackPublicKey;
+            }
             if (cfg.nextYearMarkupPct !== undefined) {
                 SITE_CONFIG.nextYearMarkupPct = Number(cfg.nextYearMarkupPct);
             }
@@ -2511,7 +2714,25 @@
                     if (saved.we !== undefined && Number(saved.we) > 0) room.baseWeekend  = Number(saved.we);
                 }
             });
+            updatePaystackModeUI();
         }
+
+        function updatePaystackModeUI() {
+            const banner = document.getElementById('paystackTestModeBanner');
+            if (!banner) return;
+            const pubKey = (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? String(SITE_CONFIG.paystackPublicKey).trim() : '';
+            const isLive = pubKey.startsWith('pk_live_') || (SITE_CONFIG && SITE_CONFIG.paystackMode === 'live');
+            if (isLive) {
+                banner.style.display = 'none';
+            } else if (pubKey.startsWith('pk_test_') || (SITE_CONFIG && SITE_CONFIG.paystackMode === 'test')) {
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        const _initialMinDate = getEffectiveMinBookingDate();
+        let currentViewDate = new Date(_initialMinDate.getFullYear(), _initialMinDate.getMonth(), 1);
 
         // Apply any cached rate overrides from localStorage immediately
         try {
@@ -2525,10 +2746,6 @@
         // ==========================================
         // 2. STATE MANAGEMENT
         // ==========================================
-        const TODAY = new Date();
-        TODAY.setHours(0, 0, 0, 0);
-
-        let currentViewDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
         let selectedRoomId = 'all';
 
         // Multi-stay cart: Array of confirmed stays across all rooms
@@ -2543,9 +2760,7 @@
         let calculatedDepositDue = 0;
         let calculatedBalanceDue = 0;
         let totalNightsCount = 0;
-        let includeBreakfast = false;
         let selectedGuestCount = 0;
-        let selectedBreakfastCount = 0;
         let userManuallyChangedGuestCount = false;
         let activeReferralCode = '';
 
@@ -2562,7 +2777,8 @@
                         if (data.nextSequence) {
                             window._serverNextSeq = data.nextSequence;
                         }
-                        renderCalendar();
+                        // Only re-render if not mid-interaction (avoids blank flash during date selection)
+                        if (!pendingCheckIn) renderCalendar();
                     }
                 }
             } catch (e) {
@@ -2578,9 +2794,11 @@
                     if (data && data.success && data.config) {
                         applyConfigToRooms(data.config);
                         localStorage.setItem('coolcat_rates_config', JSON.stringify(data.config));
-                        renderCalendar();
+                        // Only re-render if not mid-interaction (avoids blank flash during date selection)
+                        if (!pendingCheckIn) renderCalendar();
                         updateSummarySidebar();
                         updateBannerRoomInfo();
+                        updatePaystackModeUI();
                     }
                 }
             } catch (e) {
@@ -2601,8 +2819,8 @@
                     tier: 'festive',
                     badgeClass: 'badge-festive',
                     multiplier: 1.80,
-                    minStay: 2,
-                    desc: 'Peak summer holiday demand (Strict 2-night min)'
+                    minStay: 1,
+                    desc: 'Peak summer holiday demand'
                 };
             }
 
@@ -2612,7 +2830,7 @@
                     tier: 'peak',
                     badgeClass: 'badge-peak',
                     multiplier: 1.35,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'High demand holiday period'
                 };
             }
@@ -2623,7 +2841,7 @@
                     tier: 'low',
                     badgeClass: 'badge-low',
                     multiplier: 0.85,
-                    minStay: 2,
+                    minStay: 1,
                     desc: 'Winter value rate'
                 };
             }
@@ -2633,7 +2851,7 @@
                 tier: 'mid',
                 badgeClass: 'badge-mid',
                 multiplier: 1.00,
-                minStay: 2,
+                minStay: 1,
                 desc: 'Pleasant coastal weather rate'
             };
         }
@@ -2645,14 +2863,14 @@
                 'king-arthur': 'king',
                 'king': 'king',
                 'santori': 'santori',
-                'mykonos': 'mykonos',
+                'mykonos': 'santori',
                 'deluxe-suite': 'deluxe',
                 'deluxe': 'deluxe'
             };
             const eventName = (SITE_CONFIG.event_surge_name || '').trim() || 'Special Event';
 
             if (roomId === 'all') {
-                const activeRooms = ['king', 'santori', 'mykonos', 'deluxe'].filter(p => {
+                const activeRooms = ['king', 'santori', 'deluxe'].filter(p => {
                     const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
                     const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
                     const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
@@ -2665,7 +2883,7 @@
             }
 
             if (roomId === 'three-rooms') {
-                const activeRooms = ['king', 'santori', 'mykonos'].filter(p => {
+                const activeRooms = ['king', 'santori'].filter(p => {
                     const act = (SITE_CONFIG['event_' + p + '_active'] === true || SITE_CONFIG['event_' + p + '_active'] === 'true');
                     const st = String(SITE_CONFIG['event_' + p + '_start'] || '').trim().replace(/\//g, '-');
                     const en = String(SITE_CONFIG['event_' + p + '_end'] || '').trim().replace(/\//g, '-');
@@ -2700,7 +2918,7 @@
                 'king-arthur': 'king',
                 'king': 'king',
                 'santori': 'santori',
-                'mykonos': 'mykonos',
+                'mykonos': 'santori',
                 'deluxe-suite': 'deluxe',
                 'deluxe': 'deluxe'
             };
@@ -2795,10 +3013,16 @@
                 // Check stays array inside booking record (if present)
                 if (b.stays && Array.isArray(b.stays) && b.stays.length > 0) {
                     return b.stays.some(s => {
-                        // 'all' blocks every room; 'three-rooms' blocks the 3-room subset
-                        const blocksThisRoom = s.roomId === roomId
-                            || s.roomId === 'all'
-                            || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                        let blocksThisRoom = false;
+                        if (roomId === 'all') {
+                            blocksThisRoom = true; // Any active booking on this date blocks 'all' (entire property)
+                        } else if (roomId === 'three-rooms') {
+                            blocksThisRoom = (s.roomId === 'all' || s.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(s.roomId));
+                        } else {
+                            blocksThisRoom = (s.roomId === roomId
+                                || s.roomId === 'all'
+                                || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
+                        }
                         if (!blocksThisRoom) return false;
                         const cIn = s.checkInStr || s.checkIn;
                         const cOut = s.checkOutStr || s.checkOut;
@@ -2811,9 +3035,16 @@
                     return false;
                 }
 
-                const blocksThisRoom = b.roomId === roomId
-                    || b.roomId === 'all'
-                    || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
+                let blocksThisRoom = false;
+                if (roomId === 'all') {
+                    blocksThisRoom = true; // Any active booking on this date blocks 'all' (entire property)
+                } else if (roomId === 'three-rooms') {
+                    blocksThisRoom = (b.roomId === 'all' || b.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(b.roomId));
+                } else {
+                    blocksThisRoom = (b.roomId === roomId
+                        || b.roomId === 'all'
+                        || (b.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
+                }
                 if (!blocksThisRoom) return false;
                 return (dateStr >= b.checkIn && dateStr < b.checkOut);
             });
@@ -2821,18 +3052,19 @@
 
         function isDateInSelectedStays(roomId, dateStr) {
             return selectedStays.some(s => {
+                let coversRoom = false;
                 if (roomId === 'all') {
-                    // Four Rooms tab only cares about its OWN 'all' stays
-                    return s.roomId === 'all' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    // Any stay in cart blocks the 'all' (entire property) tab on this date
+                    coversRoom = true;
+                } else if (roomId === 'three-rooms') {
+                    // Any 'all', 'three-rooms', or individual suite in THREE_ROOMS_SUBSET in cart blocks 'three-rooms'
+                    coversRoom = (s.roomId === 'all' || s.roomId === 'three-rooms' || THREE_ROOMS_SUBSET.includes(s.roomId));
+                } else {
+                    // Individual room: match this room's stays OR any 'all'/'three-rooms' stay that covers it
+                    coversRoom = (s.roomId === roomId
+                        || s.roomId === 'all'
+                        || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId)));
                 }
-                if (roomId === 'three-rooms') {
-                    // Three Rooms tab only cares about its OWN 'three-rooms' stays
-                    return s.roomId === 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
-                }
-                // Individual room: match this room's stays OR any 'all'/'three-rooms' stay that covers it
-                const coversRoom = s.roomId === roomId
-                    || s.roomId === 'all'
-                    || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(roomId));
                 if (!coversRoom) return false;
                 return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
             });
@@ -2893,13 +3125,15 @@
 
             ROOMS.forEach(room => {
                 const bookedInDB = isRoomBookedOnDate(room.id, dateStr);
-                // Only count "all" cart stays for display blocking
-                const bookedInAllCart = selectedStays.some(s => {
-                    if (s.roomId !== 'all') return false;
-                    return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                // Count "all" cart stays, AND "three-rooms" cart stays (which cover KA + Santori)
+                const bookedInCart = selectedStays.some(s => {
+                    if (s.roomId === 'all') return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    if (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(room.id))
+                        return (dateStr >= s.checkInStr && dateStr < s.checkOutStr);
+                    return false;
                 });
 
-                if (bookedInDB || bookedInAllCart) {
+                if (bookedInDB || bookedInCart) {
                     bookedCount++;
                 } else {
                     availableRooms.push(room);
@@ -3013,7 +3247,9 @@
             const prevBtn = document.getElementById('prevMonthBtn');
             const nextBtn = document.getElementById('nextMonthBtn');
             
-            const isAtStart = (year === TODAY.getFullYear() && month <= TODAY.getMonth());
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            const isAtStart = (year < minMonthDate.getFullYear() || (year === minMonthDate.getFullYear() && month <= minMonthDate.getMonth()));
             const isAtEnd = (year >= 2027 && month >= 11);
             
             prevBtn.disabled = isAtStart;
@@ -3022,7 +3258,7 @@
             document.getElementById('monthJumpSelect').value = `${year}-${month}`;
 
             // Update badges on room selector tabs
-            const roomIds = ['all', 'three-rooms', 'king-arthur', 'santori', 'mykonos', 'deluxe-suite'];
+            const roomIds = ['all', 'three-rooms', 'king-arthur', 'santori', 'deluxe-suite'];
             roomIds.forEach(rId => {
                 const badge = document.getElementById(`badge_${rId}`);
                 if (badge) {
@@ -3050,7 +3286,7 @@
                 dateObj.setHours(0, 0, 0, 0);
                 const dateStr = formatDateKey(dateObj);
 
-                const isPast = (dateObj < TODAY);
+                const isPast = (dateObj < minAllowedDate);
                 const isCurrentDay = (dateObj.getTime() === TODAY.getTime());
                 let avail;
                 if (selectedRoomId === 'all') {
@@ -3075,6 +3311,10 @@
                 let isBooked = false;
                 let priceText = '';
                 let availPillHtml = '';
+                let currentRoom = ROOMS.find(r => r.id === selectedRoomId) || null;
+                let otherStaysOnDate = [];
+                let totalOccupiedOnDate = 0;
+                let freeRoomsLeft = ROOMS.length;
 
                 if (selectedRoomId === 'all') {
                     const allRate = ROOMS.reduce((sum, r) => sum + calculateNightPrice(r, dateObj), 0);
@@ -3087,21 +3327,21 @@
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
-                    } else if (avail.availableCount === 4 && indivCartCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                    } else if (avail.availableCount === ROOMS.length && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">${ROOMS.length} Open</span>`;
                     } else if (avail.availableCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                         isBooked = true;
-                    } else if (avail.availableCount < 4) {
+                    } else if (avail.availableCount < ROOMS.length) {
                         const n = avail.availableCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        const n = 4 - indivCartCount;
+                        const n = ROOMS.length - indivCartCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true; // Block "All Rooms" booking on these dates
                     } else {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">4 Open</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-full">${ROOMS.length} Open</span>`;
                     }
 
                 } else if (selectedRoomId === 'three-rooms') {
@@ -3115,25 +3355,25 @@
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
-                    } else if (avail.availableCount === 3 && indivCartCount === 0) {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                    } else if (avail.availableCount === THREE_ROOMS.length && indivCartCount === 0) {
+                        availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                     } else if (avail.availableCount === 0) {
                         availPillHtml = `<span class="cal-avail-pill avail-soldout">Fully Booked</span>`;
                         isBooked = true;
-                    } else if (avail.availableCount < 3) {
+                    } else if (avail.availableCount < THREE_ROOMS.length) {
                         const n = avail.availableCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else if (indivCartCount > 0) {
-                        const n = 3 - indivCartCount;
+                        const n = THREE_ROOMS.length - indivCartCount;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         isBooked = true;
                     } else {
-                        availPillHtml = `<span class="cal-avail-pill avail-full">3 Open</span>`;
+                        availPillHtml = `<span class="cal-avail-pill avail-full">Open</span>`;
                     }
 
                 } else {
-                    const currentRoom = ROOMS.find(r => r.id === selectedRoomId);
+                    currentRoom = ROOMS.find(r => r.id === selectedRoomId);
                     const isBookedInDB = isRoomBookedOnDate(selectedRoomId, dateStr);
                     const isBookedOtherStay = selectedStays.some(s => {
                         if (s === stayForDate) return false;
@@ -3145,13 +3385,13 @@
                     isBooked = (isBookedInDB || isBookedOtherStay);
 
                     // How many other rooms are in cart on this date?
-                    const otherStaysOnDate = selectedStays.filter(s =>
+                    otherStaysOnDate = selectedStays.filter(s =>
                         s.roomId !== selectedRoomId && s.roomId !== 'all' && s.roomId !== 'three-rooms' && (dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                     );
-                    const totalOccupiedOnDate = ROOMS.filter(r =>
+                    totalOccupiedOnDate = ROOMS.filter(r =>
                         isRoomBookedOnDate(r.id, dateStr) || selectedStays.some(s => (s.roomId === r.id || s.roomId === 'all' || (s.roomId === 'three-rooms' && THREE_ROOMS_SUBSET.includes(r.id))) && (dateStr >= s.checkInStr && dateStr < s.checkOutStr))
                     ).length;
-                    const freeRoomsLeft = 4 - totalOccupiedOnDate;
+                    freeRoomsLeft = ROOMS.length - totalOccupiedOnDate;
 
                     if (stayForDate) {
                         availPillHtml = `<span class="cal-avail-pill" style="background:#0F52BA;color:#fff;">✓ In Cart</span>`;
@@ -3165,7 +3405,7 @@
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
                         const rate = calculateNightPrice(currentRoom, dateObj);
                         priceText = `R${rate.toLocaleString()}`;
-                    } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
+                    } else if (totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
                         // This room is OPEN, and other rooms are booked in DB!
                         const n = freeRoomsLeft;
                         availPillHtml = `<span class="cal-avail-pill avail-limited">${getRoomsLeftLabel(n)}</span>`;
@@ -3204,12 +3444,12 @@
                         const indivCartBlocking = ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
-                        if (indivCartBlocking > 0 && avail.availableCount === 4) {
+                        if (indivCartBlocking > 0 && avail.availableCount === ROOMS.length) {
                             tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) already in your cart – can't book Four Rooms on this date</span>`;
                         } else if (fullAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of 4 rooms free – can't book Four Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${fullAvail.availableCount} of ${ROOMS.length} rooms free – can't book Four Rooms on this date</span>`;
                         } else {
-                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 4 rooms fully booked – no availability</span>`;
+                            tooltipText += `<br><span style="color: #FCA5A5;">🚫 All ${ROOMS.length} rooms fully booked – no availability</span>`;
                         }
                     } else if (selectedRoomId === 'three-rooms') {
                         const threeAvail = getDateAvailabilityForThreeRoomsBooking(dateStr);
@@ -3219,7 +3459,7 @@
                         if (indivCartBlocking > 0) {
                             tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ ${indivCartBlocking} room(s) in your cart – can't book Three Rooms on this date</span>`;
                         } else if (threeAvail.availableCount > 0) {
-                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ Only ${threeAvail.availableCount} of 3 rooms free – can't book Three Rooms on this date</span>`;
+                            tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">⚠️ One of the suites is already booked – Three Rooms requires both suites</span>`;
                         } else {
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 All 3 rooms fully booked – no availability</span>`;
                         }
@@ -3231,11 +3471,13 @@
                             tooltipText += `<br><span style="color: #FCA5A5;">🚫 Fully Booked – no rooms available</span>`;
                         }
                     }
-                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof otherStaysOnDate !== 'undefined' && otherStaysOnDate.length > 0) {
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && otherStaysOnDate.length > 0) {
                     const cartRoomNames = otherStaysOnDate.map(s => `${s.roomIcon} ${s.roomName}`).join(', ');
-                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${currentRoom.name} Available (${freeRoomsLeft} of 4 Free)`;
-                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && typeof totalOccupiedOnDate !== 'undefined' && totalOccupiedOnDate > 0 && freeRoomsLeft < 4) {
-                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${currentRoom.name} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of 4 Rooms Free)`;
+                    const rName = currentRoom ? currentRoom.name : 'Room';
+                    tooltipText += `<br><span style="color: #FCD34D; font-weight:700;">🛒 In Cart: ${cartRoomNames}</span><br>${priceText} &bull; ${rName} Available (${freeRoomsLeft} of ${ROOMS.length} Free)`;
+                } else if (selectedRoomId !== 'all' && selectedRoomId !== 'three-rooms' && totalOccupiedOnDate > 0 && freeRoomsLeft < ROOMS.length) {
+                    const rName = currentRoom ? currentRoom.name : 'Room';
+                    tooltipText += `<br><span style="color: #6EE7B7; font-weight:700;">✨ ${rName} Available</span><br>${priceText} &bull; (${freeRoomsLeft} of ${ROOMS.length} Rooms Free)`;
                 } else {
                     const activePkgPct = (selectedRoomId === 'all')
                         ? (Number(SITE_CONFIG && SITE_CONFIG.pkg_discount_four) || 0)
@@ -3285,12 +3527,12 @@
                                 const indivCartBlocking = ROOMS.filter(r =>
                                     selectedStays.some(s => s.roomId === r.id && formatDateKey(dateObj) >= s.checkInStr && formatDateKey(dateObj) < s.checkOutStr)
                                 ).length;
-                                if (indivCartBlocking > 0 && fullAvail.availableCount === 4) {
+                                if (indivCartBlocking > 0 && fullAvail.availableCount === ROOMS.length) {
                                     showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first, or book Four Rooms on other dates.`);
                                 } else if (fullAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${fullAvail.availableCount} of 4 rooms are free on this date. Four Rooms requires all 4 to be available. Book rooms individually instead.`);
+                                    showToast(`⚠️ Only ${fullAvail.availableCount} of ${ROOMS.length} rooms are free on this date. Four Rooms requires all ${ROOMS.length} to be available. Book rooms individually instead.`);
                                 } else {
-                                    showToast("🚫 All 4 rooms fully booked on this date. Please select different dates.");
+                                    showToast(`🚫 All ${ROOMS.length} rooms fully booked on this date. Please select different dates.`);
                                 }
                             } else if (selectedRoomId === 'three-rooms') {
                                 const threeAvail = getDateAvailabilityForThreeRoomsBooking(formatDateKey(dateObj));
@@ -3300,7 +3542,7 @@
                                 if (indivCartBlocking > 0) {
                                     showToast(`⚠️ ${indivCartBlocking} room(s) in your cart overlap this date. Clear those stays first.`);
                                 } else if (threeAvail.availableCount > 0) {
-                                    showToast(`⚠️ Only ${threeAvail.availableCount} of 3 rooms are free on this date. Three Rooms requires all 3 to be available.`);
+                                    showToast("⚠️ One of the suites is already booked on this date. Three Rooms requires both King Arthur Suite & Santori Suite to be available.");
                                 } else {
                                     showToast("🚫 All 3 rooms fully booked on this date. Please select different dates.");
                                 }
@@ -3322,6 +3564,11 @@
         // 6. DATE SELECTION & MULTI-STAY CART LOGIC
         // ==========================================
         function handleDateClick(dateObj) {
+            const minAllowedDate = getEffectiveMinBookingDate();
+            if (dateObj < minAllowedDate) {
+                showToast(`⚠️ Bookings are only accepted from ${formatFriendlyDate(minAllowedDate)} onward.`);
+                return;
+            }
             const dateStr = formatDateKey(dateObj);
 
             // 1. If user clicked a date that is already part of a selected stay in cart, remove it
@@ -3336,27 +3583,27 @@
                 // Validate availability
                 if (selectedRoomId === 'all') {
                     const avail = getDateAvailability(dateStr);
-                    if (avail.availableCount < 4) {
+                    if (avail.availableCount < ROOMS.length) {
                         const indivCount = ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCount > 0) {
                             showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Four Rooms.`);
                         } else {
-                            showToast("All 4 rooms must be available on this date to book the entire property.");
+                            showToast(`All ${ROOMS.length} rooms must be available on this date to book the entire property.`);
                         }
                         return;
                     }
                 } else if (selectedRoomId === 'three-rooms') {
                     const avail = getDateAvailabilityForThreeRoomsBooking(dateStr);
-                    if (avail.availableCount < 3) {
+                    if (avail.availableCount < THREE_ROOMS.length) {
                         const indivCount = THREE_ROOMS.filter(r =>
                             selectedStays.some(s => s.roomId === r.id && dateStr >= s.checkInStr && dateStr < s.checkOutStr)
                         ).length;
                         if (indivCount > 0) {
                             showToast(`⚠️ ${indivCount} room(s) already in your cart on this date. Remove those stays to book Three Rooms.`);
                         } else {
-                            showToast("All 3 rooms (King Arthur, Santori, Mykonos) must be available on this date to book Three Rooms.");
+                            showToast("Both suites (King Arthur Suite & Santori Suite) must be available on this date to book Three Rooms.");
                         }
                         return;
                     }
@@ -3377,7 +3624,7 @@
 
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 pendingCheckIn = { roomId: selectedRoomId, date: new Date(dateObj) };
                 showToast(`📍 ${roomDisplayName}: Check-in set for ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
@@ -3401,7 +3648,7 @@
                 pendingCheckIn.date = new Date(dateObj);
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const roomDisplayName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 showToast(`📍 ${roomDisplayName}: Check-in moved to ${formatFriendlyDate(dateObj)}. Now click your check-out date.`);
                 renderCalendar();
@@ -3414,16 +3661,8 @@
             const checkOutDate = dateObj;
             const nights = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
 
-            // REQUIREMENT: Minimum stay is 2 nights across all rooms & dates.
-            if (nights < 2) {
-                showToast("⚠️ Minimum stay is 2 nights. Please select a check-out date at least 2 nights after check-in.");
-                return;
-            }
-
-            const season = getSeasonInfo(checkInDate);
-
-            if (season.minStay && nights < season.minStay) {
-                showToast(`⚠️ ${season.name} requires a minimum stay of ${season.minStay} nights.`);
+            if (nights < 1) {
+                showToast("⚠️ Please select a check-out date after your check-in date.");
                 return;
             }
 
@@ -3433,12 +3672,12 @@
             while (d < checkOutDate) {
                 const dKey = formatDateKey(d);
                 if (selectedRoomId === 'all') {
-                    if (getDateAvailability(dKey).availableCount < 4) {
+                    if (getDateAvailability(dKey).availableCount < ROOMS.length) {
                         hasConflict = true;
                         break;
                     }
                 } else if (selectedRoomId === 'three-rooms') {
-                    if (getDateAvailabilityForThreeRoomsBooking(dKey).availableCount < 3) {
+                    if (getDateAvailabilityForThreeRoomsBooking(dKey).availableCount < THREE_ROOMS.length) {
                         hasConflict = true;
                         break;
                     }
@@ -3500,13 +3739,13 @@
                 d.setDate(d.getDate() + 1);
             }
 
-            const stayMaxGuests = isAll ? 8 : isThree ? 6 : 2;
+            const stayMaxGuests = isAll ? 8 : isThree ? 6 : (selectedRoomId === 'santori' ? 4 : 2);
             const stayGuestCount = (selectedGuestCount && selectedGuestCount >= 1 && selectedGuestCount <= stayMaxGuests) ? selectedGuestCount : stayMaxGuests;
 
             const newStay = {
                 id: 'stay_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
                 roomId: selectedRoomId,
-                roomName: isAll ? 'All 4 Rooms (Entire Property)' : isThree ? 'Three Rooms (King Arthur, Santori, Mykonos)' : roomObj.name,
+                roomName: isAll ? 'All 4 Rooms (Entire Property)' : isThree ? 'Three Rooms (King Arthur Suite & Santori Suite)' : roomObj.name,
                 roomIcon: isAll ? '🏨' : isThree ? '🏠' : roomObj.icon,
                 checkIn: new Date(checkInDate),
                 checkOut: new Date(checkOutDate),
@@ -3520,8 +3759,6 @@
                 discountSavings: (originalSubtotal - subtotal),
                 maxGuests: stayMaxGuests,
                 guestCount: stayGuestCount,
-                includeBreakfast: false,
-                breakfastCount: stayGuestCount
             };
 
             selectedStays.push(newStay);
@@ -3579,7 +3816,7 @@
             if (pendingCheckIn && pendingCheckIn.roomId === selectedRoomId) {
                 const roomObj = ROOMS.find(r => r.id === selectedRoomId);
                 const rName = selectedRoomId === 'all' ? 'Four Rooms (Entire Property)'
-                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA, Santori, Mykonos)'
+                    : selectedRoomId === 'three-rooms' ? 'Three Rooms (KA Suite & Santori Suite)'
                     : (roomObj ? roomObj.name : 'Room');
                 pendingText.textContent = `📍 ${rName}: Check-in ${formatFriendlyDate(pendingCheckIn.date)} – click check-out date`;
                 pendingBox.style.display = 'flex';
@@ -3718,14 +3955,7 @@
                 nightsBadge.style.background = '#DCFCE7';
             }
 
-            // Pricing calculation using per-stay breakfast data
-            let totalBreakfastCost = 0;
-            selectedStays.forEach(stay => {
-                if (stay.includeBreakfast && stay.breakfastCount > 0) {
-                    totalBreakfastCost += stay.breakfastCount * stay.nights * 120;
-                }
-            });
-            let grandTotal = staysSubtotal + totalBreakfastCost;
+            let grandTotal = staysSubtotal;
 
             let breakdownHtml = '';
             if (totalPackageSavings > 0) {
@@ -3752,14 +3982,7 @@
                 `;
             }
 
-            if (totalBreakfastCost > 0) {
-                breakdownHtml += `
-                    <li style="color: #166534; font-weight: 600;">
-                        <span>🍳 Breakfast Packages (all stays)</span>
-                        <span>+R${totalBreakfastCost.toLocaleString()}</span>
-                    </li>
-                `;
-            }
+
 
             if (activeReferralCode) {
                 const discountAmount = Math.round(grandTotal * 0.05);
@@ -3786,11 +4009,11 @@
             // Normalize earliestCheckIn to local midnight so DST/timezone offsets
             // don't cause Math.floor to round a 3-day gap to 8+ days.
             const earliestCheckInRaw = selectedStays.reduce((min, s) => {
-                const cDate = (s.checkIn instanceof Date) ? s.checkIn : new Date(s.checkIn);
+                const cDate = parseLocalDate(s.checkIn);
                 return cDate < min ? cDate : min;
-            }, (selectedStays[0].checkIn instanceof Date) ? selectedStays[0].checkIn : new Date(selectedStays[0].checkIn));
+            }, parseLocalDate(selectedStays[0].checkIn));
 
-            const earliestCheckIn = new Date(earliestCheckInRaw);
+            const earliestCheckIn = parseLocalDate(earliestCheckInRaw);
             earliestCheckIn.setHours(0, 0, 0, 0); // normalise to midnight local time
 
             // Use Math.floor (conservative): 7.9 days is still ≤ 7 full days away.
@@ -3838,6 +4061,7 @@
         function getActiveTabMaxGuests() {
             if (selectedRoomId === 'all') return 8;
             if (selectedRoomId === 'three-rooms') return 6;
+            if (selectedRoomId === 'santori') return 4;
             return 2;
         }
 
@@ -3845,7 +4069,7 @@
             if (selectedStays && selectedStays.length > 0) {
                 let max = 0;
                 selectedStays.forEach(s => {
-                    max += (s.roomId === 'all') ? 8 : (s.roomId === 'three-rooms') ? 6 : 2;
+                    max += (s.roomId === 'all') ? 8 : (s.roomId === 'three-rooms') ? 6 : (s.roomId === 'santori') ? 4 : 2;
                 });
                 return Math.min(10, Math.max(1, max));
             }
@@ -3895,14 +4119,6 @@
             return selectedGuestCount;
         }
 
-        function getCurrentBreakfastGuests() {
-            const totalG = getCurrentGuests();
-            if (!selectedBreakfastCount || selectedBreakfastCount > totalG) {
-                selectedBreakfastCount = totalG;
-            }
-            return selectedBreakfastCount;
-        }
-
         function handleSidebarGuestCountChange() {
             const select = document.getElementById('sidebarGuestCount');
             if (select && select.value) {
@@ -3910,22 +4126,6 @@
                 userManuallyChangedGuestCount = true;
                 updateSummarySidebar();
             }
-        }
-
-        function toggleStayBreakfast(stayId) {
-            // Temporarily deactivated: breakfast packages currently not offered
-            return;
-        }
-
-        function handleStayBreakfastCountChange(stayId) {
-            const stay = selectedStays.find(s => s.id === stayId);
-            if (!stay) return;
-            const sel = document.getElementById('bfCount_' + stayId);
-            if (sel) {
-                stay.breakfastCount = parseInt(sel.value) || 1;
-            }
-            updateStep2Recap();
-            updateSummarySidebar();
         }
 
         function updateStep2Recap() {
@@ -3939,27 +4139,12 @@
 
             recapTitle.textContent = `${selectedStays.length} Reserved Stay${selectedStays.length > 1 ? 's' : ''} (${totalNightsCount} Total Nights)`;
 
-            // Build per-stay cards with individual breakfast toggle + guest count
+            // Build per-stay cards with room details + guest count
             if (recapStayCardsContainer) {
                 let cardsHtml = '';
                 selectedStays.forEach((s, idx) => {
-                    const stayBfTotal = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
-                    const stayTotalWithBf = s.subtotal + stayBfTotal;
-
-                    // Build breakfast guest count options
-                    let bfOptions = '';
-                    for (let i = 1; i <= s.guestCount; i++) {
-                        const label = i === s.guestCount
-                            ? `${i} Person${i > 1 ? 's' : ''} (All ${s.guestCount} guests)`
-                            : `${i} Person${i > 1 ? 's' : ''}`;
-                        const sel = (i === (s.breakfastCount || s.guestCount)) ? 'selected' : '';
-                        bfOptions += `<option value="${i}" ${sel}>${label}</option>`;
-                    }
-
-                    const bfVisible = s.includeBreakfast ? 'flex' : 'none';
-
                     cardsHtml += `
-                        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem;">
+                        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem; text-align: left; box-sizing: border-box; width: 100%;">
                             <!-- Stay header -->
                             <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">
                                 <span style="font-size: 1.1rem;">${s.roomIcon}</span>
@@ -3971,47 +4156,14 @@
                             <div style="font-size: 0.81rem; color: #0284C7; font-weight: 600; margin-bottom: 0.3rem;">
                                 👥 ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} arriving (max ${s.maxGuests})
                             </div>
-                            <div style="font-size: 0.84rem; color: #1E293B; font-weight: 700; margin-bottom: 0.5rem;">
-                                🏨 Room Cost: R${s.subtotal.toLocaleString()} ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; margin-left: 6px; border: 1px solid #86EFAC;">${s.pkgDiscount}% Discount Applied</span>` : ''}
-                            </div>
-
-                            <!-- Breakfast toggle for this stay (Temporarily Deactivated) -->
-                            <div style="background: #FFFFFF; border: 1px dashed #94A3B8; border-radius: 8px; padding: 0.6rem 0.75rem; opacity: 0.75;">
-                                <label style="display: flex; align-items: flex-start; gap: 0.55rem; cursor: not-allowed; margin: 0;">
-                                    <input type="checkbox" id="bfChk_${s.id}" disabled style="margin-top: 3px; flex-shrink: 0; cursor: not-allowed;">
-                                    <div>
-                                        <strong style="font-size: 0.88rem; color: #1E293B;">🍳 Add Daily Breakfast Package</strong><br>
-                                        <span style="font-size: 0.78rem; color: #334155;">Farm-fresh breakfast (+R120 per guest / night) &mdash; Estimated for ${s.guestCount} guest${s.guestCount > 1 ? 's' : ''}: R${(s.guestCount * s.nights * 120).toLocaleString()} total</span>
-                                    </div>
-                                </label>
-
-                                <!-- Breakfast guest count selector (visible when checked) -->
-                                <div id="bfBox_${s.id}" style="display: ${bfVisible}; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px dashed #CBD5E1;">
-                                    <label for="bfCount_${s.id}" style="font-size: 0.82rem; font-weight: 700; color: #1E293B; margin: 0; white-space: nowrap;">
-                                        How many guests want breakfast?
-                                    </label>
-                                    <select id="bfCount_${s.id}" style="padding: 0.35rem 0.55rem; border: 1.5px solid #0F52BA; border-radius: 7px; font-size: 0.84rem; font-weight: 700; min-width: 130px;" onchange="handleStayBreakfastCountChange('${s.id}')">
-                                        ${bfOptions}
-                                    </select>
-                                </div>
-
-                                ${s.includeBreakfast ? `<div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-top: 0.4rem;">✓ Breakfast: ${s.breakfastCount} × ${s.nights}N × R120 = <strong>+R${stayBfTotal.toLocaleString()}</strong></div>` : ''}
-                            </div>
-
-                            <!-- Stay total including breakfast -->
-                            <div style="text-align: right; font-size: 0.9rem; font-weight: 800; color: #0F52BA; margin-top: 0.5rem;">
-                                Stay + Breakfast Total: R${stayTotalWithBf.toLocaleString()}
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px dashed #CBD5E1;">
+                                <span style="font-size: 0.84rem; color: #64748B;">Room Rate:</span>
+                                <strong style="font-size: 0.95rem; color: #0F52BA;">R${s.subtotal.toLocaleString()} ${(s.pkgDiscount > 0) ? `<span style="color: #15803D; font-size: 0.76rem; font-weight: 800; background: #DCFCE7; padding: 2px 7px; border-radius: 4px; margin-left: 6px; border: 1px solid #86EFAC;">${s.pkgDiscount}% Package Discount</span>` : ''}</strong>
                             </div>
                         </div>
                     `;
                 });
                 recapStayCardsContainer.innerHTML = cardsHtml;
-
-                // After rendering HTML, show/hide breakfast selectors correctly
-                selectedStays.forEach(s => {
-                    const bfBox = document.getElementById('bfBox_' + s.id);
-                    if (bfBox) bfBox.style.display = s.includeBreakfast ? 'flex' : 'none';
-                });
             }
 
             if (recapTotalAmount) {
@@ -4085,9 +4237,27 @@
 
         function copyReferralLink() {
             const el = document.getElementById('generatedRefUrl');
-            el.select();
-            document.execCommand('copy');
-            showToast("Referral link copied to clipboard!");
+            const url = el ? el.value : '';
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url).then(function() {
+                    showToast("Referral link copied to clipboard!");
+                }).catch(function() {
+                    fallbackCopyReferralLink(el);
+                });
+            } else {
+                fallbackCopyReferralLink(el);
+            }
+        }
+
+        function fallbackCopyReferralLink(el) {
+            if (!el) return;
+            try {
+                el.select();
+                document.execCommand('copy');
+                showToast("Referral link copied to clipboard!");
+            } catch (err) {
+                showToast("Please copy the link manually.");
+            }
         }
 
         // ==========================================
@@ -4147,6 +4317,12 @@
         }
 
         function goToStep1() {
+            isPaymentSubmitting = false;
+            const submitBtn = document.getElementById('btnPaystackSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+            }
             try {
                 const s1 = document.getElementById('step1View');
                 const s2 = document.getElementById('step2View');
@@ -4196,6 +4372,24 @@
         // ==========================================
         // 9. BOOKING REFERENCE & ROOM HELPER FUNCTIONS
         // ==========================================
+        function formatPhoneNumber(input) {
+            if (!input) return '';
+            let raw = String(input).trim().replace(/[\s\-\(\)\.]/g, '');
+            if (raw.startsWith('00')) {
+                raw = '+' + raw.slice(2);
+            }
+            if (raw.startsWith('+')) {
+                return raw;
+            }
+            if (raw.startsWith('27') && raw.length >= 10) {
+                return '+' + raw;
+            }
+            if (raw.startsWith('0')) {
+                return '+27' + raw.slice(1);
+            }
+            return '+27' + raw;
+        }
+
         function getRoomPrefix(rId) {
             if (!rId) return 'CC-';
             const r = String(rId).toLowerCase();
@@ -4222,18 +4416,14 @@
             // Strip trailing timestamp or random suffix e.g. _1740000000 or _849302
             clean = clean.replace(/_\d{5,}$/, '');
 
-            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC)-\d+$/i.test(clean)) {
+            if (/^(ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-\d+$/i.test(clean)) {
                 return clean.toUpperCase();
             }
 
-            const roomSuffixMatch = clean.match(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i);
-            const inferredRoom = roomSuffixMatch ? roomSuffixMatch[1] : roomId;
-            const prefix = getRoomPrefix(inferredRoom);
-
-            clean = clean.replace(/_(king-arthur|santori|mykonos|deluxe-suite|all)$/i, '');
+            clean = clean.replace(/_(?:king-arthur|santori|deluxe-suite|three-rooms|all)(?:_\d{4}-\d{2}-\d{2})?$/i, '');
             const numMatch = clean.match(/\d+/);
             if (numMatch) {
-                return `${prefix}${numMatch[0]}`;
+                return `CCH-${numMatch[0]}`;
             }
             return clean;
         }
@@ -4242,7 +4432,7 @@
             let maxSeq = 10000;
             (MOCK_BOOKINGS || []).forEach(b => {
                 const idStr = String(b.id || b.parentBookingId || '');
-                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC)-(\d{5})/i);
+                const match = idStr.match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i);
                 if (match) {
                     const num = parseInt(match[1], 10);
                     if (num >= 10001 && num > maxSeq) {
@@ -4254,18 +4444,33 @@
                 maxSeq = window._serverNextSeq - 1;
             }
             const nextSeq = maxSeq + 1;
-            const prefix = Array.isArray(staysOrRoom) ? getRoomPrefixForStays(staysOrRoom) : getRoomPrefix(staysOrRoom);
-            return `${prefix}${nextSeq}`;
+            return `CCH-${nextSeq}`;
         }
 
         // ==========================================
         // PAYSTACK CHECKOUT & SERVER VERIFICATION
         // ==========================================
+        let isPaymentSubmitting = false;
+
         function handleProceedToPayment(e) {
             e.preventDefault();
 
+            // Strict double-submit guard
+            if (isPaymentSubmitting) {
+                console.warn("Payment initiation already in progress. Ignoring duplicate click.");
+                return;
+            }
+
             if (selectedStays.length === 0) {
                 showToast("No active stays selected.");
+                return;
+            }
+
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minDateKey = formatDateKey(minAllowedDate);
+            const hasEarlyStay = selectedStays.some(s => (s.checkInStr || s.checkIn) < minDateKey);
+            if (hasEarlyStay) {
+                showToast(`⚠️ Bookings are only accepted from ${formatFriendlyDate(minAllowedDate)} onward.`);
                 return;
             }
 
@@ -4281,21 +4486,28 @@
                 return;
             }
 
+            isPaymentSubmitting = true;
+            const submitBtn = document.getElementById('btnPaystackSubmit');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>🔒</span> Initializing Payment Gateway...';
+            }
+
             const staySummaryText = selectedStays.map(s => `${s.roomName} (${s.checkInStr} to ${s.checkOutStr})`).join(', ');
             const amountInCents = calculatedDepositDue * 100;
 
             const generatedBookingRef = getNextRefNumber(selectedStays);
             // Unique transaction ref for Paystack ledger so Paystack never throws 'Duplicate reference'
             const paystackUniqueTxRef = `${generatedBookingRef}_${Date.now()}`;
-            const cleanPhone = phone.replace(/^(\+27|0)/, '');
+            const cleanPhone = formatPhoneNumber(phone);
             const isSingleStay = selectedStays.length === 1;
             const isAllRooms = selectedStays.some(s => s.roomId === 'all');
             const isThreeRooms = selectedStays.some(s => s.roomId === 'three-rooms');
             const primaryRoomId = isAllRooms ? 'all' : isThreeRooms ? 'three-rooms' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
             const primaryRoomName = isAllRooms
-                ? 'All 4 Rooms (Entire Property)'
+                ? 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'
                 : isThreeRooms
-                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const staysJson = JSON.stringify(selectedStays.map(s => ({
@@ -4308,82 +4520,118 @@
                 checkOutStr: s.checkOutStr || s.checkOut,
                 nights: s.nights,
                 guestCount: s.guestCount,
-                subtotal: s.subtotal,
-                includeBreakfast: !!s.includeBreakfast,
-                breakfastCount: s.breakfastCount || 0
+                subtotal: s.subtotal
             })));
 
-            if (typeof PaystackPop !== 'undefined') {
-                const handler = PaystackPop.setup({
-                    key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
-                    email: email,
-                    amount: amountInCents,
-                    currency: 'ZAR',
-                    ref: paystackUniqueTxRef,
-                    metadata: {
-                        booking_ref: generatedBookingRef,
-                        guest_name: fullName,
+            try {
+                if (typeof PaystackPop !== 'undefined') {
+                    const handler = PaystackPop.setup({
+                        key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                         email: email,
-                        phone: "+27" + cleanPhone,
-                        room_id: primaryRoomId,
-                        room_name: primaryRoomName,
-                        check_in: selectedStays[0]?.checkInStr || '',
-                        check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
-                        total_amount: calculatedGrandTotal,
-                        amount_paid: calculatedDepositDue,
-                        balance_due: calculatedBalanceDue,
-                        stays_json: staysJson,
-                        custom_fields: [
-                            { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
-                            { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
-                            { display_name: "Phone Number", variable_name: "phone", value: "+27" + cleanPhone },
-                            { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
-                            { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
-                        ]
-                    },
-                    callback: function(response) {
-                        completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
-                    },
-                    onClose: function() {
-                        showToast("Payment window closed.");
+                        amount: amountInCents,
+                        currency: 'ZAR',
+                        ref: paystackUniqueTxRef,
+                        metadata: {
+                            booking_ref: generatedBookingRef,
+                            guest_name: fullName,
+                            email: email,
+                            phone: cleanPhone,
+                            room_id: primaryRoomId,
+                            room_name: primaryRoomName,
+                            check_in: selectedStays[0]?.checkInStr || '',
+                            check_out: selectedStays[selectedStays.length - 1]?.checkOutStr || '',
+                            total_amount: calculatedGrandTotal,
+                            amount_paid: calculatedDepositDue,
+                            balance_due: calculatedBalanceDue,
+                            stays_json: staysJson,
+                            custom_fields: [
+                                { display_name: "Booking Ref", variable_name: "booking_ref", value: generatedBookingRef },
+                                { display_name: "Guest Name", variable_name: "guest_name", value: fullName },
+                                { display_name: "Phone Number", variable_name: "phone", value: cleanPhone },
+                                { display_name: "Stays Reserved", variable_name: "stays_summary", value: staySummaryText },
+                                { display_name: "Total Stays", variable_name: "total_stays", value: selectedStays.length }
+                            ]
+                        },
+                        callback: function(response) {
+                            if (submitBtn) {
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = '<span>⏳</span> Finalizing Booking...';
+                            }
+                            completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, response?.reference || paystackUniqueTxRef);
+                        },
+                        onClose: function() {
+                            isPaymentSubmitting = false;
+                            const submitBtn = document.getElementById('btnPaystackSubmit');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                            }
+                            showToast("Payment window closed.");
+                        }
+                    });
+
+                    // Save pending booking to sessionStorage in case Paystack redirects (mobile/3DS)
+                    try {
+                        sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
+                            bookingRef: generatedBookingRef,
+                            fullName: fullName,
+                            email: email,
+                            phone: cleanPhone,
+                            arrivalTime: arrivalTime,
+                            specialRequests: specialRequests,
+                            paystackTxRef: paystackUniqueTxRef,
+                            stays: selectedStays,
+                            grandTotal: calculatedGrandTotal,
+                            depositDue: calculatedDepositDue,
+                            balanceDue: calculatedBalanceDue,
+                            guestCount: selectedGuestCount,
+                            nights: totalNightsCount,
+                            totalNights: totalNightsCount,
+                            referralCode: activeReferralCode || ''
+                        }));
+                    } catch (e) {
+                        console.warn("Could not save pending booking to sessionStorage:", e);
                     }
-                });
 
-                // Save pending booking to sessionStorage in case Paystack redirects (mobile/3DS)
-                try {
-                    sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
-                        bookingRef: generatedBookingRef,
-                        fullName: fullName,
-                        email: email,
-                        phone: cleanPhone,
-                        arrivalTime: arrivalTime,
-                        specialRequests: specialRequests,
-                        paystackTxRef: paystackUniqueTxRef,
-                        stays: selectedStays,
-                        grandTotal: calculatedGrandTotal,
-                        depositDue: calculatedDepositDue,
-                        balanceDue: calculatedBalanceDue,
-                        guestCount: selectedGuestCount,
-                        nights: totalNightsCount,
-                        referralCode: activeReferralCode || ''
-                    }));
-                } catch (e) {
-                    console.warn("Could not save pending booking to sessionStorage:", e);
+                    handler.openIframe();
+
+                    // Timeout fallback: if iframe fails to render or browser blocks gateway, restore button after 45s
+                    setTimeout(() => {
+                        if (isPaymentSubmitting) {
+                            isPaymentSubmitting = false;
+                            const submitBtn = document.getElementById('btnPaystackSubmit');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                            }
+                            showToast("Payment gateway timed out. Please try again.");
+                        }
+                    }, 45000);
+                } else {
+                    console.error("PaystackPop is not available on window.");
+                    isPaymentSubmitting = false;
+                    const submitBtn = document.getElementById('btnPaystackSubmit');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                    }
+                    alert("⚠️ The secure payment gateway could not be loaded. Please disable any ad blockers, check your internet connection, or refresh the page to try again.");
                 }
-
-                handler.openIframe();
-            } else {
-                completeBooking(generatedBookingRef, fullName, email, cleanPhone, arrivalTime, specialRequests, paystackUniqueTxRef);
+            } catch (err) {
+                console.error("Paystack launch error:", err);
+                isPaymentSubmitting = false;
+                const submitBtn = document.getElementById('btnPaystackSubmit');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `🔒 Pay <span id="paystackButtonAmount">R${calculatedDepositDue.toLocaleString()}</span> via Paystack ➔`;
+                }
+                showToast("Failed to initialize payment gateway. Please try again.");
             }
         }
 
         async function completeBooking(refNumber, name, email, phone, arrivalTime, specialRequests, txRef = '') {
             const cleanRef = formatRefId(refNumber, selectedStays[0]?.roomId);
 
-            // Compile per-stay totals from per-stay breakfast data
-            const totalBreakfastCost = selectedStays.reduce((sum, s) => {
-                return sum + (s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0);
-            }, 0);
             const totalGuestCount = selectedStays.reduce((max, s) => Math.max(max, s.guestCount), 0);
 
             const isSingleStay = selectedStays.length === 1;
@@ -4393,7 +4641,7 @@
             const primaryRoomName = isAllRooms
                 ? 'All 4 Rooms (Entire Property)'
                 : isThreeRooms
-                ? 'Three Rooms (King Arthur, Santori, Mykonos)'
+                ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);
 
             const bookingPayload = {
@@ -4401,15 +4649,14 @@
                 paystackRef: txRef || cleanRef,
                 guestName: name,
                 guestEmail: email,
-                guestPhone: '+27' + phone,
+                guestPhone: formatPhoneNumber(phone),
                 roomId: primaryRoomId,
                 roomName: primaryRoomName,
                 stays: selectedStays,
                 totalStays: selectedStays.length,
+                nights: totalNightsCount,
                 totalNights: totalNightsCount,
                 guestCount: totalGuestCount,
-                includeBreakfast: selectedStays.some(s => s.includeBreakfast),
-                breakfastCost: totalBreakfastCost,
                 totalAmount: calculatedGrandTotal,
                 amountPaid: calculatedDepositDue,
                 balanceDue: calculatedBalanceDue,
@@ -4433,9 +4680,11 @@
                 } else {
                     const errData = await res.json().catch(() => ({}));
                     console.warn("Backend verification notice:", errData.error || res.statusText);
+                    alert(`⚠️ Reservation Notice:\n\nYour payment was received by Paystack (Ref: ${txRef || cleanRef}), but our booking system could not finalize your reservation in the cloud database (${errData.error || res.statusText}).\n\nPlease contact Michele (+27 72 889 4840) with reference #${cleanRef} so we can manually confirm your dates.`);
                 }
             } catch (err) {
                 console.log("Local sync notice:", err);
+                alert(`⚠️ Reservation Notice:\n\nYour payment was processed, but a network error occurred while communicating with our server (${err.message}).\n\nPlease contact Michele (+27 72 889 4840) with reference #${cleanRef} so we can manually confirm your dates.`);
             }
 
             // Update local state so calendar permanently marks rooms as booked
@@ -4491,23 +4740,14 @@
                 document.getElementById('confBalanceDue').textContent = 'R0 (100% Paid)';
             }
 
-            // Render list of reserved stays in receipt – per-stay with breakfast
+            // Render list of reserved stays in receipt
             const confStaysList = document.getElementById('confStaysList');
             let confHtml = selectedStays.map(s => {
-                const bfCost = s.includeBreakfast ? (s.breakfastCount * s.nights * 120) : 0;
-                const stayTotal = s.subtotal + bfCost;
-                let bfLine = '';
-                if (s.includeBreakfast) {
-                    bfLine = `<div style="margin-top: 0.3rem; padding: 0.3rem 0.5rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 6px; font-size: 0.82rem; color: #166534;">
-                        🍳 Breakfast: ${s.breakfastCount} of ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} × ${s.nights}N @ R120 = <strong>+R${bfCost.toLocaleString()}</strong>
-                    </div>`;
-                }
                 return `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem; margin-bottom: 0.5rem;">
                     <strong>${s.roomIcon} ${s.roomName}</strong><br>
                     <span>📅 Check-in: ${formatFriendlyDate(s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
                     <span>👥 ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} arriving</span><br>
-                    ${bfLine}
-                    <div style="font-weight: 700; color: #0F52BA; margin-top: 0.3rem;">Stay Total: R${stayTotal.toLocaleString()}</div>
+                    <div style="font-weight: 700; color: #0F52BA; margin-top: 0.3rem;">Stay Rate: R${s.subtotal.toLocaleString()}</div>
                 </div>`;
             }).join('');
 
@@ -4516,7 +4756,7 @@
             // Wire dynamic WhatsApp button
             const waBtn = document.getElementById('confWhatsAppBtn');
             if (waBtn) {
-                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!%0A%0A*Booking Ref:* #${cleanRef}%0A*Guest:* ${name}%0A*Arrival Window:* ${arrivalTime}%0A%0ALooking forward to our stay in Strand!`);
+                const waText = encodeURIComponent(`Hi Michele, I have just secured my booking at Cool-Cat!\n\n*Booking Ref:* #${cleanRef}\n*Guest:* ${name}\n*Arrival Window:* ${arrivalTime}\n\nLooking forward to our stay in Strand!`);
                 waBtn.href = `https://wa.me/27728894840?text=${waText}`;
             }
 
@@ -4555,6 +4795,7 @@
             document.getElementById('wizStep3').classList.add('completed');
             document.getElementById('circle3').textContent = '✓';
 
+            isPaymentSubmitting = false;
             window.scrollTo({ top: 120, behavior: 'smooth' });
             showToast("🎉 Booking secured! Confirmation email dispatched.");
         }
@@ -4585,8 +4826,8 @@
                     ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
                     ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
                     ics.push(`SUMMARY:Stay at Cool-Cat (${s.roomName})`);
-                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: Gouws (Pass: 004eda35aef)\\nHost Michele: 072 889 4840`);
-                    ics.push(`LOCATION:Cool-Cat B&B, Strand, Western Cape, South Africa`);
+                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: High-Speed Fiber\\nHost Michele: 072 889 4840`);
+                    ics.push(`LOCATION:Cool-Cat Holiday Accommodation, Strand, Western Cape, South Africa`);
                     ics.push('STATUS:CONFIRMED');
                     ics.push('END:VEVENT');
                 }
@@ -4668,16 +4909,16 @@
             if (isAll) {
                 bannerName.textContent = '🏨 FOUR ROOMS (Whole Property)';
                 if (pkgDiscount > 0) {
-                    bannerSpecs.innerHTML = `Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ Whole Property Special: Book all 4 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
+                    bannerSpecs.innerHTML = `Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ Whole Property Special: Book all rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
                 } else {
-                    bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Suites (King Arthur, Santori, Mykonos, Deluxe Suite)';
+                    bannerSpecs.textContent = 'Sleeps up to 8 Guests · 4 Bedrooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)';
                 }
             } else if (isThree) {
-                bannerName.textContent = '🏠 THREE ROOMS (3 Suites)';
+                bannerName.textContent = '🏠 THREE ROOMS (2 Suites / 3 Bedrooms)';
                 if (pkgDiscount > 0) {
-                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Suite Special: Book 3 rooms together and save ${pkgDiscount}% automatically on all dates!</span>`;
+                    bannerSpecs.innerHTML = `Sleeps up to 6 Guests · 3 Bedrooms (King Arthur Suite &amp; Santori Suite [2 Rooms]) – Excludes Deluxe Suite<br><span style="color: #15803D; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 0.2rem;">✨ 3-Bedroom Special: Book King Arthur &amp; Santori Suites together and save ${pkgDiscount}% automatically on all dates!</span>`;
                 } else {
-                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Suites (King Arthur, Santori, Mykonos) – Excludes Deluxe Suite';
+                    bannerSpecs.textContent = 'Sleeps up to 6 Guests · 3 Bedrooms (King Arthur Suite & Santori Suite [2 Rooms]) – Excludes Deluxe Suite';
                 }
             } else {
                 const r = ROOMS.find(item => item.id === selectedRoomId);
@@ -4903,6 +5144,12 @@
             }
         }
 
+        function clearHoverRange() {
+            document.querySelectorAll('.cal-day-in-hover-range, .cal-day-hover-target').forEach(el => {
+                el.classList.remove('cal-day-in-hover-range', 'cal-day-hover-target');
+            });
+        }
+
         function switchRoom(roomId) {
             selectedRoomId = roomId;
             const tabs = document.querySelectorAll('.room-tab-btn');
@@ -4924,38 +5171,50 @@
             }
 
             // For ANY room tab chosen/activated, always default to max guests for that room
-            const roomMax = (roomId === 'all') ? 8 : (roomId === 'three-rooms') ? 6 : 2;
+            const roomMax = (roomId === 'all') ? 8 : (roomId === 'three-rooms') ? 6 : (roomId === 'santori') ? 4 : 2;
             selectedGuestCount = roomMax;
             userManuallyChangedGuestCount = false;
 
-            if (selectedBreakfastCount > selectedGuestCount) {
-                selectedBreakfastCount = selectedGuestCount;
-            }
+
 
             renderCalendar();
             updateSummarySidebar();
         }
 
         function changeMonth(delta) {
-            currentViewDate.setMonth(currentViewDate.getMonth() + delta);
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            const target = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth() + delta, 1);
+            if (delta < 0 && target < minMonthDate) {
+                return;
+            }
+            currentViewDate = target;
             renderCalendar();
         }
 
         function jumpToMonth(val) {
             const [y, m] = val.split('-').map(Number);
-            currentViewDate = new Date(y, m, 1);
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const minMonthDate = new Date(minAllowedDate.getFullYear(), minAllowedDate.getMonth(), 1);
+            let target = new Date(y, m, 1);
+            if (target < minMonthDate) target = minMonthDate;
+            currentViewDate = target;
             renderCalendar();
         }
 
         function populateMonthDropdown() {
             const select = document.getElementById('monthJumpSelect');
+            if (!select) return;
             select.innerHTML = '';
 
-            const startYear = TODAY.getFullYear();
+            const minAllowedDate = getEffectiveMinBookingDate();
+            const startYear = minAllowedDate.getFullYear();
+            const startMonth = minAllowedDate.getMonth();
+            const endYear = Math.max(2027, startYear + 1);
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-            for (let y = startYear; y <= 2027; y++) {
-                const startM = (y === startYear) ? TODAY.getMonth() : 0;
+            for (let y = startYear; y <= endYear; y++) {
+                const startM = (y === startYear) ? startMonth : 0;
                 for (let m = startM; m < 12; m++) {
                     const opt = document.createElement('option');
                     opt.value = `${y}-${m}`;
@@ -4965,9 +5224,24 @@
             }
         }
 
+        function parseLocalDate(date) {
+            if (!date) return new Date();
+            if (date instanceof Date) return date;
+            if (typeof date === 'string') {
+                const parts = date.trim().split('T')[0].split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    return new Date(y, m, d);
+                }
+            }
+            return new Date(date);
+        }
+
         function formatFriendlyDate(date) {
             if (!date) return '';
-            const d = (date instanceof Date) ? date : new Date(date);
+            const d = parseLocalDate(date);
             if (isNaN(d.getTime())) return '';
             return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
         }
@@ -4977,7 +5251,7 @@
         function showToast(msg) {
             const banner = document.getElementById('calToastBanner');
             const bannerText = document.getElementById('calToastBannerText');
-            const step1 = document.getElementById('step1');
+            const step1 = document.getElementById('step1View');
 
             if (banner && bannerText && (!step1 || step1.style.display !== 'none')) {
                 bannerText.innerHTML = msg;
@@ -5000,7 +5274,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Reviews Modal Wiring
             const reviewsBtn = document.getElementById('reviewsBtn');
             const reviewsModal = document.getElementById('reviewsModal');
@@ -5031,7 +5305,7 @@
                     'king': 'king-arthur',
                     'kingarthur': 'king-arthur',
                     'santori': 'santori',
-                    'mykonos': 'mykonos',
+                    'mykonos': 'santori',
                     'deluxe-suite': 'deluxe-suite',
                     'deluxe': 'deluxe-suite',
                     'deluxesuite': 'deluxe-suite',
@@ -5056,8 +5330,9 @@
 
             populateMonthDropdown();
             switchRoom(initialRoom);
-            loadLiveBookings();
+            const liveBookingsPromise = loadLiveBookings();
             loadSiteSettings();
+            updatePaystackModeUI();
 
             // Auto-detect referral link from URL
             const ref = urlParams.get('ref') || urlParams.get('promo');
@@ -5076,6 +5351,50 @@
                 if (rawPending) {
                     try {
                         const pending = JSON.parse(rawPending);
+
+                        // If returning from mobile 3DS on a Quote payment:
+                        if (pending.isQuotePayment) {
+                            history.replaceState({}, document.title, window.location.pathname);
+
+                            try {
+                                const vRes = await fetch('/api/verify-payment', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        reference: pending.bookingRef,
+                                        paystackRef: paystackReturnRef,
+                                        guestName: pending.fullName,
+                                        guestEmail: pending.email,
+                                        guestPhone: pending.phone,
+                                        roomId: pending.roomId,
+                                        roomName: pending.roomName,
+                                        checkIn: pending.checkIn,
+                                        checkOut: pending.checkOut,
+                                        nights: pending.nights || pending.totalNights || 1,
+                                        totalNights: pending.totalNights || pending.nights || 1,
+                                        totalAmount: pending.grandTotal,
+                                        amountPaid: pending.depositDue,
+                                        balanceDue: pending.balanceDue,
+                                        isQuotePayment: true
+                                    })
+                                });
+
+                                if (!vRes.ok) {
+                                    const errData = await vRes.json().catch(() => ({}));
+                                    throw new Error(errData.error || `Payment verification returned status ${vRes.status}`);
+                                }
+
+                                sessionStorage.removeItem('coolcat_pending_booking');
+                                alert(`🎉 Payment of R${Number(pending.depositDue).toLocaleString()} received successfully for booking #${pending.bookingRef}!\n\nYour confirmation receipt has been issued.`);
+                                window.location.href = '/book';
+                                return;
+                            } catch (err) {
+                                console.error("Payment sync notice:", err);
+                                alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${pending.bookingRef}.`);
+                                return;
+                            }
+                        }
+
                         if (Array.isArray(pending.stays) && pending.stays.length > 0) {
                             selectedStays = pending.stays;
                         }
@@ -5106,7 +5425,7 @@
             }
 
             // Auto-detect Direct Quote / Manual Payment Link (?payRef=MAN-...)
-            checkQuotePaymentUrl();
+            await checkQuotePaymentUrl(liveBookingsPromise);
 
             // Wire explicit click listener to Continue button
             const btnContinueEl = document.getElementById('btnContinue');
@@ -5134,28 +5453,78 @@
             chosenType: 'deposit'
         };
 
-        function checkQuotePaymentUrl() {
+        async function checkQuotePaymentUrl(liveBookingsPromise) {
             const urlParams = new URLSearchParams(window.location.search);
             const payRef = urlParams.get('payRef');
             if (!payRef) return;
 
-            const total = Number(urlParams.get('amt') || 0);
-            const dep = Number(urlParams.get('dep') || Math.round(total * 0.5));
-            const name = urlParams.get('name') || 'Valued Guest';
-            const room = urlParams.get('room') || 'all';
-            const cIn = urlParams.get('in') || '';
-            const cOut = urlParams.get('out') || '';
+            // Wait for authentic live bookings to load to guarantee anti-tampering verification
+            if (liveBookingsPromise) {
+                try { await liveBookingsPromise; } catch(e) {}
+            } else if (!Array.isArray(MOCK_BOOKINGS) || MOCK_BOOKINGS.length === 0) {
+                try { await loadLiveBookings(); } catch(e) {}
+            }
+
+            let total = Number(urlParams.get('amt') || 0);
+            let depParam = Number(urlParams.get('dep') || 0);
+            let name = urlParams.get('name') || 'Valued Guest';
+            let room = urlParams.get('room') || 'all';
+            let cIn = urlParams.get('in') || '';
+            let cOut = urlParams.get('out') || '';
 
             const roomNames = {
-                'all': 'Four Rooms (King Arthur, Santori, Mykonos, Deluxe Suite)',
-                'three-rooms': 'Three Rooms (King Arthur, Santori, Mykonos)',
-                'king-arthur': 'King Arthur Room',
-                'santori': 'Santori Room',
-                'mykonos': 'Mykonos Room',
+                'all': 'Four Rooms (King Arthur Suite, Santori Suite [2 Rooms], Deluxe Suite)',
+                'three-rooms': 'Three Rooms (King Arthur Suite & Santori Suite [2 Rooms])',
+                'king-arthur': 'King Arthur Suite',
+                'santori': 'Santori Suite (2 Bedrooms)',
                 'deluxe-suite': 'Cool-Cat Deluxe Suite'
             };
 
             const cleanPayRef = formatRefId(payRef, room);
+
+            // Anti-Tampering Check: Cross-reference with authentic database bookings if loaded
+            let dbMatch = null;
+            if (Array.isArray(MOCK_BOOKINGS) && MOCK_BOOKINGS.length > 0) {
+                dbMatch = MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
+                if (dbMatch) {
+                    if (Number(dbMatch.totalAmount) > 0) {
+                        total = Number(dbMatch.totalAmount);
+                    }
+                    if (dbMatch.guestName && dbMatch.guestName !== 'Valued Guest') name = dbMatch.guestName;
+                    if (dbMatch.roomId) room = dbMatch.roomId;
+                    if (dbMatch.checkIn) cIn = dbMatch.checkIn;
+                    if (dbMatch.checkOut) cOut = dbMatch.checkOut;
+                }
+            }
+
+            // Calculate earliest check-in date across stays
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let earliestCheckInStr = cIn;
+            if (dbMatch && dbMatch.stays && Array.isArray(dbMatch.stays)) {
+                dbMatch.stays.forEach(s => {
+                    if (s.checkIn && (!earliestCheckInStr || s.checkIn < earliestCheckInStr)) {
+                        earliestCheckInStr = s.checkIn;
+                    }
+                });
+            }
+
+            const cInDate = parseLocalDate(earliestCheckInStr);
+            cInDate.setHours(0, 0, 0, 0);
+            const daysUntilCheckIn = Math.floor((cInDate - today) / (1000 * 60 * 60 * 24));
+
+            // FAQ Rules:
+            // 1. > 7 days in advance AND total > R1,000 -> 50% deposit allowed
+            // 2. <= 7 days in advance OR total <= R1,000 -> 100% full payment required
+            const is50PercentAllowed = (total > 1000 && daysUntilCheckIn > 7);
+            const calcDeposit = is50PercentAllowed ? Math.round(total * 0.5) : total;
+
+            const dbPaid = Number(dbMatch?.amountPaid || 0);
+            const dbBalance = Number(dbMatch?.balanceDue !== undefined ? dbMatch.balanceDue : (total - dbPaid));
+            const hasExistingPartialPayment = (dbPaid > 0 && dbBalance > 0 && dbBalance < total);
+
+            const depAmount = hasExistingPartialPayment ? dbBalance : calcDeposit;
 
             activeQuotePay = {
                 ref: cleanPayRef,
@@ -5165,9 +5534,11 @@
                 checkOut: cOut,
                 name: name,
                 totalAmount: total,
-                depositAmount: dep,
-                chosenAmount: dep,
-                chosenType: 'deposit'
+                depositAmount: depAmount,
+                chosenAmount: is50PercentAllowed && !hasExistingPartialPayment ? depAmount : (hasExistingPartialPayment ? dbBalance : total),
+                chosenType: is50PercentAllowed && !hasExistingPartialPayment ? 'deposit' : 'full',
+                is50PercentAllowed: is50PercentAllowed,
+                hasExistingPartialPayment: hasExistingPartialPayment
             };
 
             const refEl = document.getElementById('qpBookingRef');
@@ -5181,9 +5552,9 @@
             const totEl = document.getElementById('qpTotalAmount');
             if (totEl) totEl.textContent = `R${total.toLocaleString()}`;
             const depEl = document.getElementById('qpDepositAmount');
-            if (depEl) depEl.textContent = `R${dep.toLocaleString()}`;
+            if (depEl) depEl.textContent = `R${depAmount.toLocaleString()}`;
             const fullEl = document.getElementById('qpFullAmount');
-            if (fullEl) fullEl.textContent = `R${total.toLocaleString()}`;
+            if (fullEl) fullEl.textContent = hasExistingPartialPayment ? `R${dbBalance.toLocaleString()}` : `R${total.toLocaleString()}`;
             const eftRef = document.getElementById('qpEftRefText');
             if (eftRef) eftRef.textContent = `${cleanPayRef} ${name}`;
 
@@ -5191,7 +5562,65 @@
             const waBtn = document.getElementById('qpEftWaBtn');
             if (waBtn) waBtn.href = `https://wa.me/27728894840?text=${encodeURIComponent(waMsg)}`;
 
-            selectQuotePayOption('deposit');
+            const btnDep = document.getElementById('qpBtnDeposit');
+            const btnFull = document.getElementById('qpBtnFull');
+            const btnContainer = document.getElementById('qpPaymentButtonsContainer');
+            const noticeEl = document.getElementById('qpPolicyNotice');
+
+            if (hasExistingPartialPayment) {
+                if (btnDep) btnDep.style.display = 'none';
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `Remaining Balance Due<br><span style="font-size:1.05rem; font-weight:800;">R${dbBalance.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#EFF6FF';
+                    noticeEl.style.border = '1px solid #BFDBFE';
+                    noticeEl.style.color = '#1E40AF';
+                    noticeEl.innerHTML = `ℹ️ <strong>Remaining Balance:</strong> Initial payment of R${dbPaid.toLocaleString()} was received. The remaining balance of R${dbBalance.toLocaleString()} is due now.`;
+                }
+                selectQuotePayOption('full');
+            } else if (!is50PercentAllowed) {
+                // 100% full payment required upfront
+                if (btnDep) btnDep.style.display = 'none';
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `100% Full Payment Required<br><span style="font-size:1.05rem; font-weight:800;">R${total.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    const reason = daysUntilCheckIn <= 7 
+                        ? 'For stays booked within 7 days of arrival, 100% payment is required upfront to secure your reservation.'
+                        : 'For stays valued at R1,000 or less, 100% payment is required upfront to secure your reservation.';
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#FEF3C7';
+                    noticeEl.style.border = '1px solid #FCD34D';
+                    noticeEl.style.color = '#92400E';
+                    noticeEl.innerHTML = `🔒 <strong>Payment Policy Notice:</strong> ${reason}`;
+                }
+                selectQuotePayOption('full');
+            } else {
+                // 50% deposit allowed
+                if (btnDep) {
+                    btnDep.style.display = 'block';
+                    btnDep.innerHTML = `50% Deposit<br><span id="qpDepositAmount" style="font-size:1.05rem; font-weight:800;">R${calcDeposit.toLocaleString()}</span>`;
+                }
+                if (btnContainer) btnContainer.style.gridTemplateColumns = '1fr 1fr';
+                if (btnFull) {
+                    btnFull.style.display = 'block';
+                    btnFull.innerHTML = `100% Full Amount<br><span id="qpFullAmount" style="font-size:1.05rem; font-weight:800;">R${total.toLocaleString()}</span>`;
+                }
+                if (noticeEl) {
+                    noticeEl.style.display = 'block';
+                    noticeEl.style.background = '#EFF6FF';
+                    noticeEl.style.border = '1px solid #BFDBFE';
+                    noticeEl.style.color = '#1E40AF';
+                    noticeEl.innerHTML = `💡 <strong>50% Deposit to Secure:</strong> Pay R${calcDeposit.toLocaleString()} now to secure your stay. Remaining 50% balance (R${(total - calcDeposit).toLocaleString()}) is due 3 days before arrival or at check-in.`;
+                }
+                selectQuotePayOption('deposit');
+            }
 
             const modal = document.getElementById('quotePayModal');
             if (modal) modal.style.display = 'flex';
@@ -5208,7 +5637,7 @@
             const btnFull = document.getElementById('qpBtnFull');
             const payBtn = document.getElementById('qpPaystackBtn');
 
-            if (type === 'deposit') {
+            if (type === 'deposit' && activeQuotePay.is50PercentAllowed && !activeQuotePay.hasExistingPartialPayment) {
                 activeQuotePay.chosenAmount = activeQuotePay.depositAmount;
                 if (btnDep) {
                     btnDep.style.background = '#EEF2FF';
@@ -5222,7 +5651,8 @@
                 }
                 if (payBtn) payBtn.innerHTML = `🔒 Pay 50% Deposit (R${activeQuotePay.depositAmount.toLocaleString()}) via Paystack`;
             } else {
-                activeQuotePay.chosenAmount = activeQuotePay.totalAmount;
+                activeQuotePay.chosenType = 'full';
+                activeQuotePay.chosenAmount = activeQuotePay.hasExistingPartialPayment ? activeQuotePay.depositAmount : activeQuotePay.totalAmount;
                 if (btnFull) {
                     btnFull.style.background = '#EEF2FF';
                     btnFull.style.color = 'var(--sapphire-blue)';
@@ -5233,7 +5663,8 @@
                     btnDep.style.color = '#475569';
                     btnDep.style.borderColor = 'transparent';
                 }
-                if (payBtn) payBtn.innerHTML = `🔒 Pay 100% Full (R${activeQuotePay.totalAmount.toLocaleString()}) via Paystack`;
+                const fullLabel = activeQuotePay.hasExistingPartialPayment ? 'Remaining Balance' : '100% Full';
+                if (payBtn) payBtn.innerHTML = `🔒 Pay ${fullLabel} (R${activeQuotePay.chosenAmount.toLocaleString()}) via Paystack`;
             }
         }
 
@@ -5242,13 +5673,24 @@
             if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
         }
 
+        let isQuotePaymentSubmitting = false;
+
         function processQuotePaystackPayment() {
+            if (isQuotePaymentSubmitting) return;
+
             const email = (document.getElementById('qpEmail').value || '').trim();
-            const phone = (document.getElementById('qpPhone').value || '').trim();
+            const phone = formatPhoneNumber((document.getElementById('qpPhone').value || '').trim());
 
             if (!email || !email.includes('@')) {
                 alert("Please enter a valid email address for your payment receipt.");
                 return;
+            }
+
+            isQuotePaymentSubmitting = true;
+            const qpBtn = document.getElementById('qpPaystackBtn');
+            if (qpBtn) {
+                qpBtn.disabled = true;
+                qpBtn.innerHTML = '<span>🔒</span> Initializing Paystack...';
             }
 
             const amountInCents = activeQuotePay.chosenAmount * 100;
@@ -5256,12 +5698,23 @@
 
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                    key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',
                     ref: paystackRef,
                     metadata: {
+                        booking_ref: activeQuotePay.ref,
+                        guest_name: activeQuotePay.name,
+                        phone: phone,
+                        email: email,
+                        room_id: activeQuotePay.room,
+                        room_name: activeQuotePay.roomName,
+                        check_in: activeQuotePay.checkIn,
+                        check_out: activeQuotePay.checkOut,
+                        total_amount: activeQuotePay.totalAmount,
+                        payment_type: activeQuotePay.chosenType,
+                        is_quote_payment: true,
                         custom_fields: [
                             { display_name: "Booking Ref", variable_name: "booking_ref", value: activeQuotePay.ref },
                             { display_name: "Guest Name", variable_name: "guest_name", value: activeQuotePay.name },
@@ -5276,29 +5729,73 @@
                         const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
 
                         try {
-                            await fetch('/api/bookings', {
-                                method: 'PUT',
+                            const res = await fetch('/api/verify-payment', {
+                                method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    id: activeQuotePay.ref,
+                                    reference: activeQuotePay.ref,
+                                    paystackRef: (response && response.reference) ? response.reference : paystackRef,
+                                    guestName: activeQuotePay.name,
+                                    guestEmail: email,
+                                    guestPhone: phone,
+                                    roomId: activeQuotePay.room,
+                                    roomName: activeQuotePay.roomName,
+                                    checkIn: activeQuotePay.checkIn,
+                                    checkOut: activeQuotePay.checkOut,
+                                    nights: activeQuotePay.nights || 1,
+                                    totalNights: activeQuotePay.nights || 1,
+                                    totalAmount: total,
                                     amountPaid: paid,
                                     balanceDue: bal,
-                                    status: newStatus,
-                                    paymentMethod: 'card'
+                                    isQuotePayment: true
                                 })
                             });
+
+                            if (!res.ok) {
+                                const errData = await res.json().catch(() => ({}));
+                                throw new Error(errData.error || `Server verification failed with HTTP ${res.status}`);
+                            }
+
+                            closeQuotePayModal();
+                            alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
+                            window.location.href = '/book';
                         } catch (err) {
                             console.error("Payment sync error:", err);
+                            closeQuotePayModal();
+                            alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${activeQuotePay.ref}.`);
                         }
-
-                        closeQuotePayModal();
-                        alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
-                        window.location.href = '/book.html';
                     },
                     onClose: function() {
+                        isQuotePaymentSubmitting = false;
+                        const qpBtn = document.getElementById('qpPaystackBtn');
+                        if (qpBtn) {
+                            qpBtn.disabled = false;
+                            selectQuotePayOption(activeQuotePay.chosenType);
+                        }
                         showToast("Payment window closed.");
                     }
                 });
+
+                // Save pending quote booking to sessionStorage in case Paystack redirects (mobile/3DS)
+                try {
+                    sessionStorage.setItem('coolcat_pending_booking', JSON.stringify({
+                        isQuotePayment: true,
+                        bookingRef: activeQuotePay.ref,
+                        fullName: activeQuotePay.name,
+                        email: email,
+                        phone: phone,
+                        roomId: activeQuotePay.room,
+                        roomName: activeQuotePay.roomName,
+                        checkIn: activeQuotePay.checkIn,
+                        checkOut: activeQuotePay.checkOut,
+                        grandTotal: activeQuotePay.totalAmount,
+                        depositDue: activeQuotePay.chosenAmount,
+                        balanceDue: Math.max(0, activeQuotePay.totalAmount - activeQuotePay.chosenAmount),
+                        paystackTxRef: paystackRef
+                    }));
+                } catch (e) {
+                    console.warn("Could not save quote pending booking to sessionStorage:", e);
+                }
 
                 handler.openIframe();
             } else {
@@ -5329,7 +5826,7 @@
     
     <div class="modal-header-content">
       <h2>Guest Reviews &amp; Ratings</h2>
-      <p>Cool-Cat Holiday Accommodation &bull; Strand, South Africa</p>
+      <p>Cool Cat Holiday Accommodation &bull; Strand, South Africa</p>
       <div class="stars-badge">
         <span>★★★★★</span>
         <span style="color: #334155; font-size: 0.88rem; font-weight: 600;">(Rate &amp; Review on Google)</span>

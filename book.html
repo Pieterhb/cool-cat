@@ -1151,16 +1151,17 @@
         }
 
         .recap-bar {
-            background: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%);
-            border: 1px solid #C7D2FE;
+            background: #F0F7FF;
+            border: 1.5px solid #BFDBFE;
             border-radius: 12px;
-            padding: 1rem 1.4rem;
-            margin-bottom: 2rem;
+            padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .recap-title {
@@ -2169,22 +2170,22 @@
                 <div class="step2-card">
 
                     <!-- Stay Recap Banner -->
-                    <div class="recap-bar" style="background: #F0F7FF; border: 1.5px solid #BFDBFE; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
-                        <!-- Title row -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark);">1 Reserved Stay</div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 0.75rem; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
-                                <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--sapphire-blue-dark);" id="recapTotalAmount">R0</div>
-                                <div id="recapDepositSubtext" style="font-size: 0.8rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
-                            </div>
+                    <div class="recap-bar">
+                        <!-- 1. Grand Total (Centered) -->
+                        <div style="text-align: center; margin-bottom: 0.85rem; width: 100%;">
+                            <div style="font-size: 0.75rem; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total</div>
+                            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.45rem; color: var(--sapphire-blue-dark); margin: 0.15rem 0;" id="recapTotalAmount">Total: R0</div>
+                            <div id="recapDepositSubtext" style="font-size: 0.82rem; color: #0369A1; font-weight: 700; margin-top: 0.15rem;"></div>
                         </div>
-                        <!-- Per-stay cards rendered by updateStep2Recap() -->
-                        <div id="recapStaysList" style="display: flex; flex-direction: column; gap: 0;"></div>
-                        <!-- Edit / Back button -->
-                        <div style="margin-top: 0.75rem; text-align: right;">
-                            <button type="button" class="btn-edit-dates" onclick="goToStep1()" style="margin-top: 0;">✏️ Edit Dates / Rooms</button>
+
+                        <!-- 2. Reserved Stays Count & Edit Dates / Rooms Button (Centered) -->
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; width: 100%;">
+                            <div class="recap-title" id="recapStaysCount" style="font-weight: 800; font-size: 1.05rem; color: var(--sapphire-blue-dark); text-align: center;">1 Reserved Stay</div>
+                            <button type="button" class="btn-edit-dates" onclick="goToStep1()" style="margin: 0;">✏️ Edit Dates / Rooms</button>
                         </div>
+
+                        <!-- 3. Per-Stay Booking Windows / Cards (Centered) -->
+                        <div id="recapStaysList" style="max-width: 520px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 0;"></div>
                     </div>
 
                     <!-- Test Mode Helper (Hidden by default; dynamically shown only if pk_test_ is detected) -->
@@ -4143,7 +4144,7 @@
                 let cardsHtml = '';
                 selectedStays.forEach((s, idx) => {
                     cardsHtml += `
-                        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem;">
+                        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.75rem; text-align: left; box-sizing: border-box; width: 100%;">
                             <!-- Stay header -->
                             <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">
                                 <span style="font-size: 1.1rem;">${s.roomIcon}</span>
