@@ -1824,6 +1824,47 @@
                 max-width: 100% !important;
                 box-sizing: border-box !important;
             }
+            html, body {
+                overflow-x: hidden;
+                max-width: 100%;
+            }
+            .success-card {
+                padding: 1.4rem 0.9rem !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .booking-receipt-box,
+            .access-details-card {
+                padding: 1rem 0.85rem !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .access-item {
+                font-size: 0.85rem !important;
+                line-height: 1.5 !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+            }
+            .receipt-row {
+                gap: 0.5rem !important;
+                flex-wrap: wrap !important;
+            }
+            .success-ref {
+                max-width: 100% !important;
+                font-size: 0.95rem !important;
+                padding: 0.4rem 0.85rem !important;
+                overflow-wrap: anywhere !important;
+            }
+            .conf-actions-grid > div {
+                grid-template-columns: 1fr !important;
+            }
+            .btn-conf-action,
+            #btnPaystackSubmit {
+                min-width: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
         }
     </style>
 </head>
@@ -2263,7 +2304,7 @@
                                 <img src="Logo.png?v=3" alt="Cool Cat Logo" style="height: 48px; width: auto;">
                                 <div>
                                     <div style="font-size: 1.15rem; font-weight: 800; color: #0A3A85; letter-spacing: 0.5px;">COOL CAT HOLIDAY ACCOMMODATION</div>
-                                    <div style="font-size: 0.8rem; color: #334155;">Strand, Western Cape, South Africa • https://cool-cat.co.za</div>
+                                    <div style="font-size: 0.8rem; color: #334155;">38 Victoria Street, Van Ryneveld, Strand, 7140 • https://cool-cat.co.za</div>
                                 </div>
                             </div>
                             <div style="text-align: right;">
@@ -2310,7 +2351,7 @@
                         <div class="access-item">🕒 <strong>Check-In Time:</strong> 14:00 to 19:00 (Please inform us if arriving later)</div>
                         <div class="access-item">🕚 <strong>Check-Out Time:</strong> 10:00 AM</div>
                         <div class="access-item">📶 <strong>Free Wi-Fi:</strong> High-speed optical fiber across all suites (credentials in confirmation receipt &amp; house guide)</div>
-                        <div class="access-item">📍 <strong>Location:</strong> Strand, Western Cape &bull; <a href="https://www.google.com/maps/search/?api=1&query=Cool+Cat+Holiday+Accommodation+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
+                        <div class="access-item">📍 <strong>Address:</strong> 38 Victoria Street, Van Ryneveld, Strand &bull; <a href="https://www.google.com/maps/search/?api=1&query=38+Victoria+Street%2C+Van+Ryneveld%2C+Strand" target="_blank" style="color: var(--sapphire-blue); font-weight: 700; text-decoration: underline;">Open Google Maps Directions</a></div>
                         <div class="access-item">📱 <strong>Host Contact:</strong> Enquiries (<a href="tel:0728894840" style="color: var(--sapphire-blue); text-decoration: none; font-weight: 500;">072 889 4840</a>)</div>
                     </div>
 
@@ -2323,7 +2364,7 @@
                             <a href="/guide" target="_blank" class="btn btn-conf-action" style="background: var(--sapphire-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
                                 📖 View Guest Guide &amp; House Info
                             </a>
-                            <a href="https://www.google.com/maps/search/?api=1&query=Cool+Cat+Holiday+Accommodation+Strand" target="_blank" class="btn btn-conf-action" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=38+Victoria+Street%2C+Van+Ryneveld%2C+Strand" target="_blank" class="btn btn-conf-action" style="background: #0F52BA; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; font-weight: 700;">
                                 🗺️ Google Maps Directions
                             </a>
                         </div>
@@ -2347,7 +2388,7 @@
                     <!-- Printable Official Voucher Footer (Shown Only on Print / PDF) -->
                     <div class="print-voucher-footer" style="display: none;">
                         <div style="border-top: 1px solid #CBD5E1; margin-top: 15px; padding-top: 10px; font-size: 0.75rem; color: #334155; display: flex; justify-content: space-between; align-items: center;">
-                            <span>Cool Cat Holiday Accommodation (Pty) Ltd (Reg. 2026/626178/07) • Strand, 7140, South Africa</span>
+                            <span>Cool Cat Holiday Accommodation (Pty) Ltd (Reg. 2026/626178/07) • 38 Victoria Street, Van Ryneveld, Strand, 7140</span>
                             <span>Secured Payment via Paystack PCI-DSS</span>
                         </div>
                     </div>
@@ -4787,8 +4828,8 @@
                     ics.push(`DTSTART;VALUE=DATE:${dtStart}`);
                     ics.push(`DTEND;VALUE=DATE:${dtEnd}`);
                     ics.push(`SUMMARY:Stay at Cool-Cat (${s.roomName})`);
-                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: Strand, Western Cape\\nWi-Fi: High-Speed Fiber\\nHost Michele: 072 889 4840`);
-                    ics.push(`LOCATION:Cool-Cat Holiday Accommodation, Strand, Western Cape, South Africa`);
+                    ics.push(`DESCRIPTION:Booking #${b.id} for ${b.guestName}\\nCheck-in: 14:00\\nAddress: 38 Victoria Street, Van Ryneveld, Strand\\nWi-Fi: High-Speed Fiber\\nHost Michele: 072 889 4840`);
+                    ics.push(`LOCATION:38 Victoria Street, Van Ryneveld, Strand, 7140, South Africa`);
                     ics.push('STATUS:CONFIRMED');
                     ics.push('END:VEVENT');
                 }
