@@ -4754,7 +4754,7 @@
             let confHtml = selectedStays.map(s => {
                 return `<div style="padding: 0.5rem 0.8rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem; margin-bottom: 0.5rem;">
                     <strong>${s.roomIcon} ${s.roomName}</strong><br>
-                    <span>📅 Check-in: ${formatFriendlyDate(s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
+                    <span>📅 Check-in: ${formatFriendlyDate(s.checkInStr || s.checkIn)} (14:00) &bull; Check-out: ${formatFriendlyDate(s.checkOutStr || s.checkOut)} (10:00) &bull; ${s.nights}N</span><br>
                     <span>👥 ${s.guestCount} Guest${s.guestCount > 1 ? 's' : ''} arriving</span><br>
                     <div style="font-weight: 700; color: #0F52BA; margin-top: 0.3rem;">Stay Rate: R${s.subtotal.toLocaleString()}</div>
                 </div>`;
@@ -5552,12 +5552,24 @@
 
             const depAmount = hasExistingPartialPayment ? dbBalance : calcDeposit;
 
+            const computedQuoteNights = (() => {
+                if (dbMatch && Number(dbMatch.nights) > 0) return Number(dbMatch.nights);
+                if (cIn && cOut) {
+                    const dIn = parseLocalDate(cIn);
+                    const dOut = parseLocalDate(cOut);
+                    const diff = Math.round((dOut - dIn) / 86400000);
+                    if (diff > 0) return diff;
+                }
+                return 1;
+            })();
+
             activeQuotePay = {
                 ref: cleanPayRef,
                 room: room,
                 roomName: roomNames[room] || room,
                 checkIn: cIn,
                 checkOut: cOut,
+                nights: computedQuoteNights,
                 name: name,
                 totalAmount: total,
                 depositAmount: depAmount,
@@ -5838,8 +5850,12 @@
 
                 handler.openIframe();
             } else {
-                alert(`Paystack simulated success for R${activeQuotePay.chosenAmount.toLocaleString()}`);
-                closeQuotePayModal();
+                isQuotePaymentSubmitting = false;
+                if (qpBtn) {
+                    qpBtn.disabled = false;
+                    selectQuotePayOption(activeQuotePay.chosenType);
+                }
+                alert("⚠️ Payment gateway (Paystack) could not be loaded. Please disable any ad-blocker or refresh the page and try again.");
             }
         }
 

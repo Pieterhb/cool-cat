@@ -10,6 +10,19 @@ export async function onRequest(context) {
   const { request, next } = context;
   const url = new URL(request.url);
 
+  // 0. Block direct public access to backup files, dev scripts, templates, and raw data
+  const decodedPath = decodeURIComponent(url.pathname).toLowerCase();
+  if (
+    decodedPath.includes('_backup') ||
+    decodedPath === '/index backup.txt' ||
+    decodedPath === '/pseo_template.html' ||
+    decodedPath.endsWith('.py') ||
+    decodedPath.endsWith('.bat') ||
+    decodedPath.startsWith('/data/')
+  ) {
+    return new Response('Not Found', { status: 404 });
+  }
+
   // 1. Force Apex domain: 301 redirect www.cool-cat.co.za -> cool-cat.co.za
   if (url.hostname === 'www.cool-cat.co.za') {
     const target = new URL(request.url);
