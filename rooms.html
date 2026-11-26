@@ -120,37 +120,31 @@
             margin-bottom: 1rem;
         }
         .room-special-tag {
-            background: #FFFBEB;
-            border: 1.5px solid #FCD34D;
-            border-radius: 8px;
-            padding: 0.45rem 0.75rem;
+            background-color: var(--orange, #FF7F50);
+            color: #FFFFFF;
+            border-radius: 9999px;
+            padding: 0.55rem 1.2rem;
             margin-bottom: 0.9rem;
-            font-size: 0.92rem;
-            line-height: 1.4;
-            display: inline-block;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.1rem;
+            box-shadow: 0 4px 14px rgba(255, 127, 80, 0.35);
+            max-width: 100%;
+            box-sizing: border-box;
         }
-        .room-special-tag .special-title {
-            color: #B45309;
-            font-weight: 700;
-        }
-        .room-special-tag .special-price {
-            color: #D97706;
-            font-size: 1.15rem;
+        .room-special-tag .from-rate-line {
+            font-size: 1.08rem;
             font-weight: 800;
-            margin-left: 0.25rem;
+            color: #FFFFFF;
+            letter-spacing: 0.01em;
+            line-height: 1.3;
         }
-        .room-special-tag .special-unit {
-            font-size: 0.82rem;
-            color: #475569;
-        }
-        .room-special-tag .special-old {
-            color: #64748B;
-            font-size: 0.88rem;
-            margin-left: 0.45rem;
-        }
-        .room-special-tag .special-old s {
-            color: #DC2626;
-            font-weight: 700;
+        .room-special-tag .from-rate-note {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.3;
         }
         .room-features {
             list-style: none;
@@ -217,9 +211,8 @@
                         <h2>King Arthur Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price" id="special-price-king">R990</span> <span class="special-unit">/ night</span>
-                            <span class="special-old">(was <s>R1 790</s>)</span>
+                            <span class="from-rate-line">From <span id="special-price-king">R808</span> / night</span>
+                            <span class="from-rate-note">Lowest <span class="rate-year-label">2026</span> rate &middot; varies by dates</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Single Room - For up to 2 Guests)</p>
                         <ul class="room-features">
@@ -245,9 +238,8 @@
                         <h2>Santori Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price" id="special-price-santori">R1 880</span> <span class="special-unit">/ night</span>
-                            <span class="special-old">(was <s>R3 400</s>)</span>
+                            <span class="from-rate-line">From <span id="special-price-santori">R723</span> / night</span>
+                            <span class="from-rate-note">Lowest <span class="rate-year-label">2026</span> rate &middot; varies by dates</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Two Private Separate Bedrooms - For up to 4 Guests)</p>
                         <ul class="room-features">
@@ -272,9 +264,8 @@
                         <h2>Cool Cat Deluxe Suite</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price" id="special-price-deluxe">R990</span> <span class="special-unit">/ night</span>
-                            <span class="special-old">(was <s>R1 790</s>)</span>
+                            <span class="from-rate-line">From <span id="special-price-deluxe">R1 148</span> / night</span>
+                            <span class="from-rate-note">Lowest <span class="rate-year-label">2026</span> rate &middot; varies by dates</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Private Deluxe Suite - For up to 2 Guests)</p>
                         <ul class="room-features">
@@ -307,9 +298,8 @@
                         <h2>THREE ROOMS (King Arthur Suite &amp; Santori Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price" id="special-price-three-rooms">R2 870</span> <span class="special-unit">/ night</span>
-                            <span class="special-old">(was <s>R5 190</s>)</span>
+                            <span class="from-rate-line">From <span id="special-price-three-rooms">R1 531</span> / night</span>
+                            <span class="from-rate-note">Lowest <span class="rate-year-label">2026</span> rate &middot; varies by dates</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Three Bedrooms / Two Suites - For up to 6 Guests)</p>
                         <ul class="room-features">
@@ -339,9 +329,8 @@
                         <h2>FOUR ROOMS (King Arthur Suite, Santori Suite, Deluxe Suite)</h2>
                         <div class="room-price" style="color: #333; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ BEST VALUE RATES AVAILABLE</div>
                         <div class="room-special-tag">
-                            <span class="special-title">🔥 GRAND OPENING SPECIAL (16 Nov – 31 Dec):</span>
-                            <span class="special-price" id="special-price-four-rooms">R3 860</span> <span class="special-unit">/ night</span>
-                            <span class="special-old">(was <s>R6 980</s>)</span>
+                            <span class="from-rate-line">From <span id="special-price-four-rooms">R2 679</span> / night</span>
+                            <span class="from-rate-note">Lowest <span class="rate-year-label">2026</span> rate &middot; varies by dates</span>
                         </div>
                         <p style="margin-bottom: 1rem;">(Entire Property - 4 Bedrooms for up to 8 Guests)</p>
                         <ul class="room-features">
@@ -622,34 +611,63 @@
         // DYNAMIC RATES UPDATER (Synchronized with Admin Rates & Specials)
         // ==========================================
         function getSmartLowestRate(prefix, lowKey, cfg, todayStr) {
-            var lowRate = Number(cfg[lowKey]);
-            if (isNaN(lowRate) || lowRate <= 0) {
-                if (prefix === 'king') lowRate = 1790;
-                else if (prefix === 'santori') lowRate = 3400;
-                else if (prefix === 'mykonos') lowRate = 550;
-                else if (prefix === 'deluxe') lowRate = 1790;
+            var currentYear = new Date().getFullYear();
+            var keys = [
+                'low_' + prefix + '_wd', 'low_' + prefix + '_we',
+                prefix + '_wd', prefix + '_we',
+                'peak_' + prefix + '_wd', 'peak_' + prefix + '_we',
+                'festive_' + prefix + '_wd', 'festive_' + prefix + '_we'
+            ];
+
+            var candidates = [];
+            for (var i = 0; i < keys.length; i++) {
+                var val = Number(cfg[keys[i]]);
+                if (!isNaN(val) && val > 0) {
+                    candidates.push(val);
+                }
             }
 
+            var minSeasonal = candidates.length > 0 ? Math.min.apply(null, candidates) : 0;
+            if (!minSeasonal || minSeasonal <= 0) {
+                if (prefix === 'king') minSeasonal = 808;
+                else if (prefix === 'santori') minSeasonal = 723;
+                else if (prefix === 'mykonos') minSeasonal = 723;
+                else if (prefix === 'deluxe') minSeasonal = 1148;
+            }
+
+            // Apply future-year markup if current calendar year is 2027+
+            if (currentYear >= 2027) {
+                var markupPct = (cfg.nextYearMarkupPct !== undefined && !isNaN(Number(cfg.nextYearMarkupPct)))
+                    ? Number(cfg.nextYearMarkupPct)
+                    : 10;
+                if (markupPct > 0) {
+                    minSeasonal = Math.round(minSeasonal * (1 + markupPct / 100));
+                }
+            }
+
+            // Also include any active special/promo whose window falls in the current year
             var isSpecialActive = (cfg['special_' + prefix + '_active'] === true || cfg['special_' + prefix + '_active'] === 'true');
             var spStart = String(cfg['special_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
             var spEnd = String(cfg['special_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
             var spRate = Number(cfg['special_' + prefix + '_rate']);
+            var yearStart = currentYear + '-01-01';
+            var yearEnd = currentYear + '-12-31';
 
-            var activePromo = false;
+            var promoInCurrentYear = false;
             if (isSpecialActive && spRate > 0) {
                 if (spStart && spEnd) {
-                    if (todayStr >= spStart && todayStr <= spEnd) {
-                        activePromo = true;
+                    if (spStart <= yearEnd && spEnd >= yearStart) {
+                        promoInCurrentYear = true;
                     }
                 } else {
-                    activePromo = true;
+                    promoInCurrentYear = true;
                 }
             }
 
-            if (activePromo && spRate < lowRate) {
+            if (promoInCurrentYear && spRate < minSeasonal) {
                 return { rate: spRate, isPromo: true };
             }
-            return { rate: lowRate, isPromo: false };
+            return { rate: minSeasonal, isPromo: false };
         }
 
         function formatSpecialZar(amount) {
@@ -666,14 +684,20 @@
             var d = String(today.getDate()).padStart(2, '0');
             var todayStr = y + '-' + m + '-' + d;
 
-            // Dynamic rates from Admin settings (Active specials or current weekday rates)
-            var kingSpecial = getSmartLowestRate('king', 'king_wd', cfg, todayStr);
-            var santoriSpecial = getSmartLowestRate('santori', 'santori_wd', cfg, todayStr);
-            var deluxeSpecial = getSmartLowestRate('deluxe', 'deluxe_wd', cfg, todayStr);
+            // Keep year label in sync with the current calendar year
+            var yearLabels = document.querySelectorAll('.rate-year-label');
+            for (var i = 0; i < yearLabels.length; i++) {
+                yearLabels[i].textContent = String(y);
+            }
 
-            var kingRate = (kingSpecial && kingSpecial.rate > 0) ? kingSpecial.rate : (Number(cfg.king_wd) || 990);
-            var santoriRate = (santoriSpecial && santoriSpecial.rate > 0) ? santoriSpecial.rate : (Number(cfg.santori_wd) || 1880);
-            var deluxeRate = (deluxeSpecial && deluxeSpecial.rate > 0) ? deluxeSpecial.rate : (Number(cfg.deluxe_wd) || 990);
+            // Dynamic lowest annual rates from Admin settings
+            var kingSpecial = getSmartLowestRate('king', 'low_king_wd', cfg, todayStr);
+            var santoriSpecial = getSmartLowestRate('santori', 'low_santori_wd', cfg, todayStr);
+            var deluxeSpecial = getSmartLowestRate('deluxe', 'low_deluxe_wd', cfg, todayStr);
+
+            var kingRate = (kingSpecial && kingSpecial.rate > 0) ? kingSpecial.rate : (Number(cfg.low_king_wd) || Number(cfg.king_wd) || 808);
+            var santoriRate = (santoriSpecial && santoriSpecial.rate > 0) ? santoriSpecial.rate : (Number(cfg.low_santori_wd) || Number(cfg.santori_wd) || 723);
+            var deluxeRate = (deluxeSpecial && deluxeSpecial.rate > 0) ? deluxeSpecial.rate : (Number(cfg.low_deluxe_wd) || Number(cfg.deluxe_wd) || 1148);
 
             var elKing = document.getElementById('special-price-king');
             if (elKing && kingRate > 0) elKing.textContent = formatSpecialZar(kingRate);
