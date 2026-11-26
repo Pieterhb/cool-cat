@@ -311,6 +311,8 @@ export async function onRequestPost(context) {
             createdAt: new Date().toISOString()
         };
 
+        const currentTxRef = txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef;
+
         // 3. Save to Cloudflare KV storage if present
         if (env && env.COOLCAT_KV) {
             // Determine roomName and primary room for consolidated display
@@ -322,7 +324,6 @@ export async function onRequestPost(context) {
                     ? staysList[0].roomName
                     : `${staysList.length} Reserved Stays`;
 
-            const currentTxRef = txRefToVerify || (paystackData ? paystackData.reference : rawRef) || bookingRef;
             const parentRecord = {
                 id: bookingRef,
                 parentBookingId: null,
