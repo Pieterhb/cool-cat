@@ -1,7 +1,7 @@
 // Cloudflare Pages Function: /api/bookings
 // Handles GET (retrieve active bookings), POST (create/block booking), DELETE (cancel booking), and PUT (update status)
 
-// Helper: Verify Admin / Marketer Authorization via Cloudflare Environment Variables
+// Helper: Verify Owner Authorization via Cloudflare Environment Variables
 function verifyAuth(request, env) {
     const authHeader = request.headers.get('Authorization') || request.headers.get('X-Admin-Key') || '';
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
@@ -10,11 +10,7 @@ function verifyAuth(request, env) {
     const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '';
     const isOwner = Boolean(expectedOwnerKey && token === expectedOwnerKey);
 
-    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : '';
-    const isMarketer = Boolean(expectedMarketerKey && token === expectedMarketerKey);
-
     if (isOwner) return { isAuthorized: true, role: 'owner' };
-    if (isMarketer) return { isAuthorized: true, role: 'marketer' };
     return { isAuthorized: false, role: null };
 }
 

@@ -1669,7 +1669,6 @@
                     <label for="adminAccountSelect">Authorized Account</label>
                     <select id="adminAccountSelect" class="login-input" required onchange="handleAccountChange(this.value)">
                         <option value="owner">👑 Owner / Host (Pieter &amp; Corrie)</option>
-                        <option value="marketer">📈 Marketing Partner</option>
                     </select>
                 </div>
 
@@ -3610,12 +3609,8 @@
                 });
                 if (testRes.ok) {
                     const testData = await testRes.json();
-                    if (testData && testData.authenticated === true) {
-                        if (account === 'owner' && testData.role === 'owner') {
-                            isAuthorized = true;
-                        } else if (account === 'marketer' && (testData.role === 'marketer' || testData.role === 'owner')) {
-                            isAuthorized = true;
-                        }
+                    if (testData && testData.authenticated === true && testData.role === 'owner') {
+                        isAuthorized = true;
                     }
                 }
             } catch(e) {
