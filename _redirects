@@ -44,3 +44,12 @@
 # 5. Cloudflare Email Protection Crawler 404 Prevention
 /cdn-cgi/l/email-protection /                                     301
 /cdn-cgi/*                /                                       301
+
+# 6. Block direct public access to backup & template files
+/admin_backup.html        /404.html                               404
+/book_backup.html         /404.html                               404
+/entertainment_backup.html /404.html                              404
+/guide_backup.html        /404.html                               404
+/rooms_backup.html        /404.html                               404
+/pseo_template.html       /404.html                               404
+/index%20backup.txt       /404.html                               404
