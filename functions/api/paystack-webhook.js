@@ -84,55 +84,58 @@ export async function onRequestPost(context) {
             const rawRef = data.reference || '';
             const metadata = data.metadata || {};
 
+            const getMeta = (key) => {
+                if (metadata[key] !== undefined && metadata[key] !== null && String(metadata[key]).trim() !== '') {
+                    return metadata[key];
+                }
+                if (Array.isArray(metadata.custom_fields)) {
+                    const cf = metadata.custom_fields.find(f => f.variable_name === key);
+                    if (cf && cf.value !== undefined && cf.value !== null && String(cf.value).trim() !== '') {
+                        return cf.value;
+                    }
+                }
+                return '';
+            };
+
             // Extract booking reference from top-level metadata, custom_fields, or payment reference
-            let bookingRefMeta = metadata.booking_ref || '';
-            if (!bookingRefMeta && Array.isArray(metadata.custom_fields)) {
-                const cf = metadata.custom_fields.find(f => f.variable_name === 'booking_ref');
-                if (cf && cf.value) bookingRefMeta = cf.value;
-            }
+            let bookingRefMeta = getMeta('booking_ref');
             if (!bookingRefMeta && String(rawRef).startsWith('PAY_')) {
                 bookingRefMeta = String(rawRef).replace(/^PAY_/, '').replace(/_\d{3,}$/, '');
             }
 
             const cleanBookingRef = (bookingRefMeta || String(rawRef).replace(/_\d{5,}$/, '')).trim();
-            const amountInZar = Number(data.amount) / 100;
-            const customerEmail = data.customer ? data.customer.email : (metadata.email || '');
+            const amountInZar = Math.round(Number(data.amount) / 100);
+            const customerEmail = data.customer ? data.customer.email : (getMeta('email') || '');
 
-            let guestName = metadata.guest_name || '';
-            if (!guestName && Array.isArray(metadata.custom_fields)) {
-                const cf = metadata.custom_fields.find(f => f.variable_name === 'guest_name');
-                if (cf && cf.value) guestName = cf.value;
-            }
-            if (!guestName) guestName = 'Guest';
+            const guestName = String(getMeta('guest_name') || '').trim() || 'Guest';
+            const phone = String(getMeta('phone') || '').trim();
 
-            let phone = metadata.phone || '';
-            if (!phone && Array.isArray(metadata.custom_fields)) {
-                const cf = metadata.custom_fields.find(f => f.variable_name === 'phone');
-                if (cf && cf.value) phone = cf.value;
-            }
-
-            const checkIn = metadata.check_in || '';
-            const checkOut = metadata.check_out || '';
+            const checkIn = String(getMeta('check_in') || '').trim();
+            const checkOut = String(getMeta('check_out') || '').trim();
             let staysList = [];
-            if (metadata.stays_json) {
+            const rawStaysJson = getMeta('stays_json');
+            if (rawStaysJson) {
                 try {
-                    staysList = typeof metadata.stays_json === 'string' ? JSON.parse(metadata.stays_json) : metadata.stays_json;
+                    staysList = typeof rawStaysJson === 'string' ? JSON.parse(rawStaysJson) : rawStaysJson;
                 } catch(e) {}
             }
 
-            // Derive room info from metadata (roomId was previously undefined - fixed)
-            const metaRoomId = metadata.room_id || (staysList.length === 1 ? staysList[0].roomId : 'multiple');
+            // Derive room info from metadata without falsely defaulting to All Rooms
+            const metaRoomId = String(getMeta('room_id') || '').trim() || (staysList.length === 1 ? staysList[0].roomId : (staysList.length > 1 ? 'multiple' : ''));
             const isAllRooms = (metaRoomId === 'all') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'all'));
-            const parentRoomId = isAllRooms ? 'all' : (staysList.length === 1 ? staysList[0].roomId : (metaRoomId || 'multiple'));
+            const isThreeRooms = (metaRoomId === 'three-rooms') || (Array.isArray(staysList) && staysList.some(s => s.roomId === 'three-rooms'));
+            const parentRoomId = isAllRooms ? 'all' : (isThreeRooms ? 'three-rooms' : (staysList.length === 1 ? staysList[0].roomId : (metaRoomId || 'multiple')));
             const defaultDisplayRoomName = isAllRooms
-                ? 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'
-                : (staysList.length === 1 ? (staysList[0].roomName || 'Single Room') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'));
-            const finalRoomName = metadata.room_name || defaultDisplayRoomName;
-            // Derive amounts and status from payment data (totalAmount/balanceDue/status were undefined - fixed)
-            const totalAmountMeta = Number(metadata.total_amount || 0);
+                ? 'All 4 Rooms (Entire Property)'
+                : isThreeRooms
+                ? 'Three Rooms (King Arthur Suite & Santori Suite)'
+                : (staysList.length === 1 ? (staysList[0].roomName || 'Accommodation Stay') : (staysList.length > 1 ? `${staysList.length} Reserved Stays` : 'Cool-Cat Accommodation'));
+            const finalRoomName = String(getMeta('room_name') || '').trim() || defaultDisplayRoomName;
+
+            const totalAmountMeta = Number(getMeta('total_amount') || 0);
             const amountPaidMeta = amountInZar;
-            const balanceDueMeta = Math.max(0, totalAmountMeta - amountPaidMeta);
-            let bookingStatus = 'not_paid';
+            const balanceDueMeta = totalAmountMeta > 0 ? Math.max(0, totalAmountMeta - amountPaidMeta) : 0;
+            let bookingStatus = 'deposit_paid';
             if (totalAmountMeta > 0 && amountPaidMeta >= totalAmountMeta) {
                 bookingStatus = 'fully_paid';
             } else if (totalAmountMeta > 0 && amountPaidMeta > 0) {
@@ -140,6 +143,9 @@ export async function onRequestPost(context) {
             }
 
             console.log(`Paystack Webhook Success: Ref ${cleanBookingRef} (tx: ${rawRef}) | R${amountInZar} | Customer: ${customerEmail}`);
+
+            // Allow browser /api/verify-payment (which has complete form data) 3.5s to complete first & claim the email lock
+            await new Promise(resolve => setTimeout(resolve, 3500));
 
             const calculatedNights = (staysList && staysList.length > 0)
                 ? staysList.reduce((sum, s) => sum + (Number(s.nights) || 0), 0)
@@ -180,61 +186,93 @@ export async function onRequestPost(context) {
                 };
 
                 const foundIndex = existing.findIndex(b => b.id === cleanBookingRef || b.id === rawRef || b.paystackRef === rawRef);
+                let skipCalendarRebuild = false;
                 if (foundIndex >= 0) {
                     const ex = existing[foundIndex];
                     const existingRefs = Array.isArray(ex.processedPaystackRefs) ? ex.processedPaystackRefs : (ex.paystackRef ? [ex.paystackRef] : []);
                     const alreadyProcessed = existingRefs.includes(rawRef);
 
-                    const newAmountPaid = alreadyProcessed ? (Number(ex.amountPaid) || amountInZar) : ((Number(ex.amountPaid) || 0) + amountInZar);
-                    const tot = Number(ex.totalAmount) || totalAmountMeta || amountInZar;
-                    const newBal = Math.max(0, tot - newAmountPaid);
-                    const newStat = (newBal === 0 && newAmountPaid > 0) ? 'fully_paid' : (newAmountPaid > 0 ? 'deposit_paid' : 'not_paid');
-                    const newPaystackAmount = alreadyProcessed ? (Number(ex.paystackAmount) || amountInZar) : ((Number(ex.paystackAmount) || 0) + amountInZar);
-                    const updatedRefs = alreadyProcessed ? existingRefs : [...existingRefs, rawRef];
+                    if (alreadyProcessed) {
+                        // verify-payment.js already saved this transaction with full details; preserve it untouched
+                        skipCalendarRebuild = true;
+                    } else {
+                        const newAmountPaid = (Number(ex.amountPaid) || 0) + amountInZar;
+                        const tot = Number(ex.totalAmount) || totalAmountMeta || amountInZar;
+                        const newBal = Math.max(0, tot - newAmountPaid);
+                        const newStat = (tot > 0 && newBal === 0 && newAmountPaid > 0) ? 'fully_paid' : (newAmountPaid > 0 ? 'deposit_paid' : 'not_paid');
+                        const newPaystackAmount = (Number(ex.paystackAmount) || 0) + amountInZar;
+                        const updatedRefs = [...existingRefs, rawRef];
 
-                    existing[foundIndex] = {
-                        ...ex,
-                        totalAmount: tot,
-                        amountPaid: newAmountPaid,
-                        balanceDue: newBal,
-                        paystackAmount: newPaystackAmount,
-                        status: newStat,
-                        paymentMethod: 'card',
-                        paystackRef: rawRef,
-                        processedPaystackRefs: updatedRefs,
-                        isRecordedPayment: true,
-                        isPaidPaystack: true,
-                        guestEmail: ex.guestEmail || customerEmail,
-                        guestPhone: ex.guestPhone || phone,
-                        checkIn: ex.checkIn || checkIn,
-                        checkOut: ex.checkOut || checkOut,
-                        roomId: ex.roomId || parentRoomId,
-                        roomName: ex.roomName || finalRoomName,
-                        createdAt: ex.createdAt || parentRecord.createdAt
-                    };
+                        existing[foundIndex] = {
+                            ...ex,
+                            totalAmount: tot,
+                            amountPaid: newAmountPaid,
+                            balanceDue: newBal,
+                            paystackAmount: newPaystackAmount,
+                            status: newStat,
+                            paymentMethod: 'card',
+                            paystackRef: rawRef,
+                            processedPaystackRefs: updatedRefs,
+                            isRecordedPayment: true,
+                            isPaidPaystack: true,
+                            guestName: (ex.guestName && ex.guestName !== 'Guest' && ex.guestName !== 'Valued Guest') ? ex.guestName : guestName,
+                            guestEmail: ex.guestEmail || customerEmail,
+                            guestPhone: ex.guestPhone || phone,
+                            checkIn: ex.checkIn || checkIn,
+                            checkOut: ex.checkOut || checkOut,
+                            roomId: ex.roomId || parentRoomId,
+                            roomName: ex.roomName || finalRoomName,
+                            createdAt: ex.createdAt || parentRecord.createdAt
+                        };
+                    }
                 } else {
                     existing.push(parentRecord);
                 }
 
-                // Remove existing calendar blocks for this booking ref
-                existing = existing.filter(b => b.parentBookingId !== cleanBookingRef && b.parentBookingId !== rawRef);
+                if (!skipCalendarRebuild) {
+                    // Remove existing calendar blocks for this booking ref
+                    existing = existing.filter(b => b.parentBookingId !== cleanBookingRef && b.parentBookingId !== rawRef);
 
-                // Generate fresh calendar block records
-                if (staysList && Array.isArray(staysList) && staysList.length > 0) {
-                    staysList.forEach(s => {
-                        const stayRooms = s.roomId === 'all'
-                            ? ['king-arthur', 'santori', 'deluxe-suite']
-                            : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori'] : [s.roomId]);
-                        stayRooms.forEach(rid => {
+                    // Generate fresh calendar block records
+                    if (staysList && Array.isArray(staysList) && staysList.length > 0) {
+                        staysList.forEach(s => {
+                            const stayRooms = s.roomId === 'all'
+                                ? ['king-arthur', 'santori', 'deluxe-suite']
+                                : (s.roomId === 'three-rooms' ? ['king-arthur', 'santori'] : [s.roomId]);
+                            stayRooms.forEach(rid => {
+                                existing.push({
+                                    id: `${cleanBookingRef}_${rid}_${s.checkInStr || s.checkIn}`,
+                                    parentBookingId: cleanBookingRef,
+                                    isCalendarBlock: true,
+                                    roomId: rid,
+                                    roomName: s.roomName || rid,
+                                    checkIn: s.checkInStr || s.checkIn,
+                                    checkOut: s.checkOutStr || s.checkOut,
+                                    nights: s.nights || 1,
+                                    guestName: guestName,
+                                    guestEmail: customerEmail,
+                                    guestPhone: phone,
+                                    totalAmount: 0,
+                                    amountPaid: 0,
+                                    balanceDue: 0,
+                                    status: bookingStatus,
+                                    createdAt: new Date().toISOString()
+                                });
+                            });
+                        });
+                    } else if (isAllRooms || isThreeRooms) {
+                        // Single All Rooms or Three Rooms booking without explicit stays array
+                        const pkgRooms = isAllRooms ? ['king-arthur', 'santori', 'deluxe-suite'] : ['king-arthur', 'santori'];
+                        pkgRooms.forEach(rid => {
                             existing.push({
-                                id: `${cleanBookingRef}_${rid}_${s.checkInStr || s.checkIn}`,
+                                id: `${cleanBookingRef}_${rid}_${checkIn}`,
                                 parentBookingId: cleanBookingRef,
                                 isCalendarBlock: true,
                                 roomId: rid,
-                                roomName: s.roomName || rid,
-                                checkIn: s.checkInStr || s.checkIn,
-                                checkOut: s.checkOutStr || s.checkOut,
-                                nights: s.nights || 1,
+                                roomName: finalRoomName,
+                                checkIn: checkIn,
+                                checkOut: checkOut,
+                                nights: calculatedNights,
                                 guestName: guestName,
                                 guestEmail: customerEmail,
                                 guestPhone: phone,
@@ -245,15 +283,13 @@ export async function onRequestPost(context) {
                                 createdAt: new Date().toISOString()
                             });
                         });
-                    });
-                } else if (isAllRooms) {
-                    // Single All Rooms booking without explicit stays array: block all 4 rooms
-                    ['king-arthur', 'santori', 'deluxe-suite'].forEach(rid => {
+                    } else if (parentRoomId && parentRoomId !== 'multiple') {
+                        // Single room booking: ensure calendar block exists
                         existing.push({
-                            id: `${cleanBookingRef}_${rid}_${checkIn}`,
+                            id: `${cleanBookingRef}_${parentRoomId}_${checkIn}`,
                             parentBookingId: cleanBookingRef,
                             isCalendarBlock: true,
-                            roomId: rid,
+                            roomId: parentRoomId,
                             roomName: finalRoomName,
                             checkIn: checkIn,
                             checkOut: checkOut,
@@ -267,43 +303,45 @@ export async function onRequestPost(context) {
                             status: bookingStatus,
                             createdAt: new Date().toISOString()
                         });
-                    });
-                } else if (parentRoomId && parentRoomId !== 'multiple') {
-                    // Single room booking: ensure calendar block exists
-                    existing.push({
-                        id: `${cleanBookingRef}_${parentRoomId}_${checkIn}`,
-                        parentBookingId: cleanBookingRef,
-                        isCalendarBlock: true,
-                        roomId: parentRoomId,
-                        roomName: finalRoomName,
-                        checkIn: checkIn,
-                        checkOut: checkOut,
-                        nights: calculatedNights,
-                        guestName: guestName,
-                        guestEmail: customerEmail,
-                        guestPhone: phone,
-                        totalAmount: 0,
-                        amountPaid: 0,
-                        balanceDue: 0,
-                        status: bookingStatus,
-                        createdAt: new Date().toISOString()
-                    });
+                    }
                 }
 
-                // Webhook Email Dispatch Fallback: send confirmation if verify-payment has not already dispatched
+                // Webhook Email Dispatch Fallback: send ONLY if verify-payment has not already claimed the tx lock
+                const txLockKey = `email_lock:${cleanBookingRef}:${rawRef}`;
+                let lockAlreadySet = false;
+                try {
+                    const existingLock = await env.COOLCAT_KV.get(txLockKey);
+                    if (existingLock) lockAlreadySet = true;
+                } catch (e) {}
+
                 const parentIdxForEmail = existing.findIndex(b => b.id === cleanBookingRef || (b.isParentBooking && b.id === cleanBookingRef));
-                if (parentIdxForEmail >= 0 && !existing[parentIdxForEmail].emailsDispatched) {
+                const parentForEmail = parentIdxForEmail >= 0 ? existing[parentIdxForEmail] : null;
+                const alreadyDispatchedForTx = parentForEmail && (
+                    (Array.isArray(parentForEmail.dispatchedTxRefs) && parentForEmail.dispatchedTxRefs.includes(rawRef)) ||
+                    (parentForEmail.emailsDispatched && skipCalendarRebuild)
+                );
+
+                let kvChanged = !skipCalendarRebuild;
+                if (parentForEmail && !lockAlreadySet && !alreadyDispatchedForTx) {
                     try {
-                        const emailRes = await dispatchBookingEmails(existing[parentIdxForEmail], env);
+                        await env.COOLCAT_KV.put(txLockKey, new Date().toISOString(), { expirationTtl: 604800 });
+                        const emailRes = await dispatchBookingEmails(parentForEmail, env);
                         if (emailRes && emailRes.sent) {
+                            const prevTxRefs = Array.isArray(parentForEmail.dispatchedTxRefs) ? parentForEmail.dispatchedTxRefs : [];
                             existing[parentIdxForEmail].emailsDispatched = true;
+                            if (!prevTxRefs.includes(rawRef)) {
+                                existing[parentIdxForEmail].dispatchedTxRefs = [...prevTxRefs, rawRef];
+                            }
+                            kvChanged = true;
                         }
                     } catch (e) {
                         console.error("Webhook email fallback exception:", e);
                     }
                 }
 
-                await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
+                if (kvChanged) {
+                    await env.COOLCAT_KV.put('bookings_list', JSON.stringify(existing));
+                }
 
                 const numMatch = String(cleanBookingRef).match(/(?:ALL|KIN|SAN|MYK|DEL|MAN|CC|TRI|THR|CCH)-(\d{5})/i) || String(cleanBookingRef).match(/(\d{5})/);
                 if (numMatch) {
@@ -388,9 +426,9 @@ async function dispatchBookingEmails(booking, env) {
                 <strong>Reserved Stays:</strong>
                 ${staysRowsHtml}
             </div>
-            <p style="margin: 4px 0;">💰 <strong>Total Stay:</strong> R${Number(booking.totalAmount).toLocaleString()}</p>
+            ${Number(booking.totalAmount) > 0 ? `<p style="margin: 4px 0;">💰 <strong>Total Stay:</strong> R${Number(booking.totalAmount).toLocaleString()}</p>` : ''}
             <p style="margin: 4px 0; color: #166534;">💳 <strong>Amount Paid:</strong> R${Number(booking.amountPaid).toLocaleString()}</p>
-            ${booking.balanceDue > 0 ? `<p style="margin: 4px 0; color: #991b1b; font-weight: bold;">⏳ Balance Due at Check-In: R${Number(booking.balanceDue).toLocaleString()}</p>` : `<p style="margin: 4px 0; color: #166534;">🎉 100% Fully Paid</p>`}
+            ${Number(booking.balanceDue) > 0 ? `<p style="margin: 4px 0; color: #991b1b; font-weight: bold;">⏳ Balance Due at Check-In: R${Number(booking.balanceDue).toLocaleString()}</p>` : (Number(booking.totalAmount) > 0 ? `<p style="margin: 4px 0; color: #166534;">🎉 100% Fully Paid</p>` : '')}
           </div>
           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin: 0 0 10px; color: #166534; font-size: 16px;">🏠 Check-In & Access Details:</h3>

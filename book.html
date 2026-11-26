@@ -4507,7 +4507,7 @@
             const isThreeRooms = selectedStays.some(s => s.roomId === 'three-rooms');
             const primaryRoomId = isAllRooms ? 'all' : isThreeRooms ? 'three-rooms' : (isSingleStay ? selectedStays[0].roomId : 'multiple');
             const primaryRoomName = isAllRooms
-                ? 'All Rooms (Entire Property - 3 Suites / 4 Bedrooms)'
+                ? 'All 4 Rooms (Entire Property)'
                 : isThreeRooms
                 ? 'Three Rooms (King Arthur Suite & Santori Suite)'
                 : (isSingleStay ? selectedStays[0].roomName : `${selectedStays.length} Reserved Stays`);

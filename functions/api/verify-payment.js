@@ -442,17 +442,38 @@ export async function onRequestPost(context) {
             finalBookingRecord = confirmedBooking;
         }
 
-        // 4. Dispatch Automated Emails (Guest Confirmation & Owner Alert)
-        const emailResults = await dispatchBookingEmails(finalBookingRecord, env);
-        if (emailResults && emailResults.sent && env && env.COOLCAT_KV) {
+        // 4. Dispatch Automated Emails (Guest Confirmation & Owner Alert) with per-tx deduplication lock
+        const txLockKey = `email_lock:${finalBookingRecord.id}:${currentTxRef}`;
+        let alreadyEmailed = Boolean(finalBookingRecord.emailsDispatched && Array.isArray(finalBookingRecord.dispatchedTxRefs) && finalBookingRecord.dispatchedTxRefs.includes(currentTxRef));
+        if (!alreadyEmailed && env && env.COOLCAT_KV) {
             try {
-                let latestList = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
-                const idx = latestList.findIndex(b => b.id === finalBookingRecord.id || (b.isParentBooking && b.id === finalBookingRecord.id));
-                if (idx >= 0) {
-                    latestList[idx].emailsDispatched = true;
-                    await env.COOLCAT_KV.put('bookings_list', JSON.stringify(latestList));
-                }
+                const lockVal = await env.COOLCAT_KV.get(txLockKey);
+                if (lockVal) alreadyEmailed = true;
             } catch (e) {}
+        }
+
+        let emailResults = { sent: false, skipped: true, note: 'Emails already dispatched for this transaction' };
+        if (!alreadyEmailed) {
+            if (env && env.COOLCAT_KV) {
+                try {
+                    await env.COOLCAT_KV.put(txLockKey, new Date().toISOString(), { expirationTtl: 604800 });
+                } catch (e) {}
+            }
+            emailResults = await dispatchBookingEmails(finalBookingRecord, env);
+            if (emailResults && emailResults.sent && env && env.COOLCAT_KV) {
+                try {
+                    let latestList = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+                    const idx = latestList.findIndex(b => b.id === finalBookingRecord.id || (b.isParentBooking && b.id === finalBookingRecord.id));
+                    if (idx >= 0) {
+                        const prevTxRefs = Array.isArray(latestList[idx].dispatchedTxRefs) ? latestList[idx].dispatchedTxRefs : [];
+                        latestList[idx].emailsDispatched = true;
+                        if (!prevTxRefs.includes(currentTxRef)) {
+                            latestList[idx].dispatchedTxRefs = [...prevTxRefs, currentTxRef];
+                        }
+                        await env.COOLCAT_KV.put('bookings_list', JSON.stringify(latestList));
+                    }
+                } catch (e) {}
+            }
         }
 
         return new Response(JSON.stringify({
