@@ -93,9 +93,29 @@ export async function onRequestGet(context) {
 
         const nextSequence = await getNextSequenceNumber(env, allBookings);
 
+        let quoteSummary = null;
+        const quoteRefParam = new URL(request.url).searchParams.get('quoteRef');
+        if (quoteRefParam) {
+            const cleanQRef = quoteRefParam.replace(/^#/, '').trim();
+            const qMatch = allBookings.find(b => !b.isCalendarBlock && (b.id === cleanQRef || b.id === quoteRefParam));
+            if (qMatch) {
+                const qTotal = Number(qMatch.totalAmount || 0);
+                const qPaid = Number(qMatch.amountPaid || 0);
+                const qBal = qMatch.balanceDue !== undefined ? Number(qMatch.balanceDue) : Math.max(0, qTotal - qPaid);
+                quoteSummary = {
+                    id: qMatch.id,
+                    totalAmount: qTotal,
+                    amountPaid: qPaid,
+                    balanceDue: qBal,
+                    status: qMatch.status || 'not_paid'
+                };
+            }
+        }
+
         return new Response(JSON.stringify({
             success: true,
             bookings: responseBookings,
+            quoteSummary: quoteSummary,
             nextSequence: nextSequence,
             authenticated: auth.isAuthorized,
             role: auth.role

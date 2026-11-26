@@ -5483,10 +5483,23 @@
 
             const cleanPayRef = formatRefId(payRef, room);
 
+            // Fetch server-side quote financial summary (works for public guests without exposing other bookings)
+            let serverQuoteSummary = null;
+            try {
+                const qRes = await fetch(`/api/bookings?quoteRef=${encodeURIComponent(cleanPayRef)}`);
+                if (qRes.ok) {
+                    const qData = await qRes.json();
+                    if (qData && qData.quoteSummary) {
+                        serverQuoteSummary = qData.quoteSummary;
+                    }
+                }
+            } catch (e) {}
+
             // Anti-Tampering Check: Cross-reference with authentic database bookings if loaded
             let dbMatch = null;
             if (Array.isArray(MOCK_BOOKINGS) && MOCK_BOOKINGS.length > 0) {
-                dbMatch = MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
+                dbMatch = MOCK_BOOKINGS.find(b => !b.isCalendarBlock && (b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef))
+                    || MOCK_BOOKINGS.find(b => b.id === cleanPayRef || b.id === payRef || formatRefId(b.id, b.roomId) === cleanPayRef);
                 if (dbMatch) {
                     if (Number(dbMatch.totalAmount) > 0) {
                         total = Number(dbMatch.totalAmount);
@@ -5496,6 +5509,9 @@
                     if (dbMatch.checkIn) cIn = dbMatch.checkIn;
                     if (dbMatch.checkOut) cOut = dbMatch.checkOut;
                 }
+            }
+            if (serverQuoteSummary && Number(serverQuoteSummary.totalAmount) > 0) {
+                total = Number(serverQuoteSummary.totalAmount);
             }
 
             // Calculate earliest check-in date across stays
@@ -5521,8 +5537,10 @@
             const is50PercentAllowed = (total > 1000 && daysUntilCheckIn > 7);
             const calcDeposit = is50PercentAllowed ? Math.round(total * 0.5) : total;
 
-            const dbPaid = Number(dbMatch?.amountPaid || 0);
-            const dbBalance = Number(dbMatch?.balanceDue !== undefined ? dbMatch.balanceDue : (total - dbPaid));
+            const dbPaid = Number(serverQuoteSummary ? serverQuoteSummary.amountPaid : (dbMatch?.amountPaid || 0));
+            const dbBalance = Number(serverQuoteSummary && serverQuoteSummary.balanceDue !== undefined
+                ? serverQuoteSummary.balanceDue
+                : (dbMatch?.balanceDue !== undefined ? dbMatch.balanceDue : (total - dbPaid)));
             const hasExistingPartialPayment = (dbPaid > 0 && dbBalance > 0 && dbBalance < total);
 
             const depAmount = hasExistingPartialPayment ? dbBalance : calcDeposit;
@@ -5723,48 +5741,50 @@
                             { display_name: "Payment Type", variable_name: "payment_type", value: activeQuotePay.chosenType }
                         ]
                     },
-                    callback: async function(response) {
-                        const total = activeQuotePay.totalAmount;
-                        const paid = activeQuotePay.chosenAmount;
-                        const bal = Math.max(0, total - paid);
-                        const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
+                    callback: function(response) {
+                        (async function() {
+                            const total = activeQuotePay.totalAmount;
+                            const paid = activeQuotePay.chosenAmount;
+                            const bal = Math.max(0, total - paid);
+                            const newStatus = (bal === 0) ? 'fully_paid' : 'deposit_paid';
 
-                        try {
-                            const res = await fetch('/api/verify-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    reference: activeQuotePay.ref,
-                                    paystackRef: (response && response.reference) ? response.reference : paystackRef,
-                                    guestName: activeQuotePay.name,
-                                    guestEmail: email,
-                                    guestPhone: phone,
-                                    roomId: activeQuotePay.room,
-                                    roomName: activeQuotePay.roomName,
-                                    checkIn: activeQuotePay.checkIn,
-                                    checkOut: activeQuotePay.checkOut,
-                                    nights: activeQuotePay.nights || 1,
-                                    totalNights: activeQuotePay.nights || 1,
-                                    totalAmount: total,
-                                    amountPaid: paid,
-                                    balanceDue: bal,
-                                    isQuotePayment: true
-                                })
-                            });
+                            try {
+                                const res = await fetch('/api/verify-payment', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        reference: activeQuotePay.ref,
+                                        paystackRef: (response && response.reference) ? response.reference : paystackRef,
+                                        guestName: activeQuotePay.name,
+                                        guestEmail: email,
+                                        guestPhone: phone,
+                                        roomId: activeQuotePay.room,
+                                        roomName: activeQuotePay.roomName,
+                                        checkIn: activeQuotePay.checkIn,
+                                        checkOut: activeQuotePay.checkOut,
+                                        nights: activeQuotePay.nights || 1,
+                                        totalNights: activeQuotePay.nights || 1,
+                                        totalAmount: total,
+                                        amountPaid: paid,
+                                        balanceDue: bal,
+                                        isQuotePayment: true
+                                    })
+                                });
 
-                            if (!res.ok) {
-                                const errData = await res.json().catch(() => ({}));
-                                throw new Error(errData.error || `Server verification failed with HTTP ${res.status}`);
+                                if (!res.ok) {
+                                    const errData = await res.json().catch(() => ({}));
+                                    throw new Error(errData.error || `Server verification failed with HTTP ${res.status}`);
+                                }
+
+                                closeQuotePayModal();
+                                alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
+                                window.location.href = '/book';
+                            } catch (err) {
+                                console.error("Payment sync error:", err);
+                                closeQuotePayModal();
+                                alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${activeQuotePay.ref}.`);
                             }
-
-                            closeQuotePayModal();
-                            alert(`🎉 Payment of R${paid.toLocaleString()} received successfully for booking #${activeQuotePay.ref}!\n\nYour confirmation receipt has been issued.`);
-                            window.location.href = '/book';
-                        } catch (err) {
-                            console.error("Payment sync error:", err);
-                            closeQuotePayModal();
-                            alert(`⚠️ Payment Verification Notice:\n\n${err.message || 'We could not verify the payment with the cloud server.'}\n\nIf your account was debited, please contact Michele (+27 72 889 4840) with reference #${activeQuotePay.ref}.`);
-                        }
+                        })();
                     },
                     onClose: function() {
                         isQuotePaymentSubmitting = false;
