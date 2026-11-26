@@ -67,46 +67,53 @@ export async function onRequestPost(context) {
         }
 
         const effectiveSecret = paystackSecret || null;
+        if (!effectiveSecret) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: "Paystack verification error: Server secret key (PAYSTACK_SECRET_KEY) is not configured."
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
+        if (!txRefToVerify) {
+            return new Response(JSON.stringify({
+                success: false,
+                error: "Paystack verification error: Missing transaction reference."
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
+        }
 
-        if (txRefToVerify && effectiveSecret) {
-            try {
-                const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(txRefToVerify)}`, {
-                    headers: {
-                        Authorization: `Bearer ${effectiveSecret}`
-                    }
+        try {
+            const res = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(txRefToVerify)}`, {
+                headers: {
+                    Authorization: `Bearer ${effectiveSecret}`
+                }
+            });
+            const data = await res.json();
+            if (data && data.status && data.data && data.data.status === 'success') {
+                paystackVerified = true;
+                paystackData = data.data;
+            } else {
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: `Paystack payment verification failed: ${data?.message || 'Transaction not verified'}`
+                }), {
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
                 });
-                const data = await res.json();
-                if (data && data.status && data.data && data.data.status === 'success') {
-                    paystackVerified = true;
-                    paystackData = data.data;
-                } else {
-                    // With live key, reject unverified transactions strictly
-                    if (isLiveSecretKey) {
-                        return new Response(JSON.stringify({
-                            success: false,
-                            error: `Paystack payment verification failed: ${data?.message || 'Transaction not verified'}`
-                        }), {
-                            status: 400,
-                            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-                        });
-                    }
-                    // In test mode or fallback, accept checkout with log notice
-                    paystackVerified = true;
-                    if (data) console.log("Paystack test verification notice:", data.message || data);
-                }
-            } catch (pErr) {
-                console.error("Paystack verification warning:", pErr);
-                if (isLiveSecretKey) {
-                    return new Response(JSON.stringify({
-                        success: false,
-                        error: `Unable to verify payment with Paystack gateway: ${pErr.message}`
-                    }), {
-                        status: 502,
-                        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-                    });
-                }
-                paystackVerified = true; // allow through in test mode on network error
             }
+        } catch (pErr) {
+            console.error("Paystack verification error:", pErr);
+            return new Response(JSON.stringify({
+                success: false,
+                error: `Unable to verify payment with Paystack gateway: ${pErr.message}`
+            }), {
+                status: 502,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
         }
 
         function formatPhoneNumber(input) {
@@ -233,6 +240,144 @@ export async function onRequestPost(context) {
             } else {
                 // Within 1-rand tolerance (e.g. 50-cent discount rounding): adopt actual gateway charged amount
                 numPaid = verifiedAmountZar;
+            }
+        }
+
+        // Server-Side Pricing & Overlap Safeguards for standard bookings
+        if (!payload.isQuotePayment && !payload.is_quote_payment) {
+            // Double-booking / overlap check
+            const expandRooms = (rId) => {
+                if (rId === 'all') return ['king-arthur', 'santori', 'deluxe-suite'];
+                if (rId === 'three-rooms') return ['king-arthur', 'santori'];
+                if (rId === 'mykonos') return ['santori'];
+                return [rId];
+            };
+            const hasOverlap = staysList.some(stay => {
+                const sIn = String(stay.checkInStr || stay.checkIn || '').split('T')[0];
+                const sOut = String(stay.checkOutStr || stay.checkOut || '').split('T')[0];
+                if (!sIn || !sOut) return false;
+                const reqRooms = expandRooms(stay.roomId);
+                return existing.some(b => {
+                    if (b.status === 'cancelled') return false;
+                    if (b.id === bookingRef || b.parentBookingId === bookingRef) return false;
+                    if (b.isParentBooking && Array.isArray(b.stays) && b.stays.length > 0) return false;
+                    const bIn = String(b.checkIn || '').split('T')[0];
+                    const bOut = String(b.checkOut || '').split('T')[0];
+                    if (!bIn || !bOut) return false;
+                    if (sIn < bOut && sOut > bIn) {
+                        const bRooms = expandRooms(b.roomId);
+                        return reqRooms.some(r => bRooms.includes(r));
+                    }
+                    return false;
+                });
+            });
+            if (hasOverlap) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: "Double-booking conflict: one or more selected rooms/dates were just booked. Please contact Michele (+27 72 889 4840) with your Paystack reference."
+                }), {
+                    status: 409,
+                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                });
+            }
+
+            // Server-side seasonal rate recalculation
+            if (siteConfig) {
+                const currentYear = new Date().getFullYear();
+                const prefixMap = { 'king-arthur': 'king', 'king': 'king', 'santori': 'santori', 'mykonos': 'santori', 'deluxe-suite': 'deluxe', 'deluxe': 'deluxe' };
+                const baseDefaults = { king: { wd: 950, we: 1200 }, santori: { wd: 850, we: 1100 }, deluxe: { wd: 1350, we: 1750 } };
+                const calcSingleRoomNight = (rId, dateObj) => {
+                    const prefix = prefixMap[rId] || rId;
+                    const y = dateObj.getFullYear();
+                    const m = dateObj.getMonth() + 1;
+                    const d = dateObj.getDate();
+                    const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const dow = dateObj.getDay();
+                    const isWeekend = (dow === 5 || dow === 6 || dow === 0);
+                    const dayType = isWeekend ? 'we' : 'wd';
+
+                    // Event surcharge
+                    const evActive = (siteConfig['event_' + prefix + '_active'] === true || siteConfig['event_' + prefix + '_active'] === 'true');
+                    const evStart = String(siteConfig['event_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+                    const evEnd = String(siteConfig['event_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+                    const evRate = Number(siteConfig['event_' + prefix + '_rate']);
+                    if (evActive && evStart && evEnd && dateStr >= evStart && dateStr <= evEnd && evRate > 0) return evRate;
+
+                    // Special promo
+                    const spActive = (siteConfig['special_' + prefix + '_active'] === true || siteConfig['special_' + prefix + '_active'] === 'true');
+                    const spStart = String(siteConfig['special_' + prefix + '_start'] || '').trim().replace(/\//g, '-');
+                    const spEnd = String(siteConfig['special_' + prefix + '_end'] || '').trim().replace(/\//g, '-');
+                    const spRate = Number(siteConfig['special_' + prefix + '_rate']);
+                    if (spActive && spStart && spEnd && dateStr >= spStart && dateStr <= spEnd && spRate > 0) return spRate;
+
+                    let tier = 'mid', mult = 1.0;
+                    if ((m === 12 && d >= 16) || (m === 1 && d <= 10)) { tier = 'festive'; mult = 1.80; }
+                    else if ((m === 12 && d >= 1 && d <= 15) || (m === 4 && d >= 3 && d <= 6)) { tier = 'peak'; mult = 1.35; }
+                    else if (m >= 5 && m <= 8) { tier = 'low'; mult = 0.85; }
+
+                    let rate = null;
+                    const tierKey = tier === 'mid' ? `${prefix}_${dayType}` : `${tier}_${prefix}_${dayType}`;
+                    if (siteConfig[tierKey] !== undefined && Number(siteConfig[tierKey]) > 0) {
+                        rate = Number(siteConfig[tierKey]);
+                    } else {
+                        const baseKey = `${prefix}_${dayType}`;
+                        const baseVal = (siteConfig[baseKey] !== undefined && Number(siteConfig[baseKey]) > 0)
+                            ? Number(siteConfig[baseKey])
+                            : (baseDefaults[prefix] ? baseDefaults[prefix][dayType] : 950);
+                        rate = baseVal * mult;
+                    }
+                    if (y > currentYear) {
+                        const markupPct = siteConfig.nextYearMarkupPct !== undefined ? Number(siteConfig.nextYearMarkupPct) : 10;
+                        if (markupPct > 0) rate = rate * (1 + markupPct / 100);
+                    }
+                    return Math.round(rate);
+                };
+
+                let serverExpectedTotal = 0;
+                staysList.forEach(stay => {
+                    const sInStr = String(stay.checkInStr || stay.checkIn || '').split('T')[0];
+                    const sOutStr = String(stay.checkOutStr || stay.checkOut || '').split('T')[0];
+                    if (!sInStr || !sOutStr) return;
+                    const isAll = stay.roomId === 'all';
+                    const isThree = stay.roomId === 'three-rooms';
+                    const pkgDisc = isAll ? (Number(siteConfig.pkg_discount_four) || 0) : (isThree ? (Number(siteConfig.pkg_discount_three) || 0) : 0);
+                    const roomsForStay = isAll ? ['king-arthur', 'santori', 'deluxe-suite'] : (isThree ? ['king-arthur', 'santori'] : [stay.roomId]);
+
+                    const [sy, sm, sd] = sInStr.split('-').map(Number);
+                    const [ey, em, ed] = sOutStr.split('-').map(Number);
+                    let cur = new Date(Date.UTC(sy, sm - 1, sd));
+                    const end = new Date(Date.UTC(ey, em - 1, ed));
+                    while (cur < end) {
+                        const dLocal = new Date(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate());
+                        const baseNight = roomsForStay.reduce((sum, r) => sum + calcSingleRoomNight(r, dLocal), 0);
+                        const netNight = pkgDisc > 0 ? Math.round(baseNight * (1 - pkgDisc / 100)) : baseNight;
+                        serverExpectedTotal += netNight;
+                        cur.setUTCDate(cur.getUTCDate() + 1);
+                    }
+                });
+
+                if (serverExpectedTotal > 0) {
+                    const minAllowedTotal = payload.referralCode ? Math.round(serverExpectedTotal * 0.80) : serverExpectedTotal;
+                    if (numTotal < (minAllowedTotal - 5)) {
+                        return new Response(JSON.stringify({
+                            success: false,
+                            error: `Price tampering detected: Expected minimum stay total R${minAllowedTotal.toLocaleString()}, but received R${numTotal.toLocaleString()}.`
+                        }), {
+                            status: 400,
+                            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                        });
+                    }
+                    const minExpectedDeposit = Math.round(numTotal * 0.5) - 2;
+                    if (numPaid < minExpectedDeposit) {
+                        return new Response(JSON.stringify({
+                            success: false,
+                            error: `Deposit validation failed: Minimum required payment is R${Math.round(numTotal * 0.5).toLocaleString()}, but Paystack paid R${numPaid.toLocaleString()}.`
+                        }), {
+                            status: 400,
+                            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+                        });
+                    }
+                }
             }
         }
 

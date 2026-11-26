@@ -4454,7 +4454,7 @@
         // ==========================================
         let isPaymentSubmitting = false;
 
-        function handleProceedToPayment(e) {
+        async function handleProceedToPayment(e) {
             e.preventDefault();
 
             // Strict double-submit guard
@@ -4526,9 +4526,16 @@
             })));
 
             try {
+                if (window._siteSettingsPromise) {
+                    await Promise.race([window._siteSettingsPromise, new Promise(r => setTimeout(r, 3000))]);
+                }
+                const resolvedPubKey = (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : '';
+                if (!resolvedPubKey || (window.location.hostname === 'cool-cat.co.za' && resolvedPubKey.startsWith('pk_test_'))) {
+                    throw new Error("Live payment gateway key is not loaded yet. Please refresh and try again.");
+                }
                 if (typeof PaystackPop !== 'undefined') {
                     const handler = PaystackPop.setup({
-                        key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                        key: resolvedPubKey,
                         email: email,
                         amount: amountInCents,
                         currency: 'ZAR',
@@ -5333,7 +5340,7 @@
             populateMonthDropdown();
             switchRoom(initialRoom);
             const liveBookingsPromise = loadLiveBookings();
-            loadSiteSettings();
+            window._siteSettingsPromise = loadSiteSettings();
 
             // Auto-detect referral link from URL
             const ref = urlParams.get('ref') || urlParams.get('promo');
@@ -5715,9 +5722,20 @@
             const amountInCents = activeQuotePay.chosenAmount * 100;
             const paystackRef = 'PAY_' + activeQuotePay.ref + '_' + Math.floor(Math.random() * 899 + 100);
 
+            const handlerKey = (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : '';
+            if (!handlerKey || (window.location.hostname === 'cool-cat.co.za' && handlerKey.startsWith('pk_test_'))) {
+                isQuotePaymentSubmitting = false;
+                if (qpBtn) {
+                    qpBtn.disabled = false;
+                    selectQuotePayOption(activeQuotePay.chosenType);
+                }
+                alert("Payment gateway is still initializing. Please wait 2 seconds and try again.");
+                return;
+            }
+
             if (typeof PaystackPop !== 'undefined') {
                 const handler = PaystackPop.setup({
-                    key: (SITE_CONFIG && SITE_CONFIG.paystackPublicKey) ? SITE_CONFIG.paystackPublicKey : 'pk_test_6b6231b5dbcce9a4562f8583b0a3841f1307a407',
+                    key: handlerKey,
                     email: email,
                     amount: amountInCents,
                     currency: 'ZAR',

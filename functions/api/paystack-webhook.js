@@ -31,8 +31,14 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Verify HMAC SHA512 signature if secret key is configured
-        if (paystackSecret) {
+        // Always require Paystack secret key and verify HMAC SHA512 signature
+        if (!paystackSecret) {
+            return new Response(JSON.stringify({ error: "Paystack secret key not configured in environment" }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        {
             if (!signature) {
                 return new Response(JSON.stringify({ error: "Missing x-paystack-signature header" }), {
                     status: 401,

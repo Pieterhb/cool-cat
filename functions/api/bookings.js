@@ -7,21 +7,50 @@ function verifyAuth(request, env) {
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
     if (!token) return { isAuthorized: false, role: null };
 
-    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '2026coolcat';
-    const isOwner = Boolean(
-        (expectedOwnerKey && token === expectedOwnerKey) ||
-        (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
-    );
+    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '';
+    const isOwner = Boolean(expectedOwnerKey && token === expectedOwnerKey);
 
-    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : 'marketer2026';
-    const isMarketer = Boolean(
-        (expectedMarketerKey && token === expectedMarketerKey) ||
-        (!env?.MARKETER_API_KEY && (token === 'marketer2026' || token === 'coolcat_mkt_2026'))
-    );
+    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : '';
+    const isMarketer = Boolean(expectedMarketerKey && token === expectedMarketerKey);
 
     if (isOwner) return { isAuthorized: true, role: 'owner' };
     if (isMarketer) return { isAuthorized: true, role: 'marketer' };
     return { isAuthorized: false, role: null };
+}
+
+function expandRoomsForOverlap(roomId) {
+    if (roomId === 'all') return ['king-arthur', 'santori', 'deluxe-suite'];
+    if (roomId === 'three-rooms') return ['king-arthur', 'santori'];
+    if (roomId === 'mykonos') return ['santori'];
+    return [roomId];
+}
+
+function hasRoomOverlap(existingBookings, staysToCheck, ignoreBookingId) {
+    if (!Array.isArray(existingBookings) || !Array.isArray(staysToCheck)) return false;
+    for (const stay of staysToCheck) {
+        const sIn = String(stay.checkInStr || stay.checkIn || '').split('T')[0];
+        const sOut = String(stay.checkOutStr || stay.checkOut || '').split('T')[0];
+        if (!sIn || !sOut) continue;
+        const reqRooms = expandRoomsForOverlap(stay.roomId);
+
+        for (const b of existingBookings) {
+            if (b.status === 'cancelled') continue;
+            if (ignoreBookingId && (b.id === ignoreBookingId || b.parentBookingId === ignoreBookingId)) continue;
+            if (b.isParentBooking && Array.isArray(b.stays) && b.stays.length > 0) continue;
+
+            const bIn = String(b.checkIn || '').split('T')[0];
+            const bOut = String(b.checkOut || '').split('T')[0];
+            if (!bIn || !bOut) continue;
+
+            if (sIn < bOut && sOut > bIn) {
+                const bRooms = expandRoomsForOverlap(b.roomId);
+                if (reqRooms.some(r => bRooms.includes(r))) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 export async function onRequestGet(context) {
@@ -239,6 +268,13 @@ export async function onRequestPost(context) {
         let existing = [];
         if (env && env.COOLCAT_KV) {
             existing = await env.COOLCAT_KV.get('bookings_list', { type: 'json' }) || [];
+        }
+
+        if (hasRoomOverlap(existing, [{ roomId, checkIn, checkOut }], id || ref || null)) {
+            return new Response(JSON.stringify({ success: false, error: "Double-booking conflict: selected room and dates overlap with an existing booking or block." }), {
+                status: 409,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+            });
         }
 
         let bookingRef = id || ref;

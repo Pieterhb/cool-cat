@@ -136,6 +136,15 @@ export async function onRequestGet(context) {
         const resendApiKey = (env && env.RESEND_API_KEY) ? String(env.RESEND_API_KEY).trim() : '';
         config.resendEmailConfigured = Boolean(resendApiKey);
 
+        // Strip sensitive/internal fields for unauthenticated public visitors
+        if (!auth.isAuthorized) {
+            delete config.wifi_network;
+            delete config.wifi_password;
+            delete config.marketer_payouts;
+            delete config.referral_payouts;
+            delete config.paystack_secret_key;
+        }
+
         return new Response(JSON.stringify({ success: true, config }), { headers: CORS_HEADERS });
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message, config: DEFAULT_CONFIG }), {
@@ -151,17 +160,11 @@ function verifyAuth(request, env) {
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
     if (!token) return { isAuthorized: false, role: null };
 
-    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '2026coolcat';
-    const isOwner = Boolean(
-        (expectedOwnerKey && token === expectedOwnerKey) ||
-        (!env?.ADMIN_API_KEY && (token === '2026coolcat' || token === 'coolcat2026'))
-    );
+    const expectedOwnerKey = (env && env.ADMIN_API_KEY) ? String(env.ADMIN_API_KEY).trim() : '';
+    const isOwner = Boolean(expectedOwnerKey && token === expectedOwnerKey);
 
-    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : 'marketer2026';
-    const isMarketer = Boolean(
-        (expectedMarketerKey && token === expectedMarketerKey) ||
-        (!env?.MARKETER_API_KEY && (token === 'marketer2026' || token === 'coolcat_mkt_2026'))
-    );
+    const expectedMarketerKey = (env && env.MARKETER_API_KEY) ? String(env.MARKETER_API_KEY).trim() : '';
+    const isMarketer = Boolean(expectedMarketerKey && token === expectedMarketerKey);
 
     if (isOwner) return { isAuthorized: true, role: 'owner' };
     if (isMarketer) return { isAuthorized: true, role: 'marketer' };
